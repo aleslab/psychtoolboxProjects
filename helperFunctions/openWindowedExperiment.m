@@ -1,4 +1,4 @@
-function screenInfo = openExperiment(monWidth, viewDist, curScreen)
+function screenInfo = openWindowedExperiment(monWidth, viewDist, curScreen)
 % screenInfo = openExperiment(monWidth, viewDist, curScreen)
 % Arguments:
 %	monWidth ... viewing width of monitor (cm)
@@ -8,14 +8,18 @@ function screenInfo = openExperiment(monWidth, viewDist, curScreen)
 %                         default is 0.
 % Sets the random number generator, opens the screen, gets the refresh
 % rate, determines the center and ppd, and stops the update process 
-% Used by both my dot code and my touch code.
-% MKMK July 2006
+%
+% Original from MKMK July 2006
+% Modified by Justin Ales
 
-mfilename
+
+%ACK!! This is out of date for new matlab!
+%Commenting out so it doesn't bite later. 
 % 1. SEED RANDOM NUMBER GENERATOR
-screenInfo.rseed = [];
-rseed = sum(100*clock);
-rand('state',rseed);
+%
+% screenInfo.rseed = [];
+% rseed = sum(100*clock);
+% rand('state',rseed);
 %screenInfo.rseed = sum(100*clock);
 %rand('state',screenInfo.rseed);
 
@@ -23,27 +27,24 @@ rand('state',rseed);
 % open the screen
 % ---------------
 
+%
+% This is a line that is easily skipped/missed 
 % Various default setup options, including color as float 0-1;
-
+% 
 PsychDefaultSetup(2)
 
 if nargin < 3
     curScreen = 0;
 end
 
-% added to make stuff behave itself in os x with multiple monitors
-Screen('Preference', 'VisualDebugLevel',2);
-%%%%
 
 % Set the background to the background value.
 screenInfo.bckgnd = 0.5;
+%This uses the new "psychImaging" pipeline. 
 [screenInfo.curWindow, screenInfo.screenRect] = PsychImaging('OpenWindow', curScreen, screenInfo.bckgnd,[0 0 500 500],32, 2);
 screenInfo.dontclear = 0; % 1 gives incremental drawing (does not clear buffer after flip)
 
 %get the refresh rate of the screen
-% need to change this if using crt, would be nice to have an if
-% statement...
-%screenInfo.monRefresh = Screen(curWindow,'FrameRate');
 spf =Screen('GetFlipInterval', screenInfo.curWindow);      % seconds per frame
 screenInfo.monRefresh = 1/spf;    % frames per second
 screenInfo.frameDur = 1000/screenInfo.monRefresh;

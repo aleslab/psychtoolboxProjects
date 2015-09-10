@@ -31,7 +31,7 @@ if nargin < 3
 end
 
 % added to make stuff behave itself in os x with multiple monitors
-Screen('Preference', 'VisualDebugLevel',2);
+%Screen('Preference', 'VisualDebugLevel',2);
 %%%%
 
 % Set the background to the background value.
