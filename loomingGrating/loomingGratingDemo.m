@@ -19,7 +19,9 @@ try
     
     %I find a windowed version of the experiment is easier to get working
     %and play with.
-    screenInfo = openWindowedExperiment(screenWidthCm,screenDistanceCm,screenNumber);
+    useFullScreen = false;
+    screenInfo = openExperiment(screenWidthCm,screenDistanceCm,...
+        screenNumber,useFullScreen);
     
     %Using the new "procedural" mechanisms that have the graphics card
     %calculate the stimulus instead of us.  Allows for for rapid 
