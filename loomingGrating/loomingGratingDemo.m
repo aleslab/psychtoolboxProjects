@@ -32,6 +32,7 @@ try
     % Build a procedural  texture  with a support of tw x th
     % pixels, and a RGB color offset of 0.5 -- a 50% gray.
     % Initial stimulus params for the patch:
+    % A lot of these are for the gabor
     res = 1*[128 128];
     phase = 90;
     sc = 5.0;
@@ -59,18 +60,15 @@ try
     %Here we figure out what we'll actually display.
     nFrames = round(trialDuration/screenInfo.frameDur);
     
-    %Warning linspace is wrong for a real loom. 
+    %What happens when something gets closer? 
+    %Spatial frequency gets lower. So we'll use that here:
+    %!!! Warning linspace is wrong for a real loom. 
     freqList = linspace(startingFreq,endingFreq,nFrames);
-    
-    keepShowing= true;
-    condInfo = [];
-    position = nan(nFrames,2);
-    velocity = nan(nFrames,2);
-    mousePos = nan(nFrames,2);
-    
+   
     
     for iFrame=1:nFrames,
         
+        %Update the frame on each frame. 
         freq = freqList(iFrame);
         %Heres a wacky line, This sets the focus of expansion of the
         %grating.  I'm tempted to leave this as an excercise for the
@@ -95,6 +93,7 @@ try
         Screen('flip',screenInfo.curWindow);
 
         
+        %Check if a key is pressed
         [keyIsDown,secs, keyCode, deltaSecs] = KbCheck([]);
         
         
