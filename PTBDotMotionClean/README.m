@@ -1,4 +1,8 @@
-% This is the latest version of variable coherence random dot motion for
+% This code is based on dot coherence experimental code from Maria Mckinley, Feb 2007 parody@u.washington.edu
+%
+%
+%The readme for the original version is below:
+%version of variable coherence random dot motion for
 % visual experiments for use on OS X macs.
 %
 % DemoOSX is a good place to start to see how the targets and dots are
@@ -74,4 +78,3 @@
 % the aperture. It makes sense that some dots should have long paths
 % beginning at the leading edge of the aperture.
 %
-% Maria Mckinley      Feb 2007      parody@u.washington.edu
