@@ -5,9 +5,10 @@
 %doesn't automatically clear if there's a programming error.
 %The try/catch will gracefully fail on an error
 
+%This is a wierd place to "cd" to. More importantly,
 %This type of a statement won't work on other computers it is best to
-%avoid.  The better solution is to add "C:\Users\aril\Documents" to your
-%matlab path. But that's a wierd place to be anyway.  
+%avoid.  If you need it for the function to run a  better solution is to 
+%add "C:\Users\aril\Documents" to your matlab path.  
 %cd  C:\Users\aril\Documents  
 
 
