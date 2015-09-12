@@ -4,7 +4,13 @@
 %We enclose everything in a try-catch statement because psychtoolbox
 %doesn't automatically clear if there's a programming error.
 %The try/catch will gracefully fail on an error
-cd  C:\Users\aril\Documents  
+
+%This type of a statement won't work on other computers it is best to
+%avoid.  The better solution is to add "C:\Users\aril\Documents" to your
+%matlab path. But that's a wierd place to be anyway.  
+%cd  C:\Users\aril\Documents  
+
+
 try
  
     %initialize the screen
@@ -80,12 +86,12 @@ try
         %so we need  to recenter to tw/2 (the center of the
         %texture)
         %2) The drawing code has phase in "degrees" I need it in radians
-        %so I use a rad2deg
+        %so we multiply by (180 degrees / pi radians)
         %3) algebra: grating = sin(2*pi*freq*x);
         %we change x to (x-tw/2)
         %sin(2*pi*freq*(x-tw/2)) = sin(2*pi*freq*x -
         %2*pi*freq*(tw/2))
-      phase = - (180/pi)*(2*pi*freq*(tw/2));
+        phase = - (180/pi)*(2*pi*freq*(tw/2));
         % Draw the Gabor patch: We simply draw the procedural texture as any other
         % texture via 'DrawTexture', but provide the parameters for the gabor as
         % optional 'auxParameters'.
@@ -113,7 +119,9 @@ catch
     disp('caught')
     errorMsg = lasterror;
     %screenInfo
-   % closeExperiment;
+    %closeExperiment() is the most important call in this block.  It's what
+    %stops psychtoolbox and returns control to matlab.
+    closeExperiment;
     error(errorMsg.message)
     %closeScreen(screenInfo.curWindow, screenInfo.oldclut)
 end;
