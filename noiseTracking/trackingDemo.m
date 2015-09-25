@@ -7,7 +7,7 @@ try
  
     %initialize the screen
     Screen('Preference', 'SkipSyncTests', 1);
-    screenInfo = openWindowedExperiment(34,50,0);
+    screenInfo = openExperiment(34,50,0,false);
     
     if ~exist('nreps','var')
         nreps = 0;
