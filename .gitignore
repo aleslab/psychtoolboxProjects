@@ -3,4 +3,4 @@
 *.asv
 
 #Default datafile location psychMaster
-psychMaster/Data/**/* 
+psychMaster/Data/*
