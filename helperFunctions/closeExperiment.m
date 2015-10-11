@@ -6,3 +6,4 @@ function closeExperiment
 Priority(0);
 Screen('CloseAll');
 ShowCursor; % Show cursor again, if it has been disabled.
+ListenChar(0);
