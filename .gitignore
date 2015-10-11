@@ -1,0 +1,6 @@
+#tempory files from matlab
+*.m~
+*.asv
+
+#Default datafile location psychMaster
+psychMaster/Data/**/* 
