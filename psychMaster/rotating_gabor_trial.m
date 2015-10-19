@@ -32,7 +32,6 @@ sigmaPix = 20;  % standard devistion in pixels
 cyclesPerSigma = 2;    %cycles per standaard devaion
 contrast = 0.25;   % contrast 
 phase = 0.25;      %phase of gabor
-orient = 360*rand();      % orientation of Gabor 0-360
       
 
 
@@ -40,9 +39,10 @@ orient = 360*rand();      % orientation of Gabor 0-360
 
 for iFrame = 1:nFrames
 
-    %creates a gabor texture.  This has to be within the loop because we
+    %creates a gabor texture.  These two lines have to be within the loop because we
     %want to create a new gabor on every frame we present.
-    my_gabor=createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase,orient)
+    orient = 360*rand();      % orientation of Gabor 0-360
+    my_gabor=createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase,orient);
     % Convert it to a texture 'tex':
     tex=Screen('MakeTexture', screenInfo.curWindow, my_gabor);
     
