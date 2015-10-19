@@ -27,20 +27,24 @@ end
 
 %parameters for gabor
 
-radiusPix = 256    % image size
-sigmaPix = 20  % standard devistion in pixels
-cyclesPerSigma = 2    %cycles per standaard devaion
-contrast = 0.25   % contrast 
-phase = 0.25      %phase of background?
-orient = rand      % orientation of Gabot?
+radiusPix = 256;    % image size
+sigmaPix = 20;  % standard devistion in pixels
+cyclesPerSigma = 2;    %cycles per standaard devaion
+contrast = 0.25;   % contrast 
+phase = 0.25;      %phase of gabor
+orient = 360*rand();      % orientation of Gabor 0-360
       
 
 
-my_gabor=createGabor(radiusPix, sigmaPix, cyclesPerSigma, [contrast=0.25], [phase=0],[orient=0])
-% Convert it to a texture 'tex':
-tex=Screen('MakeTexture', screenInfo.curWindow, noisePattern+targetPattern);
+
 
 for iFrame = 1:nFrames
+
+    %creates a gabor texture.  This has to be within the loop because we
+    %want to create a new gabor on every frame we present.
+    my_gabor=createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase,orient)
+    % Convert it to a texture 'tex':
+    tex=Screen('MakeTexture', screenInfo.curWindow, my_gabor);
     
     thisTime =  GetSecs - conditionInfo.stimStartTime-conditionInfo.preStimDuration;
     %How long has it been since last draw?
@@ -64,6 +68,9 @@ for iFrame = 1:nFrames
     
     flipTimes(iFrame)=Screen('Flip', screenInfo.curWindow);
     
+    %release the texture after we flip because we will redraw again in this
+    %loop.
+    Screen('Close', tex);
     if screenInfo.useKbQueue
         [ trialData.pressed, trialData.firstPress]=KbQueueCheck(screenInfo.deviceIndex);
     else
