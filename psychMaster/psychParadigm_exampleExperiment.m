@@ -22,7 +22,7 @@ screenInfo.instructions = ['Press f key if target present' ...
          '\n\n    Press any key to start'];
      
 %This defines what function to call to draw the condition
-conditionInfo(1).trialFun=@exampleNoiseTrial;
+conditionInfo(1).trialFun=@rotating_gabor_trial;
 
 % %Condition definitions
 %Condition 1, lets set some defaults:
