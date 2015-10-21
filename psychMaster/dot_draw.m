@@ -30,6 +30,8 @@ grey = white / 2;
 %primary screen in the lab; will be different for the lab CRT screen. 
 %Ideally need to  check the screen size to check the range but worry about
 %that later.
+%to check screen size use:
+%[width, height]=Screen('WindowSize', screenNumber) 
 %xrange = [0:1920]; %in the lilac room. this is the actual range.
 %yrange = [0:1200]; %in the lilac room 
 
@@ -81,6 +83,9 @@ end
 % Get the size of the on screen window in pixels.
 [screenXpixels, screenYpixels] = Screen('WindowSize', window);
 
+
+
+
 % Get the centre coordinate of the window in pixels
 % For help see: help RectCenter
 [xCenter, yCenter] = RectCenter(windowRect);
@@ -88,7 +93,17 @@ end
 % Enable alpha blending for anti-aliasing
 %you need this or you get a square instead of a circle
 %Will need to remove this later on as it's openGL but can use for this?
+%This is not really openGL. It just sets how the alpha channel gets
+%interpreted.  This, and a bunch of other things are already set in the
+%wrapper scripts.
 Screen('BlendFunction', window, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+
+
+% basically for adapting this code into the wrapper you just need to start
+% here. The wrapper script handles everything above.
+%-------------------------------------------------------
+% function [trialData] = drawDotTrial(screenInfo, conditionInfo)
+%
 
 % Setting the colour of the dots. It's RGB, but you can also use the 
 %black/grey/white that you defined earlier. [0 0 0] = black; 
@@ -123,6 +138,10 @@ Screen('Flip', window);
 % key) to terminate the demo. For help see: help KbStrokeWait
 KbStrokeWait;
 
+%This would be the end of your trial script. 
+%%%%%
+%--------------------------
+% This also gets handled by the wrapper script. 
 % Clear the screen. "sca" is short hand for "Screen CloseAll". This clears
 % all features related to PTB. Note: we leave the variables in the
 % workspace so you can have a look at them if you want.
