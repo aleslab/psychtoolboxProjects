@@ -17,40 +17,33 @@ screenInfo.instructions = ['Press f key if target present' ...
          '\n ' num2str(payoff(4)) ' points for a false alarm' ...
          '\n\n    Press any key to start'];
 %%% Justin**** b unsure about wether to leave all these screen instructions in??
+% No. These instructions are for the other paradigm. You'll need to write
+% your own. 
      
 %This defines what function to call to draw the condition
-conditionInfo(1).trialFun=rotating_gabor_trial;
+%Crucial: requires the @ sign prefix.  Because it needs it to be a
+%"function handle"
+conditionInfo(1).trialFun=@rotating_gabor_trial;
 
 
 % %Condition definitions
 %Condition 1, lets set some defaults:
-%Condition 1 is the target absent condition.
 conditionInfo(1).stimDuration     = 0.25; %approximate stimulus duration in seconds
 conditionInfo(1).preStimDuration  = 0.5;  %Static time before stimulus change
 conditionInfo(1).postStimDuration = 0;  %static time aftter stimulus change
-conditionInfo(1).iti              = .2;     %Inter Stimulus Interval
+conditionInfo(1).iti              = .2;     %Minimum Inter Trial Interval
 conditionInfo(1).responseDuration = 2;    %Post trial window for waiting for a response
-conditionInfo(1).sigma=.20; %cyclespersigma
-conditionInfo(1).freq = 4; %frequency of what ***justin
-conditionInfo(1).targetAmp = 0; % targetamplitude **Justin
-conditionInfo(1).nReps = 2; %% number of reps **justin
+
+conditionInfo(1).sigma=.20; %standard deviation of the gabor in pixels
+conditionInfo(1).freq = 4; %frequency of the gabor in cycles per sigma. 
+conditionInfo(1).targetAmp = 0; % target amplitude **Justin This was to define the target in noise
+conditionInfo(1).nReps = 2; %% number of trials to present this condition. 
 conditionInfo(1).stimRadiusCm   = 5;    %stimulus size in cm;
-conditionInfo(1).contrast = 0.25 
-conditonInfo(1).orientation = 360*Rand() 
+conditionInfo(1).contrast = 0.25 ;
+
+%This will pick a random orientation at the start of the experiment this is
+%not what you want.  
+conditionInfo(1).orientation = 360*Rand(); %
 
 
 
-%For conditions 2-4 we're going to copy all the settings from condition 1
-%and just define what we want changed.
-
-conditionInfo(2) = conditionInfo(1);
-conditionInfo(2).targetAmp = 10;
-conditionInfo(2).nReps = 1;
-
-conditionInfo(3) = conditionInfo(1);
-conditionInfo(3).targetAmp = 30;
-conditionInfo(3).nReps = 1;
-
-conditionInfo(4) = conditionInfo(1);
-conditionInfo(4).targetAmp = 80;
-conditionInfo(4).nReps = 1;
