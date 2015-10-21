@@ -38,6 +38,8 @@ conditionInfo(1).stimRadiusCm   = 5;    %stimulus size in cm;
 conditionInfo(1).contrast = 0.25 
 conditonInfo(1).orientation = 360*Rand() 
 
+
+
 %For conditions 2-4 we're going to copy all the settings from condition 1
 %and just define what we want changed.
 
