@@ -32,6 +32,7 @@ sigmaPix = 20;  % standard devistion in pixels
 cyclesPerSigma = 2;    %cycles per standaard devaion
 contrast = 0.25;   % contrast 
 phase = 0.25;      %phase of gabor
+orient = 360*rand(): %orient of gabor
       
 
 
@@ -39,15 +40,21 @@ phase = 0.25;      %phase of gabor
 
 for iFrame = 1:nFrames
 
-    %creates a gabor texture.  These two lines have to be within the loop because we
-    %want to create a new gabor on every frame we present.
-    orient = 360*rand();      % orientation of Gabor 0-360
-    my_gabor=createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase,orient);
-    % Convert it to a texture 'tex':
-    tex=Screen('MakeTexture', screenInfo.curWindow, my_gabor);
+    %creates a gabor texture. this has to be in the loop beacuse we want to
+    %create a new gabor on every frame we present.
+    my_gabor = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient)
+    %convert it to a texture 'tex'
+    tex=Screen(makeTexture, screenInfo, curWindow, my_gabor);
     
     thisTime =  GetSecs - conditionInfo.stimStartTime-conditionInfo.preStimDuration;
     %How long has it been since last draw?
+    
+    flipTimes(iframe)=Screen('Flip', screenInfo, curWindow');
+    %release the texture after we flip because we will redraw again in this
+    %loop.
+    screen('Close', tex);
+    
+    
     
     %relcalculate time to account for pre and post stim
     %
