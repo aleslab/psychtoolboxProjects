@@ -87,6 +87,7 @@ end
 
 % Enable alpha blending for anti-aliasing
 %you need this or you get a square instead of a circle
+%Will need to remove this later on as it's openGL but can use for this?
 Screen('BlendFunction', window, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 
 % Setting the colour of the dots. It's RGB, but you can also use the 
