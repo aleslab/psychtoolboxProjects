@@ -27,13 +27,26 @@ black = BlackIndex(screenNumber);
 grey = white / 2;
 %% A piece of code that asks you where you want to position the dot
 %X coordinate needs to be within 0-1920 for lilac room screen and the 
-%primary screen in the lab; will be different for the lab CRT screen. 
+%primary screen in the lab; will be different for the lab CRT screen and 
+%other computers with different screen dimensions. 
 %Ideally need to  check the screen size to check the range but worry about
 %that later.
 %to check screen size use:
 %[width, height]=Screen('WindowSize', screenNumber) 
 %xrange = [0:1920]; %in the lilac room. this is the actual range.
 %yrange = [0:1200]; %in the lilac room 
+
+%for the looming + CD experiment (||) you will want the same start and end
+%x coordinate for the line -- the code allows you to input only 1 x 
+%coordinate and 2 y coordinates. want two lots of these coordinates.
+
+%for the looming only experiment (=) you will want the opposite -- 2 x
+%coordinates and 1 y coordinate. want two lots of these coordinates.
+
+% for the possible CD only experiment discussed (|) you will want only one
+% line -- will need one x coordinate and 2 y coordinates.
+
+%For now this asks for 1x and 2y.
 
 xRange = false; %not the same as xrange. this is a boolean, but the values 
 %should still be within 0 and 1920 for this to be true.
@@ -56,21 +69,40 @@ while (~ xRange) %while not xRange
     end
 end 
 
-yRange = false; %not the same as yrange. this is a boolean, but the values 
+y1Range = false; %not the same as yrange. this is a boolean, but the values 
 %should still be within 0 and 1200.
-while (~ yRange) %the same loop but to get the Y coordinate instead of X
+while (~ y1Range) %the same loop but to get the Y coordinate instead of X
 
-    yquestion = ['Your Y coordinate? '];
+    y1question = ['Your first Y coordinate? '];
     
-    answery = input(yquestion);
+    answery1 = input(y1question);
     
-    if answery <= 1200 && answery >= 0
+    if answery1 <= 1200 && answery1 >= 0
         
-    yRange = true;
+    y1Range = true;
     
     else
         
-        yRange = false;
+        y1Range = false;
+        disp('Please enter a value in the range 0-1200');
+         
+    end
+end 
+y2Range = false; %not the same as yrange. this is a boolean, but the values 
+%should still be within 0 and 1200.
+while (~ y2Range) %the same loop but to get the Y coordinate instead of X
+
+    y2question = ['Your second Y coordinate? '];
+    
+    answery2 = input(y2question);
+    
+    if answery2 <= 1200 && answery2 >= 0
+        
+    y2Range = true;
+    
+    else
+        
+        y2Range = false;
         disp('Please enter a value in the range 0-1200');
          
     end
@@ -91,12 +123,10 @@ end
 [xCenter, yCenter] = RectCenter(windowRect);
 
 % Enable alpha blending for anti-aliasing
-%you need this or you get a square instead of a circle
-%Will need to remove this later on as it's openGL but can use for this?
 %This is not really openGL. It just sets how the alpha channel gets
 %interpreted.  This, and a bunch of other things are already set in the
 %wrapper scripts.
-Screen('BlendFunction', window, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+%Screen('BlendFunction', window, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 
 
 % basically for adapting this code into the wrapper you just need to start
@@ -105,27 +135,13 @@ Screen('BlendFunction', window, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 % function [trialData] = drawDotTrial(screenInfo, conditionInfo)
 %
 
-% Setting the colour of the dots. It's RGB, but you can also use the 
-%black/grey/white that you defined earlier. [0 0 0] = black; 
-%[1 0 0] = red; [0 1 0] = green; [0 0 1] = blue; [1 1 1] = white. 
-dotColor = black;
- 
-%Remember that if the dot is drawn at the edge of the screen some of it 
+%Remember that if the dot/line is drawn at the edge of the screen some of it 
 %might not be visible.
 
-dotXpos = answerx; %putting in the coordinate you input earlier for X so 
-%that it is actually drawn
-dotYpos = answery; %putting in the coordinate you input earlier for Y so 
-%that it is actually drawn
+% Draw the dot to the screen. Draws a black line in the grey window from
+% start(x,y1) to end(x,y2)
 
-% Dot size in pixels
-dotSizePix = 10;
-
-% Draw the dot to the screen. For information on the command used in
-% this line type "Screen DrawDots?" at the command line (without the
-% brackets) and press enter. Here we used good antialiasing to get nice
-% smooth edges
-Screen('DrawDots', window, [dotXpos dotYpos], dotSizePix, dotColor, [], 2);
+Screen('DrawLine', window, black, answerx, answery1, answerx, answery2);
 
 % Flip to the screen. This command basically draws all of our previous
 % commands onto the screen. See later demos in the animation section on more
