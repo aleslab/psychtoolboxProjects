@@ -108,9 +108,16 @@ while (~ y2Range) %the same loop but to get the Y coordinate instead of X
     end
 end 
 
-%% Generating the window with the dot
+%% Generating the window with the line
 % Opens a grey window.
+%stereoMode = 4; This isn't fully functional yet, I just wanted to put it
+%in to keep it in mind
+
 [window, windowRect] = PsychImaging('OpenWindow', screenNumber, grey);
+
+%[window, windowRect] = PsychImaging('OpenWindow', screenNumber, grey,...
+    %[], 32, 2, stereoMode); %the 32 and 2 might not be right, taken from
+    %another of Peter Scarfe's demos
 
 % Get the size of the on screen window in pixels.
 [screenXpixels, screenYpixels] = Screen('WindowSize', window);
