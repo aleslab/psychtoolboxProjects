@@ -38,26 +38,26 @@ vbl=Screen('Flip', window); %taken from PTB-3 MovingLineDemo
 x=0; %xcoordinate
 xv = 10;
 lw = 1; %linewidth
-
-while ;
-    
-x=mod(x+xv, screenXpixels);
-
-end
-
-%button = 0;
-
-% Run until left mouse button is pressed:
-% while ~button(1)
-%     %Query mouse:
-%     [xm, ym, button] = GetMouse;
+% 
+% while ();
 %     
-%     %Move line pair by 'xv' unless right mouse button is pressed, which
-%     %will pause the animation:
-%     if button(2)==0
-%         x=mod(x+xv, screenXpixels);
-%     end
+% x=mod(x+xv, screenXpixels);
+% 
 % end
+
+button = 0;
+
+%Run until left mouse button is pressed:
+while ~button(1)
+    %Query mouse:
+    [xm, ym, button] = GetMouse;
+    
+    %Move line pair by 'xv' unless right mouse button is pressed, which
+    %will pause the animation:
+    if button(2)==0
+        x=mod(x+xv, screenXpixels);
+    end
+end
 
 %Screen('DrawLine', window, black, answerx, answery1, answerx, answery2);
 Screen('DrawLines', window, [x, x ; 0, screenYpixels], lw); 
