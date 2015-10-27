@@ -56,14 +56,16 @@ while ~button(1)
     %will pause the animation:
     if button(2)==0
         x=mod(x+xv, screenXpixels);
-    end
+        Screen('DrawLines', window, [x, x ; 0, screenYpixels], lw); 
+        vbl=Screen('Flip', window,vbl+ifi/2); %taken from PTB-3 MovingLineDemo
+
+    end 
 end
+%this currently moves the position of the line across the screen until the
+%left mouse button is pressed. right click pauses (so if right click/button
+%(2) is false then it will run.
 
-%Screen('DrawLine', window, black, answerx, answery1, answerx, answery2);
-Screen('DrawLines', window, [x, x ; 0, screenYpixels], lw); 
-vbl=Screen('Flip', window,vbl+ifi/2); %taken from PTB-3 MovingLineDemo
-
-KbStrokeWait;
+%KbStrokeWait;
 
 %This would be the end of your trial script. 
 %%%%%
