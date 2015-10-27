@@ -18,6 +18,63 @@ screenNumber = max(screens);
 white = WhiteIndex(screenNumber);
 black = BlackIndex(screenNumber);
 grey = white / 2;
+
+%% Get the start and end x coordinates for the line to move between
+
+xRangeinitial = false; 
+while (~ xRangeinitial) %while not in the range of x pixels
+
+    xquestionini = ['Your starting X coordinate? ']; %asks for the x 
+    %coordinate that you want the line to be moved from
+    
+   xinitial = input(xquestionini); %initial x coordinate is the input
+    
+    if xinitial <= 1920 && xinitial >= 0 %if the x answer is outside the 
+    %specified range for the lilac room
+    
+%      if xinitial <= 1280 && xinitial >= 0 %if the x answer is outside the 
+%     %specified range for the CRT in the lab
+        
+    xRangeinitial = true;
+    
+    else
+        
+        xRangeinitial = false;
+        disp('Please enter a value in the range 0-1920'); %lilac room
+        
+%         xRangeinitial = false;
+%         disp('Please enter a value in the range 0-1920'); %lab crt
+         
+    end
+end 
+
+xRangefinal = false; 
+while (~ xRangefinal) %while not in the range of x pixels
+
+    xquestionfin = ['Your end X coordinate? ']; %asks for the x 
+    %coordinate that you want the line to be moved from
+    
+   xfinal = input(xquestionfin); %initial x coordinate is the input
+    
+    if xfinal <= 1920 && xfinal >= 0 %if the x answer is outside the 
+    %specified range for the lilac room
+    
+%      if xfinal <= 1280 && xfinal >= 0 %if the x answer is outside the 
+%     %specified range for the CRT in the lab
+        
+    xRangefinal = true;
+    
+    else
+        
+        xRangefinal = false;
+        disp('Please enter a value in the range 0-1920'); %lilac room
+        
+%         xRangefinal = false;
+%         disp('Please enter a value in the range 0-1920'); %lab crt
+         
+    end
+end 
+
 %% Generating the window with the line
 [window, windowRect] = PsychImaging('OpenWindow', screenNumber, black);
 
@@ -35,7 +92,7 @@ vbl=Screen('Flip', window); %taken from PTB-3 MovingLineDemo
 %-------------------------------------------------------
 % function [trialData] = drawDotTrial(screenInfo, conditionInfo)
 %
-x=0; %xcoordinate
+%x=0; %xcoordinate
 xv = 10;
 lw = 1; %linewidth
 % 
@@ -66,11 +123,11 @@ lw = 1; %linewidth
 %     end 
 % end
 
-while x<1000; %so now you need to change this so that the x ==/less than/ 
+while xinitial < xfinal; %so now you need to change this so that the x ==/less than/ 
     %whatever value is entered at the beginning. you also need to pick the
     %x coordinate to start at at the beginning.
-     x=mod(x+xv, screenXpixels);
-        Screen('DrawLines', window, [x, x ; 0, screenYpixels], lw); 
+     xinitial=mod(xinitial+xv, screenXpixels);
+        Screen('DrawLines', window, [xinitial, xinitial ; 0, screenYpixels], lw); 
         vbl=Screen('Flip', window,vbl+ifi/2); %taken from PTB-3 MovingLineDemo
 
     end 
