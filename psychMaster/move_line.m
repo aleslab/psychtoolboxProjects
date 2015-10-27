@@ -75,6 +75,12 @@ while (~ xRangefinal) %while not in the range of x pixels
     end
 end 
 
+
+speedquestion = ['How fast would you like the line to move across the screen? '];
+    
+xv = input(speedquestion); %xv = the speed that the line is moving 
+   %through the x axis 
+
 %% Generating the window with the line
 [window, windowRect] = PsychImaging('OpenWindow', screenNumber, black);
 
@@ -93,42 +99,18 @@ vbl=Screen('Flip', window); %taken from PTB-3 MovingLineDemo
 % function [trialData] = drawDotTrial(screenInfo, conditionInfo)
 %
 %x=0; %xcoordinate
-xv = 10;
+%xv = 10;
 lw = 1; %linewidth
-% 
-% while (KbStrokeWait); %this moves the line while you hold down a key on 
-%     %the keyboard. Want it to do the opposite and run until you press a key
-%     %but it's not as simple as just doing ~KbStrokeWait.
-%     
-% x=mod(x+xv, screenXpixels);
-% Screen('DrawLines', window, [x, x ; 0, screenYpixels], lw); 
-% vbl=Screen('Flip', window,vbl+ifi/2); %taken from PTB-3 MovingLineDemo
-% 
-% end
-
-% button = 0;
-% 
-% %Run until left mouse button is pressed:
-% while ~button(1)
-%     %Query mouse:
-%     [xm, ym, button] = GetMouse;
-%     
-%     %Move line pair by 'xv' unless right mouse button is pressed, which
-%     %will pause the animation:
-%     if button(2)==0
-%         x=mod(x+xv, screenXpixels);
-%         Screen('DrawLines', window, [x, x ; 0, screenYpixels], lw); 
-%         vbl=Screen('Flip', window,vbl+ifi/2); %taken from PTB-3 MovingLineDemo
-% 
-%     end 
-% end
 
 while xinitial < xfinal; %so now you need to change this so that the x ==/less than/ 
     %whatever value is entered at the beginning. you also need to pick the
     %x coordinate to start at at the beginning.
-     xinitial=mod(xinitial+xv, screenXpixels);
+     xinitial=mod(xinitial+xv, screenXpixels); %the part that actually gets 
+     %the line to move within the while loop
         Screen('DrawLines', window, [xinitial, xinitial ; 0, screenYpixels], lw); 
         vbl=Screen('Flip', window,vbl+ifi/2); %taken from PTB-3 MovingLineDemo
+        %Drawing and flipping everything onto the screen so that it appears
+        %as it should.
 
     end 
 %this currently moves the position of the line across the screen until the
