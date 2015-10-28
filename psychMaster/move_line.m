@@ -102,7 +102,18 @@ vbl=Screen('Flip', window); %taken from PTB-3 MovingLineDemo
 %xv = 10;
 lw = 1; %linewidth
 
-while xinitial < xfinal; %so now you need to change this so that the x ==/less than/ 
+if xinitial > xfinal;
+    
+    while xinitial > xfinal; %so now you need to change this so that the x ==/less than/ 
+    %whatever value is entered at the beginning. you also need to pick the
+    %x coordinate to start at at the beginning.
+     xinitial=mod(xinitial-xv, screenXpixels); %the part that actually gets 
+     %the line to move within the while loop
+        Screen('DrawLines', window, [xinitial, xinitial ; 0, screenYpixels], lw); 
+        vbl=Screen('Flip', window,vbl+ifi/2); %taken from PTB-3 MovingLineDemo
+    end
+else
+    while xinitial < xfinal; %so now you need to change this so that the x ==/less than/ 
     %whatever value is entered at the beginning. you also need to pick the
     %x coordinate to start at at the beginning.
      xinitial=mod(xinitial+xv, screenXpixels); %the part that actually gets 
@@ -113,6 +124,7 @@ while xinitial < xfinal; %so now you need to change this so that the x ==/less t
         %as it should.
 
     end 
+end    
 %this currently moves the position of the line across the screen until the
 %left mouse button is pressed. right click pauses (so if right click/button
 %(2) is false then it will run.
