@@ -2,7 +2,7 @@
 %the PTB-3 MovingLineDemo.
 % Clear the workspace and the screen
 close all;
-clear all;
+clear all; %#ok<CLSCR>
 sca
 
 % Here we call some default settings for setting up Psychtoolbox
@@ -24,7 +24,7 @@ grey = white / 2;
 xRangeinitial = false; 
 while (~ xRangeinitial) %while not in the range of x pixels
 
-    xquestionini = ['Your starting X coordinate? ']; %asks for the x 
+    xquestionini = 'Your starting X coordinate? '; %asks for the x 
     %coordinate that you want the line to be moved from
     
    xinitial = input(xquestionini); %initial x coordinate is the input
@@ -51,7 +51,7 @@ end
 xRangefinal = false; 
 while (~ xRangefinal) %while not in the range of x pixels
 
-    xquestionfin = ['Your end X coordinate? ']; %asks for the x 
+    xquestionfin = 'Your end X coordinate? '; %asks for the x 
     %coordinate that you want the line to be moved from
     
    xfinal = input(xquestionfin); %initial x coordinate is the input
@@ -76,10 +76,11 @@ while (~ xRangefinal) %while not in the range of x pixels
 end 
 
 
-speedquestion = ['How fast would you like the line to move across the screen? '];
+speedquestion = 'How fast would you like the line to move across the screen? ';
     
 xv = input(speedquestion); %xv = the speed that the line is moving 
-   %through the x axis 
+   %through the x axis. Not entirely sure how this translates into metres
+   %per second/ millimetres per second/ degrees per second?
 
 %% Generating the window with the line
 [window, windowRect] = PsychImaging('OpenWindow', screenNumber, black);
@@ -98,26 +99,23 @@ vbl=Screen('Flip', window); %taken from PTB-3 MovingLineDemo
 %-------------------------------------------------------
 % function [trialData] = drawDotTrial(screenInfo, conditionInfo)
 %
-%x=0; %xcoordinate
-%xv = 10;
 lw = 1; %linewidth
 
 if xinitial > xfinal;
     
-    while xinitial > xfinal; %so now you need to change this so that the x ==/less than/ 
-    %whatever value is entered at the beginning. you also need to pick the
-    %x coordinate to start at at the beginning.
+    while xinitial > xfinal;
      xinitial=mod(xinitial-xv, screenXpixels); %the part that actually gets 
-     %the line to move within the while loop
+     %the line to move within the while loop. taking xv off the value to
+     %move to the left.
         Screen('DrawLines', window, [xinitial, xinitial ; 0, screenYpixels], lw); 
         vbl=Screen('Flip', window,vbl+ifi/2); %taken from PTB-3 MovingLineDemo
+        %if this isn't flipped within the while loop you won't see the line
+        %being moved across the window.
     end
 else
-    while xinitial < xfinal; %so now you need to change this so that the x ==/less than/ 
-    %whatever value is entered at the beginning. you also need to pick the
-    %x coordinate to start at at the beginning.
-     xinitial=mod(xinitial+xv, screenXpixels); %the part that actually gets 
-     %the line to move within the while loop
+    while xinitial < xfinal; 
+     xinitial=mod(xinitial+xv, screenXpixels); %adding xv onto the value so
+     %that the line moves towards the right
         Screen('DrawLines', window, [xinitial, xinitial ; 0, screenYpixels], lw); 
         vbl=Screen('Flip', window,vbl+ifi/2); %taken from PTB-3 MovingLineDemo
         %Drawing and flipping everything onto the screen so that it appears
@@ -125,9 +123,6 @@ else
 
     end 
 end    
-%this currently moves the position of the line across the screen until the
-%left mouse button is pressed. right click pauses (so if right click/button
-%(2) is false then it will run.
 
 KbStrokeWait;
 
