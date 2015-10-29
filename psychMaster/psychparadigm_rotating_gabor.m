@@ -1,8 +1,8 @@
-function [conditionInfo, ScreenInfo, screenInfo] = psychparadigm_rotating_gabor(screenInfo)
+function [conditionInfo,screenInfo] = psychparadigm_rotating_gabor(screenInfo)
 screenInfo.paradigmName = 'noiseDetect';
 
 % use kbQueue's as they have high performance
-screenInfo.useKbQueue = false:
+screenInfo.useKbQueue = false;
 
 
 %Lets add an experiment wide setting here:
@@ -43,7 +43,7 @@ conditionInfo(1).contrast = 0.25 ;
 
 %This will pick a random orientation at the start of the experiment this is
 %not what you want.  
-conditionInfo(1).orientation = 360*Rand(); %
+conditionInfo(1).orientation = 360*rand(); %
 
 
 
