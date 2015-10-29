@@ -81,6 +81,8 @@ speedquestion = 'How fast would you like the line to move across the screen? ';
 xv = input(speedquestion); %xv = the speed that the line is moving 
    %through the x axis. Not entirely sure how this translates into metres
    %per second/ millimetres per second/ degrees per second?
+   %As coded here it's in pixels/(time to iterate while loop). Most likely a single video frame so:
+   % Pixels / ifi
 
 %% Generating the window with the line
 [window, windowRect] = PsychImaging('OpenWindow', screenNumber, black);
@@ -101,8 +103,9 @@ vbl=Screen('Flip', window); %taken from PTB-3 MovingLineDemo
 %
 lw = 1; %linewidth
 
+
 if xinitial > xfinal;
-    
+       
     while xinitial > xfinal;
      xinitial=mod(xinitial-xv, screenXpixels); %the part that actually gets 
      %the line to move within the while loop. taking xv off the value to

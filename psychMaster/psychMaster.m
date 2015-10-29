@@ -128,7 +128,7 @@ try
     %THESE VALUES ARE HARDCODED TEMPORARILY NEED TO INCORPORATE
     %CALIBRATION ROUTINE
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    monitorWidth = 34; subjectDist = 75;
+    monitorWidth = 40; subjectDist = 50;
     expScreen = max(Screen('Screens'));   
     screenInfo = openExperiment(monitorWidth,subjectDist,expScreen,0);
     

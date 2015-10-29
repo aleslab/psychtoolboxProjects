@@ -27,8 +27,8 @@ end
 
 %parameters for gabor
 
-radiusPix = 256;    % image size
-sigmaPix = 20;  % standard devistion in pixels
+radiusPix = screenInfo.ppd*conditionInfo.stimRadiusDeg;    % stimSize in degrees x pixels per degree.
+sigmaPix  = screenInfo.ppd*conditionInfo.sigma;  % standard deviation in degrees iinto pixels
 cyclesPerSigma = 2;    %cycles per standaard devaion
 contrast = 0.25;   % contrast 
 phase = 0.25;      %phase of gabor
