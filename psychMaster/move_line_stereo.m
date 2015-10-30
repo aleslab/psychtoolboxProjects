@@ -28,10 +28,10 @@ while (~ xRange) %while not in the range of x pixels
     
    xdistance = input(xdistancequestion); %distance for the line to move is the input
     
-    if xdistance <= 960 && xdistance >= 0 %if the distance is outside the 
+    if xdistance <= 480 && xdistance >= 0 %if the distance is outside the 
     %specified range for the lilac room
     
-%      if xdistance <= 640 && xdistance >= 0 %if the distance is outside the 
+%      if xdistance <= 320 && xdistance >= 0 %if the distance is outside the 
 %     %specified range for the CRT in the lab
         
     xRange = true;
@@ -79,13 +79,14 @@ lw = 5; %linewidth
 % When drawing in stereo we have to select which eyes buffer we are going
 % to draw in. These are labelled 0 for left and 1 for right.
 
-xposL = 960; 
-xposR = 0; 
+xposL = 480; %320 in lab 
+xposR = 480; %320 in lab
+
+%480 half way through half of the screen so that when viewed as fused
+%through the stereoscope you don't get crossover of the lines.
 
 currentxL = xposL-xdistance;
 currentxR = xposR+xdistance;
-%to have a starting position of the two lines at the centre of the screen
-%but 50 pixels apart.
 
 % Select left-eye image buffer for drawing (buffer = 0)
 Screen('SelectStereoDrawBuffer', window, 0); 
@@ -114,6 +115,10 @@ while xposR < currentxR
         %Drawing and flipping everything onto the screen so that it appears
         %as it should.
 end
+
+% How can you make it so that both of the lines are drawn and move
+% simultaneously?
+
 % Flip to the screen
 Screen('Flip', window);
 
