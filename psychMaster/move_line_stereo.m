@@ -21,7 +21,6 @@ white = WhiteIndex(screenNumber);
 black = BlackIndex(screenNumber);
 
 %% Get the distance and speed for the line to move
-
 xRange = false; 
 while (~ xRange) %while not in the range of x pixels
 
@@ -32,7 +31,7 @@ while (~ xRange) %while not in the range of x pixels
     if xdistance <= 960 && xdistance >= 0 %if the distance is outside the 
     %specified range for the lilac room
     
-%      if xinitial <= 640 && xinitial >= 0 %if the distance is outside the 
+%      if xdistance <= 640 && xdistance >= 0 %if the distance is outside the 
 %     %specified range for the CRT in the lab
         
     xRange = true;
@@ -42,7 +41,7 @@ while (~ xRange) %while not in the range of x pixels
         xRange = false;
         disp('Please enter a value in the range 0-960'); %lilac room
         
-%         xRangeinitial = false;
+%         xRange = false;
 %         disp('Please enter a value in the range 0-640'); %lab crt
          
     end
@@ -75,13 +74,13 @@ vbl=Screen('Flip', window); %taken from PTB-3 MovingLineDemo
 %-------------------------------------------------------
 % function [trialData] = drawDotTrial(screenInfo, conditionInfo)
 %
-lw = 1; %linewidth
+lw = 5; %linewidth
 
 % When drawing in stereo we have to select which eyes buffer we are going
 % to draw in. These are labelled 0 for left and 1 for right.
 
-xposL = 935; %960-25 pixels
-xposR = 25; %0+25 pixels
+xposL = 960; 
+xposR = 0; 
 
 currentxL = xposL-xdistance;
 currentxR = xposR+xdistance;
