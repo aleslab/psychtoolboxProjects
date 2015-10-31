@@ -89,35 +89,47 @@ currentxL = xposL-xdistance;
 currentxR = xposR+xdistance;
 
 % Select left-eye image buffer for drawing (buffer = 0)
-Screen('SelectStereoDrawBuffer', window, 0); 
 
+%We'll change this to calculate a stim duration later.
+continueDrawing = true;
 % Now draw our left eyes line
-while xposL > currentxL
-     xposL=mod(xposL-xv, screenXpixels); %the part that actually gets 
-     %the line to move within the while loop. taking xv off the value to
+while continueDrawing
+
+
+    xposL=mod(xposL-xv, screenXpixels); %the part that actually gets 
+    %the line to move within the while loop. taking xv off the value to
      %move to the left.
-        Screen('DrawLines', window, [xposL, xposL ; 0, screenYpixels], lw); 
-        vbl=Screen('Flip', window,vbl+ifi/2); %taken from PTB-3 MovingLineDemo
-        %if this isn't flipped within the while loop you won't see the line
-        %being moved across the window.
-        
-end
-
-% % Select right-eye image buffer for drawing (buffer = 1)
-Screen('SelectStereoDrawBuffer', window, 1);
-
-% Now draw our right eyes line
-while xposR < currentxR
-     xposR=mod(xposR+xv, screenXpixels); %adding xv onto the value so
+    xposR=mod(xposR+xv, screenXpixels); %adding xv onto the value so
      %that the line moves towards the right
-        Screen('DrawLines', window, [xposR, xposR; 0, screenYpixels], lw); 
-        vbl=Screen('Flip', window,vbl+ifi/2); %taken from PTB-3 MovingLineDemo
-        %Drawing and flipping everything onto the screen so that it appears
-        %as it should.
+
+    %Draw Left Image:
+    Screen('SelectStereoDrawBuffer', window, 0);     
+    Screen('DrawLines', window, [xposL, xposL ; 0, screenYpixels], lw);
+        
+        
+
+    % % Select right-eye image buffer for drawing (buffer = 1)
+    Screen('SelectStereoDrawBuffer', window, 1);
+
+    % Now draw our right eyes line
+    Screen('DrawLines', window, [xposR, xposR; 0, screenYpixels], lw);
+
+    %Now show them both.
+    vbl=Screen('Flip', window,vbl+ifi/2); %taken from PTB-3 MovingLineDemo
+     %Drawing and flipping everything onto the screen so that it appears
+     %as it should.
+     
+     %If either bar hits the limit stop drawing
+     if (xposL < currentxL) || (xposR > currentxR)
+         continueDrawing = false;
+     end
+     
 end
 
 % How can you make it so that both of the lines are drawn and move
 % simultaneously?
+%Done.  To do this you need to draw each bar before caling flip.
+
 
 % Flip to the screen
 Screen('Flip', window);
