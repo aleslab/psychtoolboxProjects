@@ -79,8 +79,8 @@ lw = 5; %linewidth
 % When drawing in stereo we have to select which eyes buffer we are going
 % to draw in. These are labelled 0 for left and 1 for right.
 
-xposL = 480; %320 in lab 
-xposR = 480; %320 in lab
+xposL = 480; %320 in lab %480 in lilac
+xposR = 480; %320 in lab %480 in lilac
 
 %480 half way through half of the screen so that when viewed as fused
 %through the stereoscope you don't get crossover of the lines.
