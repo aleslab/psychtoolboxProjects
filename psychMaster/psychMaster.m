@@ -17,11 +17,22 @@ function [] = psychMaster(sessionInfo)
 %   conditionInfo is a structure with an entry for each condtion that will be run
 %    
 %   Mandatory fields: nReps, trialFun, iti  
-%   trialFun = a function handle to the trial function
-%   nReps    = number of reptitions to run this condition 
-%              (each condition can have a different number).
-%   iti      = The intertrial interval in seconds. Currently implemented
-%              with a simple WaitSecs() call so the iti is AT LEAST this long
+%   trialFun  = a function handle to the trial function
+%   nReps     = number of reptitions to run this condition 
+%               (each condition can have a different number).
+%   iti       = The intertrial interval in seconds. Currently implemented
+%               with a simple WaitSecs() call so the iti is AT LEAST this long
+%   
+%   Optional fields:
+%   type = A string that identifies what type of trial, choices:
+%          'Generic'  -  The @trialFun will handle collecting responses and
+%                        feedback
+%          '2afc'     -  This will implement 2 temporal alternative forced
+%                        choice. This option will collect responses and 
+%                        will optionally provide feedback (if giveFeedback is set to TRUE).  
+%                        This type requires a special field in the condition 
+%                        "nullCondition" that will be used as the 
+%                        comparison trial.
 %   
 %   screenInfo defines experiment wide settings. Mostly things that are
 %   for PsychToolbox.  But also other things that are aren't specific to a
@@ -135,12 +146,18 @@ try
     %This line calls the function handle that defines all the paradigm
     %information.  ConditionInfo contains the per condition information.
     %screenInfo contains important 
-    [conditionInfo, screenInfo] = sessionInfo.paradigmFun(screenInfo);
+    try
+        [conditionInfo, screenInfo] = sessionInfo.paradigmFun(screenInfo);
+    catch
+        disp('<><><><><><> PSYCH MASTER <><><><><><><>')
+        disp('ERROR Loading Paradigm File')
+        disp('<><><><><><> PSYCH MASTER <><><><><><><>')
+        closeExperiment;
+        return;
+    end
     
- 
-   
     
-    
+    conditionInfo = validateConditions(conditionInfo);
     
     %This code randomizes the condition order
 
@@ -154,10 +171,12 @@ try
     for iCond = 1:nConditions,
         perCondData(iCond).correctResponse = [];
         
+        
         for iRep = 1:conditionInfo(iCond).nReps,
             conditionList(idx) = iCond;
             idx = idx+1;
         end
+        
     end
     
     %Now lets do a quick randomization. This is an old way to accomplish a
