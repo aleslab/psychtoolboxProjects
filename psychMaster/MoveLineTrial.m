@@ -50,31 +50,45 @@ while linerep ~= totallinereps;
         xinitial = 10;
     end
 end
-speedquestion = 'Which of the lines moved faster, the first line (1) or the second line (2)? ';
+speedquestion = 'Press the spacebar to continue ';
     DrawFormattedText(screenInfo.curWindow, speedquestion,'left', 'center', 1,[],[],[],[],[],screenInfo.screenRect);
     Screen('Flip', screenInfo.curWindow);
-    
-keysOfInterest=zeros(1,256);
-	keysOfInterest(KbName({'1', '2'}))=1;
-	KbQueueCreate(-1, keysOfInterest);
-	% Perform some other initializations
-	KbQueueStart;
-	% Perform some other tasks while key events are being recorded
-    
-	[ pressed, firstPress]=KbQueueCheck; % Collect keyboard events since KbQueueStart was invoked
-   
-    if pressed
-        
-        if firstPress(KbName('1'))
-            % Handle press of '1' key
-        end
-        if firstPress(KbName('2'))
-            % Handle press of '2' key
-        end
-    end
-	% Do additional computations
-	KbQueueRelease;
+%     if screenInfo.useKbQueue
+%         [ trialData.pressed, trialData.firstPress]=KbQueueCheck(screenInfo.deviceIndex);
+%     end
+%     
+%  keysOfInterest=zeros(1,256);
+%  	keysOfInterest(KbName({'1', '2'}))=1;
+% 	KbQueueCreate(-1, keysOfInterest);
+% 	% Perform some other initializations
+% 	KbQueueStart;
+% 	% Perform some other tasks while key events are being recorded
+%     
+% 	[ pressed, firstPress]=KbQueueCheck; % Collect keyboard events since KbQueueStart was invoked
+%    
+%     if pressed
+%         
+%         if firstPress(KbName('1'))
+%             % Handle press of '1' key
+%             trialData.firstPress(KbName('1'))
+%              trialData.correctResponse = true;
+%         end
+%         if firstPress(KbName('2'))
+%             % Handle press of '2' key
+%             trialData.firstPress(KbName('2'))
+%              trialData.correctResponse = false;
+%         end
+%     end
+% % 	% Do additional computations
+% 	KbQueueRelease;
 
-%KbStrokeWait;
+KbStrokeWait;
+trialData.firstPress = 1;
+feedbackMsg  = ['It works'];
+trialData.feedbackMsg = feedbackMsg;
+trialData.validTrial = true;
+%   feedbackMsg  = ['Invalid Response'];
+%     trialData.validTrial = false;
+    
 
 sca;

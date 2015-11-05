@@ -6,7 +6,7 @@ function [conditionInfo, screenInfo] = psychParadigm_MoveLine(screenInfo)
 screenInfo.paradigmName = 'MoveLine';
 
 %Let's use kbQueue's because they have high performance.
-screenInfo.useKbQueue = true;
+%screenInfo.useKbQueue = true;
 
 screenInfo.instructions = 'Press any key to start';
  
