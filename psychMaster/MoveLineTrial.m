@@ -7,20 +7,32 @@ function [trialData] = MoveLineTrial(screenInfo, conditionInfo)
 ifi = Screen('GetFlipInterval', screenInfo.curWindow); %inter-frame interval 
 %for the current window on the screen.
 
-totalDuration = conditionInfo.preStimDuration+conditionInfo.stimDuration+conditionInfo.postStimDuration;
-nFrames = round(totalDuration / screenInfo.ifi);
-trialData.actualDuration = nFrames*screenInfo.ifi;
+%totalDuration = conditionInfo.preStimDuration+conditionInfo.stimDuration+conditionInfo.postStimDuration;
+%nFrames = round(totalDuration / screenInfo.ifi);
+%trialData.actualDuration = nFrames*screenInfo.ifi;
 trialData.validTrial = false;
 trialData.abortNow   = false;
 
 vbl=Screen('Flip', screenInfo.curWindow); %flipping to the screen
 linerep = 1;
 totallinereps = 3;
-lw = 1; %linewidth
-xinitial = 10; %initial x position for line
-xfinal = 200; %where the line ends in x
-xv = 5; %speed (most likely Pixels / ifi)
+lw = 1; %linewidth in pixels
 
+xinitial = 0; %initial x position for line
+xfinal = 200; %where the line ends in x
+
+cmdistance = 2; %distance of line to move in cm
+pixeldistance = screenInfo.pixPerCm *cmdistance;
+durationsecs = 1;
+nFrames = durationsecs / screenInfo.ifi;
+xv = pixeldistance / screenInfo.ifi;
+%xv = 5; %speed ( pixels / ifi)
+
+%need to change this so that there isn't the repeat in the line
+%change it so that it runs for the duration I specify, not between two
+%points -- for now keep duration fixed
+%get it so that you take the duration and the distance to generate the
+%speed?
 while linerep ~= totallinereps;
     
     if xinitial > xfinal;
@@ -53,34 +65,6 @@ end
 speedquestion = 'Press the spacebar to continue ';
     DrawFormattedText(screenInfo.curWindow, speedquestion,'left', 'center', 1,[],[],[],[],[],screenInfo.screenRect);
     Screen('Flip', screenInfo.curWindow);
-%     if screenInfo.useKbQueue
-%         [ trialData.pressed, trialData.firstPress]=KbQueueCheck(screenInfo.deviceIndex);
-%     end
-%     
-%  keysOfInterest=zeros(1,256);
-%  	keysOfInterest(KbName({'1', '2'}))=1;
-% 	KbQueueCreate(-1, keysOfInterest);
-% 	% Perform some other initializations
-% 	KbQueueStart;
-% 	% Perform some other tasks while key events are being recorded
-%     
-% 	[ pressed, firstPress]=KbQueueCheck; % Collect keyboard events since KbQueueStart was invoked
-%    
-%     if pressed
-%         
-%         if firstPress(KbName('1'))
-%             % Handle press of '1' key
-%             trialData.firstPress(KbName('1'))
-%              trialData.correctResponse = true;
-%         end
-%         if firstPress(KbName('2'))
-%             % Handle press of '2' key
-%             trialData.firstPress(KbName('2'))
-%              trialData.correctResponse = false;
-%         end
-%     end
-% % 	% Do additional computations
-% 	KbQueueRelease;
 
 KbStrokeWait;
 trialData.firstPress = 1;
@@ -89,6 +73,4 @@ trialData.feedbackMsg = feedbackMsg;
 trialData.validTrial = true;
 %   feedbackMsg  = ['Invalid Response'];
 %     trialData.validTrial = false;
-    
-
-sca;
+  

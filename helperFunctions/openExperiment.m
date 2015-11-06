@@ -18,6 +18,7 @@ function screenInfo = openExperiment(monWidth, viewDist, curScreen, useFullScree
 % frameDur   - frame duration in milliseconds
 % center     -  coordinates of the monitor center. 
 % ppd        - pixels per degree 
+% pixPerCm   - pixels per centimeter
 % useKbQueue - Determines if program should use KbQueue's to get keyboard
 
 % ---------------
@@ -77,6 +78,9 @@ screenInfo.center = [screenInfo.screenRect(3) screenInfo.screenRect(4)]/2;   	% 
 % (pix/screen) * ... (screen/rad) * ... rad/deg
 screenInfo.ppd = pi * screenInfo.screenRect(3) / atan(monWidth/viewDist/2) / 360;    % pixels per degree
 
+%determine pixels per centimeter
+% screenWidth (pixels) / screenWidth (cm) 
+screenInfo.pixPerCm = screenInfo.screenRect(3)/monWidth;
 % InitializePsychSound
 % 
 % screenInfo.pahandle = PsychPortAudio('Open', [], [], 0, [], 2);
