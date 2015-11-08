@@ -14,28 +14,30 @@ trialData.validTrial = false;
 trialData.abortNow   = false;
 
 vbl=Screen('Flip', screenInfo.curWindow); %flipping to the screen
-linerep = 1;
-totallinereps = 3;
 lw = 1; %linewidth in pixels
 
-xinitial = 0; %initial x position for line
-xfinal = 200; %where the line ends in x
 
+
+xinitial = 10; %initial x position for line
 cmdistance = 2; %distance of line to move in cm
-pixeldistance = screenInfo.pixPerCm *cmdistance;
-durationsecs = 1;
-nFrames = durationsecs / screenInfo.ifi;
-xv = pixeldistance / screenInfo.ifi;
-%xv = 5; %speed ( pixels / ifi)
+pixeldistance = screenInfo.pixPerCm *cmdistance; %the distance in pixels 
+%that we want to move -- this gives a value of 12.5 pixels to 1 cm which
+%according to other unit converters is wrong... is there a problem with
+%this line or is there a problem with how the screenInfo.pixPerCm is
+%specified in openExperiment?
+xfinal = xinitial + pixeldistance; %where the line ends in x (pixels)
+durationsecs = 2; %the time in seconds that we want the line to move for
+nFrames = durationsecs / screenInfo.ifi; %number of frames displayed during 
+%the duration (in seconds) that is specified
+xv = pixeldistance / screenInfo.ifi; % this does not work yet
 
-%need to change this so that there isn't the repeat in the line
+
+%need to:
 %change it so that it runs for the duration I specify, not between two
 %points -- for now keep duration fixed
 %get it so that you take the duration and the distance to generate the
 %speed?
-while linerep ~= totallinereps;
-    
-    if xinitial > xfinal;
+if xinitial > xfinal;
         
         while xinitial > xfinal;
             xinitial=mod(xinitial-xv, screenXpixels); %the part that actually gets
@@ -47,9 +49,8 @@ while linerep ~= totallinereps;
             %being moved across the window.
             
         end
-        linerep = linerep+1;
-        xinitial = 10;
-    else
+      
+else
         while xinitial < xfinal;
             xinitial=mod(xinitial+xv, screenXpixels); %adding xv onto the value so
             %that the line moves towards the right
@@ -58,12 +59,10 @@ while linerep ~= totallinereps;
             %Drawing and flipping everything onto the screen so that it appears
             %as it should.
         end
-        linerep = linerep+1;
-        xinitial = 10;
-    end
 end
-speedquestion = 'Press the spacebar to continue ';
-    DrawFormattedText(screenInfo.curWindow, speedquestion,'left', 'center', 1,[],[],[],[],[],screenInfo.screenRect);
+
+contscreen = ('Press the spacebar to continue ');
+    DrawFormattedText(screenInfo.curWindow, contscreen,'left', 'center', 1,[],[],[],[],[],screenInfo.screenRect);
     Screen('Flip', screenInfo.curWindow);
 
 KbStrokeWait;
@@ -71,6 +70,8 @@ trialData.firstPress = 1;
 feedbackMsg  = ['It works'];
 trialData.feedbackMsg = feedbackMsg;
 trialData.validTrial = true;
-%   feedbackMsg  = ['Invalid Response'];
-%     trialData.validTrial = false;
-  
+%% for testing to check values
+disp(pixeldistance);
+disp(screenInfo.ifi);
+disp(nFrames);
+disp(xv);
