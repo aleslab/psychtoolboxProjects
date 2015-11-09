@@ -24,24 +24,25 @@ conditionInfo(1).preStimDuration  = 0.5;  %Static time before stimulus change
 conditionInfo(1).postStimDuration = 0;  %static time aftter stimulus change
 conditionInfo(1).iti              = 1;     %Inter Stimulus Interval
 conditionInfo(1).responseDuration = 3;    %Post trial window for waiting for a response
-% conditionInfo(1).sigma=.2;
-% conditionInfo(1).freq = 4;
-
-conditionInfo(1).velocityCmPerSec = 2;  %Stimulus velocity
-conditionInfo(1).nReps = 2; %number of repeats
-% conditionInfo(1).stimRadiusCm   = 1;    %stimulus size in cm;
+conditionInfo(1).cmDistance = 1; %distance the line should move in cm
+conditionInfo(1).velocityCmPerSec = conditionInfo(1).cmDistance/conditionInfo(1).stimDuration;  %Stimulus velocity
+conditionInfo(1).startPos = 10; %where on the x axis of the screen the line 
+%should start at (in pixels)
+conditionInfo(1).nReps = 1; %number of repeats
 
 %For conditions 2-4 we're going to copy all the settings from condition 1
 %and just define what we want changed.
 
-% conditionInfo(2) = conditionInfo(1);
-% conditionInfo(2).targetAmp = 10;
-% conditionInfo(2).nReps = 1;
-% 
-% conditionInfo(3) = conditionInfo(1);
-% conditionInfo(3).targetAmp = 30;
-% conditionInfo(3).nReps = 1;
-% 
-% conditionInfo(4) = conditionInfo(1);
-% conditionInfo(4).targetAmp = 80;
-% conditionInfo(4).nReps = 1;
+conditionInfo(2) = conditionInfo(1);
+conditionInfo(2).cmDistance = 2;
+conditionInfo(2).velocityCmPerSec = conditionInfo(2).cmDistance/conditionInfo(2).stimDuration; 
+
+
+conditionInfo(3) = conditionInfo(1);
+conditionInfo(3).cmDistance = 3;
+conditionInfo(3).velocityCmPerSec = conditionInfo(3).cmDistance/conditionInfo(3).stimDuration; 
+
+conditionInfo(4) = conditionInfo(1);
+conditionInfo(4).cmDistance = 4;
+conditionInfo(4).velocityCmPerSec = conditionInfo(4).cmDistance/conditionInfo(4).stimDuration; 
+
