@@ -4,7 +4,7 @@ function [trialData] = MoveLineTrial(screenInfo, conditionInfo)
 [screenXpixels, screenYpixels] = Screen('WindowSize', screenInfo.curWindow); 
 %get the number of pixels in the window
 
-ifi = Screen('GetFlipInterval', screenInfo.curWindow); %inter-frame interval 
+%ifi = Screen('GetFlipInterval', screenInfo.curWindow); %inter-frame interval 
 %for the current window on the screen.
 
 %totalDuration = conditionInfo.preStimDuration+conditionInfo.stimDuration+conditionInfo.postStimDuration;
@@ -41,10 +41,6 @@ nFrames = round(conditionInfo.stimDuration / screenInfo.ifi); %number of frames 
 % CM/Sec  * ( Pix/CM) = Pix/Sec (CM cancels)
 % (Pix/Sec) * (Sec/Frame) = PixPerFrame (Sec cancels)
 
-%so now need to incorporate the durationsecs into this so that keeping the
-%duration the same actually keeps the duration the same? At the moment with
-%the line moving different distances the duration is varying.
-
 velPixPerFrame = conditionInfo.velocityCmPerSec*screenInfo.pixPerCm*screenInfo.ifi;
 xv = velPixPerFrame;
 
@@ -55,7 +51,7 @@ if conditionInfo.startPos > xfinal;
             %the line to move within the while loop. taking xv off the value to
             %move to the left.
             Screen('DrawLines', screenInfo.curWindow, [conditionInfo.startPos, conditionInfo.startPos ; 0, screenYpixels], lw);
-            vbl=Screen('Flip', screenInfo.curWindow,vbl+ifi/2); %taken from PTB-3 MovingLineDemo
+            vbl=Screen('Flip', screenInfo.curWindow,vbl+screenInfo.ifi/2); %taken from PTB-3 MovingLineDemo
             %if this isn't flipped within the while loop you won't see the line
             %being moved across the window.
             
@@ -66,7 +62,7 @@ else
             conditionInfo.startPos =mod(conditionInfo.startPos+xv, screenXpixels); %adding xv onto the value so
             %that the line moves towards the right
             Screen('DrawLines', screenInfo.curWindow, [conditionInfo.startPos, conditionInfo.startPos ; 0, screenYpixels], lw);
-            vbl=Screen('Flip', screenInfo.curWindow,vbl+ifi/2); %taken from PTB-3 MovingLineDemo
+            vbl=Screen('Flip', screenInfo.curWindow,vbl+screenInfo.ifi/2); %taken from PTB-3 MovingLineDemo
             %Drawing and flipping everything onto the screen so that it appears
             %as it should.
         end
@@ -86,4 +82,4 @@ trialData.validTrial = true;
 % disp(screenInfo.ifi);
 %disp(nFrames);
 %disp(xv);
-disp(conditionInfo.velocityCmPerSec);
+%disp(conditionInfo.velocityCmPerSec);

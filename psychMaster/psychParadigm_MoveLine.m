@@ -25,7 +25,8 @@ conditionInfo(1).postStimDuration = 0;  %static time aftter stimulus change
 conditionInfo(1).iti              = 1;     %Inter Stimulus Interval
 conditionInfo(1).responseDuration = 3;    %Post trial window for waiting for a response
 conditionInfo(1).cmDistance = 1; %distance the line should move in cm
-conditionInfo(1).velocityCmPerSec = conditionInfo(1).cmDistance/conditionInfo(1).stimDuration;  %Stimulus velocity
+conditionInfo(1).velocityCmPerSec = conditionInfo(1).cmDistance/conditionInfo(1).stimDuration;  
+%Stimulus velocity in cm/s for condition 1
 conditionInfo(1).startPos = 10; %where on the x axis of the screen the line 
 %should start at (in pixels)
 conditionInfo(1).nReps = 1; %number of repeats
@@ -36,13 +37,16 @@ conditionInfo(1).nReps = 1; %number of repeats
 conditionInfo(2) = conditionInfo(1);
 conditionInfo(2).cmDistance = 2;
 conditionInfo(2).velocityCmPerSec = conditionInfo(2).cmDistance/conditionInfo(2).stimDuration; 
+%velocity in cm/s for condition 2
 
 
 conditionInfo(3) = conditionInfo(1);
 conditionInfo(3).cmDistance = 3;
 conditionInfo(3).velocityCmPerSec = conditionInfo(3).cmDistance/conditionInfo(3).stimDuration; 
+%velocity in cm/s for condition 3
 
 conditionInfo(4) = conditionInfo(1);
 conditionInfo(4).cmDistance = 4;
 conditionInfo(4).velocityCmPerSec = conditionInfo(4).cmDistance/conditionInfo(4).stimDuration; 
+%velocity in cm/s for condition 4
 
