@@ -25,12 +25,24 @@ pixeldistance = screenInfo.pixPerCm *cmdistance; %the distance in pixels
 %according to other unit converters is wrong... is there a problem with
 %this line or is there a problem with how the screenInfo.pixPerCm is
 %specified in openExperiment?
+% JMA:  Yes it's wrong. In order for it to be correct the display has to be
+% calibarated.  That's not implemented yet. So don't worry about the exact
+% numbers. 
 xfinal = xinitial + pixeldistance; %where the line ends in x (pixels)
-durationsecs = 2; %the time in seconds that we want the line to move for
-nFrames = durationsecs / screenInfo.ifi; %number of frames displayed during 
+durationsecs = conditionInfo.stimDuration; %the time in seconds that we want the line to move for
+nFrames = round(durationsecs / screenInfo.ifi); %number of frames displayed during JMA: added round because  it needs to be an integer.
 %the duration (in seconds) that is specified
-xv = pixeldistance / screenInfo.ifi; % this does not work yet
 
+%xv = pixeldistance / screenInfo.ifi; % this does not work yet
+
+%To get velocity in pixelsPerIfi we need to do a dimensional analysis.
+% The way it was before was set to be a velocity of 2 cm per ifi or 120 cm/s
+% We start with a value in CM/Sec (could be something else 
+% CM/Sec  * ( Pix/CM) = Pix/Sec (CM cancels)
+% (Pix/Sec) * (Sec/Frame) = PixPerFrame (Sec cancels)
+
+velPixPerFrame = conditionInfo.velocityCmPerSec*screenInfo.pixPerCm*screenInfo.ifi;
+xv = velPixPerFrame;
 
 %need to:
 %change it so that it runs for the duration I specify, not between two

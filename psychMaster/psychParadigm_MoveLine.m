@@ -9,8 +9,7 @@ screenInfo.paradigmName = 'MoveLine';
 %screenInfo.useKbQueue = true;
 
 screenInfo.instructions = 'Press any key to start';
- 
-KbStrokeWait;
+
 
 %% conditions
 
@@ -27,7 +26,8 @@ conditionInfo(1).iti              = 1;     %Inter Stimulus Interval
 conditionInfo(1).responseDuration = 3;    %Post trial window for waiting for a response
 % conditionInfo(1).sigma=.2;
 % conditionInfo(1).freq = 4;
-conditionInfo(1).targetAmp = 0; %adapt to x distance
+
+conditionInfo(1).velocityCmPerSec = 2;  %Stimulus velocity
 conditionInfo(1).nReps = 2; %number of repeats
 % conditionInfo(1).stimRadiusCm   = 1;    %stimulus size in cm;
 
