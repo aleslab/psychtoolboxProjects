@@ -207,15 +207,69 @@ try
         
         thisCond = conditionList(iTrial);
                 
-        %ISI happens before a trial starts, this isn't a super-accurate way
-        %to create an ISI, it makes an ISI at LEAST this big. 
-        WaitSecs(conditionInfo(thisCond).iti);
-
-        [trialData] = conditionInfo(thisCond).trialFun(screenInfo,conditionInfo(thisCond));
-        experimentData(iTrial).condNumber = thisCond;
+        %decide how to display trial depending on what type of trial it is.
+        switch lower(conditionInfo(thisCond).type) 
+            %generic trials just fire the trial function. Everything is
+            %handled there.
+            case 'generic'
+                %ISI happens before a trial starts, this isn't a super-accurate way
+                %to create an ISI, it makes an ISI at LEAST this big.
+                WaitSecs(conditionInfo(thisCond).iti);
         
-        %Determine what should be done depending on keypresses
-        numKeysPressed = sum((trialData.firstPress>0));
+                [trialData] = conditionInfo(thisCond).trialFun(screenInfo,conditionInfo(thisCond));
+            case '2afc'
+                %Which trial first?
+                nullFirst = rand()>.5;
+                
+                if nullFirst
+                    firstCond = conditionInfo(thisCond).nullCondition;
+                    secondCond = conditionInfo(thisCond);
+                else
+                    firstCond = conditionInfo(thisCond);
+                    secondCond = conditionInfo(thisCond).nullCondition;
+                end
+                
+                trialData.nullFirst = nullFirst;
+                [trialData.firstCond] = conditionInfo(thisCond).trialFun(screenInfo,firstCond);
+                WaitSecs(conditionInfo(thisCond).iti);
+                [trialData.secondCond] = conditionInfo(thisCond).trialFun(screenInfo,secondCond);
+                
+                [responseData] = getResponse(screenInfo,conditionInfo(thisCond).responseDuration);
+                              
+                trialData.firstPress = responseData.firstPress;
+                trialData.pressed    = responseData.pressed;
+                trialData.abortNow = false;
+                
+                if nullFirst
+                    correctResponse   = 'f';
+                    incorrectResponse = 'j';
+                else
+                    correctResponse   = 'j';
+                    incorrectResponse = 'f';
+                end
+                
+                if trialData.firstPress(KbName('ESCAPE'))
+                    %pressed escape lets abort experiment;
+                    trialData.validTrial = false;
+                    trialData.abortNow = true;
+                elseif trialData.firstPress(KbName(correctResponse))
+                    experimentData(iTrial).isResponseCorrect = true; 
+                    trialData.validTrial = true;
+                    trialData.feedbackMsg = 'Correct';    
+                elseif trialData.firstPress(KbName(incorrectResponse))
+                    experimentData(iTrial).isResponseCorrect = false;
+                    trialData.validTrial = true;
+                    trialData.feedbackMsg = 'Incorrect';
+                    experimentData(iTrial)
+                else
+                    trialData.validTrial = false;
+                end
+        end
+        
+        
+        experimentData(iTrial).condNumber = thisCond;               
+        
+
         
         if ~trialData.validTrial  %trial not valid
             

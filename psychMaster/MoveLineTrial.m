@@ -68,15 +68,15 @@ else
         end
 end
 
-contscreen = ('Press the spacebar to continue ');
-    DrawFormattedText(screenInfo.curWindow, contscreen,'left', 'center', 1,[],[],[],[],[],screenInfo.screenRect);
-    Screen('Flip', screenInfo.curWindow);
-
-KbStrokeWait;
-trialData.firstPress = 1;
-feedbackMsg  = 'Press any button to continue';
-trialData.feedbackMsg = feedbackMsg;
-trialData.validTrial = true;
+% contscreen = ('Press the spacebar to continue ');
+%     DrawFormattedText(screenInfo.curWindow, contscreen,'left', 'center', 1,[],[],[],[],[],screenInfo.screenRect);
+Screen('Flip', screenInfo.curWindow);
+% 
+% KbStrokeWait;
+% trialData.firstPress = 1;
+% feedbackMsg  = 'Press any button to continue';
+% trialData.feedbackMsg = feedbackMsg;
+% trialData.validTrial = true;
 %% for testing to check values
 % disp(pixeldistance);
 % disp(screenInfo.ifi);
