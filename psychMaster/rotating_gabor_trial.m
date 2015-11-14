@@ -1,4 +1,4 @@
-function [trialData] = exampleNoiseTrial(screenInfo, conditionInfo)
+function [trialData] = rotating_gabor_trial(screenInfo, conditionInfo)
 
 totalDuration = conditionInfo.preStimDuration+conditionInfo.stimDuration+conditionInfo.postStimDuration;
 nFrames = round(totalDuration / screenInfo.ifi);
@@ -27,7 +27,7 @@ end
 
 %parameters for gabor
 
-radiusPix = screenInfo.ppd*conditionInfo.stimRadiusDeg;    % stimSize in degrees x pixels per degree.
+radiusPix = 256;screenInfo.ppd*conditionInfo.stimRadiusDeg;    % stimSize in degrees x pixels per degree.
 sigmaPix  = screenInfo.ppd*conditionInfo.sigma;  % standard deviation in degrees iinto pixels
 cyclesPerSigma = 2;    %cycles per standaard devaion
 contrast = 0.25;   % contrast 
@@ -35,12 +35,18 @@ phase = 0.25;      %phase of gabor
       
 
 
-
-
+orientationSigma=conditionInfo.orientationSigma;
+orientationVelocity = .1;
+    
+orient = 0;
 for iFrame = 1:nFrames
 
-    orient = 360*rand(); %orient of gabor
-
+    %orient = orient+orientationSigma*randn(); %orient of gabor
+    orientationVelocity = orientationVelocity+orientationSigma*randn();
+    
+    orient = orient+orientationVelocity.^2; %orient of gabor
+    
+    
     %creates a gabor texture. this has to be in the loop beacuse we want to
     %create a new gabor on every frame we present.
     my_gabor = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient);
@@ -95,11 +101,8 @@ for iFrame = 1:nFrames
         flipTimes(iFrame)=Screen('Flip', screenInfo.curWindow);
         trialData.flipTimes = flipTimes;
         trialData.validTrial = false;
-        Screen('Close', tex);
         return;
         
-        % After drawing, we can discard the noise texture.
-        Screen('Close', tex);
 
     end
     

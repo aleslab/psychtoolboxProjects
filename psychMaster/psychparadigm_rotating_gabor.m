@@ -28,23 +28,30 @@ conditionInfo(1).trialFun=@rotating_gabor_trial;
 
 % %Condition definitions
 %Condition 1, lets set some defaults:
-conditionInfo(1).stimDuration     = 0.25; %approximate stimulus duration in seconds
+conditionInfo(1).stimDuration     = .5; %approximate stimulus duration in seconds
 conditionInfo(1).preStimDuration  = 0.5;  %Static time before stimulus change
 conditionInfo(1).postStimDuration = 0;  %static time aftter stimulus change
 conditionInfo(1).iti              = .2;     %Minimum Inter Trial Interval
 conditionInfo(1).responseDuration = 2;    %Post trial window for waiting for a response
 
-conditionInfo(1).sigma=.20; %standard deviation of the gabor in degrees
+conditionInfo(1).sigma=20; %standard deviation of the gabor in degrees
 conditionInfo(1).freq = 4; %frequency of the gabor in cycles per sigma. 
 conditionInfo(1).targetAmp = 0; % target amplitude **Justin This was to define the target in noise
 conditionInfo(1).nReps = 2; %% number of trials to present this condition. 
 conditionInfo(1).stimRadiusCm   = 5;    %stimulus size in cm;
 conditionInfo(1).stimRadiusDeg  = 1;    %stimulus size in degree;
 conditionInfo(1).contrast = 0.25 ;
+conditionInfo(1).orientationSigma = .015;
 
 %This will pick a random orientation at the start of the experiment this is
 %not what you want.  
 conditionInfo(1).orientation = 360*rand(); %
+
+conditionInfo(2) = conditionInfo(1);
+conditionInfo(2).orientationSigma = .01;
+conditionInfo(2).contrast = 0.05 ;
+conditionInfo(2).sigma=90; %standard deviation of the gabor in degrees
+
 
 
 
