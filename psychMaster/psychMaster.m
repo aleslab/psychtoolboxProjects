@@ -8,10 +8,10 @@ function [] = psychMaster(sessionInfo)
 %   
 %
 %   paradigm file: 
-%   The paradigm file should be a function that takes screenInfo as an
-%   argument and returns a conditionInfo structure and screenInfo back:
+%   The paradigm file should be a function that takes expInfo as an
+%   argument and returns a conditionInfo structure and expInfo back:
 %
-%   function [conditionInfo, screenInfo] = exampleExperiment(screenInfo)
+%   function [conditionInfo, expInfo] = exampleExperiment(expInfo)
 %
 %   conditionInfo defines all the conditions that will be run by psychMaster.
 %   conditionInfo is a structure with an entry for each condtion that will be run
@@ -34,7 +34,7 @@ function [] = psychMaster(sessionInfo)
 %                        "nullCondition" that will be used as the 
 %                        comparison trial.
 %   
-%   screenInfo defines experiment wide settings. Mostly things that are
+%   expInfo defines experiment wide settings. Mostly things that are
 %   for PsychToolbox.  But also other things that are aren't specific to a
 %   specific condition.  Mostly these are things that may be needed outside
 %   the "trialFun". 
@@ -46,7 +46,7 @@ function [] = psychMaster(sessionInfo)
 %
 %   Trial Function:
 %   The trial function is what actually draws the stimulus.
-%   function [trialData] = trialFun(screenInfo, conditionInfo)
+%   function [trialData] = trialFun(expInfo, conditionInfo)
 %
 
 
@@ -135,19 +135,11 @@ end
 
 try
 
-    %!!!!!!!!!!!!!!!!!!!!!
-    %THESE VALUES ARE HARDCODED TEMPORARILY NEED TO INCORPORATE
-    %CALIBRATION ROUTINE
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    monitorWidth = 40; subjectDist = 50;
-    expScreen = max(Screen('Screens'));   
-    screenInfo = openExperiment(monitorWidth,subjectDist,expScreen,0);
-    
     %This line calls the function handle that defines all the paradigm
     %information.  ConditionInfo contains the per condition information.
-    %screenInfo contains important 
+    %expInfo contains important 
     try
-        [conditionInfo, screenInfo] = sessionInfo.paradigmFun(screenInfo);
+        [conditionInfo, expInfo] = sessionInfo.paradigmFun([]);
     catch
         disp('<><><><><><> PSYCH MASTER <><><><><><><>')
         disp('ERROR Loading Paradigm File')
@@ -155,6 +147,17 @@ try
         closeExperiment;
         return;
     end
+%     
+%     %!!!!!!!!!!!!!!!!!!!!!
+%     %THESE VALUES ARE HARDCODED TEMPORARILY NEED TO INCORPORATE
+%     %CALIBRATION ROUTINE
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     expInfo.viewingDistance = 50;
+%     expInfo.screenNum = max(Screen('Screens'));   
+%     expInfo.useFullScreen = 0;
+    expInfo = openExperiment(expInfo);
+    
+
     
     
     conditionInfo = validateConditions(conditionInfo);
@@ -190,8 +193,8 @@ try
     %Now lets begin the experiment and loop over the conditions to show.
     
     %Show instructions and wait for a keypress. 
-    DrawFormattedText(screenInfo.curWindow, screenInfo.instructions,'left', 'center', 1,[],[],[],[],[],screenInfo.screenRect);
-    Screen('Flip', screenInfo.curWindow);    
+    DrawFormattedText(expInfo.curWindow, expInfo.instructions,'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
+    Screen('Flip', expInfo.curWindow);    
     KbStrokeWait();
     %
     %Let's start the expeirment
@@ -216,7 +219,7 @@ try
                 %to create an ISI, it makes an ISI at LEAST this big.
                 WaitSecs(conditionInfo(thisCond).iti);
         
-                [trialData] = conditionInfo(thisCond).trialFun(screenInfo,conditionInfo(thisCond));
+                [trialData] = conditionInfo(thisCond).trialFun(expInfo,conditionInfo(thisCond));
             case '2afc'
                 %Which trial first?
                 nullFirst = rand()>.5;
@@ -230,22 +233,22 @@ try
                 end
                 
                 trialData.nullFirst = nullFirst;
-                [trialData.firstCond] = conditionInfo(thisCond).trialFun(screenInfo,firstCond);
+                [trialData.firstCond] = conditionInfo(thisCond).trialFun(expInfo,firstCond);
                 WaitSecs(conditionInfo(thisCond).iti);
-                [trialData.secondCond] = conditionInfo(thisCond).trialFun(screenInfo,secondCond);
+                [trialData.secondCond] = conditionInfo(thisCond).trialFun(expInfo,secondCond);
                 
-                [responseData] = getResponse(screenInfo,conditionInfo(thisCond).responseDuration);
+                [responseData] = getResponse(expInfo,conditionInfo(thisCond).responseDuration);
                               
                 trialData.firstPress = responseData.firstPress;
                 trialData.pressed    = responseData.pressed;
                 trialData.abortNow = false;
                 
                 if nullFirst
-                    correctResponse   = 'f';
-                    incorrectResponse = 'j';
-                else
                     correctResponse   = 'j';
                     incorrectResponse = 'f';
+                else
+                    correctResponse   = 'f';
+                    incorrectResponse = 'j';
                 end
                 
                 if trialData.firstPress(KbName('ESCAPE'))
@@ -283,19 +286,19 @@ try
             experimentData(iTrial).validTrial = false;
             
             
-            DrawFormattedText(screenInfo.curWindow, 'Invalid trial','center', 'center', 1);
+            DrawFormattedText(expInfo.curWindow, 'Invalid trial','center', 'center', 1);
             
-            Screen('Flip', screenInfo.curWindow);
+            Screen('Flip', expInfo.curWindow);
             WaitSecs(.5);
-            Screen('Flip', screenInfo.curWindow);
+            Screen('Flip', expInfo.curWindow);
             
         else %valid response made
             %Give feedback:
-            DrawFormattedText(screenInfo.curWindow, trialData.feedbackMsg,...
+            DrawFormattedText(expInfo.curWindow, trialData.feedbackMsg,...
                 'center', 'center', feedbackColor);
-            Screen('Flip', screenInfo.curWindow);
+            Screen('Flip', expInfo.curWindow);
             WaitSecs(1.5);
-            Screen('Flip', screenInfo.curWindow);
+            Screen('Flip', expInfo.curWindow);
         end
         
       
@@ -305,12 +308,12 @@ try
     end
     
    % save(saveFilename,'experimentData')
-   sessionInfo.screenInfo = screenInfo;
+   sessionInfo.expInfo = expInfo;
    sessionInfo.conditionInfo = conditionInfo;
   
    
-   if isfield(screenInfo,'paradigmName') && ~isempty(screenInfo.paradigmName),       
-       filePrefix = screenInfo.paradigmName;
+   if isfield(expInfo,'paradigmName') && ~isempty(expInfo.paradigmName),       
+       filePrefix = expInfo.paradigmName;
    else
        filePrefix = func2str(sessionInfo.paradigmFun);
    end
@@ -332,8 +335,8 @@ try
    
    save(saveFilename,'sessionInfo','experimentData')
    
-   if screenInfo.useKbQueue
-       KbQueueRelease(screenInfo.deviceIndex);
+   if expInfo.useKbQueue
+       KbQueueRelease(expInfo.deviceIndex);
    end
    
    
@@ -344,8 +347,8 @@ try
    
     
 catch
-%    if screenInfo.useKbQueue
-%        KbQueueRelease(screenInfo.deviceIndex);
+%    if expInfo.useKbQueue
+%        KbQueueRelease(expInfo.deviceIndex);
 %    end
     disp('caught')
     errorMsg = lasterror;
