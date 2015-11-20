@@ -100,24 +100,24 @@
 
 %% for when the fixation point and centre of the eye do not produce a right angle
 
-%1
-%input
-viewingDistance = 57; %Vd
-objectX = 10; %AB
-objectY = 0; %ignore
-objectZ = 10; %d
-IOD = 6.3; %Interocular distance, Id
-
-%expected result
-expectedScreenX = 11.36807813;
-expectedScreenY = 0;
-[screenX,screenY] = calculateScreenLocation(objectX,objectY,objectZ,viewingDistance, IOD); 
-%altered this so that it feeds into a function that does this when there
-%isn't a right angle.
-
-assert(abs(screenX-expectedScreenX)<.01,'Failure');
-assert(abs(screenY-expectedScreenY)<.01,'Failure');
-disp('It worked');
+% %1
+% %input
+% viewingDistance = 57; %Vd
+% objectX = 10; %AB
+% objectY = 0; %ignore
+% objectZ = 10; %d
+% IOD = 6.3; %Interocular distance, Id
+% 
+% %expected result
+% expectedScreenX = 11.36807813;
+% expectedScreenY = 0;
+% [screenX,screenY] = calculateScreenLocation(objectX,objectY,objectZ,viewingDistance, IOD); 
+% %altered this so that it feeds into a function that does this when there
+% %isn't a right angle.
+% 
+% assert(abs(screenX-expectedScreenX)<.01,'Failure');
+% assert(abs(screenY-expectedScreenY)<.01,'Failure');
+% disp('It worked');
 
 %2
 % this doesn't work... If the interocular distance were 0, you would expect
@@ -164,3 +164,31 @@ disp('It worked');
 
 %Would we therefore want to make the code so that there is always at least
 %the interocular distance between the lines on the screen?
+
+%% non right angle with correct method for finding screenX with one eye
+
+%with the centre of the eye as (0,0,0) and +x towards the right, +y upwards and +z is towards the front. 
+IOD = 6;
+viewingDistance = 57;
+eyeX = 0;
+eyeY = 0;
+eyeZ = 0;
+objectX = 10;
+objectY = 0;
+objectZ = 40;
+fixationX = -3;
+fixationY = 0;
+fixationZ = viewingDistance;
+expectedScreenX = 14.25;
+expectedScreenY = 0;
+
+[screenX,screenY] = calculateScreenLocation(objectX,objectY,objectZ,viewingDistance, IOD); 
+%altered this so that it feeds into a function that does the calculation  
+%when there isn't a right angle.
+
+%Really want to make this so that it reads in object(x,y,z); fixation
+%(x,y,z); fixation(x,y,z), the viewing distance and IOD.
+
+assert(abs(screenX-expectedScreenX)<.1,'Failure');
+assert(abs(screenY-expectedScreenY)<.1,'Failure');
+disp('It worked');
