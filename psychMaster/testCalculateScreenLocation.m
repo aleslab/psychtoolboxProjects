@@ -168,27 +168,61 @@
 %% non right angle with correct method for finding screenX with one eye
 
 %with the centre of the eye as (0,0,0) and +x towards the right, +y upwards and +z is towards the front. 
-IOD = 6;
+
+% 
+% IOD = 6;
+% viewingDistance = 57;
+% eyeX = 0;
+% eyeY = 0;
+% eyeZ = 0;
+% objectX = 10;
+% objectY = 0;
+% objectZ = 40;
+% fixationX = -3;
+% fixationY = 0;
+% fixationZ = viewingDistance;
+% expectedScreenX = 14.25;
+% expectedScreenY = 0;
+% 
+% [screenX,screenY] = calculateScreenLocation(objectX,objectY,objectZ,viewingDistance, IOD); 
+% %altered this so that it feeds into a function that does the calculation  
+% %when there isn't a right angle.
+% 
+% %Really want to make this so that it reads in object(x,y,z); fixation
+% %(x,y,z); fixation(x,y,z), the viewing distance and IOD.
+% 
+% assert(abs(screenX-expectedScreenX)<.1,'Failure');
+% assert(abs(screenY-expectedScreenY)<.1,'Failure');
+% disp('It worked');
+
+
+%% with inputs as vectors
+
+
+%IOD = 6;
 viewingDistance = 57;
-eyeX = 0;
-eyeY = 0;
-eyeZ = 0;
-objectX = 10;
-objectY = 0;
-objectZ = 40;
-fixationX = -3;
-fixationY = 0;
-fixationZ = viewingDistance;
+% eyeX = 0;
+% eyeY = 0;
+% eyeZ = 0;
+% objectX = 10;
+% objectY = 0;
+% objectZ = 40;
+% fixationX = -3;
+% fixationY = 0;
+% fixationZ = viewingDistance;
 expectedScreenX = 14.25;
 expectedScreenY = 0;
-
-[screenX,screenY] = calculateScreenLocation(objectX,objectY,objectZ,viewingDistance, IOD); 
+ % x y z
+object = [10, 0, 40];
+eye = [0, 0, 0];
+fixation = [-3, 0, viewingDistance];
+[screen] = calculateScreenLocation(object, eye, fixation); 
 %altered this so that it feeds into a function that does the calculation  
 %when there isn't a right angle.
 
 %Really want to make this so that it reads in object(x,y,z); fixation
 %(x,y,z); fixation(x,y,z), the viewing distance and IOD.
 
-assert(abs(screenX-expectedScreenX)<.1,'Failure');
-assert(abs(screenY-expectedScreenY)<.1,'Failure');
+assert(abs(screen(:,1)-expectedScreenX)<.1,'Failure');
+assert(abs(screen(:,2)-expectedScreenY)<.1,'Failure');
 disp('It worked');
