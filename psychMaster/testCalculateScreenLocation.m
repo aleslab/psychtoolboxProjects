@@ -198,6 +198,7 @@
 
 %% with inputs as vectors
 
+%1 
 
 %IOD = 6;
 viewingDistance = 57;
@@ -222,6 +223,56 @@ fixation = [-3, 0, viewingDistance];
 
 %Really want to make this so that it reads in object(x,y,z); fixation
 %(x,y,z); fixation(x,y,z), the viewing distance and IOD.
+
+assert(abs(screen(:,1)-expectedScreenX)<.1,'Failure');
+assert(abs(screen(:,2)-expectedScreenY)<.1,'Failure');
+disp('It worked');
+
+%2
+
+%IOD = 6;
+viewingDistance = 57;
+% eyeX = 0;
+% eyeY = 0;
+% eyeZ = 0;
+% objectX = 10;
+% objectY = 0;
+% objectZ = 40;
+% fixationX = -3;
+% fixationY = 0;
+% fixationZ = viewingDistance;
+expectedScreenX = -14.25;
+expectedScreenY = 0;
+ % x y z
+object = [-5, 0, 20];
+eye = [0, 0, 0];
+fixation = [3, 0, viewingDistance];
+[screen] = calculateScreenLocation(object, eye, fixation); 
+
+assert(abs(screen(:,1)-expectedScreenX)<.1,'Failure');
+assert(abs(screen(:,2)-expectedScreenY)<.1,'Failure');
+disp('It worked');
+
+%3
+
+%IOD = 6;
+viewingDistance = 57;
+% eyeX = 0;
+% eyeY = 0;
+% eyeZ = 0;
+% objectX = 10;
+% objectY = 0;
+% objectZ = 40;
+% fixationX = -3;
+% fixationY = 0;
+% fixationZ = viewingDistance;
+expectedScreenX = -22.8;
+expectedScreenY = 0;
+ % x y z
+object = [-20, 0, 50];
+eye = [0, 0, 0];
+fixation = [3, 0, viewingDistance];
+[screen] = calculateScreenLocation(object, eye, fixation); 
 
 assert(abs(screen(:,1)-expectedScreenX)<.1,'Failure');
 assert(abs(screen(:,2)-expectedScreenY)<.1,'Failure');
