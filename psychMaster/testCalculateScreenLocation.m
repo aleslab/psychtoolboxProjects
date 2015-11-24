@@ -330,8 +330,44 @@ expectedScreenRY = 0;
 %checking that expected is the same as what is calculated by the function.
 assert(abs(screenL(1)-expectedScreenLX)<.1,'Failure');
 assert(abs(screenL(2)-expectedScreenLY)<.1,'Failure');
-disp('It worked for the left eye');
+disp('test1 worked for the left eye');
 
 assert(abs(screenR(1)-expectedScreenRX)<.1,'Failure');
 assert(abs(screenR(2)-expectedScreenRY)<.1,'Failure');
-disp('It worked for the right eye');
+disp('test1 worked for the right eye');
+
+
+
+%
+%Object at screen distance should not be moved
+fixation = [0, 0, viewingDistance];
+eyeL = [-cycDist, 0, 0];
+eyeR = [cycDist, 0, 0];
+
+objectList = [0, 0, viewingDistance;...
+    10, 0, viewingDistance;...
+    -10, 0, viewingDistance];
+
+expectedScreenL = [0 0;...
+     10, 0;...
+    -10, 0;]; %expected position of the object for the left eye
+
+expectedScreenR = [0 0;...
+    10, 0;...
+    -10, 0;]; %expected position of the object for the right eye
+
+
+for iTest = 1:size(objectList,1),
+   
+    object = objectList(iTest,:);
+[screenL, screenR] = calculateScreenLocation(fixation, object, eyeL, eyeR); 
+thisExpectedScreenL = expectedScreenL(iTest,:);
+thisExpectedScreenR = expectedScreenL(iTest,:);
+
+assert(abs(screenL(1)-thisExpectedScreenL(1))<.1,['LE X Failure test ' num2str(iTest)] );
+assert(abs(screenL(2)-thisExpectedScreenL(2))<.1,['LE Y Failure test ' num2str(iTest)]);
+
+assert(abs(screenR(1)-thisExpectedScreenR(1))<.1,['RE X Failure test ' num2str(iTest)]);
+assert(abs(screenR(2)-thisExpectedScreenR(2))<.1,['RE Y Failure test ' num2str(iTest)]);
+disp(['test' num2str(iTest) ' worked for the right eye']);
+end
