@@ -1,4 +1,4 @@
-function [screen] = calculateScreenLocation(object, eye, fixation)
+function [screenL, screenR] = calculateScreenLocation(fixation, object, eyeL, eyeR)
 %UNTITLED3 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -15,20 +15,29 @@ function [screen] = calculateScreenLocation(object, eye, fixation)
 %     halfId = (-IOD)/2;
 % end
 
-% currently not using "eye" at all in this code, but will need to at some
-% point.
-screenZ = fixation(:,3); %viewing distance
 
-%theta = atan(objectX/objectZ); %really needs to be atan2 but not sure how
-%to do this -- not as simple as just swapping it in
+objectL = object - eyeL;
+objectR = object - eyeR;
+
+%left eye
+screenLZ = fixation(3); %viewing distance; 57
 
 %theta = atan(object(:,1)/object(:,3));
-theta = atan2(object(:,1),object(:,3)); %not entirely sure why this works... 
-%but it comes out with the same answer as the atan line above and my workings.
-screenX = screenZ * tan(theta); 
-screenY = object(:,2);
+theta = atan2(objectL(1),objectL(3));
+screenLX = screenLZ * tan(theta); 
+screenLY = objectL(2);
 
-screen = [screenX, screenY, screenZ];
+screenL = [screenLX, screenLY, screenLZ];
+
+%right eye
+screenRZ = fixation(3); %viewing distance; 57
+
+%theta = atan(object(:,1)/object(:,3));
+theta = atan2(objectR(1),objectR(3));
+screenRX = screenRZ * tan(theta); 
+screenRY = objectR(2);
+
+screenR = [screenRX, screenRY, screenRZ];
 
 
 end

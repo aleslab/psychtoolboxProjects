@@ -200,80 +200,138 @@
 
 %1 
 
-%IOD = 6;
-viewingDistance = 57;
-% eyeX = 0;
-% eyeY = 0;
-% eyeZ = 0;
-% objectX = 10;
-% objectY = 0;
-% objectZ = 40;
-% fixationX = -3;
-% fixationY = 0;
-% fixationZ = viewingDistance;
-expectedScreenX = 14.25;
-expectedScreenY = 0;
- % x y z
-object = [10, 0, 40];
-eye = [0, 0, 0];
-fixation = [-3, 0, viewingDistance];
-[screen] = calculateScreenLocation(object, eye, fixation); 
-%altered this so that it feeds into a function that does the calculation  
-%when there isn't a right angle.
+% %IOD = 6;
+% viewingDistance = 57;
+% % eyeX = 0;
+% % eyeY = 0;
+% % eyeZ = 0;
+% % objectX = 10;
+% % objectY = 0;
+% % objectZ = 40;
+% % fixationX = -3;
+% % fixationY = 0;
+% % fixationZ = viewingDistance;
+% expectedScreenX = 14.25;
+% expectedScreenY = 0;
+%  % x y z
+% object = [10, 0, 40];
+% eye = [0, 0, 0];
+% fixation = [-3, 0, viewingDistance];
+% [screen] = calculateScreenLocation(object, eye, fixation); 
+% %altered this so that it feeds into a function that does the calculation  
+% %when there isn't a right angle.
+% 
+% %Really want to make this so that it reads in object(x,y,z); fixation
+% %(x,y,z); fixation(x,y,z), the viewing distance and IOD.
+% 
+% assert(abs(screen(:,1)-expectedScreenX)<.1,'Failure');
+% assert(abs(screen(:,2)-expectedScreenY)<.1,'Failure');
+% disp('It worked');
+% 
+% %2
+% 
+% %IOD = 6;
+% viewingDistance = 57;
+% expectedScreenX = -14.25;
+% expectedScreenY = 0;
+%  % x y z
+% object = [-5, 0, 20];
+% eye = [0, 0, 0];
+% fixation = [3, 0, viewingDistance];
+% [screen] = calculateScreenLocation(object, eye, fixation); 
+% 
+% assert(abs(screen(:,1)-expectedScreenX)<.1,'Failure');
+% assert(abs(screen(:,2)-expectedScreenY)<.1,'Failure');
+% disp('It worked');
+% 
+% %3
+% 
+% %IOD = 6;
+% viewingDistance = 57;
+% expectedScreenX = -22.8;
+% expectedScreenY = 0;
+%  % x y z
+% object = [-20, 0, 50];
+% eye = [0, 0, 0];
+% fixation = [3, 0, viewingDistance];
+% [screen] = calculateScreenLocation(object, eye, fixation); 
+% 
+% assert(abs(screen(:,1)-expectedScreenX)<.1,'Failure');
+% assert(abs(screen(:,2)-expectedScreenY)<.1,'Failure');
+% disp('It worked');
 
-%Really want to make this so that it reads in object(x,y,z); fixation
-%(x,y,z); fixation(x,y,z), the viewing distance and IOD.
+% %% with cyclopean point as (0,0,0) in coordinate system for one eye
+% 
+% IOD = 6;
+% viewingDistance = 57;
+% 
+% cycDist = 0.5*IOD;
+% cycPoint = [0, 0, 0];
+% fixation = [0, 0, viewingDistance];
+% object = [-15, 0, 30];
+% eyeL = [-cycDist, 0, 0];
+% 
+% expectedScreenX = -22.8;
+% expectedScreenY = 0;
+% 
+% [screen] = calculateScreenLocation(fixation, object, eyeL); 
+% 
+% assert(abs(screen(:,1)-expectedScreenX)<.1,'Failure');
+% assert(abs(screen(:,2)-expectedScreenY)<.1,'Failure');
+% disp('It worked');
 
-assert(abs(screen(:,1)-expectedScreenX)<.1,'Failure');
-assert(abs(screen(:,2)-expectedScreenY)<.1,'Failure');
-disp('It worked');
+%% with cyc point as (0,0,0) for two eyes
+% 
+% %1
+% IOD = 6;
+% viewingDistance = 57;
+% 
+% cycDist = 0.5*IOD;
+% cycPoint = [0, 0, 0];
+% fixation = [0, 0, viewingDistance];
+% object = [-15, 0, 30];
+% eyeL = [-cycDist, 0, 0];
+% eyeR = [cycDist, 0, 0];
+% 
+% expectedScreenLX = -22.8; %expected position of the object for the left eye
+% expectedScreenLY = 0;
+% expectedScreenRX = -34.2; %expected position of the object for the right eye
+% expectedScreenRY = 0;
+% 
+% [screenL, screenR] = calculateScreenLocation(fixation, object, eyeL, eyeR); 
+% 
+% %checking that expected is the same as what is calculated by the function.
+% assert(abs(screenL(1)-expectedScreenLX)<.1,'Failure');
+% assert(abs(screenL(2)-expectedScreenLY)<.1,'Failure');
+% disp('It worked for the left eye');
+% 
+% assert(abs(screenR(1)-expectedScreenRX)<.1,'Failure');
+% assert(abs(screenR(2)-expectedScreenRY)<.1,'Failure');
+% disp('It worked for the right eye');
 
 %2
-
-%IOD = 6;
+IOD = 6;
 viewingDistance = 57;
-% eyeX = 0;
-% eyeY = 0;
-% eyeZ = 0;
-% objectX = 10;
-% objectY = 0;
-% objectZ = 40;
-% fixationX = -3;
-% fixationY = 0;
-% fixationZ = viewingDistance;
-expectedScreenX = -14.25;
-expectedScreenY = 0;
- % x y z
-object = [-5, 0, 20];
-eye = [0, 0, 0];
-fixation = [3, 0, viewingDistance];
-[screen] = calculateScreenLocation(object, eye, fixation); 
 
-assert(abs(screen(:,1)-expectedScreenX)<.1,'Failure');
-assert(abs(screen(:,2)-expectedScreenY)<.1,'Failure');
-disp('It worked');
+cycDist = 0.5*IOD;
+cycPoint = [0, 0, 0];
+fixation = [0, 0, viewingDistance];
+object = [17, 0, 15];
+eyeL = [-cycDist, 0, 0];
+eyeR = [cycDist, 0, 0];
 
-%3
+expectedScreenLX = 76; %expected position of the object for the left eye
+expectedScreenLY = 0;
+expectedScreenRX = 53.2; %expected position of the object for the right eye
+expectedScreenRY = 0;
 
-%IOD = 6;
-viewingDistance = 57;
-% eyeX = 0;
-% eyeY = 0;
-% eyeZ = 0;
-% objectX = 10;
-% objectY = 0;
-% objectZ = 40;
-% fixationX = -3;
-% fixationY = 0;
-% fixationZ = viewingDistance;
-expectedScreenX = -22.8;
-expectedScreenY = 0;
- % x y z
-object = [-20, 0, 50];
-eye = [0, 0, 0];
-fixation = [3, 0, viewingDistance];
-[screen] = calculateScreenLocation(object, eye, fixation); 
+[screenL, screenR] = calculateScreenLocation(fixation, object, eyeL, eyeR); 
 
-assert(abs(screen(:,1)-expectedScreenX)<.1,'Failure');
-assert(abs(screen(:,2)-expectedScreenY)<.1,'Failure');
-disp('It worked');
+%checking that expected is the same as what is calculated by the function.
+assert(abs(screenL(1)-expectedScreenLX)<.1,'Failure');
+assert(abs(screenL(2)-expectedScreenLY)<.1,'Failure');
+disp('It worked for the left eye');
+
+assert(abs(screenR(1)-expectedScreenRX)<.1,'Failure');
+assert(abs(screenR(2)-expectedScreenRY)<.1,'Failure');
+disp('It worked for the right eye');
