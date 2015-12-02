@@ -2,7 +2,7 @@ function [] = testProjectionGui();
 %cm
 screenDist = 57;
 screenHalfWidth = 50;
-ipd= 6.25
+ipd= 6
 figH = figure(42);
 clf
 leCenter = [-ipd/2 0]; 
