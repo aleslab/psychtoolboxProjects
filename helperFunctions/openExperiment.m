@@ -40,7 +40,7 @@ end
 
 %Default is mono mode
 if ~isfield(expInfo,'stereoMode')
-    expInfo.stereoMode = 2;
+    expInfo.stereoMode = 0;
 end
 
 %Default viewing distance 
@@ -84,7 +84,7 @@ Screen('Preference', 'VisualDebugLevel',2);
 % Set the background to the background value.
 expInfo.bckgnd = 0.5;
 %This uses the new "psychImaging" pipeline. 
-[expInfo.curWindow, expInfo.screenRect] = PsychImaging('OpenWindow', expInfo.screenNum, expInfo.bckgnd,windowRect,32, expInfo.stereoMode);
+[expInfo.curWindow, expInfo.screenRect] = PsychImaging('OpenWindow', expInfo.screenNum, expInfo.bckgnd,windowRect,[],[], expInfo.stereoMode);
 expInfo.dontclear = 0; % 1 gives incremental drawing (does not clear buffer after flip)
 
 

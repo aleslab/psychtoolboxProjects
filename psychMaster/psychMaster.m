@@ -147,14 +147,13 @@ try
         closeExperiment;
         return;
     end
-%     
+    
+    
 %     %!!!!!!!!!!!!!!!!!!!!!
-%     %THESE VALUES ARE HARDCODED TEMPORARILY NEED TO INCORPORATE
+%     %VALUES ARE HARDCODED TEMPORARILY NEED TO INCORPORATE
 %     %CALIBRATION ROUTINE
 %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%     expInfo.viewingDistance = 50;
-%     expInfo.screenNum = max(Screen('Screens'));   
-%     expInfo.useFullScreen = 0;
+
     expInfo = openExperiment(expInfo);
     
 
