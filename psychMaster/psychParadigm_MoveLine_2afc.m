@@ -1,14 +1,14 @@
-function [conditionInfo, screenInfo] = psychParadigm_MoveLine(screenInfo)
+function [conditionInfo, expInfo] = psychParadigm_MoveLine_2afc(expInfo)
 
 
 %function [conditionInfo, screenInfo] = MoveLineTrial(screenInfo)
 %paradigmName is what will be prepended to data files
-screenInfo.paradigmName = 'MoveLine';
-
+expInfo.paradigmName = 'MoveLine';
+expInfo.stereoMode = 0;
 %Let's use kbQueue's because they have high performance.
 %screenInfo.useKbQueue = true;
 
-screenInfo.instructions = 'Which one moved slower?\nPress any key to begin';
+expInfo.instructions = 'Which one moved slower?\nPress any key to begin';
 
 
 %% conditions
@@ -28,7 +28,9 @@ conditionInfo(1).responseDuration = 3;    %Post trial window for waiting for a r
 conditionInfo(1).cmDistance = 10; %distance the line should move in cm
 conditionInfo(1).velocityCmPerSec = conditionInfo(1).cmDistance/conditionInfo(1).stimDuration;  
 %Stimulus velocity in cm/s for condition 1
-conditionInfo(1).startPos = 10; %where on the x axis of the screen the line 
+conditionInfo(1).startPos = 1; %where on the x axis of the screen the line
+%I've changed this to 1 so that this is in cm as it makes it a bit easier
+%-- but it means I need to change stuff later on.
 %should start at (in pixels)
 conditionInfo(1).nReps = 5; %number of repeats
 
