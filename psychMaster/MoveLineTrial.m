@@ -67,6 +67,7 @@ nFrames = round(conditionInfo.stimDuration / expInfo.ifi); %number of frames dis
 % (Pix/Sec) * (Sec/Frame) = PixPerFrame (Sec cancels)
 
 velPixPerFrame = conditionInfo.velocityCmPerSec*expInfo.pixPerCm*expInfo.ifi;
+velCmPerFrame  = conditionInfo.velocityCmPerSec*expInfo.ifi;
 xv = velPixPerFrame;
 
 %continueDrawing = true;
@@ -95,30 +96,31 @@ xv = velPixPerFrame;
 %     end
 %         
 % end
+objectCurrentPosition = objectStart;
+[screenL, screenR] = calculateScreenLocation(fixation, objectCurrentPosition, eyeL, eyeR);
+        
+pixelDistanceL = expInfo.pixPerCm * screenL(1);
+LinePosL = round(screenXCentre + pixelDistanceL);
 
-if LinePosL > FinalPosL;
-    
-    while LinePosL > FinalPosL;
-        LinePosL =mod(LinePosL-xv, screenXpixels); %adding xv onto the value so
+for iFrame = 1:nFrames,
+        
         %that the line moves towards the right
         Screen('DrawLines', expInfo.curWindow, [LinePosL, LinePosL ; 0, screenYpixels], lw);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
         %Drawing and flipping everything onto the screen so that it appears
         %as it should.
-    end
-    
-else
-    
-   while LinePosL < FinalPosL;
-        LinePosL =mod(LinePosL+xv, screenXpixels); %adding xv onto the value so
-        %that the line moves towards the right
-        Screen('DrawLines', expInfo.curWindow, [LinePosL, LinePosL ; 0, screenYpixels], lw);
-        vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-        %Drawing and flipping everything onto the screen so that it appears
-        %as it should.
-    end
+        
+        objectCurrentPosition(3) = objectCurrentPosition(3) + velCmPerFrame;
+        [screenL, screenR] = calculateScreenLocation(fixation, objectCurrentPosition, eyeL, eyeR);
+        
+        pixelDistanceL = expInfo.pixPerCm * screenL(1);
+        LinePosL = round(screenXCentre + pixelDistanceL);
+        
+        
+        
         
 end
+
 
 %end
 

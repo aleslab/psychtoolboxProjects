@@ -20,7 +20,7 @@ conditionInfo(1).trialFun=@MoveLineTrial;
 %Condition 1, lets set some defaults:
 %Condition 1 is the target absent condition.
 conditionInfo(1).type             = '2afc'; 
-conditionInfo(1).stimDuration     = 2; %0.5; %approximate stimulus duration in seconds
+conditionInfo(1).stimDuration     = 5; %0.5; %approximate stimulus duration in seconds
 conditionInfo(1).preStimDuration  = 0.5;  %Static time before stimulus change
 conditionInfo(1).postStimDuration = 0;  %static time aftter stimulus change
 conditionInfo(1).iti              = 1;     %Inter Stimulus Interval
@@ -39,7 +39,7 @@ conditionInfo(1).nReps = 5; %number of repeats
 %trial.  First we copy all the paramaters.
 nullCondition = conditionInfo(1);
 %Then we change the  parameter of interest:
-nullCondition.cmDistance = 5; %distance the line should move in cm
+nullCondition.cmDistance = -57; %distance the line should move in cm
 nullCondition.velocityCmPerSec = nullCondition.cmDistance/nullCondition.stimDuration;  
 %finally, assign it as the null for condition 1. 
 conditionInfo(1).nullCondition = nullCondition;
