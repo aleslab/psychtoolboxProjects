@@ -20,12 +20,13 @@ conditionInfo(1).trialFun=@MoveLineTrial;
 %Condition 1, lets set some defaults:
 %Condition 1 is the target absent condition.
 conditionInfo(1).type             = '2afc'; 
-conditionInfo(1).stimDuration     = .5; %approximate stimulus duration in seconds
+conditionInfo(1).stimDuration     = 2; %0.5; %approximate stimulus duration in seconds
 conditionInfo(1).preStimDuration  = 0.5;  %Static time before stimulus change
 conditionInfo(1).postStimDuration = 0;  %static time aftter stimulus change
 conditionInfo(1).iti              = 1;     %Inter Stimulus Interval
 conditionInfo(1).responseDuration = 3;    %Post trial window for waiting for a response
-conditionInfo(1).cmDistance = 10; %distance the line should move in cm
+conditionInfo(1).cmDistance = 10; %distance the line should move in depth in cm 
+%something weird happens if I put this up to 20
 conditionInfo(1).velocityCmPerSec = conditionInfo(1).cmDistance/conditionInfo(1).stimDuration;  
 %Stimulus velocity in cm/s for condition 1
 conditionInfo(1).startPos = 1; %where on the x axis of the screen the line
