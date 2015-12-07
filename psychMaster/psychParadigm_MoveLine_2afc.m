@@ -25,7 +25,7 @@ conditionInfo(1).preStimDuration  = 0.5;  %Static time before stimulus change
 conditionInfo(1).postStimDuration = 0;  %static time aftter stimulus change
 conditionInfo(1).iti              = 1;     %Inter Stimulus Interval
 conditionInfo(1).responseDuration = 3;    %Post trial window for waiting for a response
-conditionInfo(1).cmDistance = 10; %distance the line should move in depth in cm 
+conditionInfo(1).cmDistance = -25; %distance the line should move in depth in cm 
 %something weird happens if I put this up to 20
 conditionInfo(1).velocityCmPerSec = conditionInfo(1).cmDistance/conditionInfo(1).stimDuration;  
 %Stimulus velocity in cm/s for condition 1
