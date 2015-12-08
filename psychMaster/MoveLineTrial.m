@@ -36,39 +36,45 @@ objectCurrentPosition = objectStart;
 pixelDistanceL = expInfo.pixPerCm * screenL(1);
 LinePosL = round(screenXCentre + pixelDistanceL);
 
+pixelDistanceR = expInfo.pixPerCm * screenR(1);
+LinePosR = round(screenXCentre + pixelDistanceR);
+
 % Here we set the size of the arms of our fixation cross
 fixCrossDimPix = 20;
 
-fixxCoords = [-fixCrossDimPix fixCrossDimPix 0 0 LinePosL LinePosL ];
-fixyCoords = [0 0 -fixCrossDimPix fixCrossDimPix 0 screenYpixels];
-allCoords = [fixxCoords; fixyCoords];
+fixXCoords = [-fixCrossDimPix fixCrossDimPix 0 0];
+fixYCoords = [0 0 -fixCrossDimPix fixCrossDimPix];
+FixCoords = [fixXCoords; fixYCoords];
+
 % Set the line width for our fixation cross
-fixWidthPix = 2;
+fixWidthPix = 1;
 
-%Screen('DrawLines', expInfo.curWindow, allCoords, 0,  fixWidthPix, expInfo.center, 2);
-
-%Screen('Flip', expInfo.curWindow);
+%AL -- there's something weird going on here where I think the "left" and
+%"right" are actually the wrong way around as when it is run for an
+%approaching stimulus that increases in speed(e.g. -57) it appears to be
+%moving away. If you swap the stereo "screens" then this appears to fix the
+%problem but then I'm not sure if everything is then in the correct place.
 
 for iFrame = 1:nFrames,
-    
-   %moveLineCoords = [LinePosL LinePosL  0 screenYpixels];
-   %allCoords = [xCoords; yCoords; moveLineCoords]; 
-    %that the line moves towards the right
-
-
-    %Screen('DrawLines', expInfo.curWindow, allCoords, lw);
-    
-    Screen('DrawLines', expInfo.curWindow, allCoords, 0,  fixWidthPix, expInfo.center, 2)
-    
+  %left eye
+    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0); 
+    Screen('DrawLines', expInfo.curWindow, FixCoords, 0,  fixWidthPix, expInfo.center, 2)
     Screen('DrawLines', expInfo.curWindow, [LinePosL, LinePosL ; 0, screenYpixels], lw);
+  %right eye  
+    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1); 
+    Screen('DrawLines', expInfo.curWindow, FixCoords, 0,  fixWidthPix, expInfo.center, 2)  
+    Screen('DrawLines', expInfo.curWindow, [LinePosR, LinePosR ; 0, screenYpixels], lw);
+     
     vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
     
     objectCurrentPosition(3) = objectCurrentPosition(3) + velCmPerFrame;
     [screenL, screenR] = calculateScreenLocation(fixation, objectCurrentPosition, eyeL, eyeR);
-    
+    %left
     pixelDistanceL = expInfo.pixPerCm * screenL(1);
     LinePosL = round(screenXCentre + pixelDistanceL);
-    
+    %right
+    pixelDistanceR = expInfo.pixPerCm * screenR(1);
+    LinePosR = round(screenXCentre + pixelDistanceR);
 end
 
 Screen('Flip', expInfo.curWindow);

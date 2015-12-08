@@ -4,7 +4,7 @@ function [conditionInfo, expInfo] = psychParadigm_MoveLine_2afc(expInfo)
 %function [conditionInfo, screenInfo] = MoveLineTrial(screenInfo)
 %paradigmName is what will be prepended to data files
 expInfo.paradigmName = 'MoveLine';
-expInfo.stereoMode = 0;
+expInfo.stereoMode = 8; %0 is monocular, 4 is split screen, 8 is anaglyph
 %Let's use kbQueue's because they have high performance.
 %screenInfo.useKbQueue = true;
 
@@ -29,7 +29,7 @@ conditionInfo(1).cmDistance = -25; %distance the line should move in depth in cm
 %something weird happens if I put this up to 20
 conditionInfo(1).velocityCmPerSec = conditionInfo(1).cmDistance/conditionInfo(1).stimDuration;  
 %Stimulus velocity in cm/s for condition 1
-conditionInfo(1).startPos = 1; %where on the x axis of the screen the line
+conditionInfo(1).startPos = 0; %where on the x axis of the screen the line
 %I've changed this to 1 so that this is in cm as it makes it a bit easier
 %-- but it means I need to change stuff later on.
 %should start at (in pixels)
