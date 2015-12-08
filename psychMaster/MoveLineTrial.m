@@ -58,11 +58,11 @@ fixWidthPix = 1;
 for iFrame = 1:nFrames,
   %left eye
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0); 
-    Screen('DrawLines', expInfo.curWindow, FixCoords, 0,  fixWidthPix, expInfo.center, 2)
+    Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0)
     Screen('DrawLines', expInfo.curWindow, [LinePosL, LinePosL ; 0, screenYpixels], lw);
   %right eye  
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1); 
-    Screen('DrawLines', expInfo.curWindow, FixCoords, 0,  fixWidthPix, expInfo.center, 2)  
+    Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0)  
     Screen('DrawLines', expInfo.curWindow, [LinePosR, LinePosR ; 0, screenYpixels], lw);
      
     vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
