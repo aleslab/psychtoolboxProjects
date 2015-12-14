@@ -31,12 +31,19 @@ conditionInfo(1).cmDistance = -25; %distance the line should move in depth in cm
 %something weird happens if I put this up to 20
 conditionInfo(1).velocityCmPerSec = conditionInfo(1).cmDistance/conditionInfo(1).stimDuration;  
 %Stimulus velocity in cm/s for condition 1
+%For when there is one vertical line (cd)
 conditionInfo(1).startPos = 0; %where on the x axis of the screen the line
 %I've changed this to 1 so that this is in cm as it makes it a bit easier
 %-- but it means I need to change stuff later on.
 %should start at (in pixels)
-conditionInfo(1).objectOneStartPos = -1;
-conditionInfo(1).objectTwoStartPos = 1;
+%For when there are two vertical lines (combined)
+conditionInfo(1).objectOneStartPos = -1; %when there are two lines in each eye, the start position of the first line
+conditionInfo(1).objectTwoStartPos = 1; %the start position of the second line in each eye
+%For when there are two horizontal lines (looming)
+%This is the start position (+ = above fixation, - = below)of the first line in each eye. 
+conditionInfo(1).horizontalOneStartPos = 1; %a y coordinate. the others are x. 
+conditionInfo(1).horizontalTwoStartPos = -1;
+
 conditionInfo(1).nReps = 5; %number of repeats
 
 %Now let's create the null that this will be compared with in the 2afc
