@@ -20,7 +20,7 @@ conditionInfo(1).trialFun=@MoveLineTrial;
 %Condition 1, lets set some defaults:
 %Condition 1 is the target absent condition.
 conditionInfo(1).type             = '2afc'; 
-conditionInfo(1).stimType         = 'cd'; 
+conditionInfo(1).stimType         = 'combined'; 
 %changing disparity only = cd; looming only = 'looming'; combined = 'combined';
 conditionInfo(1).stimDuration     = 5; %0.5; %approximate stimulus duration in seconds
 conditionInfo(1).preStimDuration  = 0.5;  %Static time before stimulus change
@@ -35,6 +35,8 @@ conditionInfo(1).startPos = 0; %where on the x axis of the screen the line
 %I've changed this to 1 so that this is in cm as it makes it a bit easier
 %-- but it means I need to change stuff later on.
 %should start at (in pixels)
+conditionInfo(1).objectOneStartPos = -1;
+conditionInfo(1).objectTwoStartPos = 1;
 conditionInfo(1).nReps = 5; %number of repeats
 
 %Now let's create the null that this will be compared with in the 2afc
