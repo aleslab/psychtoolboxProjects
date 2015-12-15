@@ -34,12 +34,12 @@ conditionInfo(1).postStimDuration = 0;  %static time aftter stimulus change
 conditionInfo(1).iti              = .2;     %Minimum Inter Trial Interval
 conditionInfo(1).responseDuration = 2;    %Post trial window for waiting for a response
 
-conditionInfo(1).sigma=20; %standard deviation of the gabor in degrees
+conditionInfo(1).sigma=2; %standard deviation of the gabor in degrees
 conditionInfo(1).freq = 4; %frequency of the gabor in cycles per sigma. 
 conditionInfo(1).targetAmp = 0; % target amplitude **Justin This was to define the target in noise
 conditionInfo(1).nReps = 2; %% number of trials to present this condition. 
-conditionInfo(1).stimRadiusCm   = 5;    %stimulus size in cm;
-conditionInfo(1).stimRadiusDeg  = 1;    %stimulus size in degree;
+conditionInfo(1).stimRadiusCm   = .5;    %stimulus size in cm;
+conditionInfo(1).stimRadiusDeg  = .11;    %stimulus size in degree;
 conditionInfo(1).contrast = 0.25 ;
 conditionInfo(1).orientationSigma = .015;
 
