@@ -30,7 +30,7 @@ end
 radiusPix = 256;screenInfo.ppd*conditionInfo.stimRadiusDeg;    % stimSize in degrees x pixels per degree.
 sigmaPix  = screenInfo.ppd*conditionInfo.sigma;  % standard deviation in degrees iinto pixels
 cyclesPerSigma = 2;    %cycles per standaard devaion
-contrast = 0.45;   % contrast 
+contrast = 0.8;   % contrast 
 phase = 0.25;      %phase of gabor
       
 
@@ -38,19 +38,19 @@ phase = 0.25;      %phase of gabor
 orientationSigma=conditionInfo.orientationSigma;
 orientationVelocity = .1;
     
-orient = 0;
+orient =360*rand();
 for iFrame = 1:nFrames
 
-    %orient = orient+orientationSigma*randn(); %orient of gabor
-    orientationVelocity = orientationVelocity+orientationSigma*randn();
+    orient = orient+orientationSigma*randn(); %orient of gabor
+    %orientationVelocity = orientationVelocity+orientationSigma*randn();
     
-    orient = orient+orientationVelocity.^2; %orient of gabor
+    %orient = orient+orientationVelocity.^2; %orient of gabor
     
     
     %creates a gabor texture. this has to be in the loop beacuse we want to
     %create a new gabor on every frame we present.
     my_gabor = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient);
-    my_noise= 0.4*randn(size(my_gabor));
+    my_noise= 0.1*randn(size(my_gabor));
     %convert it to a texture 'tex'
     tex=Screen('makeTexture', screenInfo.curWindow, my_gabor+my_noise);
     
