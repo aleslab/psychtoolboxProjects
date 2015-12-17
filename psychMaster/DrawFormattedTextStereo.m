@@ -7,6 +7,38 @@ function [nx, ny, textbounds] = DrawFormattedTextStereo(win, tstring, sx, sy, co
 
 info = Screen('GetWindowInfo', win)
 
+% Process Inputs and Initialize Defaults
+nargs = 11;
+for k = nargin:nargs-1
+    switch k
+        case 0
+            win = [];
+        case 1
+            tstring = [];
+        case 2
+            sx = [];
+        case 3
+            sy = [];
+        case 4
+            color = [];
+        case 5
+            wrapat = [];
+        case 6
+            flipHorizontal = [];
+        case 7
+            flipVertical = [];
+        case 8
+            vSpacing=[];
+        case 9
+            righttoleft=[];
+        case 10
+            winRect = [];
+            
+ 
+        otherwise
+    end
+end
+ %color, wrapat, flipHorizontal, 
 if info.StereoMode == 0;
 [nx, ny, textbounds]= DrawFormattedText(win, tstring, sx, sy, color, ...
     wrapat, flipHorizontal, flipVertical, vSpacing, righttoleft, winRect);
