@@ -192,7 +192,7 @@ try
     %Now lets begin the experiment and loop over the conditions to show.
     
     %Show instructions and wait for a keypress. 
-    DrawFormattedText(expInfo.curWindow, expInfo.instructions,'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
+    DrawFormattedTextStereo(expInfo.curWindow, expInfo.instructions,'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
     Screen('Flip', expInfo.curWindow);    
     KbStrokeWait();
     %
@@ -285,7 +285,7 @@ try
             experimentData(iTrial).validTrial = false;
             
             
-            DrawFormattedText(expInfo.curWindow, 'Invalid trial','center', 'center', 1);
+            DrawFormattedTextStereo(expInfo.curWindow, 'Invalid trial','center', 'center', 1);
             
             Screen('Flip', expInfo.curWindow);
             WaitSecs(.5);
@@ -293,7 +293,7 @@ try
             
         else %valid response made
             %Give feedback:
-            DrawFormattedText(expInfo.curWindow, trialData.feedbackMsg,...
+            DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
                 'center', 'center', feedbackColor);
             Screen('Flip', expInfo.curWindow);
             WaitSecs(1.5);
