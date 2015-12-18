@@ -242,12 +242,28 @@ try
                 trialData.pressed    = responseData.pressed;
                 trialData.abortNow = false;
                 
-                if nullFirst
+                if nullFirst && conditionInfo(thisCond).velocityLessThanNull
+                    %if the null is first and the null velocity is the
+                    %fastest. First is fastest.
                     correctResponse   = 'j';
                     incorrectResponse = 'f';
-                else
+                else if ~nullFirst && conditionInfo(thisCond).velocityLessThanNull
+                    %else if the null isn't first and the null velocity is
+                    %the fastest. Second is fastest.
                     correctResponse   = 'f';
                     incorrectResponse = 'j';
+                else if nullFirst && ~conditionInfo(thisCond).velocityLessThanNull
+                    %else if the null is first and the null velocity isn't
+                    %the fastest Second is fastest.
+                    correctResponse   = 'f';
+                    incorrectResponse = 'j';    
+                else if ~nullFirst && ~conditionInfo(thisCond).velocityLessThanNull
+                    %else if the null isn't first and the null isn't the fastest. First is fastest.
+                    correctResponse   = 'j';
+                    incorrectResponse = 'f';
+                    end
+                    end
+                    end
                 end
                 
                 if trialData.firstPress(KbName('ESCAPE'))

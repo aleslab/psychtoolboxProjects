@@ -25,7 +25,7 @@ conditionInfo(1).iti              = 1;     %Inter Stimulus Interval
 conditionInfo(1).responseDuration = 5;    %Post trial window for waiting for a response
 conditionInfo(1).cmDistance = -54.15; %distance the line should move in depth in cm -- currently hardcoded as 95% of null
 conditionInfo(1).velocityCmPerSec = conditionInfo(1).cmDistance/conditionInfo(1).stimDuration;  %Is -11.4*0.95 = 10.83
-
+conditionInfo(1).velocityLessThanNull = true;
 conditionInfo(1).startPos = 0; %start position of the line
 
 conditionInfo(1).nReps = 5; %number of repeats
@@ -52,10 +52,16 @@ conditionInfo(3) = conditionInfo(1);
 conditionInfo(3).velocityCmPerSec = nullCondition.velocityCmPerSec*0.80; 
 %velocity is 20% less than condition 1 and the null
 
-%right now psychMaster is still coded that the null will always be the
-%fastest and that's the correct answer. We need to change it so that if
-%the condition is faster than the null then that's the correct answer...
-%but if it's slower then the null is the correct answer. To do this you
-%won't be able to have condition 1 as the same as the null trial velocity
-%so will have to change that. 
+conditionInfo(4) = conditionInfo(1);
+conditionInfo(4).velocityCmPerSec = nullCondition.velocityCmPerSec*1.05; 
+%5% faster than the null
+conditionInfo(4).velocityLessThanNull = false;
+
+conditionInfo(5) = conditionInfo(4);
+conditionInfo(5).velocityCmPerSec = nullCondition.velocityCmPerSec*1.10; 
+%10% faster than the null
+
+conditionInfo(6) = conditionInfo(4);
+conditionInfo(6).velocityCmPerSec = nullCondition.velocityCmPerSec*1.20; 
+%20% faster than the null
 
