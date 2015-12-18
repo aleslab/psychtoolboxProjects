@@ -31,25 +31,35 @@ fixYCoords = [0 0 -fixCrossDimPix fixCrossDimPix]; %fixation cross y coordinates
 FixCoords = [fixXCoords; fixYCoords]; %combined fixation cross coordinates
 fixWidthPix = 1; %the line width of the fixation cross
 
+%box surrounding fixation cross when you can make a response
+leftPointX = screenXCentre - 30;
+rightPointX = screenXCentre + 30;
+PointY1 = screenYCentre + 30;
+PointY2 = screenYCentre - 30;
+
+boxXcoords = [leftPointX leftPointX rightPointX rightPointX leftPointX rightPointX leftPointX rightPointX];
+boxYcoords = [PointY1 PointY2 PointY1 PointY2 PointY1 PointY1 PointY2 PointY2];
+boxCoords = [boxXcoords; boxYcoords];
+
 nFrames = round(conditionInfo.stimDuration / expInfo.ifi); %number of
-    %frames displayed during JMA: added round because  it needs to be an
-    %integer. the duration (in seconds) that is specified    
+%frames displayed during JMA: added round because  it needs to be an
+%integer. the duration (in seconds) that is specified
 velCmPerFrame  = conditionInfo.velocityCmPerSec*expInfo.ifi;
 
 %% Choosing and running the stimulus
-if strcmp(conditionInfo.stimType, 'cd'); %%strcmp seems to work better than == for this. 
+if strcmp(conditionInfo.stimType, 'cd'); %%strcmp seems to work better than == for this.
     %Checking if the stimulus type is CD only.
     % Changing disparity stimulus -- single vertical line for each eye
-    objectStart = [conditionInfo.startPos, 0, expInfo.viewingDistance]; 
-    %the single line "object" starting position 
-
+    objectStart = [conditionInfo.startPos, 0, expInfo.viewingDistance];
+    %the single line "object" starting position
+    
     objectCurrentPosition = objectStart;
-    [screenL, screenR] = calculateScreenLocation(fixation, objectCurrentPosition, eyeL, eyeR); 
+    [screenL, screenR] = calculateScreenLocation(fixation, objectCurrentPosition, eyeL, eyeR);
     %trig for the object's current position on the screen
     
-    pixelDistanceL = expInfo.pixPerCm * screenL(1); %the non-adjusted position 
+    pixelDistanceL = expInfo.pixPerCm * screenL(1); %the non-adjusted position
     %of the line on the screen in pixels for the left eye
-    LinePosL = round(screenXCentre + pixelDistanceL); %the adjusted position 
+    LinePosL = round(screenXCentre + pixelDistanceL); %the adjusted position
     %of the line on the screen in pixels -- relative to the centre of X for
     %the left eye
     
@@ -72,24 +82,24 @@ if strcmp(conditionInfo.stimType, 'cd'); %%strcmp seems to work better than == f
         objectCurrentPosition(3) = objectCurrentPosition(3) + velCmPerFrame; %changing the object's current position in space (cm) with the velocity (cm)
         [screenL, screenR] = calculateScreenLocation(fixation, objectCurrentPosition, eyeL, eyeR); %calculating the new position of the line on the screen for both eyes
         %For the left eye
-        pixelDistanceL = expInfo.pixPerCm * screenL(1); %the non-adjusted position 
-    %of the line on the screen in pixels for the left eye
-        LinePosL = round(screenXCentre + pixelDistanceL); %the adjusted position 
-    %of the line on the screen in pixels -- relative to the centre of X for
-    %the left eye
-    %For the right eye
-    %same as for the left eye above but for the right eye 
+        pixelDistanceL = expInfo.pixPerCm * screenL(1); %the non-adjusted position
+        %of the line on the screen in pixels for the left eye
+        LinePosL = round(screenXCentre + pixelDistanceL); %the adjusted position
+        %of the line on the screen in pixels -- relative to the centre of X for
+        %the left eye
+        %For the right eye
+        %same as for the left eye above but for the right eye
         pixelDistanceR = expInfo.pixPerCm * screenR(1);
         LinePosR = round(screenXCentre + pixelDistanceR);
     end
     
     
-else if strcmp(conditionInfo.stimType, 'combined'); 
+else if strcmp(conditionInfo.stimType, 'combined');
         % Combination stimulus -- two vertical lines for each eye
         objectOneStart = [conditionInfo.objectOneStartPos, 0, expInfo.viewingDistance];
         %the start position of the first line
         objectTwoStart = [conditionInfo.objectTwoStartPos, 0, expInfo.viewingDistance];
-        %the start position of the second line    
+        %the start position of the second line
         objectOneCurrentPosition = objectOneStart;
         [screenLone, screenRone] = calculateScreenLocation(fixation, objectOneCurrentPosition, eyeL, eyeR);
         %transferring this initial position for the first line onto the
@@ -130,7 +140,7 @@ else if strcmp(conditionInfo.stimType, 'combined');
             vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
             
             objectOneCurrentPosition(3) = objectOneCurrentPosition(3) + velCmPerFrame; %finding the new object position for the first line
-            [screenLone, screenRone] = calculateScreenLocation(fixation, objectOneCurrentPosition, eyeL, eyeR); 
+            [screenLone, screenRone] = calculateScreenLocation(fixation, objectOneCurrentPosition, eyeL, eyeR);
             %transferring this new position into positions on the two halves of the screen
             
             objectTwoCurrentPosition(3) = objectTwoCurrentPosition(3) + velCmPerFrame; %finding the new object position for the second line
@@ -138,9 +148,9 @@ else if strcmp(conditionInfo.stimType, 'combined');
             %transferring this new position into positions on the two halves of the screen
             
             %For the left eye
-            pixelDistanceLone = expInfo.pixPerCm * screenLone(1); 
+            pixelDistanceLone = expInfo.pixPerCm * screenLone(1);
             %the new unadjusted pixel distance for the first line in the left eye
-            LinePosLone = round(screenXCentre + pixelDistanceLone); 
+            LinePosLone = round(screenXCentre + pixelDistanceLone);
             %the new adjusted position of the line (in X) on the screen
             
             pixelDistanceLtwo = expInfo.pixPerCm * screenLtwo(1);
@@ -159,7 +169,7 @@ else if strcmp(conditionInfo.stimType, 'combined');
             LinePosRtwo = round(screenXCentre + pixelDistanceRtwo);
             %second line in the right eye
         end
-     
+        
         %% Looming only stimulus -- two horizontal lines
     else if strcmp(conditionInfo.stimType, 'looming');
             %I'm not sure that this will appear to move in depth through the stereoscope?
@@ -167,7 +177,7 @@ else if strcmp(conditionInfo.stimType, 'combined');
             %An alternative to showing the combined stimulus with one eye
             %closed.
             
-            %One and two in the names refer to the first and second horizontal line 
+            %One and two in the names refer to the first and second horizontal line
             %-- screenOne = the screen position of the first line, etc. At
             %the moment the top line is line one.
             
@@ -239,8 +249,29 @@ else if strcmp(conditionInfo.stimType, 'combined');
     end
 end
 
-Screen('Flip', expInfo.curWindow); %the final necessary flip that clears 
-%the fixation crosses from the screen so that a choice can be made for the 
+%isfield(a, 'b') && isfield(a.b, 'c')
+% if isfield(trialData, 'validTrial') %&& isfield(trialData.firstCond, 'validTrial')
+%   Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+%     Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0);
+%
+%
+%     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
+%     Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0);
+%
+%
+% else
+
+Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0);
+Screen('DrawLines', expInfo.curWindow, boxCoords, lw);
+
+Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
+Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0);
+Screen('DrawLines', expInfo.curWindow, boxCoords, lw);
+% end
+
+Screen('Flip', expInfo.curWindow); %the final necessary flip that clears
+%the fixation crosses from the screen so that a choice can be made for the
 %speed discrimination. Should text appear to prompt a choice?
 
 end
