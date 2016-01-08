@@ -24,7 +24,7 @@ conditionInfo(1).preStimDuration  = 0.5;  %Static time before stimulus change
 conditionInfo(1).postStimDuration = 0;  %static time after stimulus change
 conditionInfo(1).iti              = 1;     %Inter Stimulus Interval
 conditionInfo(1).responseDuration = 5;    %Post trial window for waiting for a response
-conditionInfo(1).cmDistance = -54.15; %distance the line should move in depth in cm -- currently hardcoded as 95% of null
+conditionInfo(1).cmDistance = -38; %distance the line should move in depth in cm -- currently hardcoded as 95% of null
 conditionInfo(1).velocityCmPerSec = conditionInfo(1).cmDistance/conditionInfo(1).stimDuration;  %Is -11.4*0.95 = 10.83
 conditionInfo(1).velocityLessThanNull = true;
 conditionInfo(1).objectOneStartPos = -1; %when there are two lines in each eye, the start position of the first line
@@ -36,7 +36,7 @@ conditionInfo(1).nReps = 5; %number of repeats
 %trial.  First we copy all the paramaters.
 nullCondition = conditionInfo(1);
 %Then we change the  parameter of interest:
-nullCondition.cmDistance = -57; %distance the line should move in cm
+nullCondition.cmDistance = -40; %distance the line should move in cm
 nullCondition.velocityCmPerSec = nullCondition.cmDistance/nullCondition.stimDuration;  
 %finally, assign it as the null for condition 1. 
 conditionInfo(1).nullCondition = nullCondition;
