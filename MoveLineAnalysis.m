@@ -1,5 +1,6 @@
 cd C:\Users\aril\Documents\Data
-%Need to automate loading.
+%Need to automate loading and loop it so that multiple files can be
+%analysed at once.
 load('MoveLine_looming_AL_20160106_144936'); %30 valid trials
 %load('MoveLine_looming_AL_20160108_134723'); % 33 trials total; 30 valid trials
 
@@ -99,3 +100,6 @@ set(gca, 'YTick', 0:0.1:1);
 set(gca, 'YTickLabel', 0:10:100);
 xlabel('Percentage velocity difference compared to the null condition');
 ylabel('Percentage correct responses');
+
+%need to save the original data and the values calculated from it in a file
+%along with the plots.
