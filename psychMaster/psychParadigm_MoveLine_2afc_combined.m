@@ -3,13 +3,9 @@ function [conditionInfo, expInfo] = psychParadigm_MoveLine_2afc_combined(expInfo
 %Paradigm file for the combined looming and cd stimulus. Two vertical lines
 %moving in each eye.
 %paradigmName is what will be prepended to data files
+expInfo = moveLineDefaultSettings(expInfo);
+
 expInfo.paradigmName = 'MoveLine_combined';
-expInfo.stereoMode = 4; %0 is monocular, 4 is split screen, 8 is anaglyph
-%Let's use kbQueue's because they have high performance.
-%screenInfo.useKbQueue = true;
-
-expInfo.instructions = 'Which one moved slower?\nPress any key to begin';
-
 %% conditions
 
 %This defines what function to call to draw the condition

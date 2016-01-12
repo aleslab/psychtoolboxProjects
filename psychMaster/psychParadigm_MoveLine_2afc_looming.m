@@ -2,12 +2,9 @@ function [conditionInfo, expInfo] = psychParadigm_MoveLine_2afc_looming(expInfo)
 
 %Paradigm file for the looming stimulus. Two norizontal lines moving in each eye.
 %paradigmName is what will be prepended to data files
-expInfo.paradigmName = 'MoveLine_looming';
-expInfo.stereoMode = 4; %0 is monocular, 4 is split screen, 8 is anaglyph
-%Let's use kbQueue's because they have high performance.
-%screenInfo.useKbQueue = true;
+expInfo = moveLineDefaultSettings(expInfo);
 
-expInfo.instructions = 'Which one moved slower?\nPress any key to begin';
+expInfo.paradigmName = 'MoveLine_looming';
 
 %% conditions
 
