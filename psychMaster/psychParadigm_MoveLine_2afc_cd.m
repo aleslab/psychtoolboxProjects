@@ -14,24 +14,23 @@ conditionInfo(1).trialFun=@MoveLineTrial;
 %Condition 1, lets set some defaults:
 conditionInfo(1).type             = '2afc'; 
 conditionInfo(1).stimType         = 'cd'; 
-conditionInfo(1).stimDuration     = 5; %0.5; %approximate stimulus duration in seconds
-conditionInfo(1).preStimDuration  = 0.5;  %Static time before stimulus change
+conditionInfo(1).stimDuration     = 0.25; %0.5; %approximate stimulus duration in seconds
+conditionInfo(1).preStimDuration  = 0.25;  %Static time before stimulus change
 conditionInfo(1).postStimDuration = 0;  %static time after stimulus change
 conditionInfo(1).iti              = 1;     %Inter Stimulus Interval
-conditionInfo(1).responseDuration = 5;    %Post trial window for waiting for a response
-conditionInfo(1).cmDistance = -38; %distance the line should move in depth in cm -- currently hardcoded as 95% of null
-conditionInfo(1).velocityCmPerSec = conditionInfo(1).cmDistance/conditionInfo(1).stimDuration;  %Is -11.4*0.95 = 10.83
+conditionInfo(1).responseDuration = 3;    %Post trial window for waiting for a response
+conditionInfo(1).cmDistance = -9.5; %distance the line should move in depth in cm -- currently hardcoded as 95% of null
+conditionInfo(1).velocityCmPerSec = conditionInfo(1).cmDistance/conditionInfo(1).stimDuration;  %9.5cm/0.25s = 38cm/s
 conditionInfo(1).velocityLessThanNull = true;
 conditionInfo(1).startPos = 0; %start position of the line
-
-conditionInfo(1).nReps = 5; %number of repeats
+conditionInfo(1).nReps = 30; %number of repeats
 
 %Now let's create the null that this will be compared with in the 2afc
 %trial.  First we copy all the paramaters.
 nullCondition = conditionInfo(1);
 %Then we change the  parameter of interest:
-nullCondition.cmDistance = -40; %distance the line should move in cm
-nullCondition.velocityCmPerSec = nullCondition.cmDistance/nullCondition.stimDuration;  
+nullCondition.cmDistance = -10; %distance the line should move in cm
+nullCondition.velocityCmPerSec = nullCondition.cmDistance/nullCondition.stimDuration;  %40cm/s
 %finally, assign it as the null for condition 1. 
 conditionInfo(1).nullCondition = nullCondition;
 

@@ -1,4 +1,5 @@
 function [trialData] = MoveLineTrial(expInfo, conditionInfo)
+%Trial code for AL's moving line experiments
 %% Setting up
 [screenXpixels, screenYpixels] = Screen('WindowSize', expInfo.curWindow);
 %get the number of pixels in the window
@@ -44,6 +45,7 @@ boxCoords = [boxXcoords; boxYcoords];
 nFrames = round(conditionInfo.stimDuration / expInfo.ifi); %number of
 %frames displayed during JMA: added round because  it needs to be an
 %integer. the duration (in seconds) that is specified
+nFramesPreStim = round(conditionInfo.preStimDuration/expInfo.ifi);
 velCmPerFrame  = conditionInfo.velocityCmPerSec*expInfo.ifi;
 
 %% Choosing and running the stimulus
@@ -66,6 +68,18 @@ if strcmp(conditionInfo.stimType, 'cd'); %%strcmp seems to work better than == f
     %same as for the left eye above but for the right eye
     pixelDistanceR = expInfo.pixPerCm * screenR(1);
     LinePosR = round(screenXCentre + pixelDistanceR);
+    
+    for iFrame = 1:nFramesPreStim %during the pre stimulus duration
+         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0); %choosing the left eye
+        Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0) %drawing the fixation cross in the left eye
+        Screen('DrawLines', expInfo.curWindow, [LinePosL, LinePosL ; 0, screenYpixels], lw); %drawing the line in the left eye
+        %For the right eye
+        Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1); %choosing the right eye
+        Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0)%drawing the fixation cross in the right eye
+        Screen('DrawLines', expInfo.curWindow, [LinePosR, LinePosR ; 0, screenYpixels], lw);
+        
+        vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
+    end
     
     for iFrame = 1:nFrames, %for each frame until you reach the maximum number of frames
         %For the left eye
@@ -125,6 +139,21 @@ else if strcmp(conditionInfo.stimType, 'combined');
         LinePosRtwo = round(screenXCentre + pixelDistanceRtwo);
         %finding the position of hte second line in the right eye in pixels
         
+        for iFrame = 1:nFramesPreStim %during the pre stimulus duration
+             %For the left eye
+            Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+            Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0) %drawing the fixation cross
+            Screen('DrawLines', expInfo.curWindow, [LinePosLone, LinePosLone ; 0, screenYpixels], lw); %drawing the first line (left)
+            Screen('DrawLines', expInfo.curWindow, [LinePosLtwo, LinePosLtwo ; 0, screenYpixels], lw); %drawing the second line (right)
+            %For the right eye
+            Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
+            Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0) %drawing the fixation cross
+            Screen('DrawLines', expInfo.curWindow, [LinePosRone, LinePosRone ; 0, screenYpixels], lw); %drawing the first line (left)
+            Screen('DrawLines', expInfo.curWindow, [LinePosRtwo, LinePosRtwo ; 0, screenYpixels], lw); %drawing the second line (right)
+            
+            vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
+        end
+        
         for iFrame = 1:nFrames, %same as above
             %For the left eye
             Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
@@ -172,11 +201,7 @@ else if strcmp(conditionInfo.stimType, 'combined');
         
         %% Looming only stimulus -- two horizontal lines
     else if strcmp(conditionInfo.stimType, 'looming');
-            %I'm not sure that this will appear to move in depth through the stereoscope?
-            
-            %An alternative to showing the combined stimulus with one eye
-            %closed.
-            
+
             %One and two in the names refer to the first and second horizontal line
             %-- screenOne = the screen position of the first line, etc. At
             %the moment the top line is line one.
@@ -205,6 +230,21 @@ else if strcmp(conditionInfo.stimType, 'combined');
             %and work out the position on the screen in pixels (below)
             HorizontalTwoPixelDistance = expInfo.pixPerCm * screenTwo(2);
             HorizontalTwoLinePos = round(screenYCentre + HorizontalTwoPixelDistance);
+            
+              for iFrame = 1:nFramesPreStim %during the pre-stimulus duration have the lines appear in a fixed position
+                   % For the left eye
+                Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+                Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0) %draw fixation cross
+                Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], lw); %draw line 1 = top line
+                Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], lw); %draw line 2 = bottom line
+                %For the right eye
+                Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
+                Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0) %these are the same drawing commands as above but for the right eye
+                Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], lw);
+                Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], lw);
+                
+                vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
+              end
             
             for iFrame = 1:nFrames, %same as for the other stimuli
                 % For the left eye
@@ -249,18 +289,6 @@ else if strcmp(conditionInfo.stimType, 'combined');
     end
 end
 
-%isfield(a, 'b') && isfield(a.b, 'c')
-% if isfield(trialData, 'validTrial') %&& isfield(trialData.firstCond, 'validTrial')
-%   Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-%     Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0);
-%
-%
-%     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-%     Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0);
-%
-%
-% else
-
 Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
 Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0);
 Screen('DrawLines', expInfo.curWindow, boxCoords, lw);
@@ -268,11 +296,8 @@ Screen('DrawLines', expInfo.curWindow, boxCoords, lw);
 Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
 Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0);
 Screen('DrawLines', expInfo.curWindow, boxCoords, lw);
-% end
 
-Screen('Flip', expInfo.curWindow); %the final necessary flip that clears
-%the fixation crosses from the screen so that a choice can be made for the
-%speed discrimination. Should text appear to prompt a choice?
+Screen('Flip', expInfo.curWindow); %the final necessary flip.
 
 end
 
