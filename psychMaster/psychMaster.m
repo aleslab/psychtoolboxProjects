@@ -220,6 +220,7 @@ try
         
                 [trialData] = conditionInfo(thisCond).trialFun(expInfo,conditionInfo(thisCond));
             case '2afc'
+                
                 %Which trial first?
                 nullFirst = rand()>.5;
                 
@@ -245,22 +246,30 @@ try
                 if nullFirst && conditionInfo(thisCond).velocityLessThanNull
                     %if the null is first and the null velocity is the
                     %fastest. First is fastest.
-                    correctResponse   = 'j';
-                    incorrectResponse = 'f';
+                    %correctResponse   = 'j';
+                    %incorrectResponse = 'f';
+                    correctResponse   = 'f';
+                    incorrectResponse = 'j';
                 else if ~nullFirst && conditionInfo(thisCond).velocityLessThanNull
                     %else if the null isn't first and the null velocity is
                     %the fastest. Second is fastest.
-                    correctResponse   = 'f';
-                    incorrectResponse = 'j';
+                    %correctResponse   = 'f';
+                    %incorrectResponse = 'j';
+                    correctResponse   = 'j';
+                    incorrectResponse = 'f';
                 else if nullFirst && ~conditionInfo(thisCond).velocityLessThanNull
                     %else if the null is first and the null velocity isn't
                     %the fastest Second is fastest.
-                    correctResponse   = 'f';
-                    incorrectResponse = 'j';    
-                else if ~nullFirst && ~conditionInfo(thisCond).velocityLessThanNull
-                    %else if the null isn't first and the null isn't the fastest. First is fastest.
+                    %correctResponse   = 'f';
+                    %incorrectResponse = 'j';   
                     correctResponse   = 'j';
                     incorrectResponse = 'f';
+                else if ~nullFirst && ~conditionInfo(thisCond).velocityLessThanNull
+                    %else if the null isn't first and the null isn't the fastest. First is fastest.
+                    %correctResponse   = 'j';
+                    %incorrectResponse = 'f';
+                    correctResponse   = 'f';
+                    incorrectResponse = 'j';
                     end
                     end
                     end
@@ -307,13 +316,13 @@ try
             WaitSecs(.5);
             Screen('Flip', expInfo.curWindow);
             
-        else %valid response made
-            %Give feedback:
-            DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
-                'center', 'center', feedbackColor);
-            Screen('Flip', expInfo.curWindow);
-            WaitSecs(1.5);
-            Screen('Flip', expInfo.curWindow);
+%         else %valid response made
+%             %Give feedback:
+%             DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
+%                 'center', 'center', feedbackColor);
+%             Screen('Flip', expInfo.curWindow);
+%             WaitSecs(1.5);
+%             Screen('Flip', expInfo.curWindow);
         end
         
       
