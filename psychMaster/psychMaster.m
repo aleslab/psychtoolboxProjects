@@ -149,11 +149,31 @@ try
     end
     
     
-%     %!!!!!!!!!!!!!!!!!!!!!
-%     %VALUES ARE HARDCODED TEMPORARILY NEED TO INCORPORATE
-%     %CALIBRATION ROUTINE
-%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %     %!!!!!!!!!!!!!!!!!!!!!
+    %     %VALUES ARE HARDCODED TEMPORARILY NEED TO INCORPORATE
+    %     %CALIBRATION ROUTINE
+    %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    %Load size calibration:
+    if ispref('psychMaster','sizeCalibrationFile');
+        sizeFile = getpref('psychMaster','sizeCalibrationFile');
+        if ~exist(sizeFile,'file')
+            disp('<><><><><><> PSYCH MASTER <><><><><><><>')
+            disp(['Cannot find calibration file: ' sizeFile])
+        else
+            load(sizeFile); %loads the variable sizeCalibInfo
+            expInfo.monitorWidth = sizeCalibInfo.monitorWidth;
+            expInfo.sizeCalibInfo = sizeCalibInfo;
+            disp('<><><><><><> PSYCH MASTER <><><><><><><>')
+            disp(['Loading Size Calibration from: ' sizeFile])
+        end
+    else
+        disp('<><><><><><> PSYCH MASTER <><><><><><><>')
+        disp('NO SIZE CALIBRATION HAS BEEN SETUP. Guessing monitor size')
+        
+    end
 
+        
     expInfo = openExperiment(expInfo);
     
 
@@ -303,7 +323,7 @@ try
       experimentData(iTrial).trialData = trialData;
       iTrial = iTrial+1;
       
-    end
+    end %End while loop for showing trials.
     
    % save(saveFilename,'experimentData')
    sessionInfo.expInfo = expInfo;
