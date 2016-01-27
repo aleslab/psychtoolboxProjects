@@ -50,7 +50,11 @@ end
 
 %Default to testing in a small window 
 if ~isfield(expInfo,'useFullScreen')
-expInfo.useFullScreen = 0;
+    if expInfo.screenNum >0
+        expInfo.useFullScreen = true;
+    else
+        expInfo.useFullScreen = false;
+    end
 end
 
 
@@ -74,6 +78,7 @@ end
 %debugging on laptops
 if expInfo.screenNum >0
     Screen('Preference', 'SkipSyncTests', 0);
+    
 else
     Screen('Preference', 'SkipSyncTests', 1);
 end
@@ -122,5 +127,5 @@ Screen('BlendFunction', expInfo.curWindow,  GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
 expInfo.useKbQueue = false;
 KbName('UnifyKeyNames');
 expInfo.deviceIndex = [];
-ListenChar(2);
+ListenChar(0);
 
