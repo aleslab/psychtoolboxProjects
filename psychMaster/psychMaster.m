@@ -296,14 +296,18 @@ try
                     %pressed escape lets abort experiment;
                     trialData.validTrial = false;
                     trialData.abortNow = true;
-                else %Not aborting lets parse the inputs.
-                    if trialData.firstPress(KbName('space'))
-                        trialData.validTrial = false;
-                        DrawFormattedTextStereo(expInfo.curWindow, expInfo.pauseInfo, ...
-                            'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
-    Screen('Flip', expInfo.curWindow);    
-    KbStrokeWait();
-                    %This section is kludgy. 
+                 
+                elseif trialData.firstPress(KbName('space'))
+                    trialData.validTrial = false;
+                    DrawFormattedTextStereo(expInfo.curWindow, expInfo.pauseInfo, ...
+                        'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
+                    Screen('Flip', expInfo.curWindow);
+                    KbStrokeWait();
+                    
+                else      %Not aborting or pausing lets parse the inputs.
+                    
+                    %This section is kludgy. Could be done more elegantly,
+                    %but I can't be bothered to make it pretty now. JMA
                     
                     %First setup which interval was chosen. 
                     if trialData.firstPress(KbName('f'))
@@ -322,8 +326,6 @@ try
                         experimentData(iTrial).isResponseCorrect = false;
                         trialData.validTrial = true;
                         trialData.feedbackMsg = 'Incorrect';                  
-                    
-                    end
                     end
                 end
                 
