@@ -5,7 +5,7 @@ function [nx, ny, textbounds] = DrawFormattedTextStereo(win, tstring, sx, sy, co
 %  If the current window is a stereo buffer it draws text into both eye buffers 
 %  if it's not it just draws monocularly as usual.
 
-info = Screen('GetWindowInfo', win)
+info = Screen('GetWindowInfo', win);
 
 % Process Inputs and Initialize Defaults
 nargs = 11;
