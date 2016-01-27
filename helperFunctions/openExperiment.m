@@ -19,7 +19,8 @@ function expInfo = openExperiment( expInfo)
 % center     -  coordinates of the monitor center. 
 % ppd        - pixels per degree 
 % pixPerCm   - pixels per centimeter
-% useKbQueue - Determines if program should use KbQueue's to get keyboard
+% useKbQueue - Defaults to false. Override if needed 
+%            - Determines if program should use KbQueue's to get keyboard
 
 % ---------------
 % open the screen
@@ -32,6 +33,10 @@ function expInfo = openExperiment( expInfo)
 PsychDefaultSetup(2)
 
 defaultWindowRect = [0 0 720 720];
+
+if nargin==0 || isempty(expInfo)
+    expInfo = struct();
+end
 
 %By default choose an external monitor if connected.
 if ~isfield(expInfo,'screenNum')
@@ -59,7 +64,7 @@ end
 
 
 %This is not always a reliable way to get screen width.  MEASURE IT!!
-%But it's the best gues we can do.
+%But it's the best guess we can do.
 if ~isfield(expInfo,'monitorWidth')
     [w, h]=Screen('DisplaySize',expInfo.screenNum)
     expInfo.monitorWidth = w/10; %Convert to cm from mm
@@ -102,15 +107,16 @@ expInfo.frameDur = 1000/expInfo.monRefresh;
 
 expInfo.center = [expInfo.screenRect(3) expInfo.screenRect(4)]/2;   	% coordinates of screen center (pixels)
 
-[pixelWidth, pixelHeight]=Screen('WindowSize', expInfo.screenNum)
 
 % determine pixels per degree
 % (pix/screen) * ... (screen/rad) * ... rad/deg
 expInfo.ppd = pi * pixelWidth / atan(expInfo.monitorWidth/expInfo.viewingDistance/2) / 360;    % pixels per degree
-
 %determine pixels per centimeter
-% screenWidth (pixels) / screenWidth (cm) 
+% screenWidth (pixels) / screenWidth (cm)
 expInfo.pixPerCm = pixelWidth/expInfo.monitorWidth;
+
+
+
 % InitializePsychSound
 % 
 % expInfo.pahandle = PsychPortAudio('Open', [], [], 0, [], 2);
