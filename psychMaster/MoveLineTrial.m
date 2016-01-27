@@ -234,12 +234,12 @@ else if strcmp(conditionInfo.stimType, 'combined');
               for iFrame = 1:nFramesPreStim %during the pre-stimulus duration have the lines appear in a fixed position
                    % For the left eye
                 Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-                Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0) %draw fixation cross
+                Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0); %draw fixation cross
                 Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], lw); %draw line 1 = top line
                 Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], lw); %draw line 2 = bottom line
                 %For the right eye
                 Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-                Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0) %these are the same drawing commands as above but for the right eye
+                Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0); %these are the same drawing commands as above but for the right eye
                 Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], lw);
                 Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], lw);
                 
@@ -249,12 +249,12 @@ else if strcmp(conditionInfo.stimType, 'combined');
             for iFrame = 1:nFrames, %same as for the other stimuli
                 % For the left eye
                 Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-                Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0) %draw fixation cross
+                Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0); %draw fixation cross
                 Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], lw); %draw line 1 = top line
                 Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], lw); %draw line 2 = bottom line
                 %For the right eye
                 Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-                Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0) %these are the same drawing commands as above but for the right eye
+                Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0); %these are the same drawing commands as above but for the right eye
                 Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], lw);
                 Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], lw);
                 
