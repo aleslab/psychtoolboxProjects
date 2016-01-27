@@ -297,7 +297,12 @@ try
                     trialData.validTrial = false;
                     trialData.abortNow = true;
                 else %Not aborting lets parse the inputs.
-        
+                    if trialData.firstPress(KbName('space'))
+                        trialData.validTrial = false;
+                        DrawFormattedTextStereo(expInfo.curWindow, expInfo.pauseInfo, ...
+                            'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
+    Screen('Flip', expInfo.curWindow);    
+    KbStrokeWait();
                     %This section is kludgy. 
                     
                     %First setup which interval was chosen. 
@@ -319,7 +324,9 @@ try
                         trialData.feedbackMsg = 'Incorrect';                  
                     
                     end
+                    end
                 end
+                
         end
         
         
