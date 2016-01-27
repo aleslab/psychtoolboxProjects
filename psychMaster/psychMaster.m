@@ -253,7 +253,6 @@ try
                 end
                 
                 trialData.nullFirst = nullFirst;
-                experimentData(iTrial).nullFirst = nullFirst;
                 [trialData.firstCond] = conditionInfo(thisCond).trialFun(expInfo,firstCond);
                 WaitSecs(conditionInfo(thisCond).iti);
                 [trialData.secondCond] = conditionInfo(thisCond).trialFun(expInfo,secondCond);
@@ -264,23 +263,50 @@ try
                 trialData.pressed    = responseData.pressed;
                 trialData.abortNow = false;
                 
+                if nullFirst && conditionInfo(thisCond).velocityLessThanNull
+                    %if the null is first and the null velocity is the
+                    %fastest. First is fastest.
+                    %correctResponse   = 'j';
+                    %incorrectResponse = 'f';
+                    correctResponse   = 'f';
+                    incorrectResponse = 'j';
+                else if ~nullFirst && conditionInfo(thisCond).velocityLessThanNull
+                    %else if the null isn't first and the null velocity is
+                    %the fastest. Second is fastest.
+                    %correctResponse   = 'f';
+                    %incorrectResponse = 'j';
+                    correctResponse   = 'j';
+                    incorrectResponse = 'f';
+                else if nullFirst && ~conditionInfo(thisCond).velocityLessThanNull
+                    %else if the null is first and the null velocity isn't
+                    %the fastest Second is fastest.
+                    %correctResponse   = 'f';
+                    %incorrectResponse = 'j';   
+                    correctResponse   = 'j';
+                    incorrectResponse = 'f';
+                else if ~nullFirst && ~conditionInfo(thisCond).velocityLessThanNull
+                    %else if the null isn't first and the null isn't the fastest. First is fastest.
+                    %correctResponse   = 'j';
+                    %incorrectResponse = 'f';
+                    correctResponse   = 'f';
+                    incorrectResponse = 'j';
+                    end
+                    end
+                    end
+                end
+                
                 if trialData.firstPress(KbName('ESCAPE'))
                     %pressed escape lets abort experiment;
                     trialData.validTrial = false;
-                    experimentData(iTrial).validTrial = false;
                     trialData.abortNow = true;
-                elseif trialData.firstPress(KbName('f'))
-                    %experimentData(iTrial).isResponseCorrect = true;
-                    experimentData(iTrial).givenResponse = 'f';
+                elseif trialData.firstPress(KbName(correctResponse))
+                    experimentData(iTrial).isResponseCorrect = true; 
                     trialData.validTrial = true;
-                    experimentData(iTrial).validTrial = true;
-                    %trialData.feedbackMsg = 'Correct';    
-                elseif trialData.firstPress(KbName('j'))
-                    experimentData(iTrial).givenResponse = 'j';
-                    %experimentData(iTrial).isResponseCorrect = false;
-                    experimentData(iTrial).validTrial = true;
+                    trialData.feedbackMsg = 'Correct';    
+                elseif trialData.firstPress(KbName(incorrectResponse))
+                    experimentData(iTrial).isResponseCorrect = false;
                     trialData.validTrial = true;
-                    %trialData.feedbackMsg = 'Incorrect';
+                    trialData.feedbackMsg = 'Incorrect';
                     experimentData(iTrial)
                 else
                     trialData.validTrial = false;
