@@ -263,53 +263,62 @@ try
                 trialData.pressed    = responseData.pressed;
                 trialData.abortNow = false;
                 
-                if nullFirst && conditionInfo(thisCond).velocityLessThanNull
-                    %if the null is first and the null velocity is the
-                    %fastest. First is fastest.
-                    %correctResponse   = 'j';
-                    %incorrectResponse = 'f';
-                    correctResponse   = 'f';
-                    incorrectResponse = 'j';
-                else if ~nullFirst && conditionInfo(thisCond).velocityLessThanNull
-                    %else if the null isn't first and the null velocity is
-                    %the fastest. Second is fastest.
-                    %correctResponse   = 'f';
-                    %incorrectResponse = 'j';
-                    correctResponse   = 'j';
-                    incorrectResponse = 'f';
-                else if nullFirst && ~conditionInfo(thisCond).velocityLessThanNull
-                    %else if the null is first and the null velocity isn't
-                    %the fastest Second is fastest.
-                    %correctResponse   = 'f';
-                    %incorrectResponse = 'j';   
-                    correctResponse   = 'j';
-                    incorrectResponse = 'f';
-                else if ~nullFirst && ~conditionInfo(thisCond).velocityLessThanNull
-                    %else if the null isn't first and the null isn't the fastest. First is fastest.
-                    %correctResponse   = 'j';
-                    %incorrectResponse = 'f';
-                    correctResponse   = 'f';
-                    incorrectResponse = 'j';
+                
+                if nullFirst
+                    %If the null is first and the null is correct than 'F'
+                    %is the correct response. 
+                    if conditionInfo(thisCond).isNullCorrect
+                        correctResponse   = 'f';
+                        incorrectResponse = 'j';
+                    else
+                        %The null is first, but the null is incorrect so 
+                        % 'j' is the correct response
+                        correctResponse   = 'j';
+                        incorrectResponse = 'f';
                     end
-                    end
+                else  %the null is second
+                    
+                    if conditionInfo(thisCond).isNullCorrect
+                        %The null is correct and it is second the correct
+                        %is 'j'
+                        correctResponse   = 'j';
+                        incorrectResponse = 'f';
+                    else
+                        %The null is second and it is incorrect so the
+                        %correct answer is 'f'
+                        correctResponse   = 'f';
+                        incorrectResponse = 'j';
                     end
                 end
                 
+                trialData.validTrial = false; %Default not valid unless proven otherwise
                 if trialData.firstPress(KbName('ESCAPE'))
                     %pressed escape lets abort experiment;
                     trialData.validTrial = false;
                     trialData.abortNow = true;
-                elseif trialData.firstPress(KbName(correctResponse))
-                    experimentData(iTrial).isResponseCorrect = true; 
-                    trialData.validTrial = true;
-                    trialData.feedbackMsg = 'Correct';    
-                elseif trialData.firstPress(KbName(incorrectResponse))
-                    experimentData(iTrial).isResponseCorrect = false;
-                    trialData.validTrial = true;
-                    trialData.feedbackMsg = 'Incorrect';
-                    experimentData(iTrial)
-                else
-                    trialData.validTrial = false;
+                else %Not aborting lets parse the inputs.
+        
+                    %This section is kludgy. 
+                    
+                    %First setup which interval was chosen. 
+                    if trialData.firstPress(KbName('f'))
+                        experimentData(iTrial).chosenInterval = 1;
+                    elseif trialData.firstPress(KbName('j'))
+                        experimentData(iTrial).chosenInterval = 2;
+                    end
+                    
+                    %Now 
+                    if trialData.firstPress(KbName(correctResponse))
+                        experimentData(iTrial).isResponseCorrect = true;
+                        trialData.validTrial = true;
+                        trialData.feedbackMsg = 'Correct';
+                        
+                    elseif trialData.firstPress(KbName(incorrectResponse))
+                        experimentData(iTrial).isResponseCorrect = false;
+                        trialData.validTrial = true;
+                        trialData.feedbackMsg = 'Incorrect';                  
+                    
+                    end
                 end
         end
         
@@ -335,14 +344,15 @@ try
             Screen('Flip', expInfo.curWindow);
             WaitSecs(.5);
             Screen('Flip', expInfo.curWindow);
-            
-%         else %valid response made
-%             %Give feedback:
-%             DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
-%                 'center', 'center', feedbackColor);
-%             Screen('Flip', expInfo.curWindow);
-%             WaitSecs(1.5);
-%             Screen('Flip', expInfo.curWindow);
+          
+            %valid response made, should we give feedback?
+        elseif conditionInfo(thisCond).giveFeedback 
+            %Give feedback:
+            DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
+                'center', 'center', feedbackColor);
+            Screen('Flip', expInfo.curWindow);
+            WaitSecs(1.5);
+            Screen('Flip', expInfo.curWindow);
         end
         
       
