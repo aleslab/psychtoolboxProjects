@@ -44,11 +44,14 @@ conditionInfo(2) = conditionInfo(1);
 conditionInfo(2).velocityCmPerSec = nullCondition.velocityCmPerSec*0.90; 
 %velocity is 10% less than in the first condition. Made the first condition
 %so that it is equal to the null condition.
-
+%Since the standard is slower the null is faster. Therefore the null is the
+%correct answer. 
+conditionInfo(2).isNullCorrect = true;
 
 conditionInfo(3) = conditionInfo(1);
 conditionInfo(3).velocityCmPerSec = nullCondition.velocityCmPerSec*0.95; 
 %velocity is 5% less than condition 1 and the null
+conditionInfo(2).isNullCorrect = true;
 
 conditionInfo(4) = conditionInfo(1);
 conditionInfo(4).velocityCmPerSec = nullCondition.velocityCmPerSec; 
