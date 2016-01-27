@@ -233,7 +233,6 @@ try
                 end
                 
                 trialData.nullFirst = nullFirst;
-                experimentData(iTrial).nullFirst = nullFirst;
                 [trialData.firstCond] = conditionInfo(thisCond).trialFun(expInfo,firstCond);
                 WaitSecs(conditionInfo(thisCond).iti);
                 [trialData.secondCond] = conditionInfo(thisCond).trialFun(expInfo,secondCond);
@@ -247,18 +246,15 @@ try
                 if trialData.firstPress(KbName('ESCAPE'))
                     %pressed escape lets abort experiment;
                     trialData.validTrial = false;
-                    experimentData(iTrial).validTrial = false;
                     trialData.abortNow = true;
                 elseif trialData.firstPress(KbName('f'))
                     %experimentData(iTrial).isResponseCorrect = true;
                     experimentData(iTrial).givenResponse = 'f';
                     trialData.validTrial = true;
-                    experimentData(iTrial).validTrial = true;
                     %trialData.feedbackMsg = 'Correct';    
                 elseif trialData.firstPress(KbName('j'))
                     experimentData(iTrial).givenResponse = 'j';
                     %experimentData(iTrial).isResponseCorrect = false;
-                    experimentData(iTrial).validTrial = true;
                     trialData.validTrial = true;
                     %trialData.feedbackMsg = 'Incorrect';
                     experimentData(iTrial)

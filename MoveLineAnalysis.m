@@ -1,114 +1,105 @@
-%cd C:\Users\aril\Documents\Data %lilac room
-cd /Users/aril/Documents/psychtoolboxProjects/psychMaster/Data %macbook pro
+cd C:\Users\aril\Documents\Data
 %Need to automate loading and loop it so that multiple files can be
 %analysed at once.
-
-load('MoveLine_cd_AL_20160119_152249.mat');
+load('MoveLine_looming_AL_20160106_144936'); %30 valid trials
+%load('MoveLine_looming_AL_20160108_134723'); % 33 trials total; 30 valid trials
 
 ResponseTable = struct2table(experimentData); %The data struct is converted to a table
 
 %excluding invalid trials
 wantedData = ~(ResponseTable.validTrial == 0); %creates a logical of which trials in the data table were valid
-validGivenResponse = ResponseTable.givenResponse(wantedData); %the responses (f or j) for the valid trials
-validCondNumber = ResponseTable.condNumber(wantedData); %the condition number of the valid trials
-validNullFirst = ResponseTable.nullFirst(wantedData); %whether the null condition was first for the valid trials. 
-%0 = test first; 1 = null first.
+validIsResponseCorrect = ResponseTable.isResponseCorrect(wantedData); %
+validCondNumber = ResponseTable.condNumber(wantedData);
+if iscell(validIsResponseCorrect) %if this is a cell because there were invalid responses
+    correctResponsesArray = cell2mat(validIsResponseCorrect); %convert to an array 
+    correctResponsesLogical = logical(correctResponsesArray); %then convert to a logical
+else
+    correctResponsesLogical = logical(validIsResponseCorrect); %immediately convert to a logical
+end
 
-%may need to convert f and j (first stimulus and second stimulus) to 0 and
-%1 so that you can index what is going on. f = 0, j = 1. 
-jResponses = strcmp(validGivenResponse, 'j');
-jResponseCondNumber = validCondNumber(jResponses);
-jResponseNullFirst = validNullFirst(jResponses);
-jResponseCondFirst = ~validNullFirst(jResponses);
-jResponseNullFirstCondNumber = jResponseCondNumber(jResponseNullFirst);
-jResponseCondFirstCondNumber = jResponseCondNumber(jResponseCondFirst);
-totalJResponses = length(jResponseCondNumber);
+%Calculating the number of correct responses for each condition for the
+%valid trials
+correctTrials = validCondNumber(correctResponsesLogical);
+cond1correct = nnz(correctTrials==1);
+cond2correct = nnz(correctTrials==2);
+cond3correct = nnz(correctTrials==3);
+cond4correct = nnz(correctTrials==4);
+cond5correct = nnz(correctTrials==5);
+cond6correct = nnz(correctTrials==6);
 
-fResponses = ~jResponses;
-fResponseCondNumber = validCondNumber(fResponses);
-fResponseNullFirst = validNullFirst(fResponses);
-fResponseCondFirst = ~validNullFirst(fResponses);
-fResponseNullFirstCondNumber = fResponseCondNumber(fResponseNullFirst);
-fResponseCondFirstCondNumber = fResponseCondNumber(fResponseCondFirst);
-totalFResponses = length(fResponseCondNumber);
-%null first j responses
+%Finding the total number of trials for each condition for the valid trials
+allTrials = [validCondNumber];
+allcond1trials = nnz(allTrials==1);
+allcond2trials = nnz(allTrials==2);
+allcond3trials = nnz(allTrials==3);
+allcond4trials = nnz(allTrials==4);
+allcond5trials = nnz(allTrials==5);
+allcond6trials = nnz(allTrials==6);
 
-nullFirstJResponsescond1 = nnz(jResponseNullFirstCondNumber==1);
-nullFirstJResponsescond2 = nnz(jResponseNullFirstCondNumber==2);
-nullFirstJResponsescond3 = nnz(jResponseNullFirstCondNumber==3);
-nullFirstJResponsescond4 = nnz(jResponseNullFirstCondNumber==4);
-nullFirstJResponsescond5 = nnz(jResponseNullFirstCondNumber==5);
-nullFirstJResponsescond6 = nnz(jResponseNullFirstCondNumber==6);
-nullFirstJResponsescond7 = nnz(jResponseNullFirstCondNumber==7);
+%Calculating the percentage correct for each condition 
+cond1PercentCorrect = cond1correct/allcond1trials;
+cond2PercentCorrect = cond2correct/allcond2trials;
+cond3PercentCorrect = cond3correct/allcond3trials;
+cond4PercentCorrect = cond4correct/allcond4trials;
+cond5PercentCorrect = cond5correct/allcond5trials;
+cond6PercentCorrect = cond6correct/allcond6trials;
 
-%condition first j responses
+% all of the percentage correct values for each condition from 80% of null
+% on the left to 120% of the null on the right. percentages in the 
+%order: 3 2 1 4 5 6
+allPercentageValues = [cond3PercentCorrect cond2PercentCorrect cond1PercentCorrect cond4PercentCorrect cond5PercentCorrect cond6PercentCorrect];
+condVelocities = [0.8 0.9 0.95 1.05 1.1 1.2];
 
-condFirstJResponsescond1 = nnz(jResponseCondFirstCondNumber==1);
-condFirstJResponsescond2 = nnz(jResponseCondFirstCondNumber==2);
-condFirstJResponsescond3 = nnz(jResponseCondFirstCondNumber==3);
-condFirstJResponsescond4 = nnz(jResponseCondFirstCondNumber==4);
-condFirstJResponsescond5 = nnz(jResponseCondFirstCondNumber==5);
-condFirstJResponsescond6 = nnz(jResponseCondFirstCondNumber==6);
-condFirstJResponsescond7 = nnz(jResponseCondFirstCondNumber==7);
+%condition 1 is 95% of null
+%condition 2 is 90% of null
+%condition 3 is 80% of null
+%condition 4 is 105% of null
+%condition 5 is 110% of null
+%condition 6 is 120% of null
 
-%null first f responses
-
-nullFirstFResponsescond1 = nnz(fResponseNullFirstCondNumber==1);
-nullFirstFResponsescond2 = nnz(fResponseNullFirstCondNumber==2);
-nullFirstFResponsescond3 = nnz(fResponseNullFirstCondNumber==3);
-nullFirstFResponsescond4 = nnz(fResponseNullFirstCondNumber==4);
-nullFirstFResponsescond5 = nnz(fResponseNullFirstCondNumber==5);
-nullFirstFResponsescond6 = nnz(fResponseNullFirstCondNumber==6);
-nullFirstFResponsescond7 = nnz(fResponseNullFirstCondNumber==7);
-
-%condition first f responses
-
-condFirstFResponsescond1 = nnz(fResponseCondFirstCondNumber==1);
-condFirstFResponsescond2 = nnz(fResponseCondFirstCondNumber==2);
-condFirstFResponsescond3 = nnz(fResponseCondFirstCondNumber==3);
-condFirstFResponsescond4 = nnz(fResponseCondFirstCondNumber==4);
-condFirstFResponsescond5 = nnz(fResponseCondFirstCondNumber==5);
-condFirstFResponsescond6 = nnz(fResponseCondFirstCondNumber==6);
-condFirstFResponsescond7 = nnz(fResponseCondFirstCondNumber==7);
-
-%all conditions total numbers
-allcond1 = nnz(validCondNumber==1);
-allcond2 = nnz(validCondNumber==2);
-allcond3 = nnz(validCondNumber==3);
-allcond4 = nnz(validCondNumber==4);
-allcond5 = nnz(validCondNumber==5);
-allcond6 = nnz(validCondNumber==6);
-allcond7 = nnz(validCondNumber==7);
-
-%conditions 1-3 are slower than the null. Therefore if they are responding
-%to the faster stimulus, if the condition was first, we would expect them to
-%respond 'j' to indicate the second stimulus, but if the null was first, 
-%we would expect them to respond 'f'. Therefore:
-
-cond1percentCondFaster = (condFirstJResponsescond1 + nullFirstFResponsescond1)/allcond1;
-cond2percentCondFaster = (condFirstJResponsescond2 + nullFirstFResponsescond2)/allcond2;
-cond3percentCondFaster = (condFirstJResponsescond3 + nullFirstFResponsescond3)/allcond3;
-
-%conditions 4-7 are greater than or equal to the null. Therefore if they
-%are responding to the faster stimulus, we would expect an f response if
-%the condition was first and a j response if the null was first. 
-
-cond4percentCondFaster = (condFirstFResponsescond4 + nullFirstJResponsescond4)/allcond4;
-cond5percentCondFaster = (condFirstFResponsescond5 + nullFirstJResponsescond5)/allcond5;
-cond6percentCondFaster = (condFirstFResponsescond6 + nullFirstJResponsescond6)/allcond6;
-cond7percentCondFaster = (condFirstFResponsescond7 + nullFirstJResponsescond7)/allcond7;
-
-conditionFasterPercentages = [cond1percentCondFaster cond2percentCondFaster ...
-    cond3percentCondFaster cond4percentCondFaster cond5percentCondFaster ...
-    cond6percentCondFaster cond7percentCondFaster];
-condVelocities = [0.8 0.9 0.95 1 1.05 1.1 1.2];
 %Creating a graph of the percentage correct responses against the 
 %velocities as a percentage of the null.
 figure
-plot(condVelocities, conditionFasterPercentages, '-xk');
+plot(condVelocities, allPercentageValues, '-xk');
 axis([0.80 1.20 0 1]);
 set(gca, 'YTick', 0:0.1:1);
 set(gca, 'YTickLabel', 0:10:100);
 xlabel('Velocity as a percentage of the null');
-ylabel('Percentage "condition faster" responses');
+ylabel('Percentage correct responses');
 
+
+%creating a graph of the percentage correct responses against the
+%percentage difference from the velocity of the null.
+
+%condition 1 and 4 are 5% different
+
+fivePerDiffCorrect = cond1correct + cond4correct;
+fivePerDiffTotalTrials = allcond1trials + allcond4trials;
+fivePerDiffPercentageCorrect = fivePerDiffCorrect/fivePerDiffTotalTrials;
+
+%condition 2 and 5 are 10% different
+
+tenPerDiffCorrect = cond2correct + cond5correct;
+tenPerDiffTotalTrials = allcond2trials + allcond5trials;
+tenPerDiffPercentageCorrect = tenPerDiffCorrect/tenPerDiffTotalTrials;
+
+%condition 3 and 6 are 20% different
+
+twentyPerDiffCorrect = cond3correct + cond6correct;
+twentyPerDiffTotalTrials = allcond3trials + allcond6trials;
+twentyPerDiffPercentageCorrect = twentyPerDiffCorrect/twentyPerDiffTotalTrials;
+
+combPercentageTotalValues = [fivePerDiffPercentageCorrect tenPerDiffPercentageCorrect twentyPerDiffPercentageCorrect];
+differenceFromNullPercentage = [5 10 20];
+
+figure
+plot(differenceFromNullPercentage, combPercentageTotalValues, '-xk');
+axis([0 20 0 1]);
+set(gca, 'XTick', 0:5:20);
+set(gca, 'YTick', 0:0.1:1);
+set(gca, 'YTickLabel', 0:10:100);
+xlabel('Percentage velocity difference compared to the null condition');
+ylabel('Percentage correct responses');
+
+%need to save the original data and the values calculated from it in a file
+%along with the plots.
