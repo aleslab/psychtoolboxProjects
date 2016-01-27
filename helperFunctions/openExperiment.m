@@ -107,6 +107,8 @@ expInfo.frameDur = 1000/expInfo.monRefresh;
 
 expInfo.center = [expInfo.screenRect(3) expInfo.screenRect(4)]/2;   	% coordinates of screen center (pixels)
 
+[pixelWidth, pixelHeight]=Screen('WindowSize', expInfo.screenNum);
+
 
 % determine pixels per degree
 % (pix/screen) * ... (screen/rad) * ... rad/deg
