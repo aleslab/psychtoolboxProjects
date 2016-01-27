@@ -142,7 +142,7 @@ else if strcmp(conditionInfo.stimType, 'combined');
         for iFrame = 1:nFramesPreStim %during the pre stimulus duration
              %For the left eye
             Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-            Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0) %drawing the fixation cross
+            Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0); %drawing the fixation cross
             Screen('DrawLines', expInfo.curWindow, [LinePosLone, LinePosLone ; 0, screenYpixels], lw); %drawing the first line (left)
             Screen('DrawLines', expInfo.curWindow, [LinePosLtwo, LinePosLtwo ; 0, screenYpixels], lw); %drawing the second line (right)
             %For the right eye
@@ -157,7 +157,7 @@ else if strcmp(conditionInfo.stimType, 'combined');
         for iFrame = 1:nFrames, %same as above
             %For the left eye
             Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-            Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0) %drawing the fixation cross
+            Screen('DrawLines', expInfo.curWindow, FixCoords, fixWidthPix, [], expInfo.center, 0); %drawing the fixation cross
             Screen('DrawLines', expInfo.curWindow, [LinePosLone, LinePosLone ; 0, screenYpixels], lw); %drawing the first line (left)
             Screen('DrawLines', expInfo.curWindow, [LinePosLtwo, LinePosLtwo ; 0, screenYpixels], lw); %drawing the second line (right)
             %For the right eye
