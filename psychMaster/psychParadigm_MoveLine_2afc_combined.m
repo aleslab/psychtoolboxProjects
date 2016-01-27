@@ -15,15 +15,14 @@ conditionInfo(1).trialFun=@MoveLineTrial;
 %Condition 1, lets set some defaults:
 conditionInfo(1).type             = '2afc'; 
 conditionInfo(1).stimType         = 'combined'; 
-conditionInfo(1).giveFeedback     = 0;
 conditionInfo(1).stimDuration     = 0.25; %0.5; %approximate stimulus duration in seconds
 conditionInfo(1).preStimDuration  = 0.25;  %Static time before stimulus change
 conditionInfo(1).postStimDuration = 0;  %static time after stimulus change
 conditionInfo(1).iti              = 1;     %Inter Stimulus Interval
 conditionInfo(1).responseDuration = 3;    %Post trial window for waiting for a response
-conditionInfo(1).cmDistance = -8; %distance the line should move in depth in cm -- currently hardcoded as 80% of null
-conditionInfo(1).velocityCmPerSec = conditionInfo(1).cmDistance/conditionInfo(1).stimDuration;  %8cm/0.25s = 32cm/s
-%conditionInfo(1).velocityLessThanNull = true;
+conditionInfo(1).cmDistance = -9.5; %distance the line should move in depth in cm -- currently hardcoded as 95% of null
+conditionInfo(1).velocityCmPerSec = conditionInfo(1).cmDistance/conditionInfo(1).stimDuration;  %9.5cm/0.25s = 38cm/s
+conditionInfo(1).velocityLessThanNull = true;
 conditionInfo(1).objectOneStartPos = -1; %when there are two lines in each eye, the start position of the first line
 conditionInfo(1).objectTwoStartPos = 1; %the start position of the second line in each eye
 conditionInfo(1).nReps = 30; %number of repeats
@@ -42,25 +41,23 @@ conditionInfo(1).nullCondition = nullCondition;
 
 conditionInfo(2) = conditionInfo(1);
 conditionInfo(2).velocityCmPerSec = nullCondition.velocityCmPerSec*0.90; 
-%10% slower than the null
+%velocity is 10% less than in the first condition. Made the first condition
+%so that it is equal to the null condition.
 
 
 conditionInfo(3) = conditionInfo(1);
-conditionInfo(3).velocityCmPerSec = nullCondition.velocityCmPerSec*0.95; 
-%5% slower than the null
+conditionInfo(3).velocityCmPerSec = nullCondition.velocityCmPerSec*0.80; 
+%velocity is 20% less than condition 1 and the null
 
 conditionInfo(4) = conditionInfo(1);
-conditionInfo(4).velocityCmPerSec = nullCondition.velocityCmPerSec; 
-%same as the null condition
-
-conditionInfo(5) = conditionInfo(1);
-conditionInfo(5).velocityCmPerSec = nullCondition.velocityCmPerSec*1.05; 
+conditionInfo(4).velocityCmPerSec = nullCondition.velocityCmPerSec*1.05; 
 %5% faster than the null
+conditionInfo(4).velocityLessThanNull = false;
 
-conditionInfo(6) = conditionInfo(1);
-conditionInfo(6).velocityCmPerSec = nullCondition.velocityCmPerSec*1.10; 
+conditionInfo(5) = conditionInfo(4);
+conditionInfo(5).velocityCmPerSec = nullCondition.velocityCmPerSec*1.10; 
 %10% faster than the null
 
-conditionInfo(7) = conditionInfo(1);
-conditionInfo(7).velocityCmPerSec = nullCondition.velocityCmPerSec*1.20;
+conditionInfo(6) = conditionInfo(4);
+conditionInfo(6).velocityCmPerSec = nullCondition.velocityCmPerSec*1.20; 
 %20% faster than the null
