@@ -261,6 +261,18 @@ try
                 WaitSecs(conditionInfo(thisCond).iti);
                 [trialData.secondCond] = conditionInfo(thisCond).trialFun(expInfo,secondCond);
                 
+                expInfo = drawFixationInfo(expInfo);
+                
+                Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+                Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, [], expInfo.center, 0);
+                Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw);
+                
+                Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
+                Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, [], expInfo.center, 0);
+                Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw);
+                
+                Screen('Flip', expInfo.curWindow);
+                
                 [responseData] = getResponse(expInfo,conditionInfo(thisCond).responseDuration);
                               
                 trialData.firstPress = responseData.firstPress;
