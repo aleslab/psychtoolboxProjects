@@ -184,6 +184,10 @@ try
     %This code randomizes the condition order
 
     nConditions = length(conditionInfo);
+    
+    if ~isfield(expInfo,'pauseInfo')
+        expInfo.pauseInfo = 'Paused';
+    end
 
     %lets enumerate the total number of trials we need.
     %This type of loop construction where the index is incremented by
