@@ -29,10 +29,11 @@ end
 %  sigma=.2
 %  freq = 2;
 gauss = exp( -(((x.^2)+(y.^2)) ./ (2* conditionInfo.sigma^2)) );
+gauss = gauss./max(gauss(:));
 targetPattern = conditionInfo.targetAmp*sin(2*pi*conditionInfo.freq*x+rand*2*pi).*gauss;
 targetPattern(gauss<.05)=0;
 
-noisePattern = .4*randn(256,256)+.5;
+noisePattern = .01*randn(256,256);
 
 % Convert it to a texture 'tex':
 tex=Screen('MakeTexture', screenInfo.curWindow, noisePattern+targetPattern);

@@ -243,6 +243,7 @@ try
                 WaitSecs(conditionInfo(thisCond).iti);
         
                 [trialData] = conditionInfo(thisCond).trialFun(expInfo,conditionInfo(thisCond));
+                 
             case '2afc'
                 
                 %Which trial first?

@@ -1,54 +1,41 @@
-function [conditionInfo,screenInfo] = psychparadigm_rotating_gabor(screenInfo)
-screenInfo.paradigmName = 'noiseDetect';
+function [conditionInfo,expInfo] = psychparadigm_rotating_gabor(expInfo)
+expInfo.paradigmName = 'noiseDetect';
 
 % use kbQueue's as they have high performance
-screenInfo.useKbQueue = false;
+expInfo.useKbQueue = false;
 
 
 %Lets add an experiment wide setting here:
-payoff = [ 10 10 -10 -10];
-screenInfo.payoff = payoff;
 
-screenInfo.instructions = ['Press f key if target present' ...
-         '\nPress f key if target absent\n' ...
-         '\n' num2str(payoff(1)) ' points for a hit' ...
-         '\n' num2str(payoff(2)) ' points for a correct reject' ...
-         '\n' num2str(payoff(3)) ' points for a miss' ...§§§
-         '\n ' num2str(payoff(4)) ' points for a false alarm' ...
-         '\n\n    Press any key to start'];
-%%% Justin**** b unsure about wether to leave all these screen instructions in??
-% No. These instructions are for the other paradigm. You'll need to write
-% your own. 
+expInfo.instructions = ['Instructions Here'];
      
 %This defines what function to call to draw the condition
 %Crucial: requires the @ sign prefix.  Because it needs it to be a
 %"function handle"
 conditionInfo(1).trialFun=@rotating_gabor_trial;
-
+conditionInfo(1).giveFeedback = true;
 
 % %Condition definitions
 %Condition 1, lets set some defaults:
-conditionInfo(1).stimDuration     = .5; %approximate stimulus duration in seconds
+conditionInfo(1).stimDuration     = 3; %approximate stimulus duration in seconds
 conditionInfo(1).preStimDuration  = 0.5;  %Static time before stimulus change
 conditionInfo(1).postStimDuration = 0;  %static time aftter stimulus change
-conditionInfo(1).iti              = .2;     %Minimum Inter Trial Interval
-conditionInfo(1).responseDuration = 2;    %Post trial window for waiting for a response
+conditionInfo(1).iti              = .25;     %Minimum Inter Trial Interval
+conditionInfo(1).responseDuration = 0;    %Post trial window for waiting for a response
 
 conditionInfo(1).sigma=2; %standard deviation of the gabor in degrees
 conditionInfo(1).freq = 4; %frequency of the gabor in cycles per sigma. 
-conditionInfo(1).targetAmp = 0; % target amplitude **Justin This was to define the target in noise
 conditionInfo(1).nReps = 2; %% number of trials to present this condition. 
-conditionInfo(1).stimRadiusCm   = .5;    %stimulus size in cm;
-conditionInfo(1).stimRadiusDeg  = .11;    %stimulus size in degree;
-conditionInfo(1).contrast = 0.25 ;
-conditionInfo(1).orientationSigma = .015;
+conditionInfo(1).stimRadiusDeg  = 6;    %stimulus size in degree;
+conditionInfo(1).contrast = 0.25;
+conditionInfo(1).noiseSigma = .1;
+conditionInfo(1).orientationSigma = 5;
+%Implement arbitrary forward models. 
+%conditionInfo(1).forwardModel = [ 1 0 ]; %Forward model
 
-%This will pick a random orientation at the start of the experiment this is
-%not what you want.  
-conditionInfo(1).orientation = 360*rand(); %
 
 conditionInfo(2) = conditionInfo(1);
-conditionInfo(2).orientationSigma = .01;
+conditionInfo(2).orientationSigma = 5;
 conditionInfo(2).contrast = 0.05 ;
 
 

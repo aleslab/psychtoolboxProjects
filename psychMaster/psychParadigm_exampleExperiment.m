@@ -42,13 +42,13 @@ conditionInfo(1).stimRadiusCm   = 1;    %stimulus size in cm;
 %and just define what we want changed.
 
 conditionInfo(2) = conditionInfo(1);
-conditionInfo(2).targetAmp = 10;
+conditionInfo(2).targetAmp = .10;
 conditionInfo(2).nReps = 1;
 
 conditionInfo(3) = conditionInfo(1);
-conditionInfo(3).targetAmp = 30;
+conditionInfo(3).targetAmp = .30;
 conditionInfo(3).nReps = 1;
 
 conditionInfo(4) = conditionInfo(1);
-conditionInfo(4).targetAmp = 80;
-conditionInfo(4).nReps = 1;
+conditionInfo(4).targetAmp = .80;
+conditionInfo(4).nReps = 10;

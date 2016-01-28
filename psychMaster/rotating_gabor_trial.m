@@ -1,25 +1,30 @@
-function [trialData] = rotating_gabor_trial(screenInfo, conditionInfo)
+function [trialData] = rotating_gabor_trial(expInfo, conditionInfo)
 
-totalDuration = conditionInfo.preStimDuration+conditionInfo.stimDuration+conditionInfo.postStimDuration;
-nFrames = round(totalDuration / screenInfo.ifi);
-trialData.actualDuration = nFrames*screenInfo.ifi;
+totalDuration = conditionInfo.preStimDuration+conditionInfo.stimDuration;
+nFrames = round(totalDuration / expInfo.ifi);
+nPreStimFrames=round(conditionInfo.preStimDuration/expInfo.ifi);
+stimStartFrame = nPreStimFrames+1;
+
+trialData.actualDuration = nFrames*expInfo.ifi;
 trialData.validTrial = false;
 trialData.abortNow   = false;
 %Strictly speaking this  isn't the _best_ way to setup the timing
 %for rendering the stimulus but whatever.
 conditionInfo.stimStartTime = GetSecs; %Get current time to start the clock
 flipTimes = nan(nFrames,1);
-
+trialData.mousePos = nan(nFrames,2);
+trialData.respOri  = nan(nFrames,1);
+trialData.stimOri  = nan(nFrames,1);
 
 %Now lets setup response gathering
 %KBqueue's are the better way to get responses, quick and accurate but they can be
 %fragile on different systems
-if screenInfo.useKbQueue
+if expInfo.useKbQueue
     
     keysOfInterest=zeros(1,256);
     keysOfInterest(KbName({'f' 'j' 'ESCAPE'}))=1;
-    KbQueueCreate(screenInfo.deviceIndex, keysOfInterest);
-    KbQueueStart(screenInfo.deviceIndex);
+    KbQueueCreate(expInfo.deviceIndex, keysOfInterest);
+    KbQueueStart(expInfo.deviceIndex);
     
     KbQueueFlush();
     
@@ -27,51 +32,54 @@ end
 
 %parameters for gabor
 
-radiusPix = 256;screenInfo.ppd*conditionInfo.stimRadiusDeg;    % stimSize in degrees x pixels per degree.
-sigmaPix  = screenInfo.ppd*conditionInfo.sigma;  % standard deviation in degrees iinto pixels
+radiusPix = expInfo.ppd*conditionInfo.stimRadiusDeg;    % stimSize in degrees x pixels per degree.
+sigmaPix  = expInfo.ppd*conditionInfo.sigma;  % standard deviation in degrees iinto pixels
 cyclesPerSigma = 2;    %cycles per standaard devaion
-contrast = 0.8;   % contrast 
-phase = 0.25;      %phase of gabor
+contrast = conditionInfo.contrast;   % contrast 
+phase = 90;      %phase of gabor
       
 
-
 orientationSigma=conditionInfo.orientationSigma;
-orientationVelocity = .1;
+
+%initAngularVelocity = 0;
+%F = [1 0;0 1;];
     
 orient =360*rand();
-for iFrame = 1:nFrames
 
+lineWidth = 4;
+lineLength = 2*sigmaPix;
+lineColor = [ 0 1 0 1];
+initLineOri = orient; 
+%Rotation matrix; 
+rotMtx = [cosd(initLineOri) -sind(initLineOri);...
+          sind(initLineOri) cosd(initLineOri)];
+initXy = [0 0; lineLength -lineLength];
+xy = rotMtx'*initXy; 
+
+%[minSmoothLineWidth, maxSmoothLineWidth, minAliasedLineWidth, maxAliasedLineWidth] = 
+
+
+[xStart,yStart] = GetMouse(expInfo.curWindow);
+for iFrame = 1:nFrames
+   
+    if iFrame>=stimStartFrame
     orient = orient+orientationSigma*randn(); %orient of gabor
-    %orientationVelocity = orientationVelocity+orientationSigma*randn();
-    
-    %orient = orient+orientationVelocity.^2; %orient of gabor
-    
+    end
     
     %creates a gabor texture. this has to be in the loop beacuse we want to
     %create a new gabor on every frame we present.
     my_gabor = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient);
-    my_noise= 0.1*randn(size(my_gabor));
+    my_noise = conditionInfo.noiseSigma.*randn(size(my_gabor));
+    my_noise = max(min(my_noise,.25),-.25);
     %convert it to a texture 'tex'
-    tex=Screen('makeTexture', screenInfo.curWindow, my_gabor+my_noise);
+    tex=Screen('makeTexture', expInfo.curWindow, my_gabor+my_noise);
+
     
-    thisTime =  GetSecs - conditionInfo.stimStartTime-conditionInfo.preStimDuration;
-    %How long has it been since last draw?
-    
-%     flipTimes(iFrame)=Screen('Flip', screenInfo.curWindow);
-%     %release the texture after we flip because we will redraw again in this
-%     %loop.
-%     Screen('Close', tex);
-%     
-    
-    
-    %relcalculate time to account for pre and post stim
-    %
-    conditionInfo.stimTime = min(max(thisTime,0),conditionInfo.stimDuration);
-    
-    % stimRect = calculateStimSize(screenInfo,conditionInfo);
-    % Screen('fillOval', screenInfo.curWindow, [60 0 0 180], stimRect);
-    Screen('DrawTexture', screenInfo.curWindow, tex, [], screenInfo.screenRect, [], 0);
-    
+    % stimRect = calculateStimSize(expInfo,conditionInfo);
+    % Screen('fillOval', expInfo.curWindow, [60 0 0 180], stimRect);
+    Screen('DrawTexture', expInfo.curWindow, tex, [], expInfo.screenRect, [], 0);
+    Screen('DrawLines', expInfo.curWindow, xy,lineWidth,lineColor,expInfo.center);
+
     % Overdraw the rectangular noise image with our special
     % aperture image. The noise image will shine through in areas
     % of the aperture image where its alpha value is zero (i.e.
@@ -79,17 +87,27 @@ for iFrame = 1:nFrames
     %Screen('DrawTexture', win, aperture, [], dstRect(i,:), [], 0);
     
     
-    Screen('DrawingFinished',screenInfo.curWindow,screenInfo.dontclear);
+    Screen('DrawingFinished',expInfo.curWindow,expInfo.dontclear);
     
-    flipTimes(iFrame)=Screen('Flip', screenInfo.curWindow);
+    flipTimes(iFrame)=Screen('Flip', expInfo.curWindow);
+    [x,y] = GetMouse(expInfo.curWindow);
+    trialData.mousePos(iFrame,1) = x-xStart;
+    trialData.mousePos(iFrame,2) = y-yStart;
+    trialData.respOri(iFrame) = initLineOri+.5*(x-xStart);
+    trialData.stimOri(iFrame) = orient;
+    
+    %Rotation matrix; 
+    rotMtx = [cosd(trialData.respOri(iFrame)) -sind(trialData.respOri(iFrame));...
+          sind(trialData.respOri(iFrame)) cosd(trialData.respOri(iFrame))];
+    xy = rotMtx'*initXy;
     
     %release the texture after we flip because we will redraw again in this
     %loop.
     Screen('Close', tex);
-    if screenInfo.useKbQueue
-        [ trialData.pressed, trialData.firstPress]=KbQueueCheck(screenInfo.deviceIndex);
+    if expInfo.useKbQueue
+        [ trialData.pressed, trialData.firstPress]=KbQueueCheck(expInfo.deviceIndex);
     else
-        [ trialData.pressed, secs, keyCode]=KbCheck(screenInfo.deviceIndex);
+        [ trialData.pressed, secs, keyCode]=KbCheck(expInfo.deviceIndex);
         trialData.firstPress = secs*keyCode;
     end
     
@@ -99,7 +117,7 @@ for iFrame = 1:nFrames
     if trialData.pressed
         %         trialData.pressed = false;
         %         trialData.firstPress = zeros(size(trialData.firstPress));
-        flipTimes(iFrame)=Screen('Flip', screenInfo.curWindow);
+        flipTimes(iFrame)=Screen('Flip', expInfo.curWindow);
         trialData.flipTimes = flipTimes;
         trialData.validTrial = false;
         return;
@@ -109,103 +127,22 @@ for iFrame = 1:nFrames
     
 end
 
-flipTimes(iFrame+1)= Screen('Flip', screenInfo.curWindow);
+flipTimes(iFrame+1)= Screen('Flip', expInfo.curWindow);
 trialData.flipTimes = flipTimes;
+trialData.validTrial = true;
 
 curTime = GetSecs;
 
 %Flush any events that happend before the end of the trial
-if screenInfo.useKbQueue
+if expInfo.useKbQueue
     KbQueueFlush();
 end
 
-%Now fire a busy loop to process any keypress durring the response window.
-while curTime<flipTimes(end)+conditionInfo.responseDuration
-    
-    
-    if screenInfo.useKbQueue
-        [ trialData.pressed, trialData.firstPress]=KbQueueCheck(screenInfo.deviceIndex);
-    else
-        [ trialData.pressed, secs, keyCode]=KbCheck(screenInfo.deviceIndex);
-        trialData.firstPress = secs*keyCode;
-    end
-    
-    
-    if trialData.pressed
-        break;
-    end
-    curTime = GetSecs;
-end
-
-if trialData.firstPress(KbName('ESCAPE'))
-    %pressed escape lets abort experiment;
-    trialData.validTrial = false;
-    trialData.abortNow = true;
-    
-elseif trialData.firstPress(KbName('f'))
-    trialData.response = 'f';
-    trialData.responseTime = ...
-        trialData.firstPress(KbName('f'))-trialData.flipTimes(end);
-    trialData.validTrial = true;
-    
-    if conditionInfo.targetAmp > 0
-        feedbackMsg = ['Hit\n\nWin ' num2str(screenInfo.payoff(1)) ' points'];
-        
-        trialData.correctResponse = true;
-        
-    else
-        feedbackMsg = ['False Alarm\n\nLose ' num2str(abs(screenInfo.payoff(4))) ' points'];
-        
-        trialData.correctResponse = false;
-    end
-    
-elseif trialData.firstPress(KbName('j'))
-    trialData.response = 'j';
-    trialData.responseTime = ...
-        trialData.firstPress(KbName('j'))-trialData.flipTimes(end);
-    trialData.validTrial = true;
-    
-    if conditionInfo.targetAmp > 0
-        feedbackMsg = ['Miss\n\nLose ' num2str(abs(screenInfo.payoff(3))) ' points'];
-        trialData.correctResponse = false;
-        
-    else
-        feedbackMsg = ['Correct Reject\n\nWin ' num2str(screenInfo.payoff(2)) ' points'];
-        trialData.correctResponse = true;
-    end
-    
-else %Wait a minute this isn't a valid response
-    
-    feedbackMsg  = ['Invalid Response'];
-    trialData.validTrial = false;
-    
-end
-
-trialData.feedbackMsg = feedbackMsg;
+score = sum( .001*max(8100-(trialData.respOri(stimStartFrame:end)-trialData.stimOri(stimStartFrame:end)).^2,0));
+trialData.feedbackMsg = ['Score: ' num2str(round(score))];
 
 %Reset times to be with respect to trial end.
 %trialData.firstPress = trialData.firstPress-trialData.flipTimes(end);
 
 end
 
-
-
-function stimRect = calculateStimSize(screenInfo,conditionInfo)
-
-
-%calculate object distance given starting size and how long the stimulus has been on;
-objectDistance = screenInfo.subjectDist-conditionInfo.stimTime*conditionInfo.visualVelocity;
-
-%given the object is simulated to have moved to objectDistance calculate
-%the pixel size of the stimulus
-stimRadiusDegrees = atand(conditionInfo.stimRadiusCm/objectDistance);
-stimRadiusPixels  = round(screenInfo.ppd*stimRadiusDegrees);
-
-
-stimLeft    = screenInfo.center(1) - stimRadiusPixels;
-stimTop     = screenInfo.center(2) - stimRadiusPixels;
-stimRight   = screenInfo.center(1) + stimRadiusPixels;
-stimBottom  = screenInfo.center(2) + stimRadiusPixels;
-
-stimRect = [stimLeft stimTop stimRight stimBottom];
-end
