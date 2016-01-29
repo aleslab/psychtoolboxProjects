@@ -312,10 +312,12 @@ try
                 if trialData.firstPress(KbName('ESCAPE'))
                     %pressed escape lets abort experiment;
                     trialData.validTrial = false;
+                    experimentData(iTrial).validTrial = false;
                     trialData.abortNow = true;
                  
                 elseif trialData.firstPress(KbName('space'))
                     trialData.validTrial = false;
+                     experimentData(iTrial).validTrial = false;
                     DrawFormattedTextStereo(expInfo.curWindow, expInfo.pauseInfo, ...
                         'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
                     Screen('Flip', expInfo.curWindow);
