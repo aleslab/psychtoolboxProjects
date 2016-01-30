@@ -175,7 +175,7 @@ try
 
     %Load luminance calibration:
     if ispref('psychMaster','lumCalibrationFile');
-        luminanceFile = getpref('psychMaster','luminanceCalibrationFile');
+        luminanceFile = getpref('psychMaster','lumCalibrationFile');
         if ~exist(luminanceFile,'file')
             disp('<><><><><><> PSYCH MASTER <><><><><><><>')
             disp(['Cannot find calibration file: ' luminanceFile])
