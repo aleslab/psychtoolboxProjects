@@ -60,7 +60,7 @@ try
         mkdir(calibdir)
     end
     
-    save(saveFilename,'sizeCalibInfo')
+    save(saveFilename,'-struct','sizeCalibInfo')
          
     
 catch

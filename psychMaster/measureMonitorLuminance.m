@@ -1,4 +1,4 @@
-function [luminanceCalibInfo] = measureMonitorLuminance(gammaTable)
+function [luminanceCalibInfo] = measureMonitorLuminance(inverseGamma)
 % Shows how to make measurements using the ColorCAL II CDC interface.
 % This script calls several other separate functions which are included
 % below.
@@ -50,7 +50,7 @@ expInfo = openExperiment();
 BackupCluts;
 %If given a gamma table use it.
 if nargin>0
-    fullTable = repmat(gammaTable,1,3);
+    fullTable = repmat(inverseGamma,1,3);
     [oldClut sucess]=Screen('LoadNormalizedGammaTable',expInfo.curWindow,fullTable);
 else
     oldClut = LoadIdentityClut(expInfo.curWindow);

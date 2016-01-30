@@ -62,6 +62,7 @@ saveBtnH= uicontrol(fh,'Style','pushbutton',...
         luminanceCalibInfo.fitComment   = fitComment;
         luminanceCalibInfo.gammaParams  = gammaParams;
         luminanceCalibInfo.inverseGamma = inverseGamma;
+        luminanceCalibInfo.gammaTable = repmat(inverseGamma,1,3);
         
         set(saveBtnH,'enable','on')
         

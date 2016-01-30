@@ -7,12 +7,16 @@ else
     sizeFile = '';
 end
 
-if ~exist(sizeFile,'file')
-    sizeColor = [1 0 0];
+sizeColor=fileColor(sizeFile);
+ 
+if ispref('psychMaster','lumCalibrationFile');
+    lumFile = getpref('psychMaster','lumCalibrationFile');
 else
-    sizeColor = [0.9400 0.9400 0.9400];
+    lumFile = '';
 end
-    
+
+lumColor = fileColor(lumFile);
+
     fh = figure('Visible','on','Units','normalized');
     
     uicontrol(fh,'Style','text',...
@@ -29,6 +33,19 @@ end
         'Units','normalized','Position',[.1 .62 .4 .1],...
         'callback',@chooseSizeFile);
     
+    
+    lumStringHandle = uicontrol(fh,'Style','edit',...
+        'String',lumFile,...
+        'Units','normalized','Position',[.1 .55 .8 .075],...
+        'BackgroundColor', sizeColor,'callback',@validateFile);
+    
+    uicontrol(fh,'Style','pushbutton',...
+        'String','Choose Luminance Calibration File',...
+        'Units','normalized','Position',[.1 .42 .4 .1],...
+        'callback',@chooseLumFile);
+    
+    
+    
     uicontrol(fh,'Style','pushbutton',...
         'String','Save Settings',...
         'Units','normalized','Position',[.1 0 .4 .1],...
@@ -40,16 +57,36 @@ end
         'callback',@closeGui);
     
     
-    function validateFile()        
-        sizeFile = get(sizeStringHandle,'String')
+    function validateSizeFile()        
+       
+        sizeFile = get(sizeStringHandle,'String');
+        bgColor = [0.9400 0.9400 0.9400];
+        try
+            sizeInfo = load(sizeFile);
+            monitorWidth=sizeInfo.monitorWidth;
+        catch ME
+            rethrow(ME);
+            bgColor = [1 0 0];
+        end
+
+        set(sizeStringHandle,'BackgroundColor',bgColor);
         
-        if ~exist(sizeFile,'file')
-            sizeColor = [1 0 0];
-        else
-            sizeColor = [0.9400 0.9400 0.9400];
+    end
+
+    function validateLumFile()
+       
+        lumFile = get(lumStringHandle,'String');
+        bgColor = [0.9400 0.9400 0.9400];
+      
+        try
+            lumInfo = load(lumFile);
+            gammaT=lumInfo.gammaTable;
+        catch ME
+            rethrow(ME);
+            bgColor = [1 0 0];
         end
         
-        set(sizeStringHandle,'BackgroundColor',sizeColor);
+        set(lumStringHandle,'BackgroundColor',bgColor);
         
     end
 
@@ -59,13 +96,24 @@ end
         uigetfile('*.mat', 'Pick a size calibration file:');
     
     set(sizeStringHandle,'String',fullfile(pathname,filename));
-    validateFile();
+    validateSizeFile();
+    
+    end
+
+    function chooseLumFile(varargin)
+        
+    [filename, pathname, filterindex] = ...
+        uigetfile('*.mat', 'Pick a luminance calibration file:');
+    
+    set(lumStringHandle,'String',fullfile(pathname,filename));
+    validateLumFile();
     
     end
 
     function saveSettings(varargin)
         
         setpref('psychMaster','sizeCalibrationFile',get(sizeStringHandle,'String'));
+        setpref('psychMaster','lumCalibrationFile',get(lumStringHandle,'String'));
         closeGui();
      
     end
@@ -74,4 +122,13 @@ end
         
         delete(fh);
     end
+
+    function bgColor = fileColor(inputFile)
+        if ~exist(inputFile,'file')
+            bgColor = [1 0 0];
+        else
+            bgColor = [0.9400 0.9400 0.9400];
+        end
+    end
+
 end

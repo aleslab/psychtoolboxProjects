@@ -161,11 +161,29 @@ try
             disp('<><><><><><> PSYCH MASTER <><><><><><><>')
             disp(['Cannot find calibration file: ' sizeFile])
         else
-            load(sizeFile); %loads the variable sizeCalibInfo
+            sizeCalibInfo = load(sizeFile); %loads the variable sizeCalibInfo
             expInfo.monitorWidth = sizeCalibInfo.monitorWidth;
             expInfo.sizeCalibInfo = sizeCalibInfo;
             disp('<><><><><><> PSYCH MASTER <><><><><><><>')
             disp(['Loading Size Calibration from: ' sizeFile])
+        end
+    else
+        disp('<><><><><><> PSYCH MASTER <><><><><><><>')
+        disp('NO SIZE CALIBRATION HAS BEEN SETUP. Guessing monitor size')
+        
+    end
+
+    %Load luminance calibration:
+    if ispref('psychMaster','lumCalibrationFile');
+        luminanceFile = getpref('psychMaster','luminanceCalibrationFile');
+        if ~exist(luminanceFile,'file')
+            disp('<><><><><><> PSYCH MASTER <><><><><><><>')
+            disp(['Cannot find calibration file: ' luminanceFile])
+        else
+            lumInfo = load(luminanceFile); 
+            expInfo.gammaTable = lumInfo.gammaTable;
+            disp('<><><><><><> PSYCH MASTER <><><><><><><>')
+            disp(['Loading Size Calibration from: ' luminanceFile])
         end
     else
         disp('<><><><><><> PSYCH MASTER <><><><><><><>')
