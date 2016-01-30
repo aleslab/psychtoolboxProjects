@@ -97,8 +97,6 @@ expInfo.bckgnd = 0.5;
 [expInfo.curWindow, expInfo.screenRect] = PsychImaging('OpenWindow', expInfo.screenNum, expInfo.bckgnd,windowRect,[],[], expInfo.stereoMode);
 expInfo.dontclear = 0; % 1 gives incremental drawing (does not clear buffer after flip)
 
-
-
 %get the refresh rate of the screen
 spf =Screen('GetFlipInterval', expInfo.curWindow);      % seconds per frame
 expInfo.ifi = spf; %putative interframe interval
