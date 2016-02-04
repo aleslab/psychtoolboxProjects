@@ -5,7 +5,7 @@ function [conditionInfo, expInfo] = psychParadigm_MoveLine_2afc_combined(expInfo
 %paradigmName is what will be prepended to data files
 expInfo = moveLineDefaultSettings(expInfo);
 
-expInfo.paradigmName = 'MoveLine_combined';
+expInfo.paradigmName = 'MoveLine_combined_towards';
 %% conditions
 
 %This defines what function to call to draw the condition

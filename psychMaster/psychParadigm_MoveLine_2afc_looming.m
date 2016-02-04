@@ -4,7 +4,7 @@ function [conditionInfo, expInfo] = psychParadigm_MoveLine_2afc_looming(expInfo)
 %paradigmName is what will be prepended to data files
 expInfo = moveLineDefaultSettings(expInfo);
 
-expInfo.paradigmName = 'MoveLine_looming';
+expInfo.paradigmName = 'MoveLine_looming_towards';
 
 %% conditions
 

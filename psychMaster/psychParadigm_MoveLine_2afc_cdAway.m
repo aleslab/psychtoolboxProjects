@@ -1,10 +1,10 @@
-function [conditionInfo, expInfo] = psychParadigm_MoveLine_2afc_cd(expInfo)
+function [conditionInfo, expInfo] = psychParadigm_MoveLine_2afc_cdAway(expInfo)
 
 %Paradigm file for the cd stimulus. One vertical line moving in each eye.
 %paradigmName is what will be prepended to data files
 expInfo = moveLineDefaultSettings(expInfo);
 
-expInfo.paradigmName = 'MoveLine_cd_towards';
+expInfo.paradigmName = 'MoveLine_cd_away';
 %% conditions
 
 %This defines what function to call to draw the condition
@@ -19,7 +19,7 @@ conditionInfo(1).preStimDuration  = 0.25;  %Static time before stimulus change
 conditionInfo(1).postStimDuration = 0;  %static time after stimulus change
 conditionInfo(1).iti              = 1;     %Inter Stimulus Interval
 conditionInfo(1).responseDuration = 3;    %Post trial window for waiting for a response
-conditionInfo(1).cmDistance = -8; %distance the line should move in depth in cm -- currently hardcoded as 80% of null
+conditionInfo(1).cmDistance = 8; %distance the line should move in depth in cm -- currently hardcoded as 80% of null
 conditionInfo(1).velocityCmPerSec = conditionInfo(1).cmDistance/conditionInfo(1).stimDuration;  %8cm/0.25s = 32cm/s
 conditionInfo(1).isNullCorrect = true; %because the condition is slower
 conditionInfo(1).startPos = 0; %start position of the line
@@ -29,7 +29,7 @@ conditionInfo(1).nReps = 30; %number of repeats
 %trial.  First we copy all the paramaters.
 nullCondition = conditionInfo(1);
 %Then we change the  parameter of interest:
-nullCondition.cmDistance = -10; %distance the line should move in cm
+nullCondition.cmDistance = 10; %distance the line should move in cm
 nullCondition.velocityCmPerSec = nullCondition.cmDistance/nullCondition.stimDuration;  %40cm/s
 %finally, assign it as the null for condition 1. 
 conditionInfo(1).nullCondition = nullCondition;
