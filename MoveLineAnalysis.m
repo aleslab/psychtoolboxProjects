@@ -1,8 +1,10 @@
-cd C:\Users\aril\Documents\Data
+cd /Users/Abigail/Documents/psychtoolboxProjects/psychMaster/Data
 %Need to automate loading and loop it so that multiple files can be
 %analysed at once.
-load('MoveLine_cd__20160129_144537.mat');
-
+load('MoveLine_combined_towards_ALp_20160205_115232'); %combined towards data file
+%load('MoveLine_looming_towards_ALp_20160205_125604'); %looming towards data file
+%load('MoveLine_cd_towards_ALp_20160205_131315'); %cd towards data file
+%load('MoveLine_combined_away__20160205_134719'); %combined away data file
 ResponseTable = struct2table(experimentData); %The data struct is converted to a table
 
 %excluding invalid trials
@@ -47,12 +49,12 @@ cond3wrong = allcond1trials - cond3correct;
 %Percentage condition was faster responses
 
 cond1per = cond1wrong/allcond1trials;
-cond2per = cond1wrong/allcond2trials;
-cond3per = cond1wrong/allcond3trials;
+cond2per = cond2wrong/allcond2trials;
+cond3per = cond3wrong/allcond3trials;
 cond4per = cond4correct/allcond4trials;
-cond5per = cond4correct/allcond5trials;
-cond6per = cond4correct/allcond6trials;
-cond7per = cond4correct/allcond7trials;
+cond5per = cond5correct/allcond5trials;
+cond6per = cond6correct/allcond6trials;
+cond7per = cond7correct/allcond7trials;
 
 allpercentages = [cond1per cond2per cond3per cond4per cond5per cond6per cond7per];
 
@@ -67,5 +69,12 @@ set(gca, 'YTickLabel', 0:10:100);
 xlabel('Velocity as a fraction of the null');
 ylabel('Percentage "condition was faster" responses');
 
+figure
 
+allcondcorrect = [cond1correct cond2correct cond3correct cond4correct cond5correct cond6correct cond7correct];
+
+plot(allvelocities, allcondcorrect, '-ok');
+axis([0.80 1.20 0 30]);
+xlabel('Velocity as a fraction of the null');
+ylabel('Correct responses for each condition');
 
