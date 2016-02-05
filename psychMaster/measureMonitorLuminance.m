@@ -60,7 +60,7 @@ Screen('TextSize',expInfo.curWindow, 14);
 
 Screen('Flip', expInfo.curWindow);
 
-nValues = 128;
+nValues = 64;
 displayValues = linspace(0,1,nValues)'*[1 1 1]; %linear algebra here to replicate the matrix
 averageMeasurement = zeros(nValues,3);
 
