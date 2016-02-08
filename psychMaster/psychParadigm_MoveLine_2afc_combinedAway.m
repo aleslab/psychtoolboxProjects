@@ -20,8 +20,8 @@ conditionInfo(1).preStimDuration  = 0.25;  %Static time before stimulus change
 conditionInfo(1).postStimDuration = 0;  %static time after stimulus change
 conditionInfo(1).iti              = 1;     %Inter Stimulus Interval
 conditionInfo(1).responseDuration = 3;    %Post trial window for waiting for a response
-conditionInfo(1).cmDistance = 8; %distance the line should move in depth in cm -- currently hardcoded as 80% of null
-conditionInfo(1).velocityCmPerSec = conditionInfo(1).cmDistance/conditionInfo(1).stimDuration;  %8cm/0.25s = 32cm/s
+conditionInfo(1).cmDistance = 1; %90% less than the null
+conditionInfo(1).velocityCmPerSec = conditionInfo(1).cmDistance/conditionInfo(1).stimDuration;  %1cm/0.25s = 4cm/s
 conditionInfo(1).isNullCorrect = true;
 conditionInfo(1).objectOneStartPos = -1; %when there are two lines in each eye, the start position of the first line
 conditionInfo(1).objectTwoStartPos = 1; %the start position of the second line in each eye
@@ -39,20 +39,15 @@ conditionInfo(1).nullCondition = nullCondition;
 %For conditions 2-4 we're going to copy all the settings from condition 1
 %and just define what we want changed.
 
-%For conditions 2-4 we're going to copy all the settings from condition 1
-%and just define what we want changed.
-
 conditionInfo(2) = conditionInfo(1);
-conditionInfo(2).velocityCmPerSec = nullCondition.velocityCmPerSec*0.90;
+conditionInfo(2).velocityCmPerSec = nullCondition.velocityCmPerSec*0.50;
 conditionInfo(2).isNullCorrect = true;
-%velocity is 10% less than in the first condition. Made the first condition
-%so that it is equal to the null condition.
-
+%velocity is 50% less than the null
 
 conditionInfo(3) = conditionInfo(1);
-conditionInfo(3).velocityCmPerSec = nullCondition.velocityCmPerSec*0.95;
+conditionInfo(3).velocityCmPerSec = nullCondition.velocityCmPerSec*0.80;
 conditionInfo(3).isNullCorrect = true;
-%velocity is 5% less than condition 1 and the null
+%velocity is 20% less than the null
 
 conditionInfo(4) = conditionInfo(1);
 conditionInfo(4).velocityCmPerSec = nullCondition.velocityCmPerSec;
@@ -60,17 +55,17 @@ conditionInfo(4).isNullCorrect = false;
 %same as the null
 
 conditionInfo(5) = conditionInfo(4);
-conditionInfo(5).velocityCmPerSec = nullCondition.velocityCmPerSec*1.05;
+conditionInfo(5).velocityCmPerSec = nullCondition.velocityCmPerSec*1.20;
 conditionInfo(5).isNullCorrect = false;
-%5% faster than the null
+%20% faster than the null
 
 conditionInfo(6) = conditionInfo(4);
-conditionInfo(6).velocityCmPerSec = nullCondition.velocityCmPerSec*1.10; 
+conditionInfo(6).velocityCmPerSec = nullCondition.velocityCmPerSec*1.50; 
 conditionInfo(6).isNullCorrect = false;
-%10% faster than the null
+%50% faster than the null
 
 conditionInfo(7) = conditionInfo(4);
-conditionInfo(7).velocityCmPerSec = nullCondition.velocityCmPerSec*1.20;
+conditionInfo(7).velocityCmPerSec = nullCondition.velocityCmPerSec*1.90;
 conditionInfo(7).isNullCorrect = false;
-%20% faster than the null
+%90% faster than the null
 
