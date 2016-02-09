@@ -15,8 +15,8 @@ conditionInfo(1).trialFun=@MoveLineTrial;
 %Condition 1, lets set some defaults:
 conditionInfo(1).type             = '2afc'; 
 conditionInfo(1).stimType         = 'combined'; 
-conditionInfo(1).stimDurationSection1 = 0.125; %0.5; %approximate stimulus duration in seconds
-conditionInfo(1).stimDurationSection2 = 0.125;
+conditionInfo(1).stimDurationSection1 = 0.5; %0.5; %approximate stimulus duration in seconds
+conditionInfo(1).stimDurationSection2 = 0.5;
 conditionInfo(1).preStimDuration  = 0.25;  %Static time before stimulus change
 conditionInfo(1).postStimDuration = 0;  %static time after stimulus change 
 %may need to reintroduce something for post stimduration because it can get confusing when doing the experiment

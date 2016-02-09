@@ -64,6 +64,7 @@ if strcmp(conditionInfo.stimType, 'cd'); %%strcmp seems to work better than == f
     end
     
     for iFrame = 1:nFramesSection1, %for each frame until you reach the maximum number of frames
+        %first section of the trial at 1 speed
         %For the left eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0); %choosing the left eye
         Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, [], expInfo.center, 0) %drawing the fixation cross in the left eye
@@ -90,6 +91,7 @@ if strcmp(conditionInfo.stimType, 'cd'); %%strcmp seems to work better than == f
     end
     
     for iFrame = 1:nFramesSection2, %for each frame until you reach the maximum number of frames
+        %second section of the trial potentially at a different speed
         %For the left eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0); %choosing the left eye
         Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, [], expInfo.center, 0) %drawing the fixation cross in the left eye
