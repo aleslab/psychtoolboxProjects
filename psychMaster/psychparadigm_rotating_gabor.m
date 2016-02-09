@@ -7,7 +7,7 @@ expInfo.useKbQueue = false;
 
 %Lets add an experiment wide setting here:
 
-expInfo.instructions = ['move the mouse left or right to try and follow the motion of the line on the stimuli'];
+expInfo.instructions = ['Try to move the mouse left or right to try and follow the changing orientation of the stimuli. Press enter to start'];
      
 %This defines what function to call to draw the condition
 %Crucial: requires the @ sign prefix.  Because it needs it to be a
