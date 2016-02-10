@@ -15,8 +15,8 @@ conditionInfo(1).trialFun=@MoveLineTrial;
 %Condition 1, lets set some defaults:
 conditionInfo(1).type             = '2afc'; 
 conditionInfo(1).stimType         = 'combined'; 
-conditionInfo(1).stimDurationSection1 = 0.5; %0.5; %approximate stimulus duration in seconds
-conditionInfo(1).stimDurationSection2 = 0.5;
+conditionInfo(1).stimDurationSection1 = 0.250; %0.5; %approximate stimulus duration in seconds
+conditionInfo(1).stimDurationSection2 = 0.250;
 conditionInfo(1).preStimDuration  = 0.25;  %Static time before stimulus change
 conditionInfo(1).postStimDuration = 0;  %static time after stimulus change 
 %may need to reintroduce something for post stimduration because it can get confusing when doing the experiment
@@ -29,7 +29,7 @@ conditionInfo(1).isNullCorrect = false;
 conditionInfo(1).objectOneStartPos = -1; %when there are two lines in each eye, the start position of the first line
 conditionInfo(1).objectTwoStartPos = 1; %the start position of the second line in each eye
 conditionInfo(1).nReps = 30; %number of repeats
-conditionInfo(1).giveFeedback = true;
+conditionInfo(1).giveFeedback = false;
 %Now let's create the null that this will be compared with in the 2afc
 %trial.  First we copy all the paramaters.
 nullCondition = conditionInfo(1);
