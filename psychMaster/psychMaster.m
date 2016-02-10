@@ -300,30 +300,13 @@ try
                 
                 
                 if nullFirst
-                    %If the null is first and the null is correct than 'F'
-                    %is the correct response. 
-                    if conditionInfo(thisCond).isNullCorrect
-                        correctResponse   = 'f';
-                        incorrectResponse = 'j';
-                    else
-                        %The null is first, but the null is incorrect so 
-                        % 'j' is the correct response
-                        correctResponse   = 'j';
-                        incorrectResponse = 'f';
-                    end
-                else  %the null is second
-                    
-                    if conditionInfo(thisCond).isNullCorrect
-                        %The null is correct and it is second the correct
-                        %is 'j'
-                        correctResponse   = 'j';
-                        incorrectResponse = 'f';
-                    else
-                        %The null is second and it is incorrect so the
-                        %correct answer is 'f'
-                        correctResponse   = 'f';
-                        incorrectResponse = 'j';
-                    end
+                    %the null is now always the wrong answer because it doesn't
+                    %change speeds so if the null is first the correct response is j
+                    correctResponse = 'j';
+                    incorrectResponse = 'f';
+                else %otherwise the null is second and the correct response is f
+                    correctResponse = 'f';
+                    incorrectResponse = 'j';
                 end
                 
                 trialData.validTrial = false; %Default not valid unless proven otherwise
