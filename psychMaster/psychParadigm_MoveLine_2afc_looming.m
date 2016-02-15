@@ -21,8 +21,8 @@ conditionInfo(1).preStimDuration  = 0.25;  %Static time before stimulus change
 conditionInfo(1).postStimDuration = 0;  %static time after stimulus change
 conditionInfo(1).iti              = 1;     %Inter Stimulus Interval
 conditionInfo(1).responseDuration = 3;    %Post trial window for waiting for a response
-conditionInfo(1).velocityCmPerSecSection1 = -40; %cm/s - 5cm in section 1
-conditionInfo(1).velocityCmPerSecSection2 = -40; %cm/s - 5cm in section 2; 10cm total
+conditionInfo(1).velocityCmPerSecSection1 = -20; %cm/s - 5cm in section 1
+conditionInfo(1).velocityCmPerSecSection2 = -20; %cm/s - 5cm in section 2; 10cm total
 conditionInfo(1).isNullCorrect = false;
 %This is the start position (+ = above fixation, - = below)of the first line in each eye. 
 conditionInfo(1).horizontalOneStartPos = 1; %a y coordinate. the others are x. 
@@ -35,8 +35,8 @@ conditionInfo(1).giveFeedback = false;
 nullCondition = conditionInfo(1);
 %Then we change the  parameter of interest:
 %nullCondition.cmDistance = -10; %distance the line should move in cm
-nullCondition.velocityCmPerSecSection1 = -40;  
-nullCondition.velocityCmPerSecSection2 = -40;
+nullCondition.velocityCmPerSecSection1 = -20;  
+nullCondition.velocityCmPerSecSection2 = -20;
 %finally, assign it as the null for condition 1. 
 conditionInfo(1).nullCondition = nullCondition;
 
@@ -44,31 +44,31 @@ conditionInfo(1).nullCondition = nullCondition;
 %and just define what we want changed.
 
 conditionInfo(2) = conditionInfo(1);
-conditionInfo(2).velocityCmPerSecSection1 = -45; %cm/s - 5.625cm in section 1
-conditionInfo(2).velocityCmPerSecSection2 = -35; %4.375cm in section 2, 10cm total
+conditionInfo(2).velocityCmPerSecSection1 = -22.5; %cm/s - 5.625cm in section 1
+conditionInfo(2).velocityCmPerSecSection2 = -17.5; %4.375cm in section 2, 10cm total
 
 conditionInfo(3) = conditionInfo(1);
-conditionInfo(3).velocityCmPerSecSection1 = -50; %cm/s - 6.25cm in section 1
-conditionInfo(3).velocityCmPerSecSection2 = -30; %3.75cm in section 2, 10cm total
+conditionInfo(3).velocityCmPerSecSection1 = -25; %cm/s - 6.25cm in section 1
+conditionInfo(3).velocityCmPerSecSection2 = -15; %3.75cm in section 2, 10cm total
 
 
 conditionInfo(4) = conditionInfo(1);
-conditionInfo(4).velocityCmPerSecSection1 = -55; %cm/s - 6.875cm in section 1
-conditionInfo(4).velocityCmPerSecSection2 = -25; %3.125cm in section 2, 10cm total
+conditionInfo(4).velocityCmPerSecSection1 = -27.5; %cm/s - 6.875cm in section 1
+conditionInfo(4).velocityCmPerSecSection2 = -12.5; %3.125cm in section 2, 10cm total
 
 
 conditionInfo(5) = conditionInfo(1);
-conditionInfo(5).velocityCmPerSecSection1 = -60; %cm/s - 7.5cm in section 1
-conditionInfo(5).velocityCmPerSecSection2 = -20; %2.5cm in section 2, 10cm total
+conditionInfo(5).velocityCmPerSecSection1 = -30; %cm/s - 7.5cm in section 1
+conditionInfo(5).velocityCmPerSecSection2 = -10; %2.5cm in section 2, 10cm total
 
 
 conditionInfo(6) = conditionInfo(1);
-conditionInfo(6).velocityCmPerSecSection1 = -65; %cm/s - 8.125cm in section 1
-conditionInfo(6).velocityCmPerSecSection2 = -15; %1.875cm in section 2, 10cm total
+conditionInfo(6).velocityCmPerSecSection1 = -32.5; %cm/s - 8.125cm in section 1
+conditionInfo(6).velocityCmPerSecSection2 = -7.5; %1.875cm in section 2, 10cm total
 
 
 conditionInfo(7) = conditionInfo(1);
-conditionInfo(7).velocityCmPerSecSection1 = -70; %cm/s - 8.75cm in section 1
-conditionInfo(7).velocityCmPerSecSection2 = -10; %1.25cm in section 2, 10cm total
+conditionInfo(7).velocityCmPerSecSection1 = -35; %cm/s - 8.75cm in section 1
+conditionInfo(7).velocityCmPerSecSection2 = -5; %1.25cm in section 2, 10cm total
 
 
