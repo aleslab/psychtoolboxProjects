@@ -283,12 +283,12 @@ try
                 expInfo = drawFixationInfo(expInfo);
                 
                 Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-                Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, [], expInfo.center, 0);
-                Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw);
+                Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);
+                Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw, 0);
                 
                 Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-                Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, [], expInfo.center, 0);
-                Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw);
+                Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);
+                Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw, 0);
                 
                 Screen('Flip', expInfo.curWindow);
                 
