@@ -1,7 +1,8 @@
 cd /Users/Abigail/Documents/psychtoolboxProjects/psychMaster/Data
+%cd C:\Users\aril\Documents\Data
 %Need to automate loading and loop it so that multiple files can be
 %analysed at once.
-
+load('');
 ResponseTable = struct2table(experimentData); %The data struct is converted to a table
 
 %excluding invalid trials
@@ -48,12 +49,19 @@ cond7per = (cond7correct/allcond7trials)*100;
 
 allPercentageCorrect = [cond1per cond2per cond3per cond4per cond5per cond6per cond7per];
 
-allFirstSectionVelocities = [40 45 50 55 60 65 70];
-
+allFirstSectionVelocities = [sessionInfo.conditionInfo.velocityCmPerSecSection1];
+%So you look at the speed rather than the velocity -- get rid of negative
+%sign as it doesn't matter which direction the condition was here and it'll flip the
+%graph if it's there.
+if min(allFirstSectionVelocities) < 0;
+    normalisedFirstSectionVelocities = allFirstSectionVelocities*-1;
+else
+    normalisedFirstSectionVelocities = allFirstSectionVelocities;
+end
 %Drawing the graph of percentage "the condition was faster" responses
 figure
-plot(allFirstSectionVelocities, allPercentageCorrect, '-xk');
-axis([40 70 0 100]);
+plot(normalisedFirstSectionVelocities, allPercentageCorrect, '-xk');
+axis([min(normalisedFirstSectionVelocities) max(normalisedFirstSectionVelocities) 0 100]);
 xlabel('Velocity of the first section (cm/s)');
-ylabel('Percentage condition changed speed responses');
-
+ylabel('Percentage correct responses');
+title('AL combined towards');
