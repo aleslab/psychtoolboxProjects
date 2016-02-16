@@ -62,6 +62,7 @@ end
 figure
 plot(normalisedFirstSectionVelocities, allPercentageCorrect, '-xk');
 axis([min(normalisedFirstSectionVelocities) max(normalisedFirstSectionVelocities) 0 100]);
+set(gca, 'Xtick', (min(normalisedFirstSectionVelocities)):2.5:(max(normalisedFirstSectionVelocities)));
 xlabel('Velocity of the first section (cm/s)');
 ylabel('Percentage correct responses');
 title('AL combined towards');
