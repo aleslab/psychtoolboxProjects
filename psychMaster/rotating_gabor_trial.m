@@ -37,7 +37,7 @@ sigmaPix  = expInfo.ppd*conditionInfo.sigma;  % standard deviation in degrees ii
 cyclesPerSigma = 2;    %cycles per standaard devaion
 contrast = conditionInfo.contrast;   % contrast 
 phase = 90;      %phase of gabor
-      
+destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
 
 orientationSigma=conditionInfo.orientationSigma;
 
@@ -47,7 +47,7 @@ orientationSigma=conditionInfo.orientationSigma;
 orient =360*rand();
 
 lineWidth = 4;
-lineLength = 2*sigmaPix;
+lineLength = expInfo.ppd*.5;
 lineColor = [ 0 1 0 1];
 initLineOri = orient; 
 %Rotation matrix; 
@@ -58,26 +58,41 @@ xy = rotMtx'*initXy;
 
 %[minSmoothLineWidth, maxSmoothLineWidth, minAliasedLineWidth, maxAliasedLineWidth] = 
 
+if expInfo.enablePowermate
+    options.secs=0.0001;
+    err=PsychHID('ReceiveReports',expInfo.powermateId,options);
+end
 
+totalShift = 0;
 [xStart,yStart] = GetMouse(expInfo.curWindow);
+y = 0;
+lastT = GetSecs;
+allT = [];
+allY = [];
 for iFrame = 1:nFrames
-   
+
+     if expInfo.enablePowermate
+         err=PsychHID('ReceiveReports',expInfo.powermateId,options);
+     end
+
     if iFrame>=stimStartFrame
     orient = orient+orientationSigma*randn(); %orient of gabor
     end
     
     %creates a gabor texture. this has to be in the loop beacuse we want to
     %create a new gabor on every frame we present.
+   % t1 = GetSecs;
     my_gabor = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient);
     my_noise = conditionInfo.noiseSigma.*randn(size(my_gabor));
     my_noise = max(min(my_noise,.25),-.25);
     %convert it to a texture 'tex'
     tex=Screen('makeTexture', expInfo.curWindow, my_gabor+my_noise);
-
-    
+%     t2 = GetSecs;
+%     
+%     1000*(t2-t1)
     % stimRect = calculateStimSize(expInfo,conditionInfo);
     % Screen('fillOval', expInfo.curWindow, [60 0 0 180], stimRect);
-    Screen('DrawTexture', expInfo.curWindow, tex, [], expInfo.screenRect, [], 0);
+    Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
     Screen('DrawLines', expInfo.curWindow, xy,lineWidth,lineColor,expInfo.center);
 
     % Overdraw the rectangular noise image with our special
@@ -87,20 +102,51 @@ for iFrame = 1:nFrames
     %Screen('DrawTexture', win, aperture, [], dstRect(i,:), [], 0);
     
     
-    Screen('DrawingFinished',expInfo.curWindow,expInfo.dontclear);
+    
+     if expInfo.enablePowermate
+         Screen('DrawingFinished',expInfo.curWindow,expInfo.dontclear);
+         err=PsychHID('ReceiveReports',expInfo.powermateId,options);
+     end
     
     flipTimes(iFrame)=Screen('Flip', expInfo.curWindow);
-    [x,y] = GetMouse(expInfo.curWindow);
-    trialData.mousePos(iFrame,1) = x-xStart;
-    trialData.mousePos(iFrame,2) = y-yStart;
-    trialData.respOri(iFrame) = initLineOri+.5*(x-xStart);
-    trialData.stimOri(iFrame) = orient;
     
+    if expInfo.enablePowermate
+        err=PsychHID('ReceiveReports',expInfo.powermateId,options);
+        r=PsychHID('GiveMeReports',1);
+        if ~isempty(r)
+            lastY = y(end);
+            y =[cat(1,r(:).report)];
+            y = typecast(uint8(y(:,2)),'int8');
+            y = double(y);
+            y = [lastY; y];
+            t = [ 1000*([ lastT r(:).time]-r(1).time) ];
+            lastT = r(end).time;
+            
+            report(iFrame).r = r;
+            
+            thisShift = .5*trapz(t,y);
+            totalShift= totalShift-thisShift;            
+        end
+        y = 0;
+        lastT = GetSecs;
+        
+        trialData.respOri(iFrame) =  initLineOri+totalShift;
+    else
+        [x,y] = GetMouse(expInfo.curWindow);
+        trialData.mousePos(iFrame,1) = x-xStart;
+        trialData.mousePos(iFrame,2) = y-yStart;
+        trialData.respOri(iFrame) = initLineOri+.5*(x-xStart);
+    end
+    
+    trialData.stimOri(iFrame) = orient;
     %Rotation matrix; 
     rotMtx = [cosd(trialData.respOri(iFrame)) -sind(trialData.respOri(iFrame));...
           sind(trialData.respOri(iFrame)) cosd(trialData.respOri(iFrame))];
     xy = rotMtx'*initXy;
     
+    if expInfo.enablePowermate
+        err=PsychHID('ReceiveReports',expInfo.powermateId,options);
+    end
     %release the texture after we flip because we will redraw again in this
     %loop.
     Screen('Close', tex);
@@ -127,6 +173,7 @@ for iFrame = 1:nFrames
     
 end
 
+save tmp report
 flipTimes(iFrame+1)= Screen('Flip', expInfo.curWindow);
 trialData.flipTimes = flipTimes;
 trialData.validTrial = true;
@@ -140,6 +187,7 @@ end
 
 score = sum( .001*max(8100-(trialData.respOri(stimStartFrame:end)-trialData.stimOri(stimStartFrame:end)).^2,0));
 trialData.feedbackMsg = ['Score: ' num2str(round(score))];
+
 
 %Reset times to be with respect to trial end.
 %trialData.firstPress = trialData.firstPress-trialData.flipTimes(end);

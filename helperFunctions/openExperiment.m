@@ -63,6 +63,7 @@ if ~isfield(expInfo,'useFullScreen')
 end
 
 
+
 %This is not always a reliable way to get screen width.  MEASURE IT!!
 %But it's the best guess we can do.
 if ~isfield(expInfo,'monitorWidth')
@@ -85,7 +86,7 @@ if expInfo.screenNum >0
     Screen('Preference', 'SkipSyncTests', 0);
     
 else
-    Screen('Preference', 'SkipSyncTests', 1);
+    Screen('Preference', 'SkipSyncTests', 2);
 end
 
 Screen('Preference', 'VisualDebugLevel',2);
@@ -96,6 +97,15 @@ expInfo.bckgnd = 0.5;
 %This uses the new "psychImaging" pipeline. 
 [expInfo.curWindow, expInfo.screenRect] = PsychImaging('OpenWindow', expInfo.screenNum, expInfo.bckgnd,windowRect,[],[], expInfo.stereoMode);
 expInfo.dontclear = 0; % 1 gives incremental drawing (does not clear buffer after flip)
+
+if isfield(expInfo,'gammaTable')
+    [oldClut sucess]=Screen('LoadNormalizedGammaTable',expInfo.curWindow,expInfo.gammaTable);
+else
+    oldClut = LoadIdentityClut(expInfo.curWindow);
+    [gammaTable, dacbits, reallutsize] = Screen('ReadNormalizedGammaTable',expInfo.curWindow);
+    expInfo.gammaTable = gammaTable;
+end
+
 
 %get the refresh rate of the screen
 spf =Screen('GetFlipInterval', expInfo.curWindow);      % seconds per frame

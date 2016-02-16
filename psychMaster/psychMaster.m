@@ -64,7 +64,11 @@ if ~exist('sessionInfo','var') || isempty(sessionInfo)
     if ispref('psychMaster','lastParadigmFile')
         lastParadigmFile = getpref('psychMaster','lastParadigmFile');
     else
-        lastParadigmFile = '';
+        lastParadigmFile = pwd;
+    end
+    
+    if ~exist(lastParadigmFile,'file')
+        lastParadigmFile = pwd;
     end
     
     [sessionInfo.paradigmFile, sessionInfo.paradigmPath] = ...
@@ -140,11 +144,13 @@ try
     %expInfo contains important 
     try
         [conditionInfo, expInfo] = sessionInfo.paradigmFun([]);
-    catch
+    catch ME
         disp('<><><><><><> PSYCH MASTER <><><><><><><>')
         disp('ERROR Loading Paradigm File')
         disp('<><><><><><> PSYCH MASTER <><><><><><><>')
+        
         closeExperiment;
+        rethrow(ME)
         return;
     end
     
