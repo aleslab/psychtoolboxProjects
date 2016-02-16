@@ -1,8 +1,8 @@
-cd C:\Users\aril\Documents\Data
+cd /Users/Abigail/Documents/psychtoolboxProjects/psychMaster/Data
+%cd C:\Users\aril\Documents\Data
 %Need to automate loading and loop it so that multiple files can be
 %analysed at once.
-load('MoveLine_cd__20160129_144537.mat');
-
+load('');
 ResponseTable = struct2table(experimentData); %The data struct is converted to a table
 
 %excluding invalid trials
@@ -28,7 +28,7 @@ cond6correct = nnz(correctTrials==6);
 cond7correct = nnz(correctTrials==7);
 
 %Finding the total number of trials for each condition for the valid trials
-allTrials = [validCondNumber];
+allTrials = validCondNumber;
 allcond1trials = nnz(allTrials==1);
 allcond2trials = nnz(allTrials==2);
 allcond3trials = nnz(allTrials==3);
@@ -37,35 +37,31 @@ allcond5trials = nnz(allTrials==5);
 allcond6trials = nnz(allTrials==6);
 allcond7trials = nnz(allTrials==7);
 
-%In conditions 1-3, the null was the faster stimulus. So for "percentage
-%condition is faster" we want the trials that were the incorrect responses.
+%Percentage condition was correct response
 
-cond1wrong = allcond1trials - cond1correct;
-cond2wrong = allcond1trials - cond2correct;
-cond3wrong = allcond1trials - cond3correct;
+cond1per = (cond1correct/allcond1trials)*100;
+cond2per = (cond2correct/allcond2trials)*100;
+cond3per = (cond3correct/allcond3trials)*100;
+cond4per = (cond4correct/allcond4trials)*100;
+cond5per = (cond5correct/allcond5trials)*100;
+cond6per = (cond6correct/allcond6trials)*100;
+cond7per = (cond7correct/allcond7trials)*100;
 
-%Percentage condition was faster responses
+allPercentageCorrect = [cond1per cond2per cond3per cond4per cond5per cond6per cond7per];
 
-cond1per = cond1wrong/allcond1trials;
-cond2per = cond1wrong/allcond2trials;
-cond3per = cond1wrong/allcond3trials;
-cond4per = cond4correct/allcond4trials;
-cond5per = cond4correct/allcond5trials;
-cond6per = cond4correct/allcond6trials;
-cond7per = cond4correct/allcond7trials;
-
-allpercentages = [cond1per cond2per cond3per cond4per cond5per cond6per cond7per];
-
-allvelocities = [0.8 0.9 0.95 1 1.05 1.1 1.2];
-
+allFirstSectionVelocities = [sessionInfo.conditionInfo.velocityCmPerSecSection1];
+%So you look at the speed rather than the velocity -- get rid of negative
+%sign as it doesn't matter which direction the condition was here and it'll flip the
+%graph if it's there.
+if min(allFirstSectionVelocities) < 0;
+    normalisedFirstSectionVelocities = allFirstSectionVelocities*-1;
+else
+    normalisedFirstSectionVelocities = allFirstSectionVelocities;
+end
 %Drawing the graph of percentage "the condition was faster" responses
 figure
-plot(allvelocities, allpercentages, '-xk');
-axis([0.80 1.20 0 1]);
-set(gca, 'YTick', 0:0.1:1);
-set(gca, 'YTickLabel', 0:10:100);
-xlabel('Velocity as a fraction of the null');
-ylabel('Percentage "condition was faster" responses');
-
-
-
+plot(normalisedFirstSectionVelocities, allPercentageCorrect, '-xk');
+axis([min(normalisedFirstSectionVelocities) max(normalisedFirstSectionVelocities) 0 100]);
+xlabel('Velocity of the first section (cm/s)');
+ylabel('Percentage correct responses');
+title('AL combined towards');

@@ -1,6 +1,6 @@
 function [] = testProjectionGui();
 %cm
-screenDist = 57;
+screenDist = 92;
 screenHalfWidth = 50;
 ipd= 6
 figH = figure(42);
