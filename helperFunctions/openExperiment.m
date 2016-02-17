@@ -99,6 +99,7 @@ expInfo.bckgnd = 0.5;
 expInfo.dontclear = 0; % 1 gives incremental drawing (does not clear buffer after flip)
 
 if isfield(expInfo,'gammaTable')
+    BackupCluts;
     [oldClut sucess]=Screen('LoadNormalizedGammaTable',expInfo.curWindow,expInfo.gammaTable);
 else
     oldClut = LoadIdentityClut(expInfo.curWindow);

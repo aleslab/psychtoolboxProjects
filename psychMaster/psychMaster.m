@@ -53,6 +53,9 @@ function [] = psychMaster(sessionInfo)
 % 10/2015 - created by Justin Ales
 %
 psychMasterVer = '.2';
+%Save matlab output to file:
+diaryName = ['tmp_MatlabLog_' datestr(now,'yyyymmdd_HHMMSS') '.txt' ];
+diary(diaryName);
 
 %the sessionInfo structure is used to store information about the current session
 %that is being run
@@ -205,7 +208,7 @@ try
     %JMA: This only works for a current git repository.
     %TODO: Add a mechanism for including this information in standalone
     %builds. 
-    [errorStatus,result]= system('git rev-parse --verify HEAD')
+    [errorStatus,result]= system('git rev-parse --verify HEAD');
     
     if ~errorStatus
         expInfo.gitHash = result;
@@ -451,6 +454,10 @@ end;
            sessionInfo.mfileBackup(iFile).name = name;
            sessionInfo.mfileBackup(iFile).content = fileread(mfiles{iFile});                   
         end
+        
+        %Now save the diary:
+        sessionInfo.diary = fileread(diaryName);
+        delete(diaryName);
         
         if isfield(expInfo,'paradigmName') && ~isempty(expInfo.paradigmName),
             filePrefix = expInfo.paradigmName;
