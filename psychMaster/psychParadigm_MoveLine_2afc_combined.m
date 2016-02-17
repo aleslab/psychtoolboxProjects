@@ -29,7 +29,7 @@ conditionInfo(1).objectOneStartPos = -1; %when there are two lines in each eye, 
 conditionInfo(1).objectTwoStartPos = 1; %the start position of the second line in each eye
 conditionInfo(1).nReps = 30; %number of repeats
 conditionInfo(1).giveFeedback = false;
-
+conditionInfo(1).depthStart = 5; %5cm behind the plane of the screen
 %Now let's create the null that this will be compared with in the 2afc
 %trial.  First we copy all the paramaters.
 nullCondition = conditionInfo(1);

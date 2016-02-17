@@ -32,11 +32,13 @@ nFramesTotal = nFramesPreStim + nFramesSection1 + nFramesSection2;
 trialData.flipTimes = NaN(nFramesTotal,1);
 frameIdx = 1;
 
+expInfo.startingDepth = expInfo.viewingDistance + conditionInfo.depthStart;
+
 %% Choosing and running the stimulus
 if strcmp(conditionInfo.stimType, 'cd'); %%strcmp seems to work better than == for this.
     %Checking if the stimulus type is CD only.
     % Changing disparity stimulus -- single vertical line for each eye
-    objectStart = [conditionInfo.startPos, 0, expInfo.viewingDistance];
+    objectStart = [conditionInfo.startPos, 0, expInfo.startingDepth];
     %the single line "object" starting position
     
     objectCurrentPosition = objectStart;
@@ -127,9 +129,9 @@ if strcmp(conditionInfo.stimType, 'cd'); %%strcmp seems to work better than == f
     
 elseif strcmp(conditionInfo.stimType, 'combined');
     % Combination stimulus -- two vertical lines for each eye
-    objectOneStart = [conditionInfo.objectOneStartPos, 0, expInfo.viewingDistance];
+    objectOneStart = [conditionInfo.objectOneStartPos, 0, expInfo.startingDepth];
     %the start position of the first line
-    objectTwoStart = [conditionInfo.objectTwoStartPos, 0, expInfo.viewingDistance];
+    objectTwoStart = [conditionInfo.objectTwoStartPos, 0, expInfo.startingDepth];
     %the start position of the second line
     objectOneCurrentPosition = objectOneStart;
     [screenLone, screenRone] = calculateScreenLocation(fixation, objectOneCurrentPosition, eyeL, eyeR);
@@ -275,9 +277,9 @@ elseif strcmp(conditionInfo.stimType, 'looming');
     %-- screenOne = the screen position of the first line, etc. At
     %the moment the top line is line one.
     
-    HorizontalObjectOneStart = [0, conditionInfo.horizontalOneStartPos, expInfo.viewingDistance];
+    HorizontalObjectOneStart = [0, conditionInfo.horizontalOneStartPos, expInfo.startingDepth];
     %the start position for the first horizontal line
-    HorizontalObjectTwoStart = [0, conditionInfo.horizontalTwoStartPos, expInfo.viewingDistance];
+    HorizontalObjectTwoStart = [0, conditionInfo.horizontalTwoStartPos, expInfo.startingDepth];
     %the start position for the second horizontal line
     
     objectOneCurrentHorizontalPosition = HorizontalObjectOneStart;
