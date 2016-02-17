@@ -52,7 +52,7 @@ function [] = psychMaster(sessionInfo)
 
 % 10/2015 - created by Justin Ales
 %
-psychMasterVer = '.1';
+psychMasterVer = '.2';
 
 %the sessionInfo structure is used to store information about the current session
 %that is being run
@@ -200,7 +200,16 @@ try
         
     expInfo = openExperiment(expInfo);
     
-
+    %Try to get the git commit hash and save it to the expInfo
+    %
+    %JMA: This only works for a current git repository.
+    %TODO: Add a mechanism for including this information in standalone
+    %builds. 
+    [errorStatus,result]= system('git rev-parse --verify HEAD')
+    
+    if ~errorStatus
+        expInfo.gitHash = result;
+    end
     
     
     conditionInfo = validateConditions(conditionInfo);
@@ -396,52 +405,75 @@ try
       
     end %End while loop for showing trials.
     
-   % save(saveFilename,'experimentData')
-   sessionInfo.expInfo = expInfo;
-   sessionInfo.conditionInfo = conditionInfo;
-  
-   
-   if isfield(expInfo,'paradigmName') && ~isempty(expInfo.paradigmName),       
-       filePrefix = expInfo.paradigmName;
-   else
-       filePrefix = func2str(sessionInfo.paradigmFun);
-   end
-   
-   filename = [ filePrefix '_' ...
-       sessionInfo.participantID '_' datestr(now,'yyyymmdd_HHMMSS') '.mat'];
-   
-    if ispref('psychMaster','datadir');
-        datadir = getpref('psychMaster','datadir');
-    else
-        datadir = '';
-    end
     
-   saveFilename = fullfile(datadir,filename);
-   
-   if ~exist(datadir,'dir') 
-       mkdir(datadir)
-   end
-   
-   save(saveFilename,'sessionInfo','experimentData')
-   
+
    if expInfo.useKbQueue
        KbQueueRelease(expInfo.deviceIndex);
    end
    
    
    
-   
+    saveResults();
     closeExperiment;
     
    
     
 catch
-%    if expInfo.useKbQueue
-%        KbQueueRelease(expInfo.deviceIndex);
-%    end
+    
+    %JMA: Fix this to gracefully release KbQueue's on error
+    %Need to 
+    %    if expInfo.useKbQueue
+    %        KbQueueRelease(expInfo.deviceIndex);
+    %    end
+    
     disp('caught')
     errorMsg = lasterror;
+    saveResults();
     closeExperiment;
     psychrethrow(psychlasterror);
     
 end;
+
+
+    function saveResults()       
+        %This block saves information for the session.        
+        
+        sessionInfo.expInfo = expInfo;
+        sessionInfo.conditionInfo = conditionInfo;
+        %Now get our path, and find the files used
+        P = mfilename('fullpath');
+        [localDir] = fileparts(P);        
+        [ mfiles ] = findLocalExecutedFiles( localDir );
+        
+        %Now loop through all the files and save them
+        for iFile = 1:length(mfiles)
+            [~,name] = fileparts(mfiles{iFile});
+           sessionInfo.mfileBackup(iFile).name = name;
+           sessionInfo.mfileBackup(iFile).content = fileread(mfiles{iFile});                   
+        end
+        
+        if isfield(expInfo,'paradigmName') && ~isempty(expInfo.paradigmName),
+            filePrefix = expInfo.paradigmName;
+        else
+            filePrefix = func2str(sessionInfo.paradigmFun);
+        end
+        
+        filename = [ filePrefix '_' ...
+            sessionInfo.participantID '_' datestr(now,'yyyymmdd_HHMMSS') '.mat'];
+        
+        if ispref('psychMaster','datadir');
+            datadir = getpref('psychMaster','datadir');
+        else
+            datadir = '';
+        end
+        
+        saveFilename = fullfile(datadir,filename);
+        
+        if ~exist(datadir,'dir')
+            mkdir(datadir)
+        end
+        
+        save(saveFilename,'sessionInfo','experimentData')
+        
+    end
+end
