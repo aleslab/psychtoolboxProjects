@@ -26,7 +26,7 @@ conditionInfo(1).isNullCorrect = false; %because the condition is slower
 conditionInfo(1).startPos = 0; %start position of the line
 conditionInfo(1).nReps = 30; %number of repeats
 conditionInfo(1).giveFeedback = false;
-
+conditionInfo(1).depthStart = 5; %5cm behind the plane of the screen
 %Now let's create the null that this will be compared with in the 2afc
 %trial.  First we copy all the paramaters.
 nullCondition = conditionInfo(1);
