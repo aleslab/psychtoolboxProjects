@@ -3,7 +3,7 @@ expInfo.paradigmName = 'noiseDetect';
 
 % use kbQueue's as they have high performance
 expInfo.useKbQueue = false;
-
+expInfo.enablePowermate = true;
 
 %Lets add an experiment wide setting here:
 
