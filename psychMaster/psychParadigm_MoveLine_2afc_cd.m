@@ -68,4 +68,32 @@ conditionInfo(7) = conditionInfo(1);
 conditionInfo(7).velocityCmPerSecSection1 = -35; %cm/s - 8.75cm in section 1
 conditionInfo(7).velocityCmPerSecSection2 = -5; %1.25cm in section 2, 10cm total
 
+%lateral motion conditions
+conditionInfo(8) = conditionInfo(1);
+conditionInfo(8).stimType         = 'lateralCd'; 
 
+conditionInfo(9) = conditionInfo(2);
+conditionInfo(9).stimType         = 'lateralCd'; 
+
+conditionInfo(10) = conditionInfo(3);
+conditionInfo(10).stimType         = 'lateralCd'; 
+
+conditionInfo(11) = conditionInfo(4);
+conditionInfo(11).stimType         = 'lateralCd'; 
+
+conditionInfo(12) = conditionInfo(5);
+conditionInfo(12).stimType         = 'lateralCd'; 
+
+conditionInfo(13) = conditionInfo(6);
+conditionInfo(13).stimType         = 'lateralCd'; 
+
+conditionInfo(14) = conditionInfo(7);
+conditionInfo(14).stimType         = 'lateralCd'; 
+
+if strcmp(conditionInfo(iCond).stimType, 'cd');
+    nullCondition.stimType = 'cd';
+else
+    nullCondition.stimType = 'lateralCd';
+end
+
+    
