@@ -22,15 +22,23 @@ function expInfo = openExperiment( expInfo)
 % useKbQueue - Defaults to false. Override if needed 
 %            - Determines if program should use KbQueue's to get keyboard
 
-% ---------------
-% open the screen
-% ---------------
+
+
+%Sometimes we lose keyboard input, resetting PsychHID seems to help
+%Psychtoolbox uses a lot of persistent data and mex files in memory.
+%Should consider if clear all should be done.  A clear all will clear all
+%that stuff.  But has implications for anything that calls this function.
+%THerefore, I think the nuclear clear all should be elsewhere and carefully
+%considered/tested.
+clear PsychHID;
 
 %
 % This is a line that is easily skipped/missed but is important
 % Various default setup options, including color as float 0-1;
 % 
 PsychDefaultSetup(2)
+
+
 
 defaultWindowRect = [0 0 720 720];
 
@@ -72,6 +80,7 @@ if ~isfield(expInfo,'monitorWidth')
 end
 
    
+
 if expInfo.useFullScreen == true
     windowRect = [];
 else
@@ -97,8 +106,32 @@ expInfo.bckgnd = 0.5;
 %This uses the new "psychImaging" pipeline. 
 [expInfo.curWindow, expInfo.screenRect] = PsychImaging('OpenWindow', expInfo.screenNum, expInfo.bckgnd,windowRect,[],[], expInfo.stereoMode);
 expInfo.dontclear = 0; % 1 gives incremental drawing (does not clear buffer after flip)
+expInfo.modeInfo =Screen('Resolution', expInfo.screenNum);
+
+%Verify size calibration video mode:
+if isfield(expInfo,'sizeCalibInfo')
+    if ~isequal(expInfo.sizeCalibInfo.modeInfo,expInfo.modeInfo)
+        disp('---> Size calibration was for a different video mode')
+        disp('Current Mode: ')
+        expInfo.modeInfo
+        disp('Calibration for: ');
+        expInfo.sizeCalibInfo.modeInfo
+        error('Cannot continue due to size calibration mismatch to current video mode')
+    end
+end
 
 if isfield(expInfo,'gammaTable')
+    
+    %Verifiy calibration is for the current video mode:
+    if ~isequal(expInfo.lumCalibInfo.modeInfo,expInfo.modeInfo)
+        disp('---> Luminance calibration was for a different video mode')
+        disp('Current Mode: ')
+        expInfo.modeInfo
+        disp('Calibration for: ');
+        expInfo.lumCalibInfo.modeInfo
+        error('Cannot continue due to luminance calibration mismatch to current video mode')
+    end
+    
     BackupCluts;
     [oldClut sucess]=Screen('LoadNormalizedGammaTable',expInfo.curWindow,expInfo.gammaTable);
 else
@@ -146,3 +179,7 @@ KbName('UnifyKeyNames');
 expInfo.deviceIndex = [];
 ListenChar(0);
 
+
+
+
+end

@@ -1,9 +1,9 @@
-function closeExperiment
+function closeExperiment()
 % closeExperiment
-% closes the screen, returns priority to zero, starts the update process,
+% closes the screen, returns priority to zero,
 % and shows the cursor.
 
 Priority(0);
+RestoreCluts
 Screen('CloseAll');
-ShowCursor; % Show cursor again, if it has been disabled.
 ListenChar(0);

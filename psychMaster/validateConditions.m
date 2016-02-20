@@ -50,8 +50,8 @@ nField = size(fieldList,1);
     for iField = 1:nField,
         
         if ~isfield(conditionInfo(iCond),fieldList{iField,1})
-            disp(['Condition structure is missing field: ' fieldList{iField,1} ...
-                ' setting to default value']);
+            disp(['Condition structure is missing field: "' fieldList{iField,1} '"'...
+                ' setting to default value: "' num2str(fieldList{iField,2}) '"']);
            conditionInfo(iCond).(fieldList{iField,1}) = fieldList{iField,2};
         elseif isempty(conditionInfo(iCond).(fieldList{iField,1}))
             conditionInfo(iCond).(fieldList{iField,1}) = fieldList{iField,2};
