@@ -11,9 +11,11 @@ Version History
 
  
 0.2:
-Added saving of mfile content with experiment data. 
-Added saving of all matlab output with data. 
 Added Gui 
+
+Added Self documentation features, mfile experiment code is saved along experiment data. 
+
+Added saving of all matlab output with data. 
 
 Added calibration utilities for spatial and luminance calibration.
 Luminance calibration utilizes the CRS ColorCalII. Added code that interfaces
