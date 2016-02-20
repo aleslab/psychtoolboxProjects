@@ -11,7 +11,11 @@ Version History
 
  
 0.2:
-Added Gui 
+Added Gui with several features:
+Input participant id
+Load paradigm
+Inspect what is in the conditions. 
+Test run single trials.
 
 Added Self documentation features, mfile experiment code is saved along experiment data. 
 
