@@ -22,7 +22,7 @@ function varargout = pmGui(varargin)
 
 % Edit the above text to modify the response to help pmGui
 
-% Last Modified by GUIDE v2.5 19-Feb-2016 20:09:18
+% Last Modified by GUIDE v2.5 20-Feb-2016 06:51:53
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -55,8 +55,9 @@ function pmGui_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for pmGui
 handles.output = hObject;
 if length(varargin)>0
-    handles.expInfo = varargin{1};
-    handles.sessionInfo = varargin{2};
+    handles.sessionInfo = varargin{1};
+    handles.expInfo = varargin{2};
+
 end
 
 % Update handles structure
@@ -86,6 +87,13 @@ else
     handles = guidata(hObject);
 end
 
+if ispref('psychMaster','lastParticipantId')
+    lastParticipantId = getpref('psychMaster','lastParticipantId');
+else
+    lastParticipantId = [];
+end
+set(handles.participantIdText,'String',lastParticipantId);
+handles.sessionInfo.participantID = lastParticipantId;
 
 
 % Update handles structure
@@ -103,6 +111,9 @@ function varargout = pmGui_OutputFcn(hObject, eventdata, handles)
 
 % Get default command line output from handles structure
 
+%Not sure 
+handles = guidata(hObject);
+
 varargout{1} = handles.sessionInfo;
 varargout{2} = handles.expInfo;
 varargout{3} = handles.conditionInfo;
@@ -117,6 +128,11 @@ function runExperimentBtn_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 %pmGui_OutputFcn(hObject, eventdata, handles)
+
+handles.sessionInfo.returnToGui = false;
+handles.sessionInfo.userCancelled = true;
+guidata(hObject,handles);
+
 figure1_CloseRequestFcn(handles.figure1, eventdata, handles)
 
 % --- Executes on button press in cancelBtn.
@@ -125,6 +141,10 @@ function cancelBtn_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+handles.sessionInfo.userCancelled = true;
+guidata(hObject,handles);
+
+figure1_CloseRequestFcn(handles.figure1, eventdata, handles)
 
 % --- Executes on button press in chooseParadigmBtn.
 function chooseParadigmBtn_Callback(hObject, eventdata, handles)
@@ -178,18 +198,21 @@ catch ME
 end
 
 
-function edit2_Callback(hObject, eventdata, handles)
-% hObject    handle to edit2 (see GCBO)
+function participantIdText_Callback(hObject, eventdata, handles)
+% hObject    handle to participantIdText (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit2 as text
-%        str2double(get(hObject,'String')) returns contents of edit2 as a double
+% Hints: get(hObject,'String') returns contents of participantIdText as text
+%        str2double(get(hObject,'String')) returns contents of participantIdText as a double
 
+handles.sessionInfo.participantID = get(hObject,'String');
+setpref('psychMaster','lastParticipantId',handles.sessionInfo.participantID);
+guidata(hObject,handles)
 
 % --- Executes during object creation, after setting all properties.
-function edit2_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit2 (see GCBO)
+function participantIdText_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to participantIdText (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -200,6 +223,11 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
+
+
+
+
+
 % --- Executes when user attempts to close figure1.
 function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)
@@ -207,6 +235,14 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: delete(hObject) closes the figure
+
+%eventdata is a new/not well documented matlab feature .
+%This is probably fragile.
+%JMA
+if strcmp(eventdata.EventName,'Close');
+    handles.sessionInfo.userCancelled = true;
+    guidata(hObject,handles);
+end
 
 if isequal(get(hObject, 'waitstatus'), 'waiting')
     % The GUI is still in UIWAIT, us UIRESUME
@@ -278,6 +314,7 @@ selectedCondition = get(handles.condListbox,'Value')
 
 handles.conditionInfo = handles.conditionInfo(selectedCondition);
 handles.conditionInfo(1).nReps = 1;
+handles.sessionInfo.returnToGui = true;
 
 guidata(hObject,handles)
 figure1_CloseRequestFcn(handles.figure1, eventdata, handles)

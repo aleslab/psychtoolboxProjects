@@ -60,7 +60,7 @@ diary(diaryName);
 %the sessionInfo structure is used to store information about the current session
 %that is being run
 if ~exist('sessionInfo','var') || isempty(sessionInfo)
-    sessionInfo.participantID = input('What is the participant ID:  ','s');
+  %  sessionInfo.participantID = input('What is the participant ID:  ','s');
     %store the date. use: datestr(sessionInfo.sessionDate) to make human readable
     sessionInfo.sessionDate = now;
     sessionInfo.psychMasterVer = psychMasterVer;
@@ -117,12 +117,7 @@ end
 
 
 try
-            
-    %     %!!!!!!!!!!!!!!!!!!!!!
-    %     %VALUES ARE HARDCODED TEMPORARILY NEED TO INCORPORATE
-    %     %CALIBRATION ROUTINE
-    %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
+
     %Load size calibration:
     if ispref('psychMaster','sizeCalibrationFile');
         sizeFile = getpref('psychMaster','sizeCalibrationFile');
@@ -163,12 +158,7 @@ try
     end
     
     
-    [sessionInfo,expInfo,conditionInfo] = pmGui(sessionInfo,expInfo);
-    
-    
-    
-    
-    %Try to get the git commit hash and save it to the expInfo
+        %Try to get the git commit hash and save it to the expInfo
     %
     %JMA: This only works for a current git repository.
     %TODO: Add a mechanism for including this information in standalone
@@ -179,19 +169,48 @@ try
         expInfo.gitHash = result;
     end
     
+    %loop to enable firing single conditions for testing, could also be
+    %extended to multiple blocks in the future. 
+    [sessionInfo,expInfo,conditionInfo] = pmGui(sessionInfo,expInfo);
+    drawnow; %<- required to actually close the gui.
+       
+    %User canceled before opening experiment, just quit the function. 
+    if sessionInfo.userCancelled
+        cleanupPsychMaster();
+        return;
+    end
+      
+        
+        %Now lets begin the experiment and loop over the conditions to show.
+        expInfo = openExperiment(expInfo);
+     
+        
+        %Show instructions and wait for a keypress.
+        DrawFormattedTextStereo(expInfo.curWindow, expInfo.instructions,'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
+        Screen('Flip', expInfo.curWindow);
+        KbStrokeWait();
     
+        
+      
+        %This function handles everything for the experimental trials.
+        mainExperimentLoop();
+        
+        while sessionInfo.returnToGui
+            
+            [sessionInfo,expInfo,conditionInfo] = pmGui(sessionInfo,expInfo);
+            drawnow; %<- required to actually close the gui.
+            
+            %User canceled after opening experiment, just close and quit the function.
+            if sessionInfo.userCancelled
+                cleanupPsychMaster();
+                closeExperiment();
+                return;
+            end
 
-    
-    
-    
-    %Now lets begin the experiment and loop over the conditions to show.
-    expInfo = openExperiment(expInfo);
-    %Show instructions and wait for a keypress.
-    DrawFormattedTextStereo(expInfo.curWindow, expInfo.instructions,'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
-    Screen('Flip', expInfo.curWindow);
-    KbStrokeWait();
-    %This function handles everything for the experimental trials.
-    mainExperimentLoop();
+            
+            %This function handles everything for the experimental trials.
+            mainExperimentLoop();
+        end
     
   
     if expInfo.useKbQueue
@@ -201,14 +220,15 @@ try
     
     
     saveResults();
-    closeExperiment;
+    cleanupPsychMaster();
+    closeExperiment();
     
     
     
 catch
     
     %JMA: Fix this to gracefully release KbQueue's on error
-    %Need to
+    %Need to do the following but we may not have expInfo in the event of an error.
     %    if expInfo.useKbQueue
     %        KbQueueRelease(expInfo.deviceIndex);
     %    end
@@ -216,6 +236,7 @@ catch
     disp('caught')
     errorMsg = lasterror;
     saveResults();
+    cleanupPsychMaster();
     closeExperiment;
     psychrethrow(psychlasterror);
     
@@ -462,4 +483,12 @@ end;
         end
         
     end
+    
+%This is a function that handles cleaning up things specific to this file
+%deleting the tempory diary.
+    function cleanupPsychMaster()
+        
+        delete(diaryName);
+    end
+
 end

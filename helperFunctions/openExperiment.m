@@ -22,15 +22,23 @@ function expInfo = openExperiment( expInfo)
 % useKbQueue - Defaults to false. Override if needed 
 %            - Determines if program should use KbQueue's to get keyboard
 
-% ---------------
-% open the screen
-% ---------------
+
+
+%Sometimes we lose keyboard input, resetting PsychHID seems to help
+%Psychtoolbox uses a lot of persistent data and mex files in memory.
+%Should consider if clear all should be done.  A clear all will clear all
+%that stuff.  But has implications for anything that calls this function.
+%THerefore, I think the nuclear clear all should be elsewhere and carefully
+%considered/tested.
+clear PsychHID;
 
 %
 % This is a line that is easily skipped/missed but is important
 % Various default setup options, including color as float 0-1;
 % 
 PsychDefaultSetup(2)
+
+
 
 defaultWindowRect = [0 0 720 720];
 
