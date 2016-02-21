@@ -22,7 +22,7 @@ function varargout = pmGui(varargin)
 
 % Edit the above text to modify the response to help pmGui
 
-% Last Modified by GUIDE v2.5 20-Feb-2016 06:51:53
+% Last Modified by GUIDE v2.5 21-Feb-2016 19:40:06
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -57,7 +57,10 @@ handles.output = hObject;
 if length(varargin)>0
     handles.sessionInfo = varargin{1};
     handles.expInfo = varargin{2};
-
+    
+    if length(varargin) ==3
+        handles.conditionInfo = varargin{3};
+    end
 end
 
 % Update handles structure
@@ -95,13 +98,14 @@ end
 set(handles.participantIdText,'String',lastParticipantId);
 handles.sessionInfo.participantID = lastParticipantId;
 
-infoString = [  'v' sprintf('%1.2f',handles.sessionInfo.psychMasterVer) ' git SHA: ' handles.sessionInfo.gitHash(1:7)];
+infoString = [  'v' handles.sessionInfo.psychMasterVer ' git SHA: ' handles.sessionInfo.gitHash(1:7)];
 set(handles.versionInfoTextBox,'String',infoString);
 
 % Update handles structure
 guidata(hObject, handles);
+movegui('center');
 % UIWAIT makes pmGui wait for user response (see UIRESUME)
-uiwait(handles.figure1);
+uiwait(handles.pmGuiParentFig);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -120,7 +124,7 @@ varargout{1} = handles.sessionInfo;
 varargout{2} = handles.expInfo;
 varargout{3} = handles.conditionInfo;
 % The figure can be deleted now
-delete(handles.figure1);
+delete(handles.pmGuiParentFig);
 
 
 
@@ -135,7 +139,7 @@ handles.sessionInfo.returnToGui = false;
 handles.sessionInfo.userCancelled = false;
 guidata(hObject,handles);
 
-figure1_CloseRequestFcn(handles.figure1, eventdata, handles)
+pmGuiParentFig_CloseRequestFcn(handles.pmGuiParentFig, eventdata, handles)
 
 % --- Executes on button press in cancelBtn.
 function cancelBtn_Callback(hObject, eventdata, handles)
@@ -146,7 +150,7 @@ function cancelBtn_Callback(hObject, eventdata, handles)
 handles.sessionInfo.userCancelled = true;
 guidata(hObject,handles);
 
-figure1_CloseRequestFcn(handles.figure1, eventdata, handles)
+pmGuiParentFig_CloseRequestFcn(handles.pmGuiParentFig, eventdata, handles)
 
 % --- Executes on button press in chooseParadigmBtn.
 function chooseParadigmBtn_Callback(hObject, eventdata, handles)
@@ -178,9 +182,17 @@ handles = guidata(hObject);
 %Try to load a paradigm file.  There are lots of reasons a paradigm file
 %might not be loaded.  Therefore the Try/Catch catches all of them. 
 try
-    [handles.conditionInfo, handles.expInfo] = handles.sessionInfo.paradigmFun(handles.expInfo);
+   
+    
+    
+    %Read in the paradigm file if condition info isn't already loaded. 
+    if ~isfield(handles,'conditionInfo')
+        [handles.conditionInfo, handles.expInfo] = handles.sessionInfo.paradigmFun(handles.expInfo);
+    end
+    
     set(handles.paradigmFileNameBox,'String',handles.sessionInfo.paradigmFile);
     set(handles.paradigmNameBox,'String',handles.expInfo.paradigmName);
+    
     
     handles.conditionInfo = validateConditions(handles.conditionInfo);
     condNameList = {};
@@ -249,9 +261,9 @@ end
 
 
 
-% --- Executes when user attempts to close figure1.
-function figure1_CloseRequestFcn(hObject, eventdata, handles)
-% hObject    handle to figure1 (see GCBO)
+% --- Executes when user attempts to close pmGuiParentFig.
+function pmGuiParentFig_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to pmGuiParentFig (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
@@ -370,10 +382,12 @@ function testCondBtn_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 selectedCondition = get(handles.condListbox,'Value')
+%Backup the preloaded conditions before selecting the test condition. 
+handles.sessionInfo.backupConditionInfo = handles.conditionInfo;
 
 handles.conditionInfo = handles.conditionInfo(selectedCondition);
 handles.conditionInfo(1).nReps = 1;
 handles.sessionInfo.returnToGui = true;
 handles.sessionInfo.userCancelled = false;
 guidata(hObject,handles)
-figure1_CloseRequestFcn(handles.figure1, eventdata, handles)
+pmGuiParentFig_CloseRequestFcn(handles.pmGuiParentFig, eventdata, handles)

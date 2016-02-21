@@ -67,7 +67,7 @@ function [] = psychMaster(sessionInfo)
 
 %Initial setup
 
-psychMasterVer = '.2';
+psychMasterVer = '0.20';
 %Save matlab output to file:
 diaryName = ['tmp_MatlabLog_' datestr(now,'yyyymmdd_HHMMSS') '.txt' ];
 diary(diaryName);
@@ -213,7 +213,7 @@ try
         
         while sessionInfo.returnToGui
             
-            [sessionInfo,expInfo,conditionInfo] = pmGui(sessionInfo,expInfo);
+            [sessionInfo,expInfo,conditionInfo] = pmGui(sessionInfo,expInfo,sessionInfo.backupConditionInfo);
             drawnow; %<- required to actually close the gui.
             
             %User canceled after opening experiment, just close and quit the function.

@@ -328,11 +328,23 @@ function [hPropsPane,parameters] = propertiesGUI(hParent, parameters, filename, 
       if isempty(dbStruct),
           set(hFig, 'WindowStyle','modal');
       end
+      
+      
+      
+      pmFigHandle = findobj('tag','pmGuiParentFig');
+      if ~isempty(pmFigHandle)
+          parentPos = getpixelposition(pmFigHandle);
+          
+          pos = [parentPos(1)+parentPos(3), ...
+              parentPos(2), 300, parentPos(4)];
+          set(hFig,'position',pos);
+      
+      end
       % Set the component's position
       %pos = [5,40,490,440];
       hFigPos = getpixelposition(hFig);
       pos = [5,40,hFigPos(3)-10,hFigPos(4)-50];
-
+      
       wasFigCreated = true;
   else
       % Set the component's position
