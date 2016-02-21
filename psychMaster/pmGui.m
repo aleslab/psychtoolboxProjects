@@ -95,6 +95,8 @@ end
 set(handles.participantIdText,'String',lastParticipantId);
 handles.sessionInfo.participantID = lastParticipantId;
 
+infoString = [  'v' sprintf('%1.2f',handles.sessionInfo.psychMasterVer) ' git SHA: ' handles.sessionInfo.gitHash(1:7)];
+set(handles.versionInfoTextBox,'String',infoString);
 
 % Update handles structure
 guidata(hObject, handles);
@@ -173,6 +175,8 @@ function loadParadigmFile(hObject)
 %expInfo contains important
 handles = guidata(hObject);
 
+%Try to load a paradigm file.  There are lots of reasons a paradigm file
+%might not be loaded.  Therefore the Try/Catch catches all of them. 
 try
     [handles.conditionInfo, handles.expInfo] = handles.sessionInfo.paradigmFun(handles.expInfo);
     set(handles.paradigmFileNameBox,'String',handles.sessionInfo.paradigmFile);
@@ -180,9 +184,26 @@ try
     
     handles.conditionInfo = validateConditions(handles.conditionInfo);
     condNameList = {};
-    for iCond = 1:length(handles.conditionInfo)        
-        condNameList{iCond} = func2str(handles.conditionInfo(iCond).trialFun);
+    for iCond = 1:length(handles.conditionInfo)
+       
+        if ~isempty(handles.conditionInfo(iCond).label) %if there's a label use it
+            condNameList{iCond} =   handles.conditionInfo(iCond).label;
+        else %otherwise create a generic label
+            condNameList{iCond} = func2str(handles.conditionInfo(iCond).trialFun);
+        end
+        
     end
+    
+    %Now lets order the fieldnames for easy viewing.
+    %Putting the Label on top.  This is a bit of a kludgy way to do it
+    %
+    orderedCond =  orderfields(handles.conditionInfo );
+    names = fieldnames(orderedCond);
+    labelIdx = find(strcmpi(names,'label'));
+    notLabelIdx = find(~strcmpi(names,'label'));
+    newPerm =[labelIdx;  notLabelIdx];
+    orderedCond =  orderfields(orderedCond,newPerm );
+    handles.conditionInfo = orderedCond;
     
     set(handles.condListbox,'String',condNameList);
     
@@ -301,7 +322,45 @@ for iCond = 1:length(handles.conditionInfo),
 end
 
 
-propertiesGUI( handles.conditionInfo(selectedCondition),diffFieldNameList);
+[hPropsPane, editedConditionInfo] =propertiesGUI( handles.conditionInfo(selectedCondition),diffFieldNameList);
+
+%Check if any fields were changed.  Do a bit of cleaning.
+%The editor can provide strings instead of numbers.  In most cases we want
+%a number. Therefore if the string is a valid number lets replace it. 
+%Also, check to see if the "label" field was changed.  If it was update the
+%GUI
+changedFieldList = findStructDifferences(handles.conditionInfo(selectedCondition), editedConditionInfo);
+
+if ~isempty( changedFieldList )
+    for iChanged = 1:length(changedFieldList)
+        
+        thisValue = editedConditionInfo.(changedFieldList{iChanged});
+        if isstr(thisValue)
+            [thisValue2Num,OK]=str2num(thisValue);
+            if OK
+                editedConditionInfo.(changedFieldList(iChanged)) = thisValue2Num;
+            end
+        end
+        
+        %Was the label changed?
+        if strcmpi(changedFieldList{iChanged},'label')
+            condNameList=get(handles.condListbox,'String');
+            condNameList{selectedCondition} = thisValue;
+            set(handles.condListbox,'String',condNameList);
+        end
+    end
+    
+    %Finaly update the conditionInfo
+    handles.conditionInfo(selectedCondition) = editedConditionInfo;
+    
+    %and Mark the condition as changed
+    condNameList=get(handles.condListbox,'String');
+    condNameList{selectedCondition} = ['*' condNameList{selectedCondition} '*'];
+    set(handles.condListbox,'String',condNameList);
+    
+    guidata(hObject,handles)
+end
+
 
 
 % --- Executes on button press in testCondBtn.

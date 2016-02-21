@@ -35,6 +35,11 @@ function [hPropsPane,parameters] = propertiesGUI(hParent, parameters, filename, 
 %              editor. If parameters is not specified, then the global
 %              test_data will be used. If test_data is also empty, then
 %              a demo of several different data types will be used.
+%     
+%
+%  JMA -:  HACKED up to enable another calling method. You can provide a
+%  cell array of strings with fieldnames to highlight.  This should be done
+%  more neatly in the future. 
 %
 %  Run-time interactions (4 inputs)
 %
@@ -102,8 +107,11 @@ function [hPropsPane,parameters] = propertiesGUI(hParent, parameters, filename, 
 %    params.date   = now;
 %    params.size.width  = 10;
 %    params.size.height = 20;
+%    fieldsToHighlight = {'age' 'folder'};
 %    [hPropsPane, params] = propertiesGUI(params);
 %
+%    [hPropsPane, params] = propertiesGUI(params, fieldsToHighlight);
+
 %    % runtime interation:
 %    propertiesGUI(hPropsPane, 'save', 'width.mat', 'size.width');
 %    propertiesGUI(hPropsPane, 'load', 'width.mat', 'size.width');
@@ -290,6 +298,22 @@ function [hPropsPane,parameters] = propertiesGUI(hParent, parameters, filename, 
           javacomponent(rateLabel, [380,5,110,30], hFig);
       end
 
+      %Check though the fields for fieldnames that match the
+      %hightlightFieldlist. If they match make them red.
+      %JMA
+      if ~isempty(highlightFieldList)
+          for propsIdx = 1 : length(propsArray)
+              thisName = char(propsArray(propsIdx).getFullName);
+              
+              if any(strcmpi(thisName,highlightFieldList))
+                  %screwing this up because I can't figure out how to highlight
+                  %non editable fields
+                  propsArray(propsIdx).setEditable(true);
+                  propsArray(propsIdx).setDisplayName(['<html><font color="red">' thisName]);
+                  %setPropName(prop,propName);
+              end
+          end
+      end
       % Check the property values to determine whether the <OK> button should be enabled or not
       checkProps(propsList, btOK, true);
   
@@ -299,8 +323,11 @@ function [hPropsPane,parameters] = propertiesGUI(hParent, parameters, filename, 
       %jFrame.setFigureIcon(icon);
      %JMA: This is makes the property browser modal.
      %Think about changing this:
-      set(hFig, 'WindowStyle','modal', 'Visible','on');
-      
+      set(hFig,'Visible','on');
+      dbStruct = dbstatus();
+      if isempty(dbStruct),
+          set(hFig, 'WindowStyle','modal');
+      end
       % Set the component's position
       %pos = [5,40,490,440];
       hFigPos = getpixelposition(hFig);
@@ -348,18 +375,7 @@ function [hPropsPane,parameters] = propertiesGUI(hParent, parameters, filename, 
   try pane.setBorderColor(pane.getBackground); catch, end  % error reported by Andrew Ness
   
   
-  %Check though the fields for fieldnames that match the
-  %hightlightFieldlist. If they match make them red. 
-  %JMA
-  if ~isempty(highlightFieldList)
-      for propsIdx = 1 : length(propsArray)
-          thisName = char(propsArray(propsIdx).getFullName);
-         
-          if any(strcmpi(thisName,highlightFieldList))
-              propsArray(propsIdx).setDisplayName(['<html><font color="red">' thisName]);
-          end
-      end
-  end
+
     
   % If a new figure was created, make it modal and wait for user to close it
   if wasFigCreated
@@ -854,7 +870,7 @@ function prop = newProperty(dataStruct, propName, label, isEditable, dataType, d
         set(hprop,'PropertyChangeCallback',{propUpdatedCallback,propName});
     else
         % Set the property's label to be gray
-        prop.setDisplayName(['<html><font color="gray">' label]);
+        prop.setDisplayName(['<html><font color="black">' label]);
     end
 
     setPropName(prop,propName);
@@ -1110,7 +1126,9 @@ function checkProps(propsList, hContainer, isInit)
     try propsArray = propsList.toArray(); catch, return; end
     for propsIdx = 1 : length(propsArray)
         isOk = checkProp(propsArray(propsIdx));
-        if ~isOk || isInit,  okEnabled = 'off';  end
+        if ~isOk || isInit, 
+            okEnabled = 'off';  
+        end
     end
     
     % Update the <OK> button's editability state accordingly
@@ -1140,7 +1158,7 @@ function isOk = checkProp(prop)
       propColor = java.awt.Color.yellow;
       isOk = false;
   elseif ~prop.isEditable
-      %propColor = java.awt.Color.gray;
+   %   propColor = java.awt.Color.gray;
       %propColor = renderer.getBackground();
       propColor = java.awt.Color.white;
   else

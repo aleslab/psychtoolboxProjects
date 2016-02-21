@@ -4,8 +4,11 @@ This enables new paradigms to be easily implemented and tracked.
 
 
 todo:
+Add more information to calibration routines to avoid filename ambiguities
 Cleanup the condition inspector. Make it draw in the same place. Or something
 that makes it work a little more intuitively. 
+Issue #7 Create an automatic format to create paradigms
+Add a check for if psycmaster changed from last run and warn user.  
 
 Version History
 

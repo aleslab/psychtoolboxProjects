@@ -3,15 +3,16 @@ function [] = psychMaster(sessionInfo)
 %   [] = psychMaster()
 %
 %   This is the master script that runs a psychophysics session.
-%   when run it will ask for the participant ID and then ask you to
-%   select the experimental paradigm file.
+%   when run it will spawn a GUI that asks for required information and
+%   allows for inspecting condition parameters and testing individual
+%   trials.
 %
 %
 %   paradigm file:
 %   The paradigm file should be a function that takes expInfo as an
 %   argument and returns a conditionInfo structure and expInfo back:
 %
-%   function [conditionInfo, expInfo] = exampleExperiment(expInfo)
+%   function [conditionInfo, expInfo] = exampleExperiment()
 %
 %   conditionInfo defines all the conditions that will be run by psychMaster.
 %   conditionInfo is a structure with an entry for each condtion that will be run
@@ -22,17 +23,28 @@ function [] = psychMaster(sessionInfo)
 %               (each condition can have a different number).
 %   iti       = The intertrial interval in seconds. Currently implemented
 %               with a simple WaitSecs() call so the iti is AT LEAST this long
+%    
 %
-%   Optional fields:
-%   type = A string that identifies what type of trial, choices:
+%   Optional fields with defaults in []:
+%   label        = [''] A short string that identifies the condition
+%                  e.g. 'vertical', 'Contrast: 25', or  'Target: Red'
+%   giveFeedback = [false] Bolean whether to print feedback after trial
+%   type = ['generic'] A string that identifies what type of trial, choices:
 %          'Generic'  -  The @trialFun will handle collecting responses and
 %                        feedback
 %          '2afc'     -  This will implement 2 temporal alternative forced
 %                        choice. This option will collect responses and
 %                        will optionally provide feedback (if giveFeedback is set to TRUE).
-%                        This type requires a special field in the condition
-%                        "nullCondition" that will be used as the
-%                        comparison trial.
+%                          Requires 2 extra fields: 
+%                          nullCondition = a conditionInfo structure with a 
+%                                          single condition that will be used 
+%                                          as the comparison
+%                          isNullCorrect = [false] a boolean that sets which 
+%                                          condition is the correct condition.
+%                                          If set to true the null condition
+%                                          is treated as correct. If set to 
+%                                          false (default) the other condition 
+%                                          is considered correct.
 %
 %   expInfo defines experiment wide settings. Mostly things that are
 %   for PsychToolbox.  But also other things that are aren't specific to a
@@ -166,7 +178,7 @@ try
     [errorStatus,result]= system('git rev-parse --verify HEAD');
     
     if ~errorStatus
-        expInfo.gitHash = result;
+        sessionInfo.gitHash = result;
     end
     
     %loop to enable firing single conditions for testing, could also be
