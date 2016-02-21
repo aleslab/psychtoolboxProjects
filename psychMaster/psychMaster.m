@@ -64,6 +64,9 @@ function [] = psychMaster(sessionInfo)
 
 % 10/2015 - created by Justin Ales
 %
+
+%Initial setup
+
 psychMasterVer = '.2';
 %Save matlab output to file:
 diaryName = ['tmp_MatlabLog_' datestr(now,'yyyymmdd_HHMMSS') '.txt' ];
@@ -80,7 +83,7 @@ if ~exist('sessionInfo','var') || isempty(sessionInfo)
 end
 
 
-
+expInfo     = struct();
 
 
 %Check for preferences.  Preferences enable  easy configuration changes for
