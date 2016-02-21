@@ -189,6 +189,7 @@ try
     [sessionInfo,expInfo,conditionInfo] = pmGui(sessionInfo,expInfo);
     drawnow; %<- required to actually close the gui.
        
+    sessionInfo.userCancelled
     %User canceled before opening experiment, just quit the function. 
     if sessionInfo.userCancelled
         cleanupPsychMaster();
@@ -469,7 +470,7 @@ end;
         
         %Now save the diary:
         sessionInfo.diary = fileread(diaryName);
-        delete(diaryName);
+      
         
         if isfield(expInfo,'paradigmName') && ~isempty(expInfo.paradigmName),
             filePrefix = expInfo.paradigmName;

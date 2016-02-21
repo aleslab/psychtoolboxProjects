@@ -132,7 +132,7 @@ function runExperimentBtn_Callback(hObject, eventdata, handles)
 %pmGui_OutputFcn(hObject, eventdata, handles)
 
 handles.sessionInfo.returnToGui = false;
-handles.sessionInfo.userCancelled = true;
+handles.sessionInfo.userCancelled = false;
 guidata(hObject,handles);
 
 figure1_CloseRequestFcn(handles.figure1, eventdata, handles)
