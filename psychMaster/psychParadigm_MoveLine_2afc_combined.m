@@ -33,6 +33,7 @@ conditionInfo(1).depthStart = 5; %5cm behind the plane of the screen
 %Now let's create the null that this will be compared with in the 2afc
 %trial.  First we copy all the paramaters.
 nullCondition = conditionInfo(1);
+nullCondition.stimType = 'combined';
 %Then we change the  parameter of interest:
 %nullCondition.cmDistance = -10; %distance the line should move in cm
 nullCondition.velocityCmPerSecSection1 = -20;  
@@ -70,5 +71,37 @@ conditionInfo(6).velocityCmPerSecSection2 = -7.5; %1.875cm in section 2, 10cm to
 conditionInfo(7) = conditionInfo(1);
 conditionInfo(7).velocityCmPerSecSection1 = -35; %cm/s - 8.75cm in section 1
 conditionInfo(7).velocityCmPerSecSection2 = -5; %1.25cm in section 2, 10cm total
+
+%lateral motion conditions
+conditionInfo(8) = conditionInfo(1);
+conditionInfo(8).stimType         = 'lateralCombined'; 
+
+conditionInfo(9) = conditionInfo(2);
+conditionInfo(9).stimType         = 'lateralCombined'; 
+
+conditionInfo(10) = conditionInfo(3);
+conditionInfo(10).stimType         = 'lateralCombined'; 
+
+conditionInfo(11) = conditionInfo(4);
+conditionInfo(11).stimType         = 'lateralCombined'; 
+
+conditionInfo(12) = conditionInfo(5);
+conditionInfo(12).stimType         = 'lateralCombined'; 
+
+conditionInfo(13) = conditionInfo(6);
+conditionInfo(13).stimType         = 'lateralCombined'; 
+
+conditionInfo(14) = conditionInfo(7);
+conditionInfo(14).stimType         = 'lateralCombined'; 
+
+if strcmp(conditionInfo(iCond).stimType, 'combined');
+    nullCondition.stimType = 'combined';
+else
+    nullCondition.stimType = 'lateralCombined';
+end
+
+ 
+
+    
 
 

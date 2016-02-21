@@ -374,6 +374,6 @@ selectedCondition = get(handles.condListbox,'Value')
 handles.conditionInfo = handles.conditionInfo(selectedCondition);
 handles.conditionInfo(1).nReps = 1;
 handles.sessionInfo.returnToGui = true;
-
+handles.sessionInfo.userCancelled = false;
 guidata(hObject,handles)
 figure1_CloseRequestFcn(handles.figure1, eventdata, handles)
