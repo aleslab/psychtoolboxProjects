@@ -246,6 +246,12 @@ catch ME
     disp(' ')
     disp(getReport(ME, 'basic'))
     
+    handles.sessionInfo.paradigmFile = '';
+    handles.expInfo.paradigmName = '';
+    set(handles.paradigmFileNameBox,'String',handles.sessionInfo.paradigmFile);
+    set(handles.paradigmNameBox,'String',handles.expInfo.paradigmName);
+    
+    set(handles.condListbox,'String',{});
 end
 
 
