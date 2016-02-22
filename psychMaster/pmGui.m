@@ -77,7 +77,7 @@ handles.sessionInfo.paradigmFile = lastParadigmFile;
 if ~exist(handles.sessionInfo.paradigmFile,'file')
     lastParadigmFile = [];
 elseif exist(handles.sessionInfo.paradigmFile,'file')~=2
-    error('Paradigm file must be in the matlab path')
+    disp('Paradigm file must be in the matlab path');
 else    
     [pathstr, funcName, ext ] = fileparts(handles.sessionInfo.paradigmFile);        
     handles.sessionInfo.paradigmFile = [funcName ext];
@@ -122,7 +122,12 @@ handles = guidata(hObject);
 
 varargout{1} = handles.sessionInfo;
 varargout{2} = handles.expInfo;
-varargout{3} = handles.conditionInfo;
+if isfield(handles,'conditionInfo')
+    varargout{3} = handles.conditionInfo;
+else 
+    varargout{3} = [];
+end
+
 % The figure can be deleted now
 delete(handles.pmGuiParentFig);
 
@@ -160,13 +165,18 @@ function chooseParadigmBtn_Callback(hObject, eventdata, handles)
 
 
 [handles.sessionInfo.paradigmFile, handles.sessionInfo.paradigmPath] = ...
-    uigetfile('*.m','Choose the experimental paradigm file',pwd)
+    uigetfile('*.m','Choose the experimental paradigm file',pwd);
 lastParadigmFile = fullfile(handles.sessionInfo.paradigmPath,handles.sessionInfo.paradigmFile);
 
 [~, funcName ] = fileparts(handles.sessionInfo.paradigmFile);
 handles.sessionInfo.paradigmFun = str2func(funcName);
 
 setpref('psychMaster','lastParadigmFile',lastParadigmFile);
+
+%If we've already loaded a condition delete it and load the new file. 
+if isfield(handles,'conditionInfo')
+    handles = rmfield(handles,'conditionInfo');
+end
 
 guidata(hObject,handles);
 loadParadigmFile(hObject);
@@ -225,9 +235,11 @@ try
     
 catch ME
     disp('<><><><><><> PSYCH MASTER <><><><><><><>')
-    disp('ERROR Loading Paradigm File')
-    disp('<><><><><><> PSYCH MASTER <><><><><><><>')
-    rethrow(ME)
+    disp('ERROR Loading Paradigm File, check your paradigm file')
+    disp('The following report should help diagnose what is wrong:')
+    disp(' ')
+    disp(getReport(ME, 'basic'))
+    
 end
 
 
@@ -390,4 +402,4 @@ handles.conditionInfo(1).nReps = 1;
 handles.sessionInfo.returnToGui = true;
 handles.sessionInfo.userCancelled = false;
 guidata(hObject,handles)
-pmGuiParentFig_CloseRequestFcn(handles.pmGuiParentFig, eventdata, handles)
+pmGuiParentFig_CloseRequestFcn(handles.pmGuiParentFig, eventdata, handles);

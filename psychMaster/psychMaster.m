@@ -253,7 +253,7 @@ catch
     disp('caught')
     errorMsg = lasterror;
     
-    if exist('experimentData','var')
+    if exist('experimentData','var') && ~isempty(experimentData)        
         saveResults();
     end
     cleanupPsychMaster();
