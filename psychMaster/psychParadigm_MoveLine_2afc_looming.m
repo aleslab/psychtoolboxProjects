@@ -39,4 +39,5 @@ nullCondition.velocityCmPerSecSection2 = -20;
 nullCondition.stimType = condStimTypes(iCond); 
 conditionInfo(iCond).nullCondition = nullCondition;
 
+end
 
