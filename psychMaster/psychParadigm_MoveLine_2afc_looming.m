@@ -7,15 +7,15 @@ expInfo = moveLineDefaultSettings(expInfo);
 expInfo.paradigmName = 'MoveLine_looming_towards';
 
 %% conditions
-firstVelocities = [-20 -22.5 -25 -27.5 -30 -32.5 -35];
-condStimTypes = {'looming' 'looming' 'looming' 'looming' 'looming' 'looming' 'looming'};
+firstVelocities = [-20:-2.5:-35];
+condStimTypes = cat(2, repmat( {'looming'},1,7));
 
 for iCond = 1: length(firstVelocities);
 %This defines what function to call to draw the condition
 conditionInfo(iCond).trialFun=@MoveLineTrial;
 
 conditionInfo(iCond).type             = '2afc'; 
-conditionInfo(iCond).stimType         = condStimTypes(iCond); %need to change
+conditionInfo(iCond).stimType         = condStimTypes{iCond};
 conditionInfo(iCond).stimDurationSection1 = 0.250; %approximate stimulus duration in seconds
 conditionInfo(iCond).stimDurationSection2 = 0.250;
 conditionInfo(iCond).preStimDuration  = 0.25;  %Static time before stimulus change
@@ -26,11 +26,12 @@ conditionInfo(iCond).responseDuration = 3;    %Post trial window for waiting for
 conditionInfo(iCond).velocityCmPerSecSection1 = firstVelocities(iCond); %cm/s
 conditionInfo(iCond).velocityCmPerSecSection2 = (-40)-(conditionInfo(iCond).velocityCmPerSecSection1); %cm/s 
 conditionInfo(iCond).isNullCorrect = false;
-conditionInfo(1).horizontalOneStartPos = 1; %a y coordinate. the others are x. 
-conditionInfo(1).horizontalTwoStartPos = -1;
+conditionInfo(iCond).horizontalOneStartPos = 1; %a y coordinate. the others are x. 
+conditionInfo(iCond).horizontalTwoStartPos = -1;
 conditionInfo(iCond).nReps = 30; %number of repeats
 conditionInfo(iCond).giveFeedback = false;
 conditionInfo(iCond).depthStart = 5; %5cm behind the plane of the screen
+conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];
 
 nullCondition = conditionInfo(iCond);
 nullCondition.velocityCmPerSecSection1 = -20;  

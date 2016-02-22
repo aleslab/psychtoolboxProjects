@@ -4,6 +4,6 @@ function closeExperiment()
 % and shows the cursor.
 
 Priority(0);
-RestoreCluts
+RestoreCluts;
 Screen('CloseAll');
 ListenChar(0);
