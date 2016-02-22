@@ -7,8 +7,8 @@ expInfo = moveLineDefaultSettings(expInfo);
 
 expInfo.paradigmName = 'MoveLine_combined_away';
 %% conditions
-firstVelocities = [20:2.5:35 20:2.5:35];
-condStimTypes = cat(2, repmat( {'combined'},1,7) , repmat( {'lateralCombined'},1,7));
+firstVelocities = [20:2.5:35];
+condStimTypes = cat(2, repmat( {'combined'},1,7));
 
 for iCond = 1: length(firstVelocities);
 %This defines what function to call to draw the condition
@@ -30,7 +30,7 @@ conditionInfo(iCond).objectOneStartPos = -1; %when there are two lines in each e
 conditionInfo(iCond).objectTwoStartPos = 1; %the start position of the second line in each eye
 conditionInfo(iCond).nReps = 30; %number of repeats
 conditionInfo(iCond).giveFeedback = false;
-conditionInfo(iCond).depthStart = 5; %5cm behind the plane of the screen
+conditionInfo(iCond).depthStart = -5; %5cm in front of the plane of the screen
 conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];
 
 nullCondition = conditionInfo(iCond);
