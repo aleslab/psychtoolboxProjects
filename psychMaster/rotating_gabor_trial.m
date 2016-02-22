@@ -58,9 +58,11 @@ xy = rotMtx'*initXy;
 
 %[minSmoothLineWidth, maxSmoothLineWidth, minAliasedLineWidth, maxAliasedLineWidth] = 
 
-if expInfo.enablePowermate
-    options.secs=0.0001;
-    err=PsychHID('ReceiveReports',expInfo.powermateId,options);
+if isfield(expInfo,'enablePowermate') 
+    if expInfo.enablePowermate
+        options.secs=0.0001;
+        err=PsychHID('ReceiveReports',expInfo.powermateId,options);
+    end
 end
 
 totalShift = 0;
@@ -173,7 +175,6 @@ for iFrame = 1:nFrames
     
 end
 
-save tmp report
 flipTimes(iFrame+1)= Screen('Flip', expInfo.curWindow);
 trialData.flipTimes = flipTimes;
 trialData.validTrial = true;

@@ -57,6 +57,7 @@ handles.output = hObject;
 if length(varargin)>0
     handles.sessionInfo = varargin{1};
     handles.expInfo = varargin{2};
+    handles.eiOrig = varargin{2};
     
     if length(varargin) ==3
         handles.conditionInfo = varargin{3};
@@ -120,9 +121,15 @@ function varargout = pmGui_OutputFcn(hObject, eventdata, handles)
 %Not sure 
 handles = guidata(hObject);
 
+
 varargout{1} = handles.sessionInfo;
-varargout{2} = handles.expInfo;
-varargout{3} = handles.conditionInfo;
+if ~handles.sessionInfo.userCancelled
+    varargout{2} = handles.expInfo;
+    varargout{3} = handles.conditionInfo;
+else
+    varargout{2} = [];
+    varargout{3} = [];
+end
 % The figure can be deleted now
 delete(handles.pmGuiParentFig);
 
@@ -168,6 +175,8 @@ handles.sessionInfo.paradigmFun = str2func(funcName);
 
 setpref('psychMaster','lastParadigmFile',lastParadigmFile);
 
+handles.conditionInfo = [];
+
 guidata(hObject,handles);
 loadParadigmFile(hObject);
 
@@ -186,8 +195,8 @@ try
     
     
     %Read in the paradigm file if condition info isn't already loaded. 
-    if ~isfield(handles,'conditionInfo')
-        [handles.conditionInfo, handles.expInfo] = handles.sessionInfo.paradigmFun(handles.expInfo);
+    if ~isfield(handles,'conditionInfo') || isempty(handles.conditionInfo)
+        [handles.conditionInfo, handles.expInfo] = handles.sessionInfo.paradigmFun(handles.eiOrig);
     end
     
     set(handles.paradigmFileNameBox,'String',handles.sessionInfo.paradigmFile);
@@ -227,7 +236,8 @@ catch ME
     disp('<><><><><><> PSYCH MASTER <><><><><><><>')
     disp('ERROR Loading Paradigm File')
     disp('<><><><><><> PSYCH MASTER <><><><><><><>')
-    rethrow(ME)
+    disp(getReport(ME))
+    %rethrow(ME)
 end
 
 
