@@ -207,7 +207,8 @@ try
         KbStrokeWait();
     
         
-      
+        experimentData = struct();
+        
         %This function handles everything for the experimental trials.
         mainExperimentLoop();
         
@@ -251,7 +252,10 @@ catch
     
     disp('caught')
     errorMsg = lasterror;
-    saveResults();
+    
+    if exist('experimentData','var')
+        saveResults();
+    end
     cleanupPsychMaster();
     closeExperiment;
     psychrethrow(psychlasterror);
@@ -494,8 +498,13 @@ end;
             mkdir(datadir)
         end
         
-        if exist('experimentData','var')
-            save(saveFilename,'sessionInfo','experimentData');
+         try  
+             save(saveFilename,'sessionInfo','experimentData');
+         catch ME
+             disp('><><><><!><!><!><!><!><!><!><!><!><!><!><><><><>')
+             disp('ERROR SAVING DATA')
+             disp('><><><><!><!><!><!><!><!><!><!><!><!><!><><><><>')
+             disp(getReport(ME))
         end
         
     end
