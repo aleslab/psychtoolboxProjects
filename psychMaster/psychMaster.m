@@ -189,7 +189,6 @@ try
     [sessionInfo,expInfo,conditionInfo] = pmGui(sessionInfo,expInfo);
     drawnow; %<- required to actually close the gui.
        
-    sessionInfo.userCancelled
     %User canceled before opening experiment, just quit the function. 
     if sessionInfo.userCancelled
         cleanupPsychMaster();

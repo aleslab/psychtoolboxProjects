@@ -161,7 +161,7 @@ function cancelBtn_Callback(hObject, eventdata, handles)
 handles.sessionInfo.userCancelled = true;
 guidata(hObject,handles);
 
-pmGuiParentFig_CloseRequestFcn(handles.pmGuiParentFig, eventdata, handles)
+pmGuiParentFig_CloseRequestFcn(handles.pmGuiParentFig, eventdata, handles);
 
 % --- Executes on button press in chooseParadigmBtn.
 function chooseParadigmBtn_Callback(hObject, eventdata, handles)
