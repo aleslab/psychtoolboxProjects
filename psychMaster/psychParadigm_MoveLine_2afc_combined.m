@@ -7,18 +7,15 @@ expInfo = moveLineDefaultSettings(expInfo);
 expInfo.paradigmName = 'MoveLine_combined_towards';
 
 %% conditions
-firstVelocities = [-20 -22.5 -25 -27.5 -30 -32.5 -35 -20 -22.5 -25 -27.5...
-    -30 -32.5 -35];
-condStimTypes = {'combined' 'combined' 'combined' 'combined' 'combined'...
-    'combined' 'combined' 'lateralCombined' 'lateralCombined' ...
-    'lateralCombined' 'lateralCombined' 'lateralCombined' 'lateralCombined' 'lateralCombined'};
+firstVelocities = [-20:-2.5:-35 -20:-2.5:-35];
+condStimTypes = cat(2, repmat( {'combined'},1,7) , repmat( {'lateralCombined'},1,7));
 
 for iCond = 1: length(firstVelocities);
 %This defines what function to call to draw the condition
 conditionInfo(iCond).trialFun=@MoveLineTrial;
 
 conditionInfo(iCond).type             = '2afc'; 
-conditionInfo(iCond).stimType         = condStimTypes(iCond); %need to change
+conditionInfo(iCond).stimType         = condStimTypes{iCond};
 conditionInfo(iCond).stimDurationSection1 = 0.250; %approximate stimulus duration in seconds
 conditionInfo(iCond).stimDurationSection2 = 0.250;
 conditionInfo(iCond).preStimDuration  = 0.25;  %Static time before stimulus change
@@ -34,6 +31,7 @@ conditionInfo(iCond).objectTwoStartPos = 1; %the start position of the second li
 conditionInfo(iCond).nReps = 30; %number of repeats
 conditionInfo(iCond).giveFeedback = false;
 conditionInfo(iCond).depthStart = 5; %5cm behind the plane of the screen
+conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];
 
 nullCondition = conditionInfo(iCond);
 nullCondition.velocityCmPerSecSection1 = -20;  
