@@ -121,7 +121,13 @@ function varargout = pmGui_OutputFcn(hObject, eventdata, handles)
 handles = guidata(hObject);
 
 varargout{1} = handles.sessionInfo;
-varargout{2} = handles.expInfo;
+if handles.sessionInfo.userCancelled
+    varargout{2} = [];
+    varargout{3} = [];
+else
+    varargout{2} = handles.expInfo;
+end
+
 if isfield(handles,'conditionInfo')
     varargout{3} = handles.conditionInfo;
 else 

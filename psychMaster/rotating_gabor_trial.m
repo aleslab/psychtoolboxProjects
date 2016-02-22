@@ -173,7 +173,6 @@ for iFrame = 1:nFrames
     
 end
 
-save tmp report
 flipTimes(iFrame+1)= Screen('Flip', expInfo.curWindow);
 trialData.flipTimes = flipTimes;
 trialData.validTrial = true;
