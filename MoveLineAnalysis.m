@@ -2,7 +2,7 @@ cd /Users/Abigail/Documents/psychtoolboxProjects/psychMaster/Data
 %cd C:\Users\aril\Documents\Data
 %Need to automate loading and loop it so that multiple files can be
 %analysed at once.
-load('');
+load('MoveLine_combined_away_ALp_20160222_154924');
 
 ResponseTable = struct2table(experimentData); %The data struct is converted to a table
 
@@ -42,11 +42,13 @@ FirstVelocities = unique(conditionFirstSectionVelocities);
 %get rid of negative sign as it doesn't matter which direction the condition was here.
 if min(FirstVelocities) < 0;
     normalisedFirstVelocities = FirstVelocities*-1;
+    orderedVelocities = fliplr(normalisedFirstVelocities);
 else
     normalisedFirstVelocities = FirstVelocities;
+    orderedVelocities = normalisedFirstVelocities;
 end
 
-orderedVelocities = fliplr(normalisedFirstVelocities);
+
 %Drawing the graph of percentage "the condition was faster" responses
 figure
 plot(orderedVelocities, allDepthPercentageCorrect, '-xk');
