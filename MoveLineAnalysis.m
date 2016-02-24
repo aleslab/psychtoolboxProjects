@@ -3,6 +3,7 @@ cd /Users/Abigail/Documents/psychtoolboxProjects/psychMaster/Data
 %Need to automate loading and loop it so that multiple files can be
 %analysed at once.
 load('');
+
 ResponseTable = struct2table(experimentData); %The data struct is converted to a table
 
 %excluding invalid trials
@@ -18,51 +19,49 @@ end
 
 %Calculating the number of correct responses for each condition for the
 %valid trials
-correctTrials = validCondNumber(correctResponsesLogical);
-cond1correct = nnz(correctTrials==1);
-cond2correct = nnz(correctTrials==2);
-cond3correct = nnz(correctTrials==3);
-cond4correct = nnz(correctTrials==4);
-cond5correct = nnz(correctTrials==5);
-cond6correct = nnz(correctTrials==6);
-cond7correct = nnz(correctTrials==7);
+correctTrials = validCondNumber(correctResponsesLogical); %the conditions of each individual correct response
+correctTrialConditions = unique(correctTrials); %the conditions for which a correct response was made
+condCorrectNumbers = histc(correctTrials, correctTrialConditions); %the total number of correct responses for each condition 
 
-%Finding the total number of trials for each condition for the valid trials
-allTrials = validCondNumber;
-allcond1trials = nnz(allTrials==1);
-allcond2trials = nnz(allTrials==2);
-allcond3trials = nnz(allTrials==3);
-allcond4trials = nnz(allTrials==4);
-allcond5trials = nnz(allTrials==5);
-allcond6trials = nnz(allTrials==6);
-allcond7trials = nnz(allTrials==7);
+% %Finding the total number of trials for each condition for the valid trials
+%allTrials = validCondNumber;
+allTrialConditions = unique(validCondNumber); %the conditions for which any response was made
+allTrialNumbers = histc(validCondNumber, allTrialConditions); %the total number of responses for each condition
 
-%Percentage condition was correct response
+allCorrectPercentages = (condCorrectNumbers./allTrialNumbers)*100; %creates a double of the percentage correct responses for every condition
 
-cond1per = (cond1correct/allcond1trials)*100;
-cond2per = (cond2correct/allcond2trials)*100;
-cond3per = (cond3correct/allcond3trials)*100;
-cond4per = (cond4correct/allcond4trials)*100;
-cond5per = (cond5correct/allcond5trials)*100;
-cond6per = (cond6correct/allcond6trials)*100;
-cond7per = (cond7correct/allcond7trials)*100;
-
-allPercentageCorrect = [cond1per cond2per cond3per cond4per cond5per cond6per cond7per];
-
-allFirstSectionVelocities = [sessionInfo.conditionInfo.velocityCmPerSecSection1];
-%So you look at the speed rather than the velocity -- get rid of negative
-%sign as it doesn't matter which direction the condition was here and it'll flip the
-%graph if it's there.
-if min(allFirstSectionVelocities) < 0;
-    normalisedFirstSectionVelocities = allFirstSectionVelocities*-1;
+if length(allTrialNumbers) > 7
+allDepthPercentageCorrect = allCorrectPercentages(1:7);
+allLateralPercentageCorrect = allCorrectPercentages(8:14);
 else
-    normalisedFirstSectionVelocities = allFirstSectionVelocities;
+    allDepthPercentageCorrect = allCorrectPercentages;
 end
+
+conditionFirstSectionVelocities = [sessionInfo.conditionInfo.velocityCmPerSecSection1];
+FirstVelocities = unique(conditionFirstSectionVelocities);
+%get rid of negative sign as it doesn't matter which direction the condition was here.
+if min(FirstVelocities) < 0;
+    normalisedFirstVelocities = FirstVelocities*-1;
+else
+    normalisedFirstVelocities = FirstVelocities;
+end
+
+orderedVelocities = fliplr(normalisedFirstVelocities);
 %Drawing the graph of percentage "the condition was faster" responses
 figure
-plot(normalisedFirstSectionVelocities, allPercentageCorrect, '-xk');
-axis([min(normalisedFirstSectionVelocities) max(normalisedFirstSectionVelocities) 0 100]);
-set(gca, 'Xtick', (min(normalisedFirstSectionVelocities)):2.5:(max(normalisedFirstSectionVelocities)));
+plot(orderedVelocities, allDepthPercentageCorrect, '-xk');
+axis([min(orderedVelocities) max(orderedVelocities) 0 100]);
+set(gca, 'Xtick', (min(orderedVelocities)):2.5:(max(orderedVelocities)));
 xlabel('Velocity of the first section (cm/s)');
 ylabel('Percentage correct responses');
-title('AL combined towards');
+title('towards');
+
+if length(allTrialNumbers) > 7
+figure
+plot(orderedVelocities, allLateralPercentageCorrect, '-xk');
+axis([min(orderedVelocities) max(orderedVelocities) 0 100]);
+set(gca, 'Xtick', (min(orderedVelocities)):2.5:(max(orderedVelocities)));
+xlabel('Velocity of the first section (cm/s)');
+ylabel('Percentage correct responses');
+title('lateral');
+end
