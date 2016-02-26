@@ -104,6 +104,8 @@ set(handles.versionInfoTextBox,'String',infoString);
 % Update handles structure
 guidata(hObject, handles);
 movegui('center');
+%set(handles.runExperimentBtn, 'Value', 1); 
+uicontrol(handles.runExperimentBtn) 
 % UIWAIT makes pmGui wait for user response (see UIRESUME)
 uiwait(handles.pmGuiParentFig);
 
@@ -150,7 +152,7 @@ handles.sessionInfo.returnToGui = false;
 handles.sessionInfo.userCancelled = false;
 guidata(hObject,handles);
 
-pmGuiParentFig_CloseRequestFcn(handles.pmGuiParentFig, eventdata, handles)
+uiresume(handles.pmGuiParentFig);
 
 % --- Executes on button press in cancelBtn.
 function cancelBtn_Callback(hObject, eventdata, handles)
@@ -297,12 +299,9 @@ function pmGuiParentFig_CloseRequestFcn(hObject, eventdata, handles)
 %This is probably fragile.
 %JMA
 % if strcmp(eventdata.EventName,'Close');
-get(get(hObject,'CurrentObject'))
-if isempty(get(hObject,'CurrentObject'))
-      
-     handles.sessionInfo.userCancelled = true;
-     guidata(hObject,handles);
-end
+
+handles.sessionInfo.userCancelled = true;
+guidata(hObject,handles);
 
 if isequal(get(hObject, 'waitstatus'), 'waiting')
     % The GUI is still in UIWAIT, us UIRESUME
@@ -417,4 +416,5 @@ handles.conditionInfo(1).nReps = 1;
 handles.sessionInfo.returnToGui = true;
 handles.sessionInfo.userCancelled = false;
 guidata(hObject,handles)
-pmGuiParentFig_CloseRequestFcn(handles.pmGuiParentFig, eventdata, handles);
+uiresume(handles.pmGuiParentFig);
+%pmGuiParentFig_CloseRequestFcn(handles.pmGuiParentFig, eventdata, handles);
