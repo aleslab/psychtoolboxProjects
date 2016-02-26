@@ -296,9 +296,12 @@ function pmGuiParentFig_CloseRequestFcn(hObject, eventdata, handles)
 %eventdata is a new/not well documented matlab feature .
 %This is probably fragile.
 %JMA
-if strcmp(eventdata.EventName,'Close');
-    handles.sessionInfo.userCancelled = true;
-    guidata(hObject,handles);
+% if strcmp(eventdata.EventName,'Close');
+get(get(hObject,'CurrentObject'))
+if isempty(get(hObject,'CurrentObject'))
+      
+     handles.sessionInfo.userCancelled = true;
+     guidata(hObject,handles);
 end
 
 if isequal(get(hObject, 'waitstatus'), 'waiting')

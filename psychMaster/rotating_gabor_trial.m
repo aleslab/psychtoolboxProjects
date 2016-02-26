@@ -114,7 +114,7 @@ for iFrame = 1:nFrames
     
     if expInfo.enablePowermate
         err=PsychHID('ReceiveReports',expInfo.powermateId,options);
-        r=PsychHID('GiveMeReports',1);
+        r=PsychHID('GiveMeReports',expInfo.powermateId);
         if ~isempty(r)
             lastY = y(end);
             y =[cat(1,r(:).report)];

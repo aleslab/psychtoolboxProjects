@@ -30,7 +30,7 @@ function expInfo = openExperiment( expInfo)
 %that stuff.  But has implications for anything that calls this function.
 %THerefore, I think the nuclear clear all should be elsewhere and carefully
 %considered/tested.
-clear PsychHID;
+%clear PsychHID;
 
 %
 % This is a line that is easily skipped/missed but is important
@@ -179,6 +179,18 @@ KbName('UnifyKeyNames');
 expInfo.deviceIndex = [];
 ListenChar(0);
 
+
+if isfield(expInfo,'enablePowermate') && expInfo.enablePowermate
+dev = PsychHID('devices');
+
+for iDev = 1:length(dev)
+
+    if  dev(iDev).vendorID== 1917 && dev(iDev).productID == 1040
+         expInfo.powermateId = iDev;
+         break;
+    end
+end
+end
 
 
 
