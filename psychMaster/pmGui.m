@@ -57,7 +57,7 @@ handles.output = hObject;
 if length(varargin)>0
     handles.sessionInfo = varargin{1};
     handles.expInfo = varargin{2};
-    
+    handles.origExpInfo = varargin{2};
     if length(varargin) ==3
         handles.conditionInfo = varargin{3};
     end
@@ -203,7 +203,7 @@ try
     
     %Read in the paradigm file if condition info isn't already loaded. 
     if ~isfield(handles,'conditionInfo')
-        [handles.conditionInfo, handles.expInfo] = handles.sessionInfo.paradigmFun(handles.expInfo);
+        [handles.conditionInfo, handles.expInfo] = handles.sessionInfo.paradigmFun(handles.origExpInfo);
     end
     
     set(handles.paradigmFileNameBox,'String',handles.sessionInfo.paradigmFile);
