@@ -34,7 +34,7 @@ end
 
 radiusPix = expInfo.ppd*conditionInfo.stimRadiusDeg;    % stimSize in degrees x pixels per degree.
 sigmaPix  = expInfo.ppd*conditionInfo.sigma;  % standard deviation in degrees iinto pixels
-cyclesPerSigma = 2;    %cycles per standaard devaion
+cyclesPerSigma = conditionInfo.freq;    %cycles per standaard devaion
 contrast = conditionInfo.contrast;   % contrast 
 phase = 90;      %phase of gabor
 destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];

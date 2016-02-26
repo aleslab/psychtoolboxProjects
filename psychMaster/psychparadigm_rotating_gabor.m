@@ -34,14 +34,15 @@ conditionInfo(1).stimDuration     = 10; %approximate stimulus duration in second
 conditionInfo(1).preStimDuration  = 2;  %Static time before stimulus change
 conditionInfo(1).postStimDuration = 0;  %static time aftter stimulus change
 conditionInfo(1).iti              = 1;     %Minimum Inter Trial Interval
-conditionInfo(1).responseDuration = 0;    %Post trial window for waiting for a response
+conditionInfo(1).responseDuration  = 0;    %Post trial window for waiting for a response
 
-conditionInfo(1).sigma=2; %standard deviation of the gabor in degrees
-conditionInfo(1).freq = 4; %frequency of the gabor in cycles per sigma. 
-conditionInfo(1).nReps = 1; %% number of trials to present this condition. 
+conditionInfo(1).sigma             =2; %standard deviation of the gabor in degrees
+conditionInfo(1).freq              =1; %frequency of the gabor in cycles per sigma. 
+conditionInfo(1).nReps             = 1; %% number of trials to present this condition. 
 conditionInfo(1).stimRadiusDeg  = 6;    %stimulus size in degree;
+
 conditionInfo(1).contrast = 0.25;
-conditionInfo(1).noiseSigma = .1;
+conditionInfo(1).noiseSigma = .15;
 conditionInfo(1).orientationSigma = 5;
 %Implement arbitrary forward models. 
 %conditionInfo(1).forwardModel = [ 1 0 ]; %Forward model
@@ -49,7 +50,7 @@ conditionInfo(1).orientationSigma = 5;
 
 conditionInfo(2) = conditionInfo(1);
 conditionInfo(2).orientationSigma = 5;
-conditionInfo(2).contrast = 0.05 ;
+conditionInfo(2).contrast = 0.04 ;
 
 
 
