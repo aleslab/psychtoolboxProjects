@@ -573,7 +573,7 @@ elseif strcmp(conditionInfo.stimType, 'looming');
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw);
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw);
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
-        Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw), 0; %draw line 2 = bottom line start
+        Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw, 0); %draw line 2 = bottom line start
         
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
         trialData.flipTimes(frameIdx) = vbl;
@@ -588,14 +588,14 @@ elseif strcmp(conditionInfo.stimType, 'looming');
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw); %draw line 1 = top line
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw); %draw line 2 = bottom line
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
-        Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw), 0; %draw line 2 = bottom line start
+        Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw, 0); %draw line 2 = bottom line start
         %For the right eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
         Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %these are the same drawing commands as above but for the right eye
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw);
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw);
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
-        Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw), 0; %draw line 2 = bottom line start
+        Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw, 0); %draw line 2 = bottom line start
         
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
         trialData.flipTimes(frameIdx) = vbl;
@@ -632,14 +632,14 @@ elseif strcmp(conditionInfo.stimType, 'looming');
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw); %draw line 1 = top line
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw); %draw line 2 = bottom line
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
-        Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw), 0; %draw line 2 = bottom line start
+        Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw, 0); %draw line 2 = bottom line start
         %For the right eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
         Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %these are the same drawing commands as above but for the right eye
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw);
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw);
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
-        Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw), 0; %draw line 2 = bottom line start
+        Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw, 0); %draw line 2 = bottom line start
         
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
         trialData.flipTimes(frameIdx) = vbl;
