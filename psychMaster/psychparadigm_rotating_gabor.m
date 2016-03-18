@@ -30,7 +30,7 @@ conditionInfo(1).giveFeedback = true;
 
 % %Condition definitions
 %Condition 1, lets set some defaults:
-conditionInfo(1).stimDuration     = 10; %approximate stimulus duration in seconds
+conditionInfo(1).stimDuration     = 30; %approximate stimulus duration in seconds
 conditionInfo(1).preStimDuration  = 2;  %Static time before stimulus change
 conditionInfo(1).postStimDuration = 0;  %static time aftter stimulus change
 conditionInfo(1).iti              = 1;     %Minimum Inter Trial Interval
@@ -51,6 +51,11 @@ conditionInfo(1).orientationSigma = 5;
 conditionInfo(2) = conditionInfo(1);
 conditionInfo(2).orientationSigma = 5;
 conditionInfo(2).contrast = 0.04 ;
+
+conditionInfo(3) = conditionInfo(1);
+conditionInfo(3).orientationSigma = 5;
+conditionInfo(3).contrast = 2;
+
 
 
 
