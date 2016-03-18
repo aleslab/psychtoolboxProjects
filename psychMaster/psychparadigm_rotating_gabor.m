@@ -31,7 +31,11 @@ conditionInfo(1).giveFeedback = true;
 % %Condition definitions
 %Condition 1, lets set some defaults:
 conditionInfo(1).stimDuration     = 10; %approximate stimulus duration in seconds
+%<<<<<<< Updated upstream
 conditionInfo(1).preStimDuration  = 2;  %Static time before stimulus change
+% =======
+% conditionInfo(1).preStimDuration  = 0.5;  %Static time before stimulus change
+% >>>>>>> Stashed changes
 conditionInfo(1).postStimDuration = 0;  %static time aftter stimulus change
 conditionInfo(1).iti              = 1;     %Minimum Inter Trial Interval
 conditionInfo(1).responseDuration  = 0;    %Post trial window for waiting for a response
