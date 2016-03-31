@@ -16,8 +16,8 @@ conditionInfo(iCond).trialFun=@MoveLineTrial;
 
 conditionInfo(iCond).type             = '2afc'; 
 conditionInfo(iCond).stimType         = condStimTypes{iCond};
-conditionInfo(iCond).stimDurationSection1 = 0.250; %approximate stimulus duration in seconds
-conditionInfo(iCond).stimDurationSection2 = 0.250;
+conditionInfo(iCond).stimDurationSection1 = 0.50; %approximate stimulus duration in seconds
+conditionInfo(iCond).stimDurationSection2 = 0.50;
 conditionInfo(iCond).preStimDuration  = 0.25;  %Static time before stimulus change
 conditionInfo(iCond).postStimDuration = 0;  %static time after stimulus change 
 %may need to reintroduce something for post stimduration because it can get confusing when doing the experiment
@@ -28,9 +28,9 @@ conditionInfo(iCond).velocityCmPerSecSection2 = (-40)-(conditionInfo(iCond).velo
 conditionInfo(iCond).isNullCorrect = false;
 conditionInfo(iCond).horizontalOneStartPos = 1; %a y coordinate. the others are x. 
 conditionInfo(iCond).horizontalTwoStartPos = -1;
-conditionInfo(iCond).nReps = 30; %number of repeats
+conditionInfo(iCond).nReps = 10; %number of repeats
 conditionInfo(iCond).giveFeedback = false;
-conditionInfo(iCond).depthStart = 5; %5cm behind the plane of the screen
+conditionInfo(iCond).depthStart = 10; %5cm behind the plane of the screen
 conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];
 
 nullCondition = conditionInfo(iCond);

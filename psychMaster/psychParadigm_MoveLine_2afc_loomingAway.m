@@ -15,8 +15,8 @@ conditionInfo(1).trialFun=@MoveLineTrial;
 %Condition 1, lets set some defaults:
 conditionInfo(1).type             = '2afc'; 
 conditionInfo(1).stimType         = 'looming'; 
-conditionInfo(1).stimDurationSection1 = 0.250; %approximate stimulus duration in seconds
-conditionInfo(1).stimDurationSection2 = 0.250;%second half of the stimulus duration
+conditionInfo(1).stimDurationSection1 = 0.50; %approximate stimulus duration in seconds
+conditionInfo(1).stimDurationSection2 = 0.50;%second half of the stimulus duration
 conditionInfo(1).preStimDuration  = 0.25;  %Static time before stimulus change
 conditionInfo(1).postStimDuration = 0;  %static time after stimulus change
 conditionInfo(1).iti              = 1;     %Inter Stimulus Interval
@@ -27,9 +27,9 @@ conditionInfo(1).isNullCorrect = false;
 %This is the start position (+ = above fixation, - = below)of the first line in each eye. 
 conditionInfo(1).horizontalOneStartPos = 1; %a y coordinate. the others are x. 
 conditionInfo(1).horizontalTwoStartPos = -1;
-conditionInfo(1).nReps = 30; %number of repeats
+conditionInfo(1).nReps = 10; %number of repeats
 conditionInfo(1).giveFeedback = false;
-conditionInfo(1).depthStart = -5; %5cm behind the plane of the screen
+conditionInfo(1).depthStart = -10; %5cm behind the plane of the screen
 %Now let's create the null that this will be compared with in the 2afc
 %trial.  First we copy all the paramaters.
 nullCondition = conditionInfo(1);
