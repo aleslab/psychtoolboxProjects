@@ -49,6 +49,9 @@ function [] = psychMaster(sessionInfo)
 %                                          is treated as correct. If set to 
 %                                          false (default) the other condition 
 %                                          is considered correct.
+%   'directionreport' - For dealing with data from a direction
+%                       discrimination task where there are 8 different 
+%                       options for response in a "circle".
 %
 %   expInfo defines experiment wide settings. Mostly things that are
 %   for PsychToolbox.  But also other things that are aren't specific to a
@@ -456,7 +459,68 @@ end;
                             trialData.feedbackMsg = 'Incorrect';
                         end
                     end
+                case 'directionreport'
                     
+                    [trialData] = conditionInfo(thisCond).trialFun(expInfo,conditionInfo(thisCond));
+                    
+                    expInfo = drawFixationInfo(expInfo);
+                    
+                    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+                    Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);
+                    Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw, 0);
+                    
+                    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
+                    Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);
+                    Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw, 0);
+                    
+                    Screen('Flip', expInfo.curWindow);
+                    
+                    [responseData] = getResponse(expInfo,conditionInfo(thisCond).responseDuration);
+                    
+                    trialData.firstPress = responseData.firstPress;
+                    trialData.pressed    = responseData.pressed;
+                    trialData.abortNow = false;
+                    
+                    trialData.validTrial = false; %Default not valid unless proven otherwise
+                        %pressed escape lets abort experiment;
+                        trialData.validTrial = false;
+                        experimentData(iTrial).validTrial = false;
+                        trialData.abortNow = true;
+                        
+                        trialData.validTrial = false;
+                        experimentData(iTrial).validTrial = false;
+                        DrawFormattedTextStereo(expInfo.curWindow, expInfo.pauseInfo, ...
+                            'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
+                        Screen('Flip', expInfo.curWindow);
+                        KbStrokeWait();
+                        
+                    elseif trialData.firstPress(KbName('1')); %left-towards response
+                        experimentData(iTrial).chosenInterval = 1;
+                        trialData.validTrial = true;
+                    elseif trialData.firstPress(KbName('2'))
+                        experimentData(iTrial).chosenInterval = 2; %towards response
+                        trialData.validTrial = true;
+                    elseif trialData.firstPress(KbName('3'))
+                        experimentData(iTrial).chosenInterval = 3; %right-towards response
+                        trialData.validTrial = true;
+                    elseif trialData.firstPress(KbName('4'))
+                        experimentData(iTrial).chosenInterval = 4; %left reponse
+                        trialData.validTrial = true;
+                    elseif trialData.firstPress(KbName('6'))
+                        experimentData(iTrial).chosenInterval = 6; %right response
+                        trialData.validTrial = true;
+                    elseif trialData.firstPress(KbName('7'))
+                        experimentData(iTrial).chosenInterval = 7; %left-away response
+                        trialData.validTrial = true;
+                    elseif trialData.firstPress(KbName('8'))
+                        experimentData(iTrial).chosenInterval = 8; %away response
+                        trialData.validTrial = true;
+                    elseif trialData.firstPress(KbName('9'))
+                        experimentData(iTrial).chosenInterval = 9; %right-away response
+                        trialData.validTrial = true;
+                    end
+
+  
             end
             
             
