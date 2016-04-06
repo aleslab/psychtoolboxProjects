@@ -26,7 +26,8 @@ else
 end
 
 saveFilename = [ filePrefix '_' ...
-            sessionInfo.participantID '_' num2str(nFiles) '_file_cat.mat'];
+            sessionInfo.participantID '_' num2str(nFiles) '_file_cat' ...
+            datestr(now,'yyyymmdd_HHMMSS') '.mat'];
 
 if nargin == 1
     outputDir = fileparts(filesToConcatenate{1});
