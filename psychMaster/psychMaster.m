@@ -391,17 +391,11 @@ end;
                     WaitSecs(conditionInfo(thisCond).iti);
                     [trialData.secondCond] = conditionInfo(thisCond).trialFun(expInfo,secondCond);
                     
-                    expInfo = drawFixationInfo(expInfo);
+                    fixationType = 'cross';
+                    responseSquare = 1;
+                    apetureType = 'frame';
                     
-                    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-                    Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);
-                    Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw, 0);
-                    
-                    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-                    Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);
-                    Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw, 0);
-                    
-                    Screen('Flip', expInfo.curWindow);
+                    expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
                     
                     [responseData] = getResponse(expInfo,conditionInfo(thisCond).responseDuration);
                     
@@ -463,17 +457,11 @@ end;
                     
                     [trialData] = conditionInfo(thisCond).trialFun(expInfo,conditionInfo(thisCond));
                     
-                    expInfo = drawFixationInfo(expInfo);
+                    fixationType = 'cross';
+                    responseSquare = 1;
+                    apetureType = 'frame';
                     
-                    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-                    Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);
-                    Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw, 0);
-                    
-                    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-                    Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);
-                    Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw, 0);
-                    
-                    Screen('Flip', expInfo.curWindow);
+                    expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
                     
                     [responseData] = getResponse(expInfo,conditionInfo(thisCond).responseDuration);
                     
