@@ -19,7 +19,7 @@ for iCond = 1: length(firstVelocities);
 %This defines what function to call to draw the condition
 conditionInfo(iCond).trialFun=@MoveLineTrial;
 
-conditionInfo(iCond).type             = 'dirDiscrimination'; 
+conditionInfo(iCond).type             = 'simpleResponse'; 
 conditionInfo(iCond).stimType         = condStimTypes{iCond}; 
 conditionInfo(iCond).stimDurationSection1 = stimDuration1(iCond); %approximate stimulus duration in seconds
 conditionInfo(iCond).stimDurationSection2 = stimDuration2(iCond);

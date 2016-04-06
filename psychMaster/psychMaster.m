@@ -30,8 +30,12 @@ function [] = psychMaster(sessionInfo)
 %                  e.g. 'vertical', 'Contrast: 25', or  'Target: Red'
 %   giveFeedback = [false] Bolean whether to print feedback after trial
 %   type = ['generic'] A string that identifies what type of trial, choices:
-%          'Generic'  -  The @trialFun will handle collecting responses and
+%          'Generic'  -  The most basic trial handling. Only handles
+%                        randomizing, trial presentation and saving data.
+%                        The @trialFun will handle collecting responses and
 %                        feedback
+%    'simpleResponse' -  Like 'Generic' but waits for a response after
+%                        every trial and saves it. 
 %          '2afc'     -  This will implement 2 temporal alternative forced
 %                        choice. This option will collect responses and
 %                        will optionally provide feedback (if giveFeedback is set to TRUE).
@@ -322,12 +326,49 @@ end;
             switch lower(conditionInfo(thisCond).type)
                 %generic trials just fire the trial function. Everything is
                 %handled there.
-                case 'generic'
+                case {'generic', 'simpleresponse'}
                     %ISI happens before a trial starts, this isn't a super-accurate way
                     %to create an ISI, it makes an ISI at LEAST this big.
                     WaitSecs(conditionInfo(thisCond).iti);
                     
                     [trialData] = conditionInfo(thisCond).trialFun(expInfo,conditionInfo(thisCond));
+                
+                    
+                    %Here we'll add the response collection
+                    %There is a bit of redunancy with the 2afc code.  I
+                    %don't like it but it will do for now.  
+                    if strcmp(lower(conditionInfo(thisCond).type),'simpleresponse')
+                    
+                        [responseData] = getResponse(expInfo,conditionInfo(thisCond).responseDuration);
+                    
+                        trialData.firstPress = responseData.firstPress;
+                        trialData.pressed    = responseData.pressed;
+                        trialData.abortNow = false;
+                        trialData.validTrial = false; %Default not valid unless proven otherwise
+                       
+                        if trialData.firstPress(KbName('ESCAPE'))
+                            %pressed escape lets abort experiment;
+                            trialData.validTrial = false;
+                            experimentData(iTrial).validTrial = false;
+                            trialData.abortNow = true;
+                            
+                        elseif trialData.firstPress(KbName('space'))
+                            trialData.validTrial = false;
+                            experimentData(iTrial).validTrial = false;
+                            DrawFormattedTextStereo(expInfo.curWindow, expInfo.pauseInfo, ...
+                                'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
+                            Screen('Flip', expInfo.curWindow);
+                            KbStrokeWait();
+                            
+                        else
+                           trialData.validTrial = true;
+                        end
+                        
+                            
+                    
+                    end
+                    
+                    
                     
                 case '2afc'
                     
