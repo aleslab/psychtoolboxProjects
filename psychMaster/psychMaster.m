@@ -494,31 +494,45 @@ end;
                         Screen('Flip', expInfo.curWindow);
                         KbStrokeWait();
                         
-                    elseif trialData.firstPress(KbName('1')); %left-towards response
-                        experimentData(iTrial).chosenInterval = 1;
-                        trialData.validTrial = true;
-                    elseif trialData.firstPress(KbName('2'))
-                        experimentData(iTrial).chosenInterval = 2; %towards response
-                        trialData.validTrial = true;
-                    elseif trialData.firstPress(KbName('3'))
-                        experimentData(iTrial).chosenInterval = 3; %right-towards response
-                        trialData.validTrial = true;
-                    elseif trialData.firstPress(KbName('4'))
-                        experimentData(iTrial).chosenInterval = 4; %left reponse
-                        trialData.validTrial = true;
-                    elseif trialData.firstPress(KbName('6'))
-                        experimentData(iTrial).chosenInterval = 6; %right response
-                        trialData.validTrial = true;
-                    elseif trialData.firstPress(KbName('7'))
-                        experimentData(iTrial).chosenInterval = 7; %left-away response
-                        trialData.validTrial = true;
-                    elseif trialData.firstPress(KbName('8'))
-                        experimentData(iTrial).chosenInterval = 8; %away response
-                        trialData.validTrial = true;
-                    elseif trialData.firstPress(KbName('9'))
-                        experimentData(iTrial).chosenInterval = 9; %right-away response
-                        trialData.validTrial = true;
-                    end
+                        if trialData.firstPress(KbName('ESCAPE')) %same as above
+                            %pressed escape lets abort experiment;
+                            trialData.validTrial = false;
+                            experimentData(iTrial).validTrial = false;
+                            trialData.abortNow = true;
+                            
+                        elseif trialData.firstPress(KbName('space')) %same as above
+                            trialData.validTrial = false;
+                            experimentData(iTrial).validTrial = false;
+                            DrawFormattedTextStereo(expInfo.curWindow, expInfo.pauseInfo, ...
+                                'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
+                            Screen('Flip', expInfo.curWindow);
+                            KbStrokeWait();
+                            
+                        elseif trialData.firstPress(KbName('1')); %left-towards response
+                            experimentData(iTrial).chosenInterval = 1;
+                            trialData.validTrial = true;
+                        elseif trialData.firstPress(KbName('2'))
+                            experimentData(iTrial).chosenInterval = 2; %towards response
+                            trialData.validTrial = true;
+                        elseif trialData.firstPress(KbName('3'))
+                            experimentData(iTrial).chosenInterval = 3; %right-towards response
+                            trialData.validTrial = true;
+                        elseif trialData.firstPress(KbName('4'))
+                            experimentData(iTrial).chosenInterval = 4; %left reponse
+                            trialData.validTrial = true;
+                        elseif trialData.firstPress(KbName('6'))
+                            experimentData(iTrial).chosenInterval = 6; %right response
+                            trialData.validTrial = true;
+                        elseif trialData.firstPress(KbName('7'))
+                            experimentData(iTrial).chosenInterval = 7; %left-away response
+                            trialData.validTrial = true;
+                        elseif trialData.firstPress(KbName('8'))
+                            experimentData(iTrial).chosenInterval = 8; %away response
+                            trialData.validTrial = true;
+                        elseif trialData.firstPress(KbName('9'))
+                            experimentData(iTrial).chosenInterval = 9; %right-away response
+                            trialData.validTrial = true;
+                        end
 
   
             end
