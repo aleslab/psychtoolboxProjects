@@ -480,19 +480,6 @@ end;
                     trialData.firstPress = responseData.firstPress;
                     trialData.pressed    = responseData.pressed;
                     trialData.abortNow = false;
-                    
-                    trialData.validTrial = false; %Default not valid unless proven otherwise
-                        %pressed escape lets abort experiment;
-                        trialData.validTrial = false;
-                        experimentData(iTrial).validTrial = false;
-                        trialData.abortNow = true;
-                        
-                        trialData.validTrial = false;
-                        experimentData(iTrial).validTrial = false;
-                        DrawFormattedTextStereo(expInfo.curWindow, expInfo.pauseInfo, ...
-                            'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
-                        Screen('Flip', expInfo.curWindow);
-                        KbStrokeWait();
                         
                         if trialData.firstPress(KbName('ESCAPE')) %same as above
                             %pressed escape lets abort experiment;
@@ -508,7 +495,8 @@ end;
                             Screen('Flip', expInfo.curWindow);
                             KbStrokeWait();
                             
-                        elseif trialData.firstPress(KbName('1')); %left-towards response
+                        else
+                            if trialData.firstPress(KbName('1')); %left-towards response
                             experimentData(iTrial).chosenInterval = 1;
                             trialData.validTrial = true;
                         elseif trialData.firstPress(KbName('2'))
@@ -532,7 +520,9 @@ end;
                         elseif trialData.firstPress(KbName('9'))
                             experimentData(iTrial).chosenInterval = 9; %right-away response
                             trialData.validTrial = true;
+                            end
                         end
+                        
 
   
             end
