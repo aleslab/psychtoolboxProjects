@@ -36,7 +36,7 @@ if responseSquare == 1;
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
     Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw, 0);
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-    Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw, 0); 
+    Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw, 0);
 end
 
 %% apeture drawing
@@ -45,27 +45,42 @@ end
 
 if strcmp(apetureType, 'frame');
     
-    leftRectMat = randn([400, screenYpixels]);
-    rightRectMat = randn([400, screenYpixels]);
-    topHorzMat = randn([400, screenYpixels]);
-    bottomHorzMat = randn([400, screenYpixels]);
+    rectSize = 100;
+    
+    leftRectMat = randn([screenYpixels, rectSize]);
+    rightRectMat = randn([screenYpixels, rectSize]);
+    topHorzMat = randn([rectSize, screenXpixels]);
+    bottomHorzMat = randn([rectSize, screenXpixels]);
+    
+    leftRectLocation = [0 0 rectSize screenYpixels];
+    rightRectLocation = [(screenXpixels-rectSize) 0 screenXpixels screenYpixels];
+    topRectLocation = [0 0 screenXpixels rectSize]; %this draws the top rectangle along the entire length of the top of the screen
+    bottomRectLocation = [0 (screenYpixels-rectSize) screenXpixels screenYpixels];
     
     leftRectTexture = Screen('MakeTexture', expInfo.curWindow, leftRectMat);
-    rightRectTexture = Screen('MakeTexture', expInfo.curWindow, rightRectMat);
-    topHorzTexture = Screen('MakeTexture', expInfo.curWindow, topHorzMat);
-    bottomHorzTexture = Screen('MakeTexture', expInfo.curWindow, bottomHorzMat);
-    allTextures = [leftRectTexture rightRectTexture topHorzTexture bottomHorzTexture];
-    
-    leftRectLocation = [];
-    rightRectLocation = [];
-    topRectLocation = [];
-    bottomRectLocation = [];
-    allRectLocations = [leftRectLocation; rightRectLocation; topRectLocation; bottomRectLocation];
-    
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-    Screen('DrawTextures', expInfo.curWindow, allTextures, [], []);
+    Screen('DrawTexture', expInfo.curWindow, leftRectTexture, [], [leftRectLocation]);
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-    Screen('DrawTextures', expInfo.curWindow, allTextures, [], []);
+    Screen('DrawTexture', expInfo.curWindow, leftRectTexture, [], [leftRectLocation]);
+    
+    rightRectTexture = Screen('MakeTexture', expInfo.curWindow, rightRectMat);
+    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+    Screen('DrawTexture', expInfo.curWindow, rightRectTexture, [], [rightRectLocation]);
+    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
+    Screen('DrawTexture', expInfo.curWindow, rightRectTexture, [], [rightRectLocation]);
+    
+    topHorzTexture = Screen('MakeTexture', expInfo.curWindow, topHorzMat);
+    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+    Screen('DrawTexture', expInfo.curWindow, topHorzTexture, [], [topRectLocation]);
+    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
+    Screen('DrawTexture', expInfo.curWindow, topHorzTexture, [], [topRectLocation]);
+    
+    bottomHorzTexture = Screen('MakeTexture', expInfo.curWindow, bottomHorzMat);
+    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+    Screen('DrawTexture', expInfo.curWindow, bottomHorzTexture, [], [bottomRectLocation]);
+    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
+    Screen('DrawTexture', expInfo.curWindow, bottomHorzTexture, [], [bottomRectLocation]);
+    
     
 end
 
