@@ -41,7 +41,31 @@ end
 
 %% apeture drawing
 
+[screenXpixels, screenYpixels] = Screen('WindowSize', expInfo.curWindow);
+
 if strcmp(apetureType, 'frame');
+    
+    leftRectMat = randn([400, screenYpixels]);
+    rightRectMat = randn([400, screenYpixels]);
+    topHorzMat = randn([400, screenYpixels]);
+    bottomHorzMat = randn([400, screenYpixels]);
+    
+    leftRectTexture = Screen('MakeTexture', expInfo.curWindow, leftRectMat);
+    rightRectTexture = Screen('MakeTexture', expInfo.curWindow, rightRectMat);
+    topHorzTexture = Screen('MakeTexture', expInfo.curWindow, topHorzMat);
+    bottomHorzTexture = Screen('MakeTexture', expInfo.curWindow, bottomHorzMat);
+    allTextures = [leftRectTexture rightRectTexture topHorzTexture bottomHorzTexture];
+    
+    leftRectLocation = [];
+    rightRectLocation = [];
+    topRectLocation = [];
+    bottomRectLocation = [];
+    allRectLocations = [leftRectLocation; rightRectLocation; topRectLocation; bottomRectLocation];
+    
+    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+    Screen('DrawTextures', expInfo.curWindow, allTextures, [], []);
+    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
+    Screen('DrawTextures', expInfo.curWindow, allTextures, [], []);
     
 end
 
