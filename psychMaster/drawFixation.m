@@ -2,7 +2,7 @@ function [expInfo] = drawFixation(expInfo, fixationType, responseSquare, apeture
 % A function to draw fixation crosses, boxes around fixation crosses and an
 % apeture to aid fixation.
 
-expInfo.stereoMode = 4;
+%expInfo.stereoMode = 4;
 %% Basic fixation cross
 
 %x centre is expInfo.center(1)
