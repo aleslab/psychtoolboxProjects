@@ -9,11 +9,14 @@ function [trialData] = MoveLineTrial(expInfo, conditionInfo)
 trialData.validTrial = false;
 trialData.abortNow   = false;
 
-vbl=Screen('Flip', expInfo.curWindow); %flipping to the screen
 expInfo.lw = 1;
 fixationType = 'cross';
 responseSquare = 0;
 apetureType = 'frame';
+
+expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+vbl=Screen('Flip', expInfo.curWindow); %flipping to the screen
+
 
 %eye information
 IOD = 6; %Interocular distance.
