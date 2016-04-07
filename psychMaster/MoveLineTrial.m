@@ -10,7 +10,7 @@ trialData.validTrial = false;
 trialData.abortNow   = false;
 
 vbl=Screen('Flip', expInfo.curWindow); %flipping to the screen
-
+expInfo.lw = 1;
 fixationType = 'cross';
 responseSquare = 0;
 apetureType = 'frame';
@@ -697,11 +697,12 @@ elseif strcmp(conditionInfo.stimType, 'looming');
 end
 %KbStrokeWait(); %again to pause so that a measurement can be made.
 
-Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);
-
-Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);
+expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+% Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+% Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);
+% 
+% Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
+% Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);
 
 Screen('Flip', expInfo.curWindow); %the final necessary flip.
 trialData.flipTimes(frameIdx) = vbl;

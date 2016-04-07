@@ -38,7 +38,7 @@ if responseSquare == 1;
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
     Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw, 0); 
 end
-Screen('Flip', expInfo.curWindow);
+
 %% apeture drawing
 
 if strcmp(apetureType, 'frame');

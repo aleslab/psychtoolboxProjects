@@ -396,6 +396,7 @@ end;
                     apetureType = 'frame';
                     
                     expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+                    Screen('Flip', expInfo.curWindow);
                     
                     [responseData] = getResponse(expInfo,conditionInfo(thisCond).responseDuration);
                     
@@ -462,6 +463,7 @@ end;
                     apetureType = 'frame';
                     
                     expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+                    Screen('Flip', expInfo.curWindow);
                     
                     [responseData] = getResponse(expInfo,conditionInfo(thisCond).responseDuration);
                     
@@ -531,7 +533,7 @@ end;
                 validTrialList(iTrial) = false;
                 experimentData(iTrial).validTrial = false;
                 
-                
+               
                 DrawFormattedTextStereo(expInfo.curWindow, 'Invalid trial','center', 'center', 1);
                 
                 Screen('Flip', expInfo.curWindow);
