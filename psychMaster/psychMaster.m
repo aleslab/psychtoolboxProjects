@@ -533,20 +533,35 @@ end;
                 validTrialList(iTrial) = false;
                 experimentData(iTrial).validTrial = false;
                 
-               
+                fixationType = '';
+                responseSquare = 0;
+                apetureType = 'frame';
+                
+
                 DrawFormattedTextStereo(expInfo.curWindow, 'Invalid trial','center', 'center', 1);
+                
+                expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
                 
                 Screen('Flip', expInfo.curWindow);
                 WaitSecs(.5);
+                expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
                 Screen('Flip', expInfo.curWindow);
                 
                 %valid response made, should we give feedback?
             elseif conditionInfo(thisCond).giveFeedback
                 %Give feedback:
+                 fixationType = '';
+                responseSquare = 0;
+                apetureType = 'frame';
+                
                 DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
                     'center', 'center', feedbackColor);
+                
+                expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+                
                 Screen('Flip', expInfo.curWindow);
                 WaitSecs(1.5);
+                expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
                 Screen('Flip', expInfo.curWindow);
             end
             
