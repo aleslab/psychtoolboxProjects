@@ -376,6 +376,7 @@ end;
                 case '2afc'
                     
                     %Which trial first?
+                    rng('shuffle');
                     nullFirst = rand()>.5;
                     
                     if nullFirst

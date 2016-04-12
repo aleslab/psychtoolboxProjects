@@ -6,7 +6,7 @@ function [conditionInfo, expInfo] = psychParadigm_MoveLine_DirectionDiscriminati
 %for the combined (double vertical line) version of this.
 
 expInfo = moveLineDefaultSettings(expInfo);
-expInfo.instructions = 'What direction did the stimulus move in?';
+expInfo.instructions = 'What direction did \nthe stimulus move in?';
 expInfo.paradigmName = 'MoveLine_DirectionDiscrimination_combined';
 %% conditions
 firstVelocities = cat(2,repmat([-20, 20],1,4)); % first section velocities are all 20cms-1 but in different directions
