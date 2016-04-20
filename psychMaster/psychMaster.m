@@ -30,8 +30,12 @@ function [] = psychMaster(sessionInfo)
 %                  e.g. 'vertical', 'Contrast: 25', or  'Target: Red'
 %   giveFeedback = [false] Bolean whether to print feedback after trial
 %   type = ['generic'] A string that identifies what type of trial, choices:
-%          'Generic'  -  The @trialFun will handle collecting responses and
+%          'Generic'  -  The most basic trial handling. Only handles
+%                        randomizing, trial presentation and saving data.
+%                        The @trialFun will handle collecting responses and
 %                        feedback
+%    'simpleResponse' -  Like 'Generic' but waits for a response after
+%                        every trial and saves it. 
 %          '2afc'     -  This will implement 2 temporal alternative forced
 %                        choice. This option will collect responses and
 %                        will optionally provide feedback (if giveFeedback is set to TRUE).
@@ -45,6 +49,9 @@ function [] = psychMaster(sessionInfo)
 %                                          is treated as correct. If set to 
 %                                          false (default) the other condition 
 %                                          is considered correct.
+%   'directionreport' - For dealing with data from a direction
+%                       discrimination task where there are 8 different 
+%                       options for response in a "circle".
 %
 %   expInfo defines experiment wide settings. Mostly things that are
 %   for PsychToolbox.  But also other things that are aren't specific to a
@@ -322,16 +329,54 @@ end;
             switch lower(conditionInfo(thisCond).type)
                 %generic trials just fire the trial function. Everything is
                 %handled there.
-                case 'generic'
+                case {'generic', 'simpleresponse'}
                     %ISI happens before a trial starts, this isn't a super-accurate way
                     %to create an ISI, it makes an ISI at LEAST this big.
                     WaitSecs(conditionInfo(thisCond).iti);
                     
                     [trialData] = conditionInfo(thisCond).trialFun(expInfo,conditionInfo(thisCond));
+                
+                    
+                    %Here we'll add the response collection
+                    %There is a bit of redunancy with the 2afc code.  I
+                    %don't like it but it will do for now.  
+                    if strcmp(lower(conditionInfo(thisCond).type),'simpleresponse')
+                    
+                        [responseData] = getResponse(expInfo,conditionInfo(thisCond).responseDuration);
+                    
+                        trialData.firstPress = responseData.firstPress;
+                        trialData.pressed    = responseData.pressed;
+                        trialData.abortNow = false;
+                        trialData.validTrial = false; %Default not valid unless proven otherwise
+                       
+                        if trialData.firstPress(KbName('ESCAPE'))
+                            %pressed escape lets abort experiment;
+                            trialData.validTrial = false;
+                            experimentData(iTrial).validTrial = false;
+                            trialData.abortNow = true;
+                            
+                        elseif trialData.firstPress(KbName('space'))
+                            trialData.validTrial = false;
+                            experimentData(iTrial).validTrial = false;
+                            DrawFormattedTextStereo(expInfo.curWindow, expInfo.pauseInfo, ...
+                                'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
+                            Screen('Flip', expInfo.curWindow);
+                            KbStrokeWait();
+                            
+                        else
+                           trialData.validTrial = true;
+                        end
+                        
+                            
+                    
+                    end
+                    
+                    
                     
                 case '2afc'
                     
                     %Which trial first?
+                    rng('shuffle');
                     nullFirst = rand()>.5;
                     
                     if nullFirst
@@ -347,17 +392,13 @@ end;
                     WaitSecs(conditionInfo(thisCond).iti);
                     [trialData.secondCond] = conditionInfo(thisCond).trialFun(expInfo,secondCond);
                     
-                    expInfo = drawFixationInfo(expInfo);
+                    fixationType = 'cross';
+                    responseSquare = 1;
+                    apetureType = 'frame';
                     
-                    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-                    Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);
-                    Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw, 0);
-                    
-                    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-                    Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);
-                    Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw, 0);
-                    
+                    expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
                     Screen('Flip', expInfo.curWindow);
+                    Screen('close', expInfo.allTextures);
                     
                     [responseData] = getResponse(expInfo,conditionInfo(thisCond).responseDuration);
                     
@@ -415,7 +456,68 @@ end;
                             trialData.feedbackMsg = 'Incorrect';
                         end
                     end
+                case 'directionreport'
                     
+                    [trialData] = conditionInfo(thisCond).trialFun(expInfo,conditionInfo(thisCond));
+                    
+                    fixationType = 'cross';
+                    responseSquare = 1;
+                    apetureType = 'frame';
+                    
+                    expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+                    Screen('Flip', expInfo.curWindow);
+                    Screen('close', expInfo.allTextures);
+                    
+                    [responseData] = getResponse(expInfo,conditionInfo(thisCond).responseDuration);
+                    
+                    trialData.firstPress = responseData.firstPress;
+                    trialData.pressed    = responseData.pressed;
+                    trialData.abortNow = false;
+                        
+                        if trialData.firstPress(KbName('ESCAPE')) %same as above
+                            %pressed escape lets abort experiment;
+                            trialData.validTrial = false;
+                            experimentData(iTrial).validTrial = false;
+                            trialData.abortNow = true;
+                            
+                        elseif trialData.firstPress(KbName('space')) %same as above
+                            trialData.validTrial = false;
+                            experimentData(iTrial).validTrial = false;
+                            DrawFormattedTextStereo(expInfo.curWindow, expInfo.pauseInfo, ...
+                                'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
+                            Screen('Flip', expInfo.curWindow);
+                            KbStrokeWait();
+                            
+                        else
+                            if trialData.firstPress(KbName('1')); %left-towards response
+                            experimentData(iTrial).chosenInterval = 1;
+                            trialData.validTrial = true;
+                        elseif trialData.firstPress(KbName('2'))
+                            experimentData(iTrial).chosenInterval = 2; %towards response
+                            trialData.validTrial = true;
+                        elseif trialData.firstPress(KbName('3'))
+                            experimentData(iTrial).chosenInterval = 3; %right-towards response
+                            trialData.validTrial = true;
+                        elseif trialData.firstPress(KbName('4'))
+                            experimentData(iTrial).chosenInterval = 4; %left reponse
+                            trialData.validTrial = true;
+                        elseif trialData.firstPress(KbName('6'))
+                            experimentData(iTrial).chosenInterval = 6; %right response
+                            trialData.validTrial = true;
+                        elseif trialData.firstPress(KbName('7'))
+                            experimentData(iTrial).chosenInterval = 7; %left-away response
+                            trialData.validTrial = true;
+                        elseif trialData.firstPress(KbName('8'))
+                            experimentData(iTrial).chosenInterval = 8; %away response
+                            trialData.validTrial = true;
+                        elseif trialData.firstPress(KbName('9'))
+                            experimentData(iTrial).chosenInterval = 9; %right-away response
+                            trialData.validTrial = true;
+                            end
+                        end
+                        
+
+  
             end
             
             
@@ -434,21 +536,40 @@ end;
                 validTrialList(iTrial) = false;
                 experimentData(iTrial).validTrial = false;
                 
+                fixationType = '';
+                responseSquare = 0;
+                apetureType = 'frame';
                 
+
                 DrawFormattedTextStereo(expInfo.curWindow, 'Invalid trial','center', 'center', 1);
                 
+                expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+                
                 Screen('Flip', expInfo.curWindow);
+                Screen('close', expInfo.allTextures);
                 WaitSecs(.5);
+                expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
                 Screen('Flip', expInfo.curWindow);
+                Screen('close', expInfo.allTextures);
                 
                 %valid response made, should we give feedback?
             elseif conditionInfo(thisCond).giveFeedback
                 %Give feedback:
+                 fixationType = '';
+                responseSquare = 0;
+                apetureType = 'frame';
+                
                 DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
                     'center', 'center', feedbackColor);
+                
+                expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+                
                 Screen('Flip', expInfo.curWindow);
+                Screen('close', expInfo.allTextures);
                 WaitSecs(1.5);
+                expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
                 Screen('Flip', expInfo.curWindow);
+                Screen('close', expInfo.allTextures);
             end
             
             

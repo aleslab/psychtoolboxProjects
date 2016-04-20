@@ -14,8 +14,8 @@ conditionInfo(1).trialFun=@MoveLineTrial;
 %Condition 1, lets set some defaults:
 conditionInfo(1).type             = '2afc'; 
 conditionInfo(1).stimType         = 'cd'; 
-conditionInfo(1).stimDurationSection1 = 0.250; %approximate "1st half of stimulus" duration in seconds
-conditionInfo(1).stimDurationSection2 = 0.250; %2nd stimulus half duration in seconds
+conditionInfo(1).stimDurationSection1 = 0.50; %approximate "1st half of stimulus" duration in seconds
+conditionInfo(1).stimDurationSection2 = 0.50; %2nd stimulus half duration in seconds
 conditionInfo(1).preStimDuration  = 0.25;  %Static time before stimulus change
 conditionInfo(1).postStimDuration = 0;  %static time after stimulus change
 conditionInfo(1).iti              = 1;     %Inter Stimulus Interval
@@ -24,9 +24,9 @@ conditionInfo(1).velocityCmPerSecSection1 = 20; %cm/s - 5cm in section 1
 conditionInfo(1).velocityCmPerSecSection2 = 20; %cm/s - 5cm in section 2; 10cm total
 conditionInfo(1).isNullCorrect = false; %because the condition is slower
 conditionInfo(1).startPos = 0; %start position of the line
-conditionInfo(1).nReps = 30; %number of repeats
+conditionInfo(1).nReps = 10; %number of repeats
 conditionInfo(1).giveFeedback = false;
-conditionInfo(1).depthStart = -5; %5cm behind the plane of the screen
+conditionInfo(1).depthStart = -10; %5cm behind the plane of the screen
 %Now let's create the null that this will be compared with in the 2afc
 %trial.  First we copy all the paramaters.
 nullCondition = conditionInfo(1);

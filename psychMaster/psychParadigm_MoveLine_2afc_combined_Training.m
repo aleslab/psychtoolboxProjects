@@ -16,8 +16,8 @@ conditionInfo(iCond).trialFun=@MoveLineTrial;
 
 conditionInfo(iCond).type             = '2afc'; 
 conditionInfo(iCond).stimType         = condStimTypes{iCond};
-conditionInfo(iCond).stimDurationSection1 = 0.250; %approximate stimulus duration in seconds
-conditionInfo(iCond).stimDurationSection2 = 0.250;
+conditionInfo(iCond).stimDurationSection1 = 0.50; %approximate stimulus duration in seconds
+conditionInfo(iCond).stimDurationSection2 = 0.50;
 conditionInfo(iCond).preStimDuration  = 0.25;  %Static time before stimulus change
 conditionInfo(iCond).postStimDuration = 0;  %static time after stimulus change 
 %may need to reintroduce something for post stimduration because it can get confusing when doing the experiment
@@ -30,7 +30,7 @@ conditionInfo(iCond).objectOneStartPos = -1; %when there are two lines in each e
 conditionInfo(iCond).objectTwoStartPos = 1; %the start position of the second line in each eye
 conditionInfo(iCond).nReps = 100; %number of repeats
 conditionInfo(iCond).giveFeedback = true;
-conditionInfo(iCond).depthStart = 5; %5cm behind the plane of the screen
+conditionInfo(iCond).depthStart = 10; %5cm behind the plane of the screen
 conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocity(iCond))];
 
 nullCondition = conditionInfo(iCond);

@@ -16,7 +16,13 @@ fieldListCommon = {...
 fieldList2afc = {...
 'nullCondition',[];...
 'isNullCorrect',false;...
+'responseDuration',3;...
 };
+
+fieldListSimpleResponse = {...
+'responseDuration',3;...
+ };
+
 
 nCond  = length(conditionInfo);
 
@@ -35,6 +41,12 @@ for iCond = 1:nCond,
         
     end
     
+    %validate simpleResponse specific fields
+    if strcmp(lower(conditionInfo(iCond).type),'simpleresponse')
+        
+        checkFields(iCond,fieldListSimpleResponse)
+        
+    end
     
     
 end
