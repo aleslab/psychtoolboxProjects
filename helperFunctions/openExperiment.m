@@ -177,7 +177,7 @@ Screen('BlendFunction', expInfo.curWindow,  GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
 expInfo.useKbQueue = false;
 KbName('UnifyKeyNames');
 expInfo.deviceIndex = [];
-ListenChar(0);
+ListenChar(2);
 
 
 if isfield(expInfo,'enablePowermate') && expInfo.enablePowermate

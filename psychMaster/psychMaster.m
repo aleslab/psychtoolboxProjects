@@ -69,7 +69,9 @@ function [] = psychMaster(sessionInfo)
 
 psychMasterVer = '0.20';
 %Save matlab output to file:
-diaryName = ['tmp_MatlabLog_' datestr(now,'yyyymmdd_HHMMSS') '.txt' ];
+thisFile = mfilename('fullpath');
+[thisDir, ~, ~] = fileparts(thisFile);
+diaryName = fullfile(thisDir,['tmp_MatlabLog_' datestr(now,'yyyymmdd_HHMMSS') '.txt' ]);
 diary(diaryName);
 
 %the sessionInfo structure is used to store information about the current session
@@ -79,6 +81,8 @@ if ~exist('sessionInfo','var') || isempty(sessionInfo)
     %store the date. use: datestr(sessionInfo.sessionDate) to make human readable
     sessionInfo.sessionDate = now;
     sessionInfo.psychMasterVer = psychMasterVer;
+    [~,ptbVerStruct]=PsychtoolboxVersion;
+    sessionInfo.ptbVersion = ptbVerStruct;
        
 end
 

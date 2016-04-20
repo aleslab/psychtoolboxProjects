@@ -30,15 +30,19 @@ conditionInfo(1).giveFeedback = true;
 
 % %Condition definitions
 %Condition 1, lets set some defaults:
-conditionInfo(1).stimDuration     = 120; %approximate stimulus duration in seconds
+conditionInfo(1).stimDuration     = 50; %approximate stimulus duration in seconds
+conditionInfo(1).stimDuration     = 50; %approximate stimulus duration in seconds
 conditionInfo(1).preStimDuration  = 2;  %Static time before stimulus change
+% =======
+% conditionInfo(1).preStimDuration  = 0.5;  %Static time before stimulus change
+% >>>>>>> Stashed changes
 conditionInfo(1).postStimDuration = 0;  %static time aftter stimulus change
 conditionInfo(1).iti              = 1;     %Minimum Inter Trial Interval
 conditionInfo(1).responseDuration  = 0;    %Post trial window for waiting for a response
 
 conditionInfo(1).sigma             =2; %standard deviation of the gabor in degrees
 conditionInfo(1).freq              =1; %frequency of the gabor in cycles per sigma. 
-conditionInfo(1).nReps             = 1; %% number of trials to present this condition. 
+conditionInfo(1).nReps             = 3; %% number of trials to present this condition. 
 conditionInfo(1).stimRadiusDeg  = 6;    %stimulus size in degree;
 
 conditionInfo(1).contrast = 0.25;
