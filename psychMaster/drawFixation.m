@@ -72,8 +72,8 @@ if strcmp(apetureType, 'frame');
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
     Screen('DrawTextures', expInfo.curWindow, expInfo.allTextures, [], [allLocations]);
 end
-
+rng(priorSeed);            % restore the generator settings
 end
 
 
-rng(priorSeed);            % restore the generator settings
+
