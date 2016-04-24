@@ -9,6 +9,7 @@ Cleanup the condition inspector. Make it draw in the same place. Or something
 that makes it work a little more intuitively. 
 Issue #7 Create an automatic format to create paradigms
 Add a check for if psychmaster changed from last run and warn user.  
+Unify the fixation drawing code. 
 
 Done:
 Make changes to conditions persist across trial tests.

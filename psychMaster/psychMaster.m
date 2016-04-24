@@ -90,7 +90,8 @@ if ~exist('sessionInfo','var') || isempty(sessionInfo)
     sessionInfo.psychMasterVer = psychMasterVer;
     [~,ptbVerStruct]=PsychtoolboxVersion;
     sessionInfo.ptbVersion = ptbVerStruct;
-       
+    rng('shuffle');
+    sessionInfo.randomSeed = rng;  
 end
 
 
@@ -376,7 +377,7 @@ end;
                 case '2afc'
                     
                     %Which trial first?
-                    rng('shuffle');
+
                     nullFirst = rand()>.5;
                     
                     if nullFirst
