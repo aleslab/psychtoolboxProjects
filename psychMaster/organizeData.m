@@ -27,6 +27,7 @@ thisRep  = repsPerCond(thisCond);
 
 thisTrialData = experimentData(iTrial).trialData;
 thisTrialData.condNumber = thisCond;
+thisTrialData.trialNumber = iTrial;
 sortedTrialData(thisCond).trialData(thisRep) = thisTrialData;
 
 end
