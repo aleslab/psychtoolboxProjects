@@ -58,6 +58,16 @@ xy = rotMtx'*initXy;
 
 %[minSmoothLineWidth, maxSmoothLineWidth, minAliasedLineWidth, maxAliasedLineWidth] = 
 
+if isfield(expInfo,'writeMovie') && expInfo.writeMovie
+% Only video, no sound:
+% We raise video quality to 50% for decent looking movies. See
+% comments in if-branch for more details about codec settings.
+movie = Screen('CreateMovie', expInfo.curWindow, 'MyTestMovie.mov', 512, 512, 30, ':CodecSettings=Videoquality=0.5 Profile=2');
+end
+% 
+
+
+
 if isfield(expInfo,'enablePowermate') 
     if expInfo.enablePowermate
         options.secs=0.0001;
@@ -111,6 +121,11 @@ for iFrame = 1:nFrames
      end
     
     flipTimes(iFrame)=Screen('Flip', expInfo.curWindow);
+    
+    if isfield(expInfo,'writeMovie') && expInfo.writeMovie
+        Screen('AddFrameToMovie', expInfo.curWindow,...
+            CenterRect([0 0 512 512], Screen('Rect', expInfo.curWindow)));
+    end
     
     if expInfo.enablePowermate
         err=PsychHID('ReceiveReports',expInfo.powermateId,options);
@@ -179,6 +194,10 @@ flipTimes(iFrame+1)= Screen('Flip', expInfo.curWindow);
 trialData.flipTimes = flipTimes;
 trialData.validTrial = true;
 
+% Finalize and close movie file, if any:
+if isfield(expInfo,'writeMovie') && expInfo.writeMovie
+    Screen('FinalizeMovie', movie);
+end
 curTime = GetSecs;
 
 %Flush any events that happend before the end of the trial
