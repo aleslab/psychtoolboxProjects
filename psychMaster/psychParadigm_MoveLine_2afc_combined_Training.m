@@ -7,7 +7,7 @@ expInfo = moveLineDefaultSettings(expInfo);
 expInfo.paradigmName = 'MoveLine_training_combined_towards';
 
 %% conditions
-firstVelocity = -35;
+firstVelocity = -5; %-35
 condStimTypes = {'combined'};
 
 for iCond = 1: length(firstVelocity);

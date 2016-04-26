@@ -7,7 +7,8 @@ expInfo = moveLineDefaultSettings(expInfo);
 expInfo.paradigmName = 'MoveLine_combined_towards';
 
 %% conditions
-firstVelocities = [-20:-2.5:-35 -20:-2.5:-35];
+firstVelocities = [-20:2.5:-5 -20:2.5:-5];
+% firstVelocities = [-20:-2.5:-35 -20:-2.5:-35];
 condStimTypes = cat(2, repmat( {'combined'},1,7) , repmat( {'lateralCombined'},1,7));
 
 for iCond = 1: length(firstVelocities);
