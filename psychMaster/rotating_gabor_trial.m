@@ -62,7 +62,7 @@ if isfield(expInfo,'writeMovie') && expInfo.writeMovie
 % Only video, no sound:
 % We raise video quality to 50% for decent looking movies. See
 % comments in if-branch for more details about codec settings.
-movie = Screen('CreateMovie', expInfo.curWindow, 'MyTestMovie.mov', 512, 512, 30, ':CodecSettings=Videoquality=0.5 Profile=2');
+movie = Screen('CreateMovie', expInfo.curWindow, 'MyTestMovie.mov', 1024, 1024, 30, ':CodecSettings=Videoquality=.9 Profile=2');
 end
 % 
 
@@ -124,7 +124,7 @@ for iFrame = 1:nFrames
     
     if isfield(expInfo,'writeMovie') && expInfo.writeMovie
         Screen('AddFrameToMovie', expInfo.curWindow,...
-            CenterRect([0 0 512 512], Screen('Rect', expInfo.curWindow)));
+            CenterRect([0 0 1024 1024], Screen('Rect', expInfo.curWindow)));
     end
     
     if expInfo.enablePowermate
