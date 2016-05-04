@@ -44,7 +44,7 @@ orientationSigma=conditionInfo.orientationSigma;
 %initAngularVelocity = 0;
 %F = [1 0;0 1;];
     
-orient =360*rand();
+orient = 360(rand);
 
 lineWidth = 4;
 lineLength = expInfo.ppd*.5;
