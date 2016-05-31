@@ -1,8 +1,10 @@
 function [trialData] = trial_ss_image_swap(expInfo, conditionInfo)
 
 
-nStim = conditionInfo.nStim;
-nTotalCycles = nStim+conditionInfo.nPrePost*2;
+nPairs= conditionInfo.nPairs;
+nStim = nPairs*2; %Number of different stimuli to present.
+nTotalImages = conditionInfo.nPairRepeats*(nStim+conditionInfo.nPrePost*2*2);
+nTotalCycles = conditionInfo.nPairRepeats*(nPairs+conditionInfo.nPrePost*2);
 
 
 timePerStim = expInfo.ifi*conditionInfo.nFramesPerStim;
@@ -29,29 +31,46 @@ end
 
 
 %Make all the needed textures
-for iStim=1:nStim
-    allTextures(iStim)=Screen('makeTexture', expInfo.curWindow,conditionInfo.imageMatrix(:,:,iStim));
+
+for iPair = 1:nPairs
+    for iAB = 1:2,
+    allTextures(iPair,iAB)=Screen('makeTexture', expInfo.curWindow,conditionInfo.imageMatrix(:,:,iPair,iAB));
+    end
 end
 Screen('Flip', expInfo.curWindow);
+
 %Make a list of the textures to present on each cycle.
-prefix = repmat([1:2],1,conditionInfo.nPrePost);
-postfix = repmat([nStim-1 nStim],1,conditionInfo.nPrePost);
-textureList = [prefix 1:nStim postfix];
+textureList = zeros(1,nTotalCycles);
+nPrePostPairs = conditionInfo.nPairRepeats*conditionInfo.nPrePost;
+startIdx = nPrePostPairs;
+for iPair = 1:nPairs, %Go through each pair of stim
+    for iPairRepeat = 1:conditionInfo.nPairRepeats, %repeat the pair this number of times
+        thisIdx = startIdx + 2*(iPair-1)+ iPairRepeat
+        textureList(thisIdx) = iPair;
+    end
+end
+
+textureList(1:nPrePostPairs) = 1;
+textureList((end-nPrePostPairs+1):end) = nPairs;
+            
 
 
+nTotalCycles
 
 for iCycle = 1:nTotalCycles
+    for iAB = 1:2,
 
     texIdx = textureList(iCycle);
-    Screen('DrawTexture', expInfo.curWindow, allTextures(texIdx), [], [], [], 0);
+    Screen('DrawTexture', expInfo.curWindow, allTextures(texIdx,iAB), [], [], [], 0);
 
     
-    if iCycle == 1,
-        flipTimes(iCycle)=Screen('Flip', expInfo.curWindow);
+    if iCycle == 1 && iAB == 1,
+        flipTimes(iCycle,iAB)=Screen('Flip', expInfo.curWindow);
     else
-        flipTimes(iCycle)=Screen('Flip', expInfo.curWindow,flipTimes(iCycle-1)+timePerStim);
-
+        flipTimes(iCycle,iAB)=Screen('Flip', expInfo.curWindow,previousFlipTime+timePerStim);   
     end
+    
+    previousFlipTime = flipTimes(iCycle,iAB);
     
     if isfield(expInfo,'writeMovie') && expInfo.writeMovie
         Screen('AddFrameToMovie', expInfo.curWindow,...
@@ -71,7 +90,7 @@ for iCycle = 1:nTotalCycles
     if trialData.pressed
         %         trialData.pressed = false;
         %         trialData.firstPress = zeros(size(trialData.firstPress));
-        flipTimes(iCycle)=Screen('Flip', expInfo.curWindow);
+        flipTimes(iCycle,iAB)=Screen('Flip', expInfo.curWindow);
         trialData.flipTimes = flipTimes;
         trialData.validTrial = false;
         return;
@@ -79,9 +98,11 @@ for iCycle = 1:nTotalCycles
 
     end
     
+    end
 end
 
-flipTimes(iCycle+1)= Screen('Flip', expInfo.curWindow);
+
+flipTimes(iCycle+1)= Screen('Flip', expInfo.curWindow,previousFlipTime+timePerStim);
 trialData.flipTimes = flipTimes;
 trialData.validTrial = true;
 
