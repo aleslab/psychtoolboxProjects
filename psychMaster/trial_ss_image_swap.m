@@ -7,7 +7,7 @@ nTotalImages = conditionInfo.nPairRepeats*(nStim+conditionInfo.nPrePost*2*2);
 nTotalCycles = conditionInfo.nPairRepeats*(nPairs+conditionInfo.nPrePost*2);
 
 
-timePerStim = expInfo.ifi*conditionInfo.nFramesPerStim;
+timePerStim = expInfo.ifi*(conditionInfo.nFramesPerStim-0.5); %Got to fully work out this -0.5.
 
 
 
@@ -45,7 +45,7 @@ nPrePostPairs = conditionInfo.nPairRepeats*conditionInfo.nPrePost;
 startIdx = nPrePostPairs;
 for iPair = 1:nPairs, %Go through each pair of stim
     for iPairRepeat = 1:conditionInfo.nPairRepeats, %repeat the pair this number of times
-        thisIdx = startIdx + 2*(iPair-1)+ iPairRepeat
+        thisIdx = startIdx + conditionInfo.nPairRepeats*(iPair-1)+ iPairRepeat;
         textureList(thisIdx) = iPair;
     end
 end
@@ -54,12 +54,10 @@ textureList(1:nPrePostPairs) = 1;
 textureList((end-nPrePostPairs+1):end) = nPairs;
             
 
-
-nTotalCycles
-
 for iCycle = 1:nTotalCycles
     for iAB = 1:2,
-
+        
+       
     texIdx = textureList(iCycle);
     Screen('DrawTexture', expInfo.curWindow, allTextures(texIdx,iAB), [], [], [], 0);
 
@@ -102,8 +100,9 @@ for iCycle = 1:nTotalCycles
 end
 
 
-flipTimes(iCycle+1)= Screen('Flip', expInfo.curWindow,previousFlipTime+timePerStim);
+lastStimFlipOffTime= Screen('Flip', expInfo.curWindow,previousFlipTime+timePerStim);
 trialData.flipTimes = flipTimes;
+trialData.lastStimFlipOffTime = lastStimFlipOffTime;
 trialData.validTrial = true;
 
 % Finalize and close movie file, if any:
@@ -118,6 +117,8 @@ if expInfo.useKbQueue
 end
 
 trialData.feedbackMsg = '';
+
+Screen('Close', allTextures(:));
 
 %Reset times to be with respect to trial end.
 %trialData.firstPress = trialData.firstPress-trialData.flipTimes(end);

@@ -11,13 +11,13 @@ expInfo.instructions = 'Instructions can go here. ';
 
 %This defines what function to call to draw the condition
 conditionInfo(1).trialFun=@trial_ss_image_swap;
-conditionInfo(1).nReps = 5; %number of repeats
+conditionInfo(1).nReps = 2; %number of repeats
 
 conditionInfo(1).iti  = 0;
 conditionInfo(1).type = 'generic';
-conditionInfo(1).nPrePost = 2; % amount of cycles to prefix and postfix, 1 cycle is an AB alternation
+conditionInfo(1).nPrePost = 1; % amount of cycles to prefix and postfix, 1 cycle is an AB alternation
 conditionInfo(1).nFramesPerStim = 30; %This will set the alternation rate.
-conditionInfo(1).nPairRepeats = 2; % Number of times to repeat a pair.
+conditionInfo(1).nPairRepeats = 1; % Number of times to repeat a pair.
 conditionInfo(1).responseDuration = 1;    %Post trial window for waiting for a response
 
 %conditionInfo(1).nStim = 1;  %Obsolete
