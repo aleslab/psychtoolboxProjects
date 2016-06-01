@@ -1,10 +1,11 @@
 function [sortedTrialData] = organizeData(sessionInfo,experimentData)
-% ORGANIZEDATA This function organizes an experiment session 
+% ORGANIZEDATA This function organizes the valid data from an experiment session 
 %
 % [sortedTrialData] = organizeData(sessionInfo,experimentData)
 %
 %  This function takes an experimental session and collects
-%  all the repetitions of a condition together
+%  all the repetitions of a condition together and removes any invalid
+%  trials
 %
 %  Output:
 %  sortedTrialData  = sortedTrialData(nConditions).trialData(nRepetitions)
@@ -16,19 +17,25 @@ function [sortedTrialData] = organizeData(sessionInfo,experimentData)
 
 nCond = length(sessionInfo.conditionInfo);
 
-repsPerCond = zeros(nCond,1); %Keep track of the repetitions per condition
+repsPerCond = zeros(nCond,1); %Keep track of the valid repetitions per condition
 
 for iTrial = 1:length(experimentData),
-
-thisCond = experimentData(iTrial).condNumber;
-%Increment the reps by 1; 
-repsPerCond(thisCond) = repsPerCond(thisCond) + 1; 
-thisRep  = repsPerCond(thisCond);
-
-thisTrialData = experimentData(iTrial).trialData;
-thisTrialData.condNumber = thisCond;
-thisTrialData.trialNumber = iTrial;
-sortedTrialData(thisCond).trialData(thisRep) = thisTrialData;
+    
+    thisCond = experimentData(iTrial).condNumber;
+    
+    %If this is NOT a valid trial skip it and move on.
+    if ~experimentData(iTrial).validTrial
+        continue;
+    end
+    
+    %Increment the reps by 1;
+    repsPerCond(thisCond) = repsPerCond(thisCond) + 1;
+    thisRep  = repsPerCond(thisCond);
+    
+    thisTrialData = experimentData(iTrial).trialData;
+    thisTrialData.condNumber = thisCond;
+    thisTrialData.trialNumber = iTrial;
+    sortedTrialData(thisCond).trialData(thisRep) = thisTrialData;
 
 end
 
