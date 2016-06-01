@@ -16,8 +16,8 @@ conditionInfo(1).nReps = 2; %number of repeats
 conditionInfo(1).iti  = 0;
 conditionInfo(1).type = 'generic';
 conditionInfo(1).nPrePost = 1; % amount of cycles to prefix and postfix, 1 cycle is an AB alternation
-conditionInfo(1).nFramesPerStim = 30; %This will set the alternation rate.
-conditionInfo(1).nPairRepeats = 1; % Number of times to repeat a pair.
+conditionInfo(1).nFramesPerStim = 3; %This will set the alternation rate.
+conditionInfo(1).nPairRepeats = 10; % Number of times to repeat a pair.
 conditionInfo(1).responseDuration = 1;    %Post trial window for waiting for a response
 
 %conditionInfo(1).nStim = 1;  %Obsolete
