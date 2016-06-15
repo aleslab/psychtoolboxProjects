@@ -11,47 +11,49 @@ i = 1;
 eyeL = [-3, 0, 0];
 eyeR = [3, 0, 0];
 fixation = [0, 0, 97];
-objectStart = [0, 0, 107];
-deltaV=15; %change in velocity in speed change interval
-objectVelocity = -20+ (1)*[deltaV*ones(nt/2,1) -deltaV*ones(nt/2,1)] ; %cm/s
+objectStart = [-5, 0, 97];
+deltaV=6; %change in velocity in speed change interval
+objectVelocity = 8+ (1)*[deltaV*ones(nt/2,1) -deltaV*ones(nt/2,1)] ; %cm/s
 
 objectCurrentPosition = objectStart;
 
 for i = 1:nt
-    pos = calculateScreenLocation(fixation, objectCurrentPosition, eyeL, eyeR);
+    posL = calculateScreenLocation(fixation, objectCurrentPosition, eyeL, eyeR);
     deltaZ = objectVelocity(i)*dt; %change in z axis position
-     objectCurrentPosition(3) = objectCurrentPosition(3) + deltaZ;
-     xpos(i) = pos(1); %x position of the line in x y coordinates converted from x y z
-     xposVARad(i) = (atan(xpos(i)./97)); %theta = atan(screenPos/viewingdistance) in radians
-     xposVAdeg(i) = rad2deg(xposVARad(i)); %convert to degrees
-     xposVA(i) = xposVAdeg(i)*120; %*2 for 2 eyes, *60 into arcmin
+     objectCurrentPosition(1) = objectCurrentPosition(1) + deltaZ;
+     xposL(i) = posL(1); %x position of the line in x y coordinates converted from x y z
+     xposVARadL(i) = (atan(xposL(i)./97)); %theta = atan(screenPos/viewingdistance) in radians
+     xposVAdegL(i) = rad2deg(xposVARadL(i)); %convert to degrees
+     xposVAL(i) = xposVAdegL(i)*60; %*2 for 2 eyes, *60 into arcmin
      
 end
 
-vel=diff(xpos)/dt; %velocity is the slope of the distance time graph in cm/s -- differentiate to find
+vel=diff(xposL)/dt; %velocity is the slope of the distance time graph in cm/s -- differentiate to find
 Accel=diff(vel)/dt; %acceleration is the slope of the velocity time graph in cm/s^2 -- differentiate to find
 
-velVA = diff(xposVA)/dt; %velocity in visual angle
-AccelVAwithCentre = diff(velVA)/dt; %acceleration in visual angle
-AccelVA = AccelVAwithCentre;
-AccelVA(500) = [];
+velVAL = diff(xposVAL)/dt; %velocity in visual angle
+AccelVAwithCentreL = diff(velVAL)/dt; %acceleration in visual angle
+AccelVAL = AccelVAwithCentreL;
+AccelVAL(500) = [];
+Accel1stInterval = AccelVAL([1 499]);
+Accel2ndInterval = AccelVAL([500 997]);
 %% plot the graphs of velocity, position and acceleration on the retina
-figure(101); clf
-plot(T(1:end-1),velVA, '-k');
+figure(101); hold on 
+plot(T(1:end-1),velVAL, '-k');
 xlabel('time (s)');
 ylabel('velocity (arcmin/s)');
 set(gca, 'Xtick', 0:0.1:1);
 set(gca, 'FontSize',18);
 
-figure(102); clf
-plot(T,xposVA, '-k');
+figure(102); hold on
+plot(T,xposVAL, '-k');
 xlabel('time (s)');
 ylabel('position (arcmin)');
 set(gca, 'Xtick', 0:0.1:1);
 set(gca, 'FontSize',18);
 
-figure(103); clf
-plot(T(1:end-3),AccelVA, '-k'); 
+figure(103); hold on
+plot(T(1:end-3),AccelVAL, '-k'); 
 %the second set of numbers are going to be shifted ever so slightly because 
 %I've removed the central acceleration point that is basically an error
 xlabel('time (s)');
