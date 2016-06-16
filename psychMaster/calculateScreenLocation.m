@@ -30,6 +30,6 @@ screenR = [screenRX, screenRY, screenRZ] + eyeR;
 
 % rad = atan(screenL(1)/97);
 % deg = rad2deg(rad);
-% va = deg*120;
+% va = deg*60;
 
 end
