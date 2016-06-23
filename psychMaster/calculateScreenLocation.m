@@ -6,6 +6,9 @@ function [screenL, screenR] = calculateScreenLocation(fixation, object, eyeL, ey
 % screenY = objectY;
 
 %% for when the eye and fixation point do not form a right-angle triangle
+% eyeL = [-3,0,0]; %left eye position
+% eyeR = [3,0,0]; %right eye position
+% fixation = [0,0,97]; %viewing distance
 
 objectL = object - eyeL;
 objectR = object - eyeR;
@@ -30,6 +33,6 @@ screenR = [screenRX, screenRY, screenRZ] + eyeR;
 
 % rad = atan(screenL(1)/97);
 % deg = rad2deg(rad);
-% va = deg*120;
+% va = deg*60;
 
 end

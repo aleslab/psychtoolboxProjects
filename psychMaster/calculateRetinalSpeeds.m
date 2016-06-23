@@ -3,16 +3,17 @@
 eyeL = [-3,0,0]; %left eye position
 eyeR = [3,0,0]; %right eye position
 fixation = [0,0,97]; %viewing distance
-% depthStart = fixation + [0, 0, 20]; %the start position of the lines in depth
-% depthEnd = fixation + [0, 0, -20]; %the end position of the lines in depth
-depthStart = fixation + [0, 0, 10]; %the start position of the lines in depth
-depthEnd = fixation + [0, 0, -10];
+depthStart = fixation + [0, 0, 20]; %the start position of the lines in depth
+depthEnd = fixation + [0, 0, -20]; %the end position of the lines in depth
+% depthStart = fixation + [0, 0, 10]; %the start position of the lines in depth
+% depthEnd = fixation + [0, 0, -10];
 
 
-% totalDistances = repmat(40,1,7); %the total distance travelled in an interval
-totalDistances = repmat(20,1,7);
-% section1distances = [20 22.5 25 27.5 30 32.5 35]; %the distance travelled in section 1 of an interval
-section1distances = [10 11.25 12.5 13.75 15 16.25 17.5];
+totalDistances = repmat(40,1,7); %the total distance travelled in an interval
+%totalDistances = repmat(20,1,7);
+section1distances = [20 17.5 15 12.5 10 7.5 5];
+%section1distances = [20 22.5 25 27.5 30 32.5 35]; %the distance travelled in section 1 of an interval
+%section1distances = [10 11.25 12.5 13.75 15 16.25 17.5];
 section2distances = totalDistances - section1distances; %the distance travelled in section 2 of an interval
 levelChanges = struct();
 
@@ -51,7 +52,7 @@ depthEndrad = atan(screenRend(1)/97);
 depthEnddeg = rad2deg(depthEndrad);
 depthEndVA = depthEnddeg*60;
 
-levelChanges.startAngle = depthStartVA;
+levelChanges.endAngle = depthEndVA;
 
 %finding the position of the speed change in visual angle
 for i = 1:length(levelChanges.depthChange);
@@ -70,6 +71,10 @@ for i = 1:length(levelChanges.depthChange);
         
     elseif levelChanges.depthChange(i) < fixation(3) %if the speed change occurs in front of fixation
     distanceMovedSection1VA(i) = depthStartVA - levelChanges.changeAngle(i);
+    distanceMovedSection2VA(i) = -depthEndVA + levelChanges.changeAngle(i);
+    
+    elseif levelChanges.depthChange(i) > fixation(3) %if the speed change occurs behind fixation, as in slow-fast
+        distanceMovedSection1VA(i) = depthStartVA - levelChanges.changeAngle(i);
     distanceMovedSection2VA(i) = -depthEndVA + levelChanges.changeAngle(i);
    
     end
