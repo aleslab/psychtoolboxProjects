@@ -8,8 +8,8 @@ expInfo.paradigmName = 'MoveLine_combined_constant_retinal_speed_slow';
 
 %% conditions
 firstVelocities = [0.630 0.488 0.412 0.339 0.267 0.197 0.129];
-%for speed changes of 0, +/-0.142, +/-0.218, +/-0.291, +/-0.363, +/-0.433,
-%+/- 0.501
+secondVelocities = [0.630 0.772 0.849 0.922 0.994 1.063 1.131];
+
 condStimTypes = repmat({'combined_retinal'},1,7);
 
 for iCond = 1: length(firstVelocities);
@@ -27,7 +27,7 @@ conditionInfo(iCond).postStimDuration = 0;  %static time after stimulus change
 conditionInfo(iCond).iti              = 1;     %Inter Stimulus Interval
 conditionInfo(iCond).responseDuration = 3;    %Post trial window for waiting for a response
 conditionInfo(iCond).velocityCmPerSecSection1 = firstVelocities(iCond); %cm/s
-conditionInfo(iCond).velocityCmPerSecSection2 = (1.26)-(conditionInfo(iCond).velocityCmPerSecSection1); %cm/s 
+conditionInfo(iCond).velocityCmPerSecSection2 = secondVelocities(iCond); %cm/s 
 conditionInfo(iCond).isNullCorrect = false;
 conditionInfo(iCond).objectOneStartPos = -1.315; %when there are two lines in each eye, the start position of the first line
 conditionInfo(iCond).objectTwoStartPos = 0.685; %the start position of the second line in each eye
