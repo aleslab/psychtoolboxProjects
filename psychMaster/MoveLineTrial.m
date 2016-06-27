@@ -1,5 +1,32 @@
 function [trialData] = MoveLineTrial(expInfo, conditionInfo)
-%Trial code for AL's moving line experiments
+%Trial code for AL's moving line experiments. Run through psychMaster and
+%psychParadigm files. 
+%
+%cd = binocular only; single vertical line moving in depth at a rate that 
+%is accelerating on the retina.
+%
+%lateralCd = one eye's image from the combined condition projected to both 
+%eyes. A single vertical line that accelerates on the retina but moves 
+%laterally.
+%
+%combined = binocular + looming information; two vertical lines moving in 
+%depth at an accelerating rate on the retina. The lines move further apart 
+%as they approach the observer.
+%
+%combined_retinal = two vertical lines moving at a constant retinal speed
+%laterally across the screen. Contains no looming or binocular depth
+%information.
+%
+%lateralCombined = one eye's image from the combined condition projected to
+%both eyes. Two vertical lines accelerating on the retina but moving
+%laterally. The lines also move further apart over the interval giving the
+%looming cue, despite there being no binocular depth information.
+%
+%looming = looming only; two horizontal lines moving in depth at an
+%accelerating rate on the retina. There is no binocular information, but
+%the lines move apart over the duration of the interval, so there is
+%looming information.
+
 %% Setting up
 [screenXpixels, screenYpixels] = Screen('WindowSize', expInfo.curWindow);
 %get the number of pixels in the window
@@ -10,11 +37,11 @@ trialData.validTrial = false;
 trialData.abortNow   = false;
 
 expInfo.lw = 1;
-fixationType = 'cross';
-responseSquare = 0;
-apetureType = 'frame';
+fixationInfo.fixationType = 'cross';
+fixationInfo.responseSquare = 0;
+fixationInfo.apetureType = 'frame';
 
-expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+expInfo = drawFixation(expInfo, fixationInfo);
 vbl=Screen('Flip', expInfo.curWindow); %flipping to the screen
 Screen('close', expInfo.allTextures);
 
@@ -64,14 +91,12 @@ if strcmp(conditionInfo.stimType, 'cd'); %%strcmp seems to work better than == f
     
     for iFrame = 1:nFramesPreStim %during the pre stimulus duration
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0); %choosing the left eye
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %drawing the fixation cross in the left eye
         Screen('DrawLines', expInfo.curWindow, [LinePosL, LinePosL ; 0, screenYpixels], expInfo.lw); %drawing the line in the left eye
         %For the right eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1); %choosing the right eye
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);%drawing the fixation cross in the right eye
         Screen('DrawLines', expInfo.curWindow, [LinePosR, LinePosR ; 0, screenYpixels], expInfo.lw);
         
-        expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+        expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
         Screen('close', expInfo.allTextures);
         trialData.flipTimes(frameIdx) = vbl;
@@ -82,14 +107,12 @@ if strcmp(conditionInfo.stimType, 'cd'); %%strcmp seems to work better than == f
         %first section of the trial at 1 speed
         %For the left eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0); %choosing the left eye
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %drawing the fixation cross in the left eye
         Screen('DrawLines', expInfo.curWindow, [LinePosL, LinePosL ; 0, screenYpixels], expInfo.lw); %drawing the line in the left eye
         %For the right eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1); %choosing the right eye
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);%drawing the fixation cross in the right eye
         Screen('DrawLines', expInfo.curWindow, [LinePosR, LinePosR ; 0, screenYpixels], expInfo.lw); %drawing the line in the right eye
         
-        expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+        expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
         Screen('close', expInfo.allTextures);
         trialData.flipTimes(frameIdx) = vbl;
@@ -113,14 +136,12 @@ if strcmp(conditionInfo.stimType, 'cd'); %%strcmp seems to work better than == f
         %second section of the trial potentially at a different speed
         %For the left eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0); %choosing the left eye
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %drawing the fixation cross in the left eye
         Screen('DrawLines', expInfo.curWindow, [LinePosL, LinePosL ; 0, screenYpixels], expInfo.lw); %drawing the line in the left eye
         %For the right eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1); %choosing the right eye
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);%drawing the fixation cross in the right eye
         Screen('DrawLines', expInfo.curWindow, [LinePosR, LinePosR ; 0, screenYpixels], expInfo.lw); %drawing the line in the right eye
         
-        expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+        expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
         Screen('close', expInfo.allTextures);
         trialData.flipTimes(frameIdx) = vbl;
@@ -161,14 +182,12 @@ elseif strcmp(conditionInfo.stimType, 'lateralCd');
     
     for iFrame = 1:nFramesPreStim %during the pre stimulus duration
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0); %choosing the left eye
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %drawing the fixation cross in the left eye
         Screen('DrawLines', expInfo.curWindow, [LinePosL, LinePosL ; 0, screenYpixels], expInfo.lw); %drawing the line in the left eye
         %For the right eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1); %choosing the right eye
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);%drawing the fixation cross in the right eye
         Screen('DrawLines', expInfo.curWindow, [LinePosL, LinePosL ; 0, screenYpixels], expInfo.lw);
         
-        expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+        expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
         Screen('close', expInfo.allTextures);
         trialData.flipTimes(frameIdx) = vbl;
@@ -179,14 +198,12 @@ elseif strcmp(conditionInfo.stimType, 'lateralCd');
         %first section of the trial at 1 speed
         %For the left eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0); %choosing the left eye
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %drawing the fixation cross in the left eye
         Screen('DrawLines', expInfo.curWindow, [LinePosL, LinePosL ; 0, screenYpixels], expInfo.lw); %drawing the line in the left eye
         %For the right eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1); %choosing the right eye
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);%drawing the fixation cross in the right eye
         Screen('DrawLines', expInfo.curWindow, [LinePosL, LinePosL ; 0, screenYpixels], expInfo.lw); %drawing the line in the right eye
         
-        expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+        expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
         Screen('close', expInfo.allTextures);
         trialData.flipTimes(frameIdx) = vbl;
@@ -210,14 +227,12 @@ elseif strcmp(conditionInfo.stimType, 'lateralCd');
         %second section of the trial potentially at a different speed
         %For the left eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0); %choosing the left eye
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %drawing the fixation cross in the left eye
         Screen('DrawLines', expInfo.curWindow, [LinePosL, LinePosL ; 0, screenYpixels], expInfo.lw); %drawing the line in the left eye
         %For the right eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1); %choosing the right eye
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);%drawing the fixation cross in the right eye
         Screen('DrawLines', expInfo.curWindow, [LinePosL, LinePosL ; 0, screenYpixels], expInfo.lw); %drawing the line in the right eye
         
-        expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+        expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
         Screen('close', expInfo.allTextures);
         trialData.flipTimes(frameIdx) = vbl;
@@ -277,7 +292,6 @@ elseif strcmp(conditionInfo.stimType, 'combined');
     for iFrame = 1:nFramesPreStim %during the pre stimulus duration
         %For the left eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %drawing the fixation cross
         Screen('DrawLines', expInfo.curWindow, [LinePosLone, LinePosLone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
         Screen('DrawLines', expInfo.curWindow, [LinePosLtwo, LinePosLtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
         %Screen('DrawLines', expInfo.curWindow, [LinePosLoneStart, LinePosLoneStart ; 0, screenYpixels], expInfo.lw, 0); %drawing the fixed first line (left)
@@ -285,13 +299,12 @@ elseif strcmp(conditionInfo.stimType, 'combined');
         
         %For the right eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %drawing the fixation cross
         Screen('DrawLines', expInfo.curWindow, [LinePosRone, LinePosRone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
         Screen('DrawLines', expInfo.curWindow, [LinePosRtwo, LinePosRtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
         %Screen('DrawLines', expInfo.curWindow, [LinePosRoneStart, LinePosRoneStart ; 0, screenYpixels], expInfo.lw, 0); %drawing the fixed first line (left)
         %Screen('DrawLines', expInfo.curWindow, [LinePosRtwoStart, LinePosRtwoStart ; 0, screenYpixels], expInfo.lw, 0); %drawing the fixed second line (right)
         
-        expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+        expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
         Screen('close', expInfo.allTextures);
         trialData.flipTimes(frameIdx) = vbl;
@@ -302,7 +315,6 @@ elseif strcmp(conditionInfo.stimType, 'combined');
     for iFrame = 1:nFramesSection1, %same as above
         %For the left eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %drawing the fixation cross
         Screen('DrawLines', expInfo.curWindow, [LinePosLone, LinePosLone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
         Screen('DrawLines', expInfo.curWindow, [LinePosLtwo, LinePosLtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
         %Screen('DrawLines', expInfo.curWindow, [LinePosLoneStart, LinePosLoneStart ; 0, screenYpixels], expInfo.lw, 0); %drawing the fixed first line (left)
@@ -310,13 +322,12 @@ elseif strcmp(conditionInfo.stimType, 'combined');
         
         %For the right eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %drawing the fixation cross
         Screen('DrawLines', expInfo.curWindow, [LinePosRone, LinePosRone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
         Screen('DrawLines', expInfo.curWindow, [LinePosRtwo, LinePosRtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
         %Screen('DrawLines', expInfo.curWindow, [LinePosRoneStart, LinePosRoneStart ; 0, screenYpixels], expInfo.lw, 0); %drawing the fixed first line (left)
         %Screen('DrawLines', expInfo.curWindow, [LinePosRtwoStart, LinePosRtwoStart ; 0, screenYpixels], expInfo.lw, 0); %drawing the fixed second line (right)
         
-        expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+        expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
         Screen('close', expInfo.allTextures);
         trialData.flipTimes(frameIdx) = vbl;
@@ -343,8 +354,7 @@ elseif strcmp(conditionInfo.stimType, 'combined');
         %the new adjusted position in X for the second line in the left
         %eye
         
-        %For the right eye -- the same commands as above but for the
-        %right eye rather than the left.
+        %For the right eye 
         pixelDistanceRone = expInfo.pixPerCm * screenRone(1);
         LinePosRone = round(expInfo.center(1) + pixelDistanceRone);
         %first line in the right eye
@@ -356,7 +366,6 @@ elseif strcmp(conditionInfo.stimType, 'combined');
     for iFrame = 1:nFramesSection2, %same as above
         %For the left eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %drawing the fixation cross
         Screen('DrawLines', expInfo.curWindow, [LinePosLone, LinePosLone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
         Screen('DrawLines', expInfo.curWindow, [LinePosLtwo, LinePosLtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
         %Screen('DrawLines', expInfo.curWindow, [LinePosLoneStart, LinePosLoneStart ; 0, screenYpixels], expInfo.lw, 0); %drawing the fixed first line (left)
@@ -364,13 +373,12 @@ elseif strcmp(conditionInfo.stimType, 'combined');
         
         %For the right eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %drawing the fixation cross
         Screen('DrawLines', expInfo.curWindow, [LinePosRone, LinePosRone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
         Screen('DrawLines', expInfo.curWindow, [LinePosRtwo, LinePosRtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
         %Screen('DrawLines', expInfo.curWindow, [LinePosRoneStart, LinePosRoneStart ; 0, screenYpixels], expInfo.lw, 0); %drawing the fixed first line (left)
         %Screen('DrawLines', expInfo.curWindow, [LinePosRtwoStart, LinePosRtwoStart ; 0, screenYpixels], expInfo.lw, 0); %drawing the fixed second line (right)
         
-        expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+        expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
         Screen('close', expInfo.allTextures);
         trialData.flipTimes(frameIdx) = vbl;
@@ -397,8 +405,8 @@ elseif strcmp(conditionInfo.stimType, 'combined');
         %the new adjusted position in X for the second line in the left
         %eye
         
-        %For the right eye -- the same commands as above but for the
-        %right eye rather than the left.
+        %For the right eye -- same as above but for the right eye 
+        %rather than the left.
         pixelDistanceRone = expInfo.pixPerCm * screenRone(1);
         LinePosRone = round(expInfo.center(1) + pixelDistanceRone);
         %first line in the right eye
@@ -451,7 +459,7 @@ elseif strcmp(conditionInfo.stimType, 'combined_retinal');
         Screen('DrawLines', expInfo.curWindow, [LinePosRone, LinePosRone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
         Screen('DrawLines', expInfo.curWindow, [LinePosRtwo, LinePosRtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
         
-        expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+        expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
         Screen('close', expInfo.allTextures);
         trialData.flipTimes(frameIdx) = vbl;
@@ -470,7 +478,7 @@ elseif strcmp(conditionInfo.stimType, 'combined_retinal');
         Screen('DrawLines', expInfo.curWindow, [LinePosRone, LinePosRone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
         Screen('DrawLines', expInfo.curWindow, [LinePosRtwo, LinePosRtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
         
-        expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+        expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
         Screen('close', expInfo.allTextures);
         trialData.flipTimes(frameIdx) = vbl;
@@ -515,7 +523,7 @@ elseif strcmp(conditionInfo.stimType, 'combined_retinal');
         Screen('DrawLines', expInfo.curWindow, [LinePosRone, LinePosRone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
         Screen('DrawLines', expInfo.curWindow, [LinePosRtwo, LinePosRtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
         
-        expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+        expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
         Screen('close', expInfo.allTextures);
         trialData.flipTimes(frameIdx) = vbl;
@@ -575,27 +583,18 @@ elseif strcmp(conditionInfo.stimType, 'lateralCombined');
     pixelDistanceLtwo = expInfo.pixPerCm * screenLtwo(1);
     LinePosLtwo = round(expInfo.center(1) + pixelDistanceLtwo);
     %finding the position of the second line in the left eye in pixels
-    %pixelDistanceRone = expInfo.pixPerCm * screenRone(1);
-    %LinePosRone = round(expInfo.center(1) + pixelDistanceRone);
-    %finding the position of the first line in the right eye in pixels
-    
-    %pixelDistanceRtwo = expInfo.pixPerCm * screenRtwo(1);
-    %LinePosRtwo = round(expInfo.center(1) + pixelDistanceRtwo);
-    %finding the position of hte second line in the right eye in pixels
     
     for iFrame = 1:nFramesPreStim %during the pre stimulus duration
         %For the left eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %drawing the fixation cross
         Screen('DrawLines', expInfo.curWindow, [LinePosLone, LinePosLone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
         Screen('DrawLines', expInfo.curWindow, [LinePosLtwo, LinePosLtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
         %For the right eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %drawing the fixation cross
         Screen('DrawLines', expInfo.curWindow, [LinePosLone, LinePosLone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
         Screen('DrawLines', expInfo.curWindow, [LinePosLtwo, LinePosLtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
         
-        expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+        expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
         Screen('close', expInfo.allTextures);
         trialData.flipTimes(frameIdx) = vbl;
@@ -606,16 +605,14 @@ elseif strcmp(conditionInfo.stimType, 'lateralCombined');
     for iFrame = 1:nFramesSection1, %same as above
         %For the left eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %drawing the fixation cross
         Screen('DrawLines', expInfo.curWindow, [LinePosLone, LinePosLone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
         Screen('DrawLines', expInfo.curWindow, [LinePosLtwo, LinePosLtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
         %For the right eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %drawing the fixation cross
         Screen('DrawLines', expInfo.curWindow, [LinePosLone, LinePosLone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
         Screen('DrawLines', expInfo.curWindow, [LinePosLtwo, LinePosLtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
         
-        expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+        expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
         Screen('close', expInfo.allTextures);
         trialData.flipTimes(frameIdx) = vbl;
@@ -642,29 +639,19 @@ elseif strcmp(conditionInfo.stimType, 'lateralCombined');
         %the new adjusted position in X for the second line in the left
         %eye
         
-        %For the right eye -- the same commands as above but for the
-        %right eye rather than the left.
-        %pixelDistanceRone = expInfo.pixPerCm * screenRone(1);
-        %LinePosRone = round(expInfo.center(1) + pixelDistanceRone);
-        %first line in the right eye
-        %pixelDistanceRtwo = expInfo.pixPerCm * screenRtwo(1);
-        %LinePosRtwo = round(expInfo.center(1) + pixelDistanceRtwo);
-        %second line in the right eye
     end
     
     for iFrame = 1:nFramesSection2, %same as above
         %For the left eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %drawing the fixation cross
         Screen('DrawLines', expInfo.curWindow, [LinePosLone, LinePosLone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
         Screen('DrawLines', expInfo.curWindow, [LinePosLtwo, LinePosLtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
         %For the right eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %drawing the fixation cross
         Screen('DrawLines', expInfo.curWindow, [LinePosLone, LinePosLone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
         Screen('DrawLines', expInfo.curWindow, [LinePosLtwo, LinePosLtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
         
-        expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+        expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
         Screen('close', expInfo.allTextures);
         trialData.flipTimes(frameIdx) = vbl;
@@ -691,14 +678,6 @@ elseif strcmp(conditionInfo.stimType, 'lateralCombined');
         %the new adjusted position in X for the second line in the left
         %eye
         
-        %For the right eye -- the same commands as above but for the
-        %right eye rather than the left.
-        %pixelDistanceRone = expInfo.pixPerCm * screenRone(1);
-        %LinePosRone = round(expInfo.center(1) + pixelDistanceRone);
-        %first line in the right eye
-        %pixelDistanceRtwo = expInfo.pixPerCm * screenRtwo(1);
-        %LinePosRtwo = round(expInfo.center(1) + pixelDistanceRtwo);
-        %second line in the right eye
     end
     
     %% Looming only stimulus -- two horizontal lines
@@ -739,7 +718,6 @@ elseif strcmp(conditionInfo.stimType, 'looming');
     for iFrame = 1:nFramesPreStim %during the pre-stimulus duration have the lines appear in a fixed position
         % For the left eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %draw fixation cross
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw); %draw line 1 = top line
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw); %draw line 2 = bottom line
         %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
@@ -747,13 +725,12 @@ elseif strcmp(conditionInfo.stimType, 'looming');
         
         %For the right eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %these are the same drawing commands as above but for the right eye
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw);
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw);
         %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
         %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw, 0); %draw line 2 = bottom line start
         
-        expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+        expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
         Screen('close', expInfo.allTextures);
         trialData.flipTimes(frameIdx) = vbl;
@@ -764,7 +741,6 @@ elseif strcmp(conditionInfo.stimType, 'looming');
     for iFrame = 1:nFramesSection1, %same as for the other stimuli
         % For the left eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %draw fixation cross
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw); %draw line 1 = top line
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw); %draw line 2 = bottom line
         %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
@@ -772,13 +748,12 @@ elseif strcmp(conditionInfo.stimType, 'looming');
        
         %For the right eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %these are the same drawing commands as above but for the right eye
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw);
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw);
         %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
         %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw, 0); %draw line 2 = bottom line start
         
-        expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+        expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
         Screen('close', expInfo.allTextures);
         trialData.flipTimes(frameIdx) = vbl;
@@ -811,7 +786,6 @@ elseif strcmp(conditionInfo.stimType, 'looming');
     for iFrame = 1:nFramesSection2, %same as for the other stimuli
         % For the left eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %draw fixation cross
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw); %draw line 1 = top line
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw); %draw line 2 = bottom line
         %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
@@ -819,13 +793,12 @@ elseif strcmp(conditionInfo.stimType, 'looming');
         
         %For the right eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-        %Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0); %these are the same drawing commands as above but for the right eye
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw);
         Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw);
         %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
         %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw, 0); %draw line 2 = bottom line start
         
-        expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+        expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
         Screen('close', expInfo.allTextures);
         trialData.flipTimes(frameIdx) = vbl;
@@ -858,13 +831,7 @@ elseif strcmp(conditionInfo.stimType, 'looming');
 end
 %KbStrokeWait(); %again to pause so that a measurement can be made.
 
-expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
-
-% Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-% Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);
-% 
-% Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-% Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);
+expInfo = drawFixation(expInfo, fixationInfo);
 
 Screen('Flip', expInfo.curWindow); %the final necessary flip.
 Screen('close', expInfo.allTextures);

@@ -393,11 +393,11 @@ end;
                     WaitSecs(conditionInfo(thisCond).iti);
                     [trialData.secondCond] = conditionInfo(thisCond).trialFun(expInfo,secondCond);
                     
-                    fixationType = 'cross';
-                    responseSquare = 1;
-                    apetureType = 'frame';
+                    fixationInfo.fixationType = 'cross';
+                    fixationInfo.responseSquare = 1;
+                    fixationInfo.apetureType = 'frame';
                     
-                    expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+                    expInfo = drawFixation(expInfo, fixationInfo);
                     Screen('Flip', expInfo.curWindow);
                     Screen('close', expInfo.allTextures);
                     
@@ -461,11 +461,11 @@ end;
                     
                     [trialData] = conditionInfo(thisCond).trialFun(expInfo,conditionInfo(thisCond));
                     
-                    fixationType = 'cross';
-                    responseSquare = 1;
-                    apetureType = 'frame';
+                    fixationInfo.fixationType = 'cross';
+                    fixationInfo.responseSquare = 1;
+                    fixationInfo.apetureType = 'frame';
                     
-                    expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+                    expInfo = drawFixation(expInfo, fixationInfo);
                     Screen('Flip', expInfo.curWindow);
                     Screen('close', expInfo.allTextures);
                     
@@ -537,38 +537,38 @@ end;
                 validTrialList(iTrial) = false;
                 experimentData(iTrial).validTrial = false;
                 
-                fixationType = '';
-                responseSquare = 0;
-                apetureType = 'frame';
+                fixationInfo.fixationType = '';
+                fixationInfo.responseSquare = 0;
+                fixationInfo.apetureType = 'frame';
                 
 
                 DrawFormattedTextStereo(expInfo.curWindow, 'Invalid trial','center', 'center', 1);
                 
-                expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+                expInfo = drawFixation(expInfo, fixationInfo);
                 
                 Screen('Flip', expInfo.curWindow);
                 Screen('close', expInfo.allTextures);
                 WaitSecs(.5);
-                expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+                expInfo = drawFixation(expInfo, fixationInfo);
                 Screen('Flip', expInfo.curWindow);
                 Screen('close', expInfo.allTextures);
                 
                 %valid response made, should we give feedback?
             elseif conditionInfo(thisCond).giveFeedback
                 %Give feedback:
-                 fixationType = '';
-                responseSquare = 0;
-                apetureType = 'frame';
+                fixationInfo.fixationType = '';
+                fixationInfo.responseSquare = 0;
+                fixationInfo.apetureType = 'frame';
                 
                 DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
                     'center', 'center', feedbackColor);
                 
-                expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+                expInfo = drawFixation(expInfo, fixationInfo);
                 
                 Screen('Flip', expInfo.curWindow);
                 Screen('close', expInfo.allTextures);
                 WaitSecs(1.5);
-                expInfo = drawFixation(expInfo, fixationType, responseSquare, apetureType);
+                expInfo = drawFixation(expInfo, fixationInfo);
                 Screen('Flip', expInfo.curWindow);
                 Screen('close', expInfo.allTextures);
             end

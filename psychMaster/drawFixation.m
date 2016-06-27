@@ -1,4 +1,4 @@
-function [expInfo] = drawFixation(expInfo, fixationType, responseSquare, apetureType)
+function [expInfo] = drawFixation(expInfo, fixationInfo)
 % A function to draw fixation crosses, boxes around fixation crosses and an
 % apeture to aid fixation.
 
@@ -14,7 +14,7 @@ expInfo.FixCoords = [fixXCoords; fixYCoords]; %combined fixation cross coordinat
 expInfo.fixWidthPix = 1; %the line width of the fixation cross
 expInfo.lw = 1;
 
-if strcmp(fixationType, 'cross');
+if strcmp(fixationInfo.fixationType, 'cross');
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
     Screen('DrawLines', expInfo.curWindow, expInfo.FixCoords, expInfo.fixWidthPix, 0, expInfo.center, 0);
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
@@ -32,7 +32,7 @@ boxXcoords = [leftPointX leftPointX rightPointX rightPointX leftPointX rightPoin
 boxYcoords = [PointY1 PointY2 PointY1 PointY2 PointY1 PointY1 PointY2 PointY2];
 expInfo.boxCoords = [boxXcoords; boxYcoords];
 
-if responseSquare == 1;
+if fixationInfo.responseSquare == 1;
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
     Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw, 0);
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
@@ -43,7 +43,7 @@ end
 
 [screenXpixels, screenYpixels] = Screen('WindowSize', expInfo.curWindow);
 
-if strcmp(apetureType, 'frame');
+if strcmp(fixationInfo.apetureType, 'frame');
     
     rectSize = 100;
     priorSeed = rng; %Save the current rng seed
