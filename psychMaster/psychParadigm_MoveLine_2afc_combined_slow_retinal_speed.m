@@ -10,7 +10,7 @@ expInfo.paradigmName = 'MoveLine_combined_constant_retinal_speed_slow';
 firstVelocities = [0.630 0.488 0.412 0.339 0.267 0.197 0.129];
 secondVelocities = [0.630 0.772 0.849 0.922 0.994 1.063 1.131];
 
-condStimTypes = repmat({'combined_retinal'},1,7);
+condStimTypes = repmat({'combined_retinal_lateral'},1,7);
 
 for iCond = 1: length(firstVelocities);
 %This defines what function to call to draw the condition

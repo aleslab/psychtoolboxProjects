@@ -7,20 +7,27 @@ function [trialData] = MoveLineTrial(expInfo, conditionInfo)
 %
 %lateralCd = one eye's image from the combined condition projected to both 
 %eyes. A single vertical line that accelerates on the retina but moves 
-%laterally.
+%laterally. Left eye's image is always used.
 %
 %combined = binocular + looming information; two vertical lines moving in 
 %depth at an accelerating rate on the retina. The lines move further apart 
 %as they approach the observer.
 %
-%combined_retinal = two vertical lines moving at a constant retinal speed
+%combined_retinal_lateral = two vertical lines moving at a constant retinal speed
 %laterally across the screen. Contains no looming or binocular depth
-%information.
+%information. Move from left to right.
+%
+%combined_retinal_depth = two vertical lines moving at constant retinal
+%speed in depth. This makes it an unrealistic stimulus that does not look
+%like something approaching through depth at a constant speed would.
+%Contains both binocular and size change information (but not looming 
+%because no acceleration for the size change.
 %
 %lateralCombined = one eye's image from the combined condition projected to
 %both eyes. Two vertical lines accelerating on the retina but moving
 %laterally. The lines also move further apart over the interval giving the
-%looming cue, despite there being no binocular depth information.
+%looming cue, despite there being no binocular depth information. Left
+%eye's image is always used.
 %
 %looming = looming only; two horizontal lines moving in depth at an
 %accelerating rate on the retina. There is no binocular information, but
@@ -175,10 +182,6 @@ elseif strcmp(conditionInfo.stimType, 'lateralCd');
     LinePosL = round(expInfo.center(1) + pixelDistanceL); %the adjusted position
     %of the line on the screen in pixels -- relative to the centre of X for
     %the left eye
-    
-    %same as for the left eye above but for the right eye
-    %pixelDistanceR = expInfo.pixPerCm * screenR(1);
-    %LinePosR = round(expInfo.center(1) + pixelDistanceR);
     
     for iFrame = 1:nFramesPreStim %during the pre stimulus duration
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0); %choosing the left eye
@@ -417,8 +420,8 @@ elseif strcmp(conditionInfo.stimType, 'combined');
     %KbStrokeWait(); %will freeze everything in the final position at the 
 %end of the presentation so that the on screen distance moved can be measured
     
-%% constant retinal speed combined stimulus 
-elseif strcmp(conditionInfo.stimType, 'combined_retinal');
+%% constant retinal speed combined stimulus -- two vertical lines moving laterally at constant retinal speed
+elseif strcmp(conditionInfo.stimType, 'combined_retinal_lateral');
  objectOneStart = [conditionInfo.objectOneStartPos, 0, expInfo.startingDepth];
     %the start position of the first line
     objectTwoStart = [conditionInfo.objectTwoStartPos, 0, expInfo.startingDepth];
@@ -552,6 +555,180 @@ elseif strcmp(conditionInfo.stimType, 'combined_retinal');
         
         %For the right eye -- the same commands as above but for the
         %right eye rather than the left.
+        pixelDistanceRone = expInfo.pixPerCm * screenRone(1);
+        LinePosRone = round(expInfo.center(1) + pixelDistanceRone);
+        %first line in the right eye
+        pixelDistanceRtwo = expInfo.pixPerCm * screenRtwo(1);
+        LinePosRtwo = round(expInfo.center(1) + pixelDistanceRtwo);
+        %second line in the right eye
+    end
+    %% constant retinal speed in depth stimulus -- two vertical lines moving in depth at constant retinal speed
+    elseif strcmp(conditionInfo.stimType, 'combined_retinal_depth');
+        %contains size change and binocular information, but is an
+        %unrealistic stimulus
+ objectOneStart = [conditionInfo.objectOneStartPos, 0, expInfo.startingDepth];
+    %the start position of the first line
+    objectTwoStart = [conditionInfo.objectTwoStartPos, 0, expInfo.startingDepth];
+    %the start position of the second line
+    
+    % for the left eye view
+    leftObjectOneCurrentPosition = objectOneStart;
+    [screenLone, screenRone] = calculateScreenLocation(fixation, leftObjectOneCurrentPosition, eyeL, eyeR);
+    %transferring this initial position for the first line onto the
+    %screen
+    
+    leftObjectTwoCurrentPosition = objectTwoStart;
+    [screenLtwo, screenRtwo] = calculateScreenLocation(fixation, leftObjectTwoCurrentPosition, eyeL, eyeR);
+    %transferring this initial position for the second line onto the
+    %screen
+    
+    pixelDistanceLone = expInfo.pixPerCm * screenLone(1);
+    LinePosLone = round(expInfo.center(1) + pixelDistanceLone);
+    %finding the position of the first line in the left eye in pixels
+    
+    pixelDistanceLtwo = expInfo.pixPerCm * screenLtwo(1);
+    LinePosLtwo = round(expInfo.center(1) + pixelDistanceLtwo);
+    %finding the position of the second line in the left eye in pixels
+      % for the left eye view
+      %for the right eye inverted view
+    rightObjectOneCurrentPosition = objectOneStart;
+    [screenLone, screenRone] = calculateScreenLocation(fixation, rightObjectOneCurrentPosition, eyeL, eyeR);
+    %transferring this initial position for the first line onto the
+    %screen
+    
+    rightObjectTwoCurrentPosition = objectTwoStart;
+    [screenLtwo, screenRtwo] = calculateScreenLocation(fixation, rightObjectTwoCurrentPosition, eyeL, eyeR);
+    %transferring this initial position for the second line onto the
+    %screen
+    pixelDistanceRone = expInfo.pixPerCm * screenRone(1);
+    LinePosRone = round(expInfo.center(1) + pixelDistanceRone);
+    %finding the position of the first line in the right eye in pixels
+    
+    pixelDistanceRtwo = expInfo.pixPerCm * screenRtwo(1);
+    LinePosRtwo = round(expInfo.center(1) + pixelDistanceRtwo);
+    %finding the position of hte second line in the right eye in pixels
+    
+    for iFrame = 1:nFramesPreStim %during the pre stimulus duration
+        %For the left eye
+        Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+        Screen('DrawLines', expInfo.curWindow, [LinePosLone, LinePosLone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
+        Screen('DrawLines', expInfo.curWindow, [LinePosLtwo, LinePosLtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
+
+        %For the right eye
+        Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
+        Screen('DrawLines', expInfo.curWindow, [LinePosRone, LinePosRone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
+        Screen('DrawLines', expInfo.curWindow, [LinePosRtwo, LinePosRtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
+        
+        expInfo = drawFixation(expInfo, fixationInfo);
+        vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
+        Screen('close', expInfo.allTextures);
+        trialData.flipTimes(frameIdx) = vbl;
+        frameIdx = frameIdx+1;
+
+    end
+    
+    for iFrame = 1:nFramesSection1, %same as above
+        %For the left eye
+        Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+        Screen('DrawLines', expInfo.curWindow, [LinePosLone, LinePosLone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
+        Screen('DrawLines', expInfo.curWindow, [LinePosLtwo, LinePosLtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
+        
+        %For the right eye
+        Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
+        Screen('DrawLines', expInfo.curWindow, [LinePosRone, LinePosRone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
+        Screen('DrawLines', expInfo.curWindow, [LinePosRtwo, LinePosRtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
+        
+        expInfo = drawFixation(expInfo, fixationInfo);
+        vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
+        Screen('close', expInfo.allTextures);
+        trialData.flipTimes(frameIdx) = vbl;
+        frameIdx = frameIdx+1;
+
+        %left eye
+        leftObjectOneCurrentPosition(1) = leftObjectOneCurrentPosition(1) + velCmPerFrameSection1; %finding the new object position for the first line
+        [screenLone, screenRone] = calculateScreenLocation(fixation, leftObjectOneCurrentPosition, eyeL, eyeR);
+        %transferring this new position into positions on the two halves of the screen
+        
+        leftObjectTwoCurrentPosition(1) = leftObjectTwoCurrentPosition(1) + velCmPerFrameSection1; %finding the new object position for the second line
+        [screenLtwo, screenRtwo] = calculateScreenLocation(fixation, leftObjectTwoCurrentPosition, eyeL, eyeR);
+        %transferring this new position into positions on the two halves of the screen
+        
+        %For the left eye
+        pixelDistanceLone = expInfo.pixPerCm * screenLone(1);
+        %the new unadjusted pixel distance for the first line in the left eye
+        LinePosLone = round(expInfo.center(1) + pixelDistanceLone);
+        %the new adjusted position of the line (in X) on the screen
+        
+        pixelDistanceLtwo = expInfo.pixPerCm * screenLtwo(1);
+        %the new unadjusted pixel distance for the second line in the
+        %left eye
+        LinePosLtwo = round(expInfo.center(1) + pixelDistanceLtwo);
+        %the new adjusted position in X for the second line in the left
+        %eye
+        
+        %right eye
+        rightObjectOneCurrentPosition(1) = rightObjectOneCurrentPosition(1) - velCmPerFrameSection1; %finding the new object position for the first line
+        [screenLone, screenRone] = calculateScreenLocation(fixation, rightObjectOneCurrentPosition, eyeL, eyeR);
+        %transferring this new position into positions on the two halves of the screen
+        
+        rightObjectTwoCurrentPosition(1) = rightObjectTwoCurrentPosition(1) - velCmPerFrameSection1; %finding the new object position for the second line
+        [screenLtwo, screenRtwo] = calculateScreenLocation(fixation, rightObjectTwoCurrentPosition, eyeL, eyeR);
+        %transferring this new position into positions on the two halves of the screen
+        pixelDistanceRone = expInfo.pixPerCm * screenRone(1);
+        LinePosRone = round(expInfo.center(1) + pixelDistanceRone);
+        %first line in the right eye
+        pixelDistanceRtwo = expInfo.pixPerCm * screenRtwo(1);
+        LinePosRtwo = round(expInfo.center(1) + pixelDistanceRtwo);
+        %second line in the right eye
+    end
+    
+    for iFrame = 1:nFramesSection2, %same as above
+        %For the left eye
+        Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+        Screen('DrawLines', expInfo.curWindow, [LinePosLone, LinePosLone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
+        Screen('DrawLines', expInfo.curWindow, [LinePosLtwo, LinePosLtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
+
+        %For the right eye
+        Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
+        Screen('DrawLines', expInfo.curWindow, [LinePosRone, LinePosRone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
+        Screen('DrawLines', expInfo.curWindow, [LinePosRtwo, LinePosRtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
+        
+        expInfo = drawFixation(expInfo, fixationInfo);
+        vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
+        Screen('close', expInfo.allTextures);
+        trialData.flipTimes(frameIdx) = vbl;
+        frameIdx = frameIdx+1;
+
+        %left eye
+        leftObjectOneCurrentPosition(1) = leftObjectOneCurrentPosition(1) + velCmPerFrameSection1; %finding the new object position for the first line
+        [screenLone, screenRone] = calculateScreenLocation(fixation, leftObjectOneCurrentPosition, eyeL, eyeR);
+        %transferring this new position into positions on the two halves of the screen
+        
+        leftObjectTwoCurrentPosition(1) = leftObjectTwoCurrentPosition(1) + velCmPerFrameSection1; %finding the new object position for the second line
+        [screenLtwo, screenRtwo] = calculateScreenLocation(fixation, leftObjectTwoCurrentPosition, eyeL, eyeR);
+        %transferring this new position into positions on the two halves of the screen
+        
+        %For the left eye
+        pixelDistanceLone = expInfo.pixPerCm * screenLone(1);
+        %the new unadjusted pixel distance for the first line in the left eye
+        LinePosLone = round(expInfo.center(1) + pixelDistanceLone);
+        %the new adjusted position of the line (in X) on the screen
+        
+        pixelDistanceLtwo = expInfo.pixPerCm * screenLtwo(1);
+        %the new unadjusted pixel distance for the second line in the
+        %left eye
+        LinePosLtwo = round(expInfo.center(1) + pixelDistanceLtwo);
+        %the new adjusted position in X for the second line in the left
+        %eye
+        
+        %right eye
+        rightObjectOneCurrentPosition(1) = rightObjectOneCurrentPosition(1) - velCmPerFrameSection1; %finding the new object position for the first line
+        [screenLone, screenRone] = calculateScreenLocation(fixation, rightObjectOneCurrentPosition, eyeL, eyeR);
+        %transferring this new position into positions on the two halves of the screen
+        
+        rightObjectTwoCurrentPosition(1) = rightObjectTwoCurrentPosition(1) - velCmPerFrameSection1; %finding the new object position for the second line
+        [screenLtwo, screenRtwo] = calculateScreenLocation(fixation, rightObjectTwoCurrentPosition, eyeL, eyeR);
+        %transferring this new position into positions on the two halves of the screen
         pixelDistanceRone = expInfo.pixPerCm * screenRone(1);
         LinePosRone = round(expInfo.center(1) + pixelDistanceRone);
         %first line in the right eye
