@@ -7,7 +7,7 @@ function [trialData] = driftSineGratingTrial(expInfo, conditionInfo)
 %Draws a sine wave grating that drifts towards the right of the screen in a
 %similar way to how the sets of lines move when programmed to move
 %laterally in MoveLineTrial (e.g. in the combined_retinal_lateral
-%condition). 
+%condition).
 
 %% setting up
 [screenXpixels, screenYpixels] = Screen('WindowSize', expInfo.curWindow);
@@ -39,11 +39,11 @@ velPixPerFrameSection2 = velCmPerFrameSection2*expInfo.pixPerCm;
 trialData.flipTimes = NaN(nFramesTotal,1);
 frameIdx = 1;
 
-pixPerCyc = 64; %Spatial period of grating in pixels; pixels per cycle. 
-%A bigger number means bigger bands of light and dark contrast when the 
+pixPerCyc = 64; %Spatial period of grating in pixels; pixels per cycle.
+%A bigger number means bigger bands of light and dark contrast when the
 %sine wave grating is drawn.
 
-visiblesize = 512; % Size of the grating image. Needs to be a power of two 
+visiblesize = 256; % Size of the grating image. Needs to be a power of two
 %or the grating isn't drawn properly.
 
 xoffset = 0;
@@ -66,22 +66,22 @@ freqRad = freq*2*pi;    % frequency in radians.
 x=meshgrid(0:visiblesize-1, 1);
 grating=gray + contrastIncrement*sin(freqRad*x);
 
-% Store grating in texture: Set the 'enforcepot' flag to 1 to signal
-% Psychtoolbox that we want a special scrollable power-of-two texture:
-gratingtex=Screen('MakeTexture', expInfo.curWindow, grating, [], 1);
 %% trial
 %adapted from psychtoolbox demos DriftDemo3
 for iFrame = 1:nFramesPreStim
+    gratingTex=Screen('MakeTexture', expInfo.curWindow, grating, [], 1);
+    
     srcRect=[xoffset 0 xoffset + visiblesize visiblesize];
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-    Screen('DrawTexture', expInfo.curWindow, gratingtex, srcRect);
+    Screen('DrawTexture', expInfo.curWindow, gratingTex, srcRect);
     
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-    Screen('DrawTexture', expInfo.curWindow, gratingtex, srcRect);
+    Screen('DrawTexture', expInfo.curWindow, gratingTex, srcRect);
     
     expInfo = drawFixation(expInfo, fixationInfo);
     
     vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
+    Screen('close', gratingTex);
     trialData.flipTimes(frameIdx) = vbl;
     frameIdx = frameIdx+1;
     
@@ -89,15 +89,18 @@ end
 
 for iFrame = 1:nFramesSection1
     
+    gratingTex=Screen('MakeTexture', expInfo.curWindow, grating, [], 1);
+    
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-    Screen('DrawTexture', expInfo.curWindow, gratingtex, srcRect);
+    Screen('DrawTexture', expInfo.curWindow, gratingTex, srcRect);
     
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-    Screen('DrawTexture', expInfo.curWindow, gratingtex, srcRect);
+    Screen('DrawTexture', expInfo.curWindow, gratingTex, srcRect);
     
     expInfo = drawFixation(expInfo, fixationInfo);
     
     vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
+    Screen('close', gratingTex);
     trialData.flipTimes(frameIdx) = vbl;
     frameIdx = frameIdx+1;
     
@@ -108,15 +111,18 @@ end
 
 for iFrame = 1:nFramesSection2
     
+    gratingTex=Screen('MakeTexture', expInfo.curWindow, grating, [], 1);
+    
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-    Screen('DrawTexture', expInfo.curWindow, gratingtex, srcRect);
+    Screen('DrawTexture', expInfo.curWindow, gratingTex, srcRect);
     
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-    Screen('DrawTexture', expInfo.curWindow, gratingtex, srcRect);
+    Screen('DrawTexture', expInfo.curWindow, gratingTex, srcRect);
     
     expInfo = drawFixation(expInfo, fixationInfo);
     
     vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
+    Screen('close', gratingTex);
     trialData.flipTimes(frameIdx) = vbl;
     frameIdx = frameIdx+1;
     
@@ -129,6 +135,7 @@ end
 expInfo = drawFixation(expInfo, fixationInfo);
 
 Screen('Flip', expInfo.curWindow);
+Screen('close', gratingTex);
 trialData.flipTimes(frameIdx) = vbl; %another way of keeping track of the
 %flip times and making sure that everything is performing as it should.
 frameIdx = frameIdx+1;
