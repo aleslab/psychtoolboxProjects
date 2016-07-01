@@ -45,9 +45,9 @@ visiblesize = 512; % Size of the grating image. Needs to be a power of two.
 
 xoffset = 0;
 
-white = WhiteIndex(expInfo.screenNum);
-black = BlackIndex(expInfo.screenNum);
-gray = round((white+black)/2);
+white = 1;
+black = 0;
+gray = 0.5;
 contrastIncrement = white-gray;
 
 % Calculate parameters of the grating:
