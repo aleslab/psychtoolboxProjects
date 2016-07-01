@@ -1,12 +1,17 @@
 function [expInfo] = drawFixation(expInfo, fixationInfo)
-% A function to draw fixation crosses, boxes around fixation crosses and an
-% apeture to aid fixation.
+% A function that draws fixation crosses, boxes around fixation crosses and an
+% apeture to aid fixation in psychtoolbox windows. You can choose whether
+% to draw any combination of these objects based on the fixationInfo that
+% is put in.
 
-%expInfo.stereoMode = 4;
+if isfield('fixationTextures', expInfo) && ~isempty(expInfo.fixationTextures)
+   
+   Screen('close', expInfo.fixationTextures);
+   
+end
+
 %% Basic fixation cross
 
-%x centre is expInfo.center(1)
-%y centre is expInfo.center(2)
 fixCrossDimPix = 20; %the size of the arms of our fixation cross
 fixXCoords = [-fixCrossDimPix fixCrossDimPix 0 0]; %fixation cross x coordinates
 fixYCoords = [0 0 -fixCrossDimPix fixCrossDimPix]; %fixation cross y coordinates
@@ -23,9 +28,9 @@ end
 
 %% box surrounding fixation cross when you can make a response
 
-leftPointX = expInfo.center(1) - 30;
+leftPointX = expInfo.center(1) - 30; %x centre is expInfo.center(1)
 rightPointX = expInfo.center(1) + 30;
-PointY1 = expInfo.center(2) + 30;
+PointY1 = expInfo.center(2) + 30; %y centre is expInfo.center(2)
 PointY2 = expInfo.center(2) - 30;
 
 boxXcoords = [leftPointX leftPointX rightPointX rightPointX leftPointX rightPointX leftPointX rightPointX];
@@ -55,24 +60,30 @@ if strcmp(fixationInfo.apetureType, 'frame');
     topHorzMat = randn([rectSize, screenXpixels]);
     bottomHorzMat = randn([rectSize, screenXpixels]);
     
+    %the locations on the screen for each of these rectangles of noise to
+    %be drawn
     leftRectLocation = [0 0 rectSize screenYpixels];
     rightRectLocation = [(screenXpixels-rectSize) 0 screenXpixels screenYpixels];
     topRectLocation = [0 0 screenXpixels rectSize]; %this draws the top rectangle along the entire length of the top of the screen
     bottomRectLocation = [0 (screenYpixels-rectSize) screenXpixels screenYpixels];
     allLocations = [leftRectLocation; rightRectLocation; topRectLocation; bottomRectLocation]';
     
+    %making the textures for the rectangles from the matrixes created
+    %earlier
     leftRectTexture = Screen('MakeTexture', expInfo.curWindow, leftRectMat); 
     rightRectTexture = Screen('MakeTexture', expInfo.curWindow, rightRectMat);
     topHorzTexture = Screen('MakeTexture', expInfo.curWindow, topHorzMat);
     bottomHorzTexture = Screen('MakeTexture', expInfo.curWindow, bottomHorzMat);
-    expInfo.allTextures = [leftRectTexture; rightRectTexture; topHorzTexture; bottomHorzTexture];
+    expInfo.fixationTextures = [leftRectTexture; rightRectTexture; topHorzTexture; bottomHorzTexture];
     
+    %Drawing these textures on the screen to create the apeture
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-    Screen('DrawTextures', expInfo.curWindow, expInfo.allTextures, [], [allLocations]);
+    Screen('DrawTextures', expInfo.curWindow, expInfo.fixationTextures, [], [allLocations]);
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-    Screen('DrawTextures', expInfo.curWindow, expInfo.allTextures, [], [allLocations]);
+    Screen('DrawTextures', expInfo.curWindow, expInfo.fixationTextures, [], [allLocations]);
+    
 end
-rng(priorSeed);            % restore the generator settings
+rng(priorSeed); % restore the random seed generator settings
 end
 
 

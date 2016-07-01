@@ -399,7 +399,6 @@ end;
                     
                     expInfo = drawFixation(expInfo, fixationInfo);
                     Screen('Flip', expInfo.curWindow);
-                    Screen('close', expInfo.allTextures);
                     
                     [responseData] = getResponse(expInfo,conditionInfo(thisCond).responseDuration);
                     
@@ -467,7 +466,6 @@ end;
                     
                     expInfo = drawFixation(expInfo, fixationInfo);
                     Screen('Flip', expInfo.curWindow);
-                    Screen('close', expInfo.allTextures);
                     
                     [responseData] = getResponse(expInfo,conditionInfo(thisCond).responseDuration);
                     
@@ -547,11 +545,9 @@ end;
                 expInfo = drawFixation(expInfo, fixationInfo);
                 
                 Screen('Flip', expInfo.curWindow);
-                Screen('close', expInfo.allTextures);
                 WaitSecs(.5);
                 expInfo = drawFixation(expInfo, fixationInfo);
                 Screen('Flip', expInfo.curWindow);
-                Screen('close', expInfo.allTextures);
                 
                 %valid response made, should we give feedback?
             elseif conditionInfo(thisCond).giveFeedback
@@ -566,11 +562,9 @@ end;
                 expInfo = drawFixation(expInfo, fixationInfo);
                 
                 Screen('Flip', expInfo.curWindow);
-                Screen('close', expInfo.allTextures);
                 WaitSecs(1.5);
                 expInfo = drawFixation(expInfo, fixationInfo);
                 Screen('Flip', expInfo.curWindow);
-                Screen('close', expInfo.allTextures);
             end
             
             
