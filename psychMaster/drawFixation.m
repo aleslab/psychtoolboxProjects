@@ -2,11 +2,10 @@ function [expInfo] = drawFixation(expInfo, fixationInfo)
 % A function to draw fixation crosses, boxes around fixation crosses and an
 % apeture to aid fixation.
 
-%expInfo.stereoMode = 4;
 %% Basic fixation cross
 
-%x centre is expInfo.center(1)
-%y centre is expInfo.center(2)
+
+
 fixCrossDimPix = 20; %the size of the arms of our fixation cross
 fixXCoords = [-fixCrossDimPix fixCrossDimPix 0 0]; %fixation cross x coordinates
 fixYCoords = [0 0 -fixCrossDimPix fixCrossDimPix]; %fixation cross y coordinates
@@ -23,9 +22,9 @@ end
 
 %% box surrounding fixation cross when you can make a response
 
-leftPointX = expInfo.center(1) - 30;
+leftPointX = expInfo.center(1) - 30; %x centre is expInfo.center(1)
 rightPointX = expInfo.center(1) + 30;
-PointY1 = expInfo.center(2) + 30;
+PointY1 = expInfo.center(2) + 30; %y centre is expInfo.center(2)
 PointY2 = expInfo.center(2) - 30;
 
 boxXcoords = [leftPointX leftPointX rightPointX rightPointX leftPointX rightPointX leftPointX rightPointX];
@@ -65,12 +64,12 @@ if strcmp(fixationInfo.apetureType, 'frame');
     rightRectTexture = Screen('MakeTexture', expInfo.curWindow, rightRectMat);
     topHorzTexture = Screen('MakeTexture', expInfo.curWindow, topHorzMat);
     bottomHorzTexture = Screen('MakeTexture', expInfo.curWindow, bottomHorzMat);
-    expInfo.allTextures = [leftRectTexture; rightRectTexture; topHorzTexture; bottomHorzTexture];
+    expInfo.fixationTextures = [leftRectTexture; rightRectTexture; topHorzTexture; bottomHorzTexture];
     
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-    Screen('DrawTextures', expInfo.curWindow, expInfo.allTextures, [], [allLocations]);
+    Screen('DrawTextures', expInfo.curWindow, expInfo.fixationTextures, [], [allLocations]);
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-    Screen('DrawTextures', expInfo.curWindow, expInfo.allTextures, [], [allLocations]);
+    Screen('DrawTextures', expInfo.curWindow, expInfo.fixationTextures, [], [allLocations]);
 end
 rng(priorSeed);            % restore the generator settings
 end

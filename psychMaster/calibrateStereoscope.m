@@ -1,3 +1,4 @@
+ListenChar(2);
 screens = Screen('Screens');
 
 screenNumber = max(screens);
@@ -42,7 +43,7 @@ Screen('DrawLines', window, boxCoordsMinor, 1, [], [rightxcentre ycentre], 0);
 Screen('Flip', window);
 KbStrokeWait;
 sca
-
+ListenChar(0);
 
 
 
