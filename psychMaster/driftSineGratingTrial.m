@@ -9,6 +9,7 @@ function [trialData] = driftSineGratingTrial(expInfo, conditionInfo)
 %laterally in MoveLineTrial (e.g. in the combined_retinal_lateral
 %condition).
 
+
 %% setting up
 [screenXpixels, screenYpixels] = Screen('WindowSize', expInfo.curWindow);
 %get the number of pixels in the window
@@ -22,6 +23,11 @@ fixationInfo.apetureType = 'frame';
 expInfo = drawFixation(expInfo, fixationInfo);
 
 vbl=Screen('Flip', expInfo.curWindow);
+Screen('close', expInfo.fixationTextures); %destroying all of the created
+%textures from drawFixation (the apeture frame). This is really important
+%because otherwise all of the textures that are created are stored, filling
+%the memory and eventually causing ahuge number of flips to be missed --
+%giving horrible lag and performance issues.
 
 %the number of frames for each section of an interval
 nFramesPreStim = round(conditionInfo.preStimDuration/expInfo.ifi);
@@ -79,9 +85,9 @@ for iFrame = 1:nFramesPreStim
     Screen('DrawTexture', expInfo.curWindow, gratingTex, srcRect);
     
     expInfo = drawFixation(expInfo, fixationInfo);
-    
     vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
     Screen('close', gratingTex);
+    Screen('close', expInfo.fixationTextures);
     trialData.flipTimes(frameIdx) = vbl;
     frameIdx = frameIdx+1;
     
@@ -98,9 +104,9 @@ for iFrame = 1:nFramesSection1
     Screen('DrawTexture', expInfo.curWindow, gratingTex, srcRect);
     
     expInfo = drawFixation(expInfo, fixationInfo);
-    
     vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
     Screen('close', gratingTex);
+    Screen('close', expInfo.fixationTextures);
     trialData.flipTimes(frameIdx) = vbl;
     frameIdx = frameIdx+1;
     
@@ -120,9 +126,9 @@ for iFrame = 1:nFramesSection2
     Screen('DrawTexture', expInfo.curWindow, gratingTex, srcRect);
     
     expInfo = drawFixation(expInfo, fixationInfo);
-    
     vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
     Screen('close', gratingTex);
+    Screen('close', expInfo.fixationTextures);
     trialData.flipTimes(frameIdx) = vbl;
     frameIdx = frameIdx+1;
     
@@ -136,6 +142,8 @@ expInfo = drawFixation(expInfo, fixationInfo);
 
 Screen('Flip', expInfo.curWindow);
 Screen('close', gratingTex);
+Screen('close', expInfo.fixationTextures);
+
 trialData.flipTimes(frameIdx) = vbl; %another way of keeping track of the
 %flip times and making sure that everything is performing as it should.
 frameIdx = frameIdx+1;
