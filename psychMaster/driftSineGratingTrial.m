@@ -45,8 +45,8 @@ visiblesize = 512; % Size of the grating image. Needs to be a power of two.
 
 xoffset = 0;
 
-white = WhiteIndex(screenNumber);
-black = BlackIndex(screenNumber);
+white = WhiteIndex(expInfo.screenNum);
+black = BlackIndex(expInfo.screenNum);
 gray = round((white+black)/2);
 contrastIncrement = white-gray;
 
@@ -70,6 +70,10 @@ gratingtex=Screen('MakeTexture', expInfo.curWindow, grating, [], 1);
 %adapted from psychtoolbox demos DriftDemo3
 for iFrame = 1:nFramesPreStim
     srcRect=[xoffset 0 xoffset + visiblesize visiblesize];
+    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+    Screen('DrawTexture', expInfo.curWindow, gratingtex, srcRect);
+    
+    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
     Screen('DrawTexture', expInfo.curWindow, gratingtex, srcRect);
     
     vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
@@ -80,6 +84,10 @@ end
 
 for iFrame = 1:nFramesSection1
     
+    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+    Screen('DrawTexture', expInfo.curWindow, gratingtex, srcRect);
+    
+    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
     Screen('DrawTexture', expInfo.curWindow, gratingtex, srcRect);
     
     vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
@@ -93,6 +101,10 @@ end
 
 for iFrame = 1:nFramesSection2
     
+    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+    Screen('DrawTexture', expInfo.curWindow, gratingtex, srcRect);
+    
+    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
     Screen('DrawTexture', expInfo.curWindow, gratingtex, srcRect);
     
     vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
