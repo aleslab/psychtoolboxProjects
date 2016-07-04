@@ -9,7 +9,7 @@ expInfo = moveLineDefaultSettings(expInfo); %contains information for the
 expInfo.paradigmName = 'driftGrating_fast';
 
 %% conditions
-firstVelocities = 8:1:14;
+firstVelocities = 8:-1:2;
 condStimTypes = repmat( {'grating'},1,7);
 
 for iCond = 1: length(firstVelocities);
@@ -29,7 +29,7 @@ conditionInfo(iCond).velocityCmPerSecSection2 = (16)-(conditionInfo(iCond).veloc
 conditionInfo(iCond).isNullCorrect = false;
 % conditionInfo(iCond).objectOneStartPos = -5; %when there are two lines in each eye, the start position of the first line
 % conditionInfo(iCond).objectTwoStartPos = -3; %the start position of the second line in each eye
-conditionInfo(iCond).nReps = 30; %number of repeats
+conditionInfo(iCond).nReps = 10; %number of repeats
 conditionInfo(iCond).giveFeedback = false;
 conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];
 
