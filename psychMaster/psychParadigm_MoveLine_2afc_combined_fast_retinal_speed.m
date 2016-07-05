@@ -7,7 +7,7 @@ expInfo = moveLineDefaultSettings(expInfo);
 expInfo.paradigmName = 'MoveLine_combined_constant_retinal_speed_fast';
 
 %% conditions
-firstVelocities = 8:1:14;
+firstVelocities = 8:-1:2;
 condStimTypes = repmat({'combined_retinal_lateral'},1,7);
 
 for iCond = 1: length(firstVelocities);
