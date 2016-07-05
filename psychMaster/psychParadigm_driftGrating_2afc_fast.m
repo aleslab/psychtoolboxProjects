@@ -13,26 +13,33 @@ firstVelocities = 8:-1:2;
 condStimTypes = repmat( {'grating'},1,7);
 
 for iCond = 1: length(firstVelocities);
-%This defines what function to call to draw the condition
-conditionInfo(iCond).trialFun=@driftSineGratingTrial;
-
+    %general
+conditionInfo(iCond).trialFun=@driftSineGratingTrial; %This defines what 
+%function to call to draw the condition
 conditionInfo(iCond).type             = '2afc'; 
 conditionInfo(iCond).stimType         = condStimTypes(iCond);
+
+%timings and speeds
 conditionInfo(iCond).stimDurationSection1 = 0.50; %approximate stimulus duration in seconds
 conditionInfo(iCond).stimDurationSection2 = 0.50;
 conditionInfo(iCond).preStimDuration  = 0.25;  %Static time before stimulus change
-
 conditionInfo(iCond).iti              = 1;     %Inter Stimulus Interval
 conditionInfo(iCond).responseDuration = 3;    %Post trial window for waiting for a response
 conditionInfo(iCond).velocityCmPerSecSection1 = firstVelocities(iCond); %cm/s
 conditionInfo(iCond).velocityCmPerSecSection2 = (16)-(conditionInfo(iCond).velocityCmPerSecSection1); %cm/s 
+
+%sine wave grating structure
+conditionInfo(iCond).degPerCycle = 1;
+conditionInfo(iCond).degGratingSize = 4;
+conditionInfo(iCond).xOffset = 0;
+
+%repeats, which is correct, feedback, labelling etc.
 conditionInfo(iCond).isNullCorrect = false;
-% conditionInfo(iCond).objectOneStartPos = -5; %when there are two lines in each eye, the start position of the first line
-% conditionInfo(iCond).objectTwoStartPos = -3; %the start position of the second line in each eye
 conditionInfo(iCond).nReps = 10; %number of repeats
 conditionInfo(iCond).giveFeedback = false;
 conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];
 
+%standard (null) condition
 nullCondition = conditionInfo(iCond);
 nullCondition.velocityCmPerSecSection1 = 8;  
 nullCondition.velocityCmPerSecSection2 = 8;

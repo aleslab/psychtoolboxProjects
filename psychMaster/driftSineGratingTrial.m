@@ -11,8 +11,6 @@ function [trialData] = driftSineGratingTrial(expInfo, conditionInfo)
 
 
 %% setting up
-[screenXpixels, screenYpixels] = Screen('WindowSize', expInfo.curWindow);
-%get the number of pixels in the window
 
 trialData.validTrial = false;
 trialData.abortNow   = false;
@@ -26,7 +24,7 @@ vbl=Screen('Flip', expInfo.curWindow);
 Screen('close', expInfo.fixationTextures); %destroying all of the created
 %textures from drawFixation (the apeture frame). This is really important
 %because otherwise all of the textures that are created are stored, filling
-%the memory and eventually causing ahuge number of flips to be missed --
+%the memory and eventually causing a huge number of flips to be missed --
 %giving horrible lag and performance issues.
 
 %the number of frames for each section of an interval
@@ -45,22 +43,29 @@ velPixPerFrameSection2 = velCmPerFrameSection2*expInfo.pixPerCm;
 trialData.flipTimes = NaN(nFramesTotal,1);
 frameIdx = 1;
 
-pixPerCyc = 64; %Spatial period of grating in pixels; pixels per cycle.
+radPerCycle = deg2rad(conditionInfo.degPerCycle);
+radGratingSize = deg2rad(conditionInfo.degGratingSize);
+
+pixPerCycle = round(expInfo.viewingDistance*expInfo.pixPerCm*tan(radPerCycle)); 
+%Spatial period of grating in pixels; pixels per cycle. Was 64.
 %A bigger number means bigger bands of light and dark contrast when the
 %sine wave grating is drawn.
+expInfo.pixPerCycle = pixPerCycle;
 
-visiblesize = 256; % Size of the grating image. Needs to be a power of two
+pixGratingSize = round(expInfo.viewingDistance*expInfo.pixPerCm*tan(radGratingSize));
+%Was 256; % Size of the grating image. Needs to be a power of two
 %or the grating isn't drawn properly.
+expInfo.pixGratingSize = pixGratingSize;
 
-xoffset = 0;
+xoffset = conditionInfo.xOffset; %the offset of the sine wave grating on the x axiss
 
+%colours for the grating
 white = 1;
-black = 0;
 gray = 0.5;
 contrastIncrement = white-gray;
 
 % Calculate parameters of the grating:
-freq = 1/pixPerCyc; %reciprocal the time period of the wave = frequency (f) of the wave
+freq = 1/pixPerCycle; %reciprocal the time period of the wave = frequency (f) of the wave
 freqRad = freq*2*pi;    % frequency in radians.
 
 % Create one single static 1-D grating image.
@@ -69,7 +74,7 @@ freqRad = freq*2*pi;    % frequency in radians.
 % below is "higher" than that (i.e. visibleSize >> 1), the GPU will
 % automatically replicate pixel rows. This 1 pixel height saves memory
 % and memory bandwith, ie. it is potentially faster on some GPUs.
-x=meshgrid(0:visiblesize-1, 1);
+x=meshgrid(0:pixGratingSize-1, 1);
 grating=gray + contrastIncrement*sin(freqRad*x);
 
 %% trial
@@ -77,7 +82,7 @@ grating=gray + contrastIncrement*sin(freqRad*x);
 for iFrame = 1:nFramesPreStim
     gratingTex=Screen('MakeTexture', expInfo.curWindow, grating, [], 1);
     
-    srcRect=[xoffset 0 xoffset + visiblesize visiblesize];
+    srcRect=[xoffset 0 xoffset + pixGratingSize pixGratingSize];
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
     Screen('DrawTexture', expInfo.curWindow, gratingTex, srcRect);
     
@@ -110,8 +115,11 @@ for iFrame = 1:nFramesSection1
     trialData.flipTimes(frameIdx) = vbl;
     frameIdx = frameIdx+1;
     
-    xoffset = xoffset - velPixPerFrameSection1;
-    srcRect=[xoffset 0 xoffset + visiblesize visiblesize];
+    xoffset = xoffset - velPixPerFrameSection1; %the offset to move the 
+    %sine wave grating to the right is the previous offset take away the 
+    %velocity in pixels/frame. if you add it the pix/frame, the sine wave
+    %moves towards the left.
+    srcRect=[xoffset 0 xoffset + pixGratingSize pixGratingSize];
     
 end
 
@@ -133,7 +141,7 @@ for iFrame = 1:nFramesSection2
     frameIdx = frameIdx+1;
     
     xoffset = xoffset - velPixPerFrameSection2;
-    srcRect=[xoffset 0 xoffset + visiblesize visiblesize];
+    srcRect=[xoffset 0 xoffset + pixGratingSize pixGratingSize];
     
 end
 
