@@ -80,7 +80,7 @@ grating=gray + contrastIncrement*sin(freqRad*x);
 %% trial
 %adapted from psychtoolbox demos DriftDemo3
 for iFrame = 1:nFramesPreStim
-    gratingTex=Screen('MakeTexture', expInfo.curWindow, grating, [], 1);
+    gratingTex=Screen('MakeTexture', expInfo.curWindow, grating, []);
     
     srcRect=[xoffset 0 xoffset + pixGratingSize pixGratingSize];
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
