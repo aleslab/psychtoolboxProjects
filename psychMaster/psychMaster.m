@@ -390,8 +390,50 @@ end;
                     end
                     
                     trialData.nullFirst = nullFirst;
+                    
+                    %audio beep before first interval?
+                    audioInfo.nOutputChannels = 2;
+                    audioInfo.samplingFreq = 48000;
+                    audioInfo.nReps = 1;
+                    audioInfo.beepLength = 0.25; %in seconds
+                    audioInfo.startCue = 0; %starts immediately on call
+                    audioInfo.pahandle = PsychPortAudio('Open', [], 1, 1, audioInfo.samplingFreq, audioInfo.nOutputChannels);
+                    
+                    PsychPortAudio('Volume', audioInfo.pahandle, 0.5);
+                    
+                    intervalBeep = MakeBeep(500, audioInfo.beepLength, audioInfo.samplingFreq);
+                    
+                    PsychPortAudio('FillBuffer', audioInfo.pahandle, [intervalBeep; intervalBeep]);
+                    
+                    PsychPortAudio('Start', audioInfo.pahandle, audioInfo.nReps, audioInfo.startCue);
+                    
+                    WaitSecs(audioInfo.beepLength);
+                    
+                    PsychPortAudio('Stop', audioInfo.pahandle);
+                    
                     [trialData.firstCond] = conditionInfo(thisCond).trialFun(expInfo,firstCond);
                     WaitSecs(conditionInfo(thisCond).iti);
+                    
+                    audioInfo.ibi = 0.1; %inter-beep interval
+                    
+                    audioInfo.pahandle = PsychPortAudio('Open', [], 1, 1, audioInfo.samplingFreq, audioInfo.nOutputChannels);
+                    
+                    PsychPortAudio('Volume', audioInfo.pahandle, 0.5);
+                    
+                    intervalBeep = MakeBeep(500, audioInfo.beepLength, audioInfo.samplingFreq);
+                    
+                    PsychPortAudio('FillBuffer', audioInfo.pahandle, [intervalBeep; intervalBeep]);
+                    
+                    PsychPortAudio('Start', audioInfo.pahandle, audioInfo.nReps, audioInfo.startCue);
+                    
+                    WaitSecs(audioInfo.beepLength + audioInfo.ibi);
+                    
+                    PsychPortAudio('Start', audioInfo.pahandle, audioInfo.nReps, audioInfo.startCue);
+                    
+                    WaitSecs(audioInfo.beepLength);
+                    
+                    PsychPortAudio('Stop', audioInfo.pahandle);
+                    
                     [trialData.secondCond] = conditionInfo(thisCond).trialFun(expInfo,secondCond);
                     
                     fixationInfo.fixationType = 'cross';
@@ -574,22 +616,22 @@ end;
                 Screen('close', expInfo.fixationTextures);
                 
             elseif conditionInfo(thisCond).giveAudioFeedback
-                                  %audio information for feedback
+                %audio information for feedback
                 audioInfo.nOutputChannels = 2;
                 audioInfo.samplingFreq = 48000;
                 audioInfo.nReps = 1;
                 audioInfo.beepLength = 0.25; %in seconds
                 audioInfo.startCue = 0; %starts immediately on call
-                
+                audioInfo.postFeedbackPause = 0.25;
                 fixationInfo.fixationType = 'cross';
-                fixationInfo.responseSquare = 1;
+                fixationInfo.responseSquare = 0;
                 fixationInfo.apetureType = 'frame';
                 expInfo = drawFixation(expInfo, fixationInfo);
                 Screen('Flip', expInfo.curWindow);
-                 Screen('close', expInfo.fixationTextures);
-                 
+                Screen('close', expInfo.fixationTextures);
+                
                 if experimentData(iTrial).isResponseCorrect;
-                  
+                    
                     audioInfo.pahandle = PsychPortAudio('Open', [], 1, 1, audioInfo.samplingFreq, audioInfo.nOutputChannels);
                     
                     PsychPortAudio('Volume', audioInfo.pahandle, 0.5);
@@ -600,12 +642,12 @@ end;
                     
                     PsychPortAudio('Start', audioInfo.pahandle, audioInfo.nReps, audioInfo.startCue);
                     
-                    WaitSecs(audioInfo.beepLength);
+                    WaitSecs(audioInfo.beepLength + audioInfo.postFeedbackPause);
                     
                     PsychPortAudio('Stop', audioInfo.pahandle);
-                          
+                    
                 else
-
+                    
                     audioInfo.pahandle = PsychPortAudio('Open', [], 1, 1, audioInfo.samplingFreq, audioInfo.nOutputChannels);
                     
                     PsychPortAudio('Volume', audioInfo.pahandle, 0.5);
@@ -616,16 +658,14 @@ end;
                     
                     PsychPortAudio('Start', audioInfo.pahandle, audioInfo.nReps, audioInfo.startCue);
                     
-                    WaitSecs(audioInfo.beepLength)
+                    WaitSecs(audioInfo.beepLength + audioInfo.postFeedbackPause);
                     
-                    PsychPortAudio('Stop', audioInfo.pahandle);                  
+                    PsychPortAudio('Stop', audioInfo.pahandle);
                     
                 end
                 
-                expInfo.audioInfo = audioInfo;
+                expInfo.audioInfo.audioFeedback = audioInfo;
                 
-                Screen('Flip', expInfo.curWindow);
-                Screen('close', expInfo.fixationTextures);
             end
             
             
