@@ -23,7 +23,7 @@ function [] = psychMaster(sessionInfo)
 %               (each condition can have a different number).
 %   iti       = The intertrial interval in seconds. Currently implemented
 %               with a simple WaitSecs() call so the iti is AT LEAST this long
-%    
+%
 %
 %   Optional fields with defaults in []:
 %   label        = [''] A short string that identifies the condition
@@ -35,22 +35,22 @@ function [] = psychMaster(sessionInfo)
 %                        The @trialFun will handle collecting responses and
 %                        feedback
 %    'simpleResponse' -  Like 'Generic' but waits for a response after
-%                        every trial and saves it. 
+%                        every trial and saves it.
 %          '2afc'     -  This will implement 2 temporal alternative forced
 %                        choice. This option will collect responses and
 %                        will optionally provide feedback (if giveFeedback is set to TRUE).
-%                          Requires 2 extra fields: 
-%                          nullCondition = a conditionInfo structure with a 
-%                                          single condition that will be used 
+%                          Requires 2 extra fields:
+%                          nullCondition = a conditionInfo structure with a
+%                                          single condition that will be used
 %                                          as the comparison
-%                          isNullCorrect = [false] a boolean that sets which 
+%                          isNullCorrect = [false] a boolean that sets which
 %                                          condition is the correct condition.
 %                                          If set to true the null condition
-%                                          is treated as correct. If set to 
-%                                          false (default) the other condition 
+%                                          is treated as correct. If set to
+%                                          false (default) the other condition
 %                                          is considered correct.
 %   'directionreport' - For dealing with data from a direction
-%                       discrimination task where there are 8 different 
+%                       discrimination task where there are 8 different
 %                       options for response in a "circle".
 %
 %   expInfo defines experiment wide settings. Mostly things that are
@@ -84,18 +84,19 @@ diary(diaryName);
 %the sessionInfo structure is used to store information about the current session
 %that is being run
 if ~exist('sessionInfo','var') || isempty(sessionInfo)
-  %  sessionInfo.participantID = input('What is the participant ID:  ','s');
+    %  sessionInfo.participantID = input('What is the participant ID:  ','s');
     %store the date. use: datestr(sessionInfo.sessionDate) to make human readable
     sessionInfo.sessionDate = now;
     sessionInfo.psychMasterVer = psychMasterVer;
     [~,ptbVerStruct]=PsychtoolboxVersion;
     sessionInfo.ptbVersion = ptbVerStruct;
     rng('shuffle');
-    sessionInfo.randomSeed = rng;  
+    sessionInfo.randomSeed = rng;
 end
 
 
 expInfo     = struct();
+InitializePsychSound(1);
 
 
 %Check for preferences.  Preferences enable  easy configuration changes for
@@ -144,7 +145,7 @@ end
 
 
 try
-
+    
     %Load size calibration:
     if ispref('psychMaster','sizeCalibrationFile');
         sizeFile = getpref('psychMaster','sizeCalibrationFile');
@@ -185,7 +186,7 @@ try
     end
     
     
-        %Try to get the git commit hash and save it to the expInfo
+    %Try to get the git commit hash and save it to the expInfo
     %
     %JMA: This only works for a current git repository.
     %TODO: Add a mechanism for including this information in standalone
@@ -200,50 +201,50 @@ try
     end
     
     %loop to enable firing single conditions for testing, could also be
-    %extended to multiple blocks in the future. 
+    %extended to multiple blocks in the future.
     [sessionInfo,expInfo,conditionInfo] = pmGui(sessionInfo,expInfo);
     drawnow; %<- required to actually close the gui.
-       
-    %User canceled before opening experiment, just quit the function. 
+    
+    %User canceled before opening experiment, just quit the function.
     if sessionInfo.userCancelled
         cleanupPsychMaster();
         return;
     end
-      
-        
-        %Now lets begin the experiment and loop over the conditions to show.
-        expInfo = openExperiment(expInfo);
-     
-        
-        %Show instructions and wait for a keypress.
-        DrawFormattedTextStereo(expInfo.curWindow, expInfo.instructions,'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
-        Screen('Flip', expInfo.curWindow);
-        KbStrokeWait();
     
+    
+    %Now lets begin the experiment and loop over the conditions to show.
+    expInfo = openExperiment(expInfo);
+    
+    
+    %Show instructions and wait for a keypress.
+    DrawFormattedTextStereo(expInfo.curWindow, expInfo.instructions,'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
+    Screen('Flip', expInfo.curWindow);
+    KbStrokeWait();
+    
+    
+    experimentData = struct();
+    
+    %This function handles everything for the experimental trials.
+    mainExperimentLoop();
+    
+    while sessionInfo.returnToGui
         
-        experimentData = struct();
+        [sessionInfo,expInfo,conditionInfo] = pmGui(sessionInfo,expInfo,sessionInfo.backupConditionInfo);
+        drawnow; %<- required to actually close the gui.
+        
+        %User canceled after opening experiment, just close and quit the function.
+        if sessionInfo.userCancelled
+            cleanupPsychMaster();
+            closeExperiment();
+            return;
+        end
+        
         
         %This function handles everything for the experimental trials.
         mainExperimentLoop();
-        
-        while sessionInfo.returnToGui
-            
-            [sessionInfo,expInfo,conditionInfo] = pmGui(sessionInfo,expInfo,sessionInfo.backupConditionInfo);
-            drawnow; %<- required to actually close the gui.
-            
-            %User canceled after opening experiment, just close and quit the function.
-            if sessionInfo.userCancelled
-                cleanupPsychMaster();
-                closeExperiment();
-                return;
-            end
-
-            
-            %This function handles everything for the experimental trials.
-            mainExperimentLoop();
-        end
+    end
     
-  
+    
     if expInfo.useKbQueue
         KbQueueRelease(expInfo.deviceIndex);
     end
@@ -267,7 +268,7 @@ catch
     disp('caught')
     errorMsg = lasterror;
     
-    if exist('experimentData','var') && ~isempty(experimentData)        
+    if exist('experimentData','var') && ~isempty(experimentData)
         saveResults();
     end
     cleanupPsychMaster();
@@ -311,7 +312,7 @@ end;
         %permutation
         [~,idx]=sort(rand(size(conditionList)));
         conditionList = conditionList(idx);
-    
+        
         %Let's start the expeirment
         %we're going to use a while loop so we can easily add trials for
         %invalid trials.
@@ -336,20 +337,20 @@ end;
                     WaitSecs(conditionInfo(thisCond).iti);
                     
                     [trialData] = conditionInfo(thisCond).trialFun(expInfo,conditionInfo(thisCond));
-                
+                    
                     
                     %Here we'll add the response collection
                     %There is a bit of redunancy with the 2afc code.  I
-                    %don't like it but it will do for now.  
+                    %don't like it but it will do for now.
                     if strcmp(lower(conditionInfo(thisCond).type),'simpleresponse')
-                    
+                        
                         [responseData] = getResponse(expInfo,conditionInfo(thisCond).responseDuration);
-                    
+                        
                         trialData.firstPress = responseData.firstPress;
                         trialData.pressed    = responseData.pressed;
                         trialData.abortNow = false;
                         trialData.validTrial = false; %Default not valid unless proven otherwise
-                       
+                        
                         if trialData.firstPress(KbName('ESCAPE'))
                             %pressed escape lets abort experiment;
                             trialData.validTrial = false;
@@ -365,11 +366,11 @@ end;
                             KbStrokeWait();
                             
                         else
-                           trialData.validTrial = true;
+                            trialData.validTrial = true;
                         end
                         
-                            
-                    
+                        
+                        
                     end
                     
                     
@@ -377,7 +378,7 @@ end;
                 case '2afc'
                     
                     %Which trial first?
-
+                    
                     nullFirst = rand()>.5;
                     
                     if nullFirst
@@ -389,8 +390,59 @@ end;
                     end
                     
                     trialData.nullFirst = nullFirst;
+                    
+                    %Basic audio information for interval beeps and audio
+                    %feedback
+                    audioInfo.nOutputChannels = 2;
+                    audioInfo.samplingFreq = 48000;
+                    audioInfo.nReps = 1;
+                    audioInfo.beepLength = 0.25; %in seconds
+                    audioInfo.startCue = 0; %starts immediately on call
+                    audioInfo.ibi = 0.1; %inter-beep interval; only used for the second interval
+                    audioInfo.pahandle = PsychPortAudio('Open', [], 1, 1, audioInfo.samplingFreq, audioInfo.nOutputChannels);
+                    
+                    if ~isfield(conditionInfo, 'intervalBeep')
+                        conditionInfo(thisCond).intervalBeep = false;
+                    end
+                    
+                    %option to make a beep before the first interval
+                    if conditionInfo(thisCond).intervalBeep
+                        
+                        PsychPortAudio('Volume', audioInfo.pahandle, 0.5); %the volume of the beep
+                        
+                        intervalBeep = MakeBeep(500, audioInfo.beepLength, audioInfo.samplingFreq);
+                        
+                        PsychPortAudio('FillBuffer', audioInfo.pahandle, [intervalBeep; intervalBeep]);
+                        
+                        PsychPortAudio('Start', audioInfo.pahandle, audioInfo.nReps, audioInfo.startCue);
+                        
+                        WaitSecs(audioInfo.beepLength);
+                        
+                        PsychPortAudio('Stop', audioInfo.pahandle);
+                        
+                    end
+                    
                     [trialData.firstCond] = conditionInfo(thisCond).trialFun(expInfo,firstCond);
                     WaitSecs(conditionInfo(thisCond).iti);
+                    
+                    %option to make a beep before the second interval
+                    
+                    if conditionInfo(thisCond).intervalBeep
+                        
+                        PsychPortAudio('Start', audioInfo.pahandle, audioInfo.nReps, audioInfo.startCue);
+                        
+                        WaitSecs(audioInfo.beepLength + audioInfo.ibi);
+                        
+                        PsychPortAudio('Start', audioInfo.pahandle, audioInfo.nReps, audioInfo.startCue);
+                        
+                        WaitSecs(audioInfo.beepLength);
+                        
+                        PsychPortAudio('Stop', audioInfo.pahandle);
+                        
+                        expInfo.audioInfo = audioInfo;
+                        
+                    end
+                    
                     [trialData.secondCond] = conditionInfo(thisCond).trialFun(expInfo,secondCond);
                     
                     fixationInfo.fixationType = 'cross';
@@ -474,23 +526,23 @@ end;
                     trialData.firstPress = responseData.firstPress;
                     trialData.pressed    = responseData.pressed;
                     trialData.abortNow = false;
+                    
+                    if trialData.firstPress(KbName('ESCAPE')) %same as above
+                        %pressed escape lets abort experiment;
+                        trialData.validTrial = false;
+                        experimentData(iTrial).validTrial = false;
+                        trialData.abortNow = true;
                         
-                        if trialData.firstPress(KbName('ESCAPE')) %same as above
-                            %pressed escape lets abort experiment;
-                            trialData.validTrial = false;
-                            experimentData(iTrial).validTrial = false;
-                            trialData.abortNow = true;
-                            
-                        elseif trialData.firstPress(KbName('space')) %same as above
-                            trialData.validTrial = false;
-                            experimentData(iTrial).validTrial = false;
-                            DrawFormattedTextStereo(expInfo.curWindow, expInfo.pauseInfo, ...
-                                'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
-                            Screen('Flip', expInfo.curWindow);
-                            KbStrokeWait();
-                            
-                        else
-                            if trialData.firstPress(KbName('1')); %left-towards response
+                    elseif trialData.firstPress(KbName('space')) %same as above
+                        trialData.validTrial = false;
+                        experimentData(iTrial).validTrial = false;
+                        DrawFormattedTextStereo(expInfo.curWindow, expInfo.pauseInfo, ...
+                            'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
+                        Screen('Flip', expInfo.curWindow);
+                        KbStrokeWait();
+                        
+                    else
+                        if trialData.firstPress(KbName('1')); %left-towards response
                             experimentData(iTrial).chosenInterval = 1;
                             trialData.validTrial = true;
                         elseif trialData.firstPress(KbName('2'))
@@ -514,17 +566,19 @@ end;
                         elseif trialData.firstPress(KbName('9'))
                             experimentData(iTrial).chosenInterval = 9; %right-away response
                             trialData.validTrial = true;
-                            end
                         end
-                        
-
-  
+                    end
+                    
+                    
+                    
             end
             
             
             experimentData(iTrial).condNumber = thisCond;
             
-            
+            if ~isfield(conditionInfo, 'giveAudioFeedback')
+                conditionInfo(thisCond).giveAudioFeedback = false;
+            end
             
             if ~trialData.validTrial  %trial not valid
                 
@@ -541,7 +595,7 @@ end;
                 fixationInfo.responseSquare = 0;
                 fixationInfo.apetureType = 'frame';
                 
-
+                
                 DrawFormattedTextStereo(expInfo.curWindow, 'Invalid trial','center', 'center', 1);
                 
                 expInfo = drawFixation(expInfo, fixationInfo);
@@ -571,6 +625,46 @@ end;
                 expInfo = drawFixation(expInfo, fixationInfo);
                 Screen('Flip', expInfo.curWindow);
                 Screen('close', expInfo.fixationTextures);
+                
+            elseif conditionInfo(thisCond).giveAudioFeedback
+                
+                audioInfo.postFeedbackPause = 0.25;
+                
+                fixationInfo.fixationType = 'cross';
+                fixationInfo.responseSquare = 0;
+                fixationInfo.apetureType = 'frame';
+                expInfo = drawFixation(expInfo, fixationInfo);
+                Screen('Flip', expInfo.curWindow);
+                Screen('close', expInfo.fixationTextures);
+                
+                if experimentData(iTrial).isResponseCorrect;
+                    
+                    correctBeep = MakeBeep(750, audioInfo.beepLength, audioInfo.samplingFreq);
+                    
+                    PsychPortAudio('FillBuffer', audioInfo.pahandle, [correctBeep; correctBeep]);
+                    
+                    PsychPortAudio('Start', audioInfo.pahandle, audioInfo.nReps, audioInfo.startCue);
+                    
+                    WaitSecs(audioInfo.beepLength + audioInfo.postFeedbackPause);
+                    
+                    PsychPortAudio('Stop', audioInfo.pahandle);
+                    
+                else
+                    
+                    incorrectBeep = MakeBeep(250, audioInfo.beepLength, audioInfo.samplingFreq);
+                    
+                    PsychPortAudio('FillBuffer', audioInfo.pahandle, [incorrectBeep; incorrectBeep]);
+                    
+                    PsychPortAudio('Start', audioInfo.pahandle, audioInfo.nReps, audioInfo.startCue);
+                    
+                    WaitSecs(audioInfo.beepLength + audioInfo.postFeedbackPause);
+                    
+                    PsychPortAudio('Stop', audioInfo.pahandle);
+                    
+                end
+                
+                expInfo.audioInfo.audioFeedback.postFeedbackPause = audioInfo.postFeedbackPause;
+                
             end
             
             
@@ -602,7 +696,7 @@ end;
         
         %Now save the diary:
         sessionInfo.diary = fileread(diaryName);
-      
+        
         
         if isfield(expInfo,'paradigmName') && ~isempty(expInfo.paradigmName),
             filePrefix = expInfo.paradigmName;
@@ -626,17 +720,17 @@ end;
             mkdir(datadir)
         end
         
-         try  
-             save(saveFilename,'sessionInfo','experimentData');
-         catch ME
-             disp('><><><><!><!><!><!><!><!><!><!><!><!><!><><><><>')
-             disp('ERROR SAVING DATA')
-             disp('><><><><!><!><!><!><!><!><!><!><!><!><!><><><><>')
-             disp(getReport(ME))
+        try
+            save(saveFilename,'sessionInfo','experimentData');
+        catch ME
+            disp('><><><><!><!><!><!><!><!><!><!><!><!><!><><><><>')
+            disp('ERROR SAVING DATA')
+            disp('><><><><!><!><!><!><!><!><!><!><!><!><!><><><><>')
+            disp(getReport(ME))
         end
         
     end
-    
+
 %This is a function that handles cleaning up things specific to this file
 %deleting the tempory diary.
     function cleanupPsychMaster()

@@ -36,6 +36,8 @@ conditionInfo(iCond).xOffset = 0;
 %repeats, which is correct, feedback, labelling etc.
 conditionInfo(iCond).isNullCorrect = false;
 conditionInfo(iCond).nReps = 10; %number of repeats
+conditionInfo(iCond).intervalBeep = true;
+conditionInfo(iCond).giveAudioFeedback = true;
 conditionInfo(iCond).giveFeedback = false;
 conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];
 
