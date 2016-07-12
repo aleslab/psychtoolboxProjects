@@ -401,10 +401,6 @@ end;
                     audioInfo.ibi = 0.1; %inter-beep interval; only used for the second interval
                     audioInfo.pahandle = PsychPortAudio('Open', [], 1, 1, audioInfo.samplingFreq, audioInfo.nOutputChannels);
                     
-                    if ~isfield(conditionInfo, 'intervalBeep')
-                        conditionInfo(thisCond).intervalBeep = false;
-                    end
-                    
                     %option to make a beep before the first interval
                     if conditionInfo(thisCond).intervalBeep
                         
