@@ -575,11 +575,7 @@ end;
             
             
             experimentData(iTrial).condNumber = thisCond;
-            
-            if ~isfield(conditionInfo, 'giveAudioFeedback')
-                conditionInfo(thisCond).giveAudioFeedback = false;
-            end
-            
+                        
             if ~trialData.validTrial  %trial not valid
                 
                 if trialData.abortNow
