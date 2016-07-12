@@ -7,12 +7,21 @@ expInfo = moveLineDefaultSettings(expInfo);
 expInfo.paradigmName = 'MoveLine_combined_CRS_depth_slow';
 
 %% conditions
-firstVelocities = [0.630 0.488 0.412 0.339 0.267 0.197 0.129];
-secondVelocities = [0.630 0.772 0.849 0.922 0.994 1.063 1.131];
+firstVelocitiesL1 = [0.419 0.323 0.275 0.226 0.176 0.132 0.087];
+secondVelocitiesL1 = [0.419 0.516 0.563 0.612 0.662 0.706 0.751];
+
+firstVelocitiesL2 = [0.839 0.648 0.549 0.451 0.354 0.263 0.173];
+secondVelocitiesL2 = [0.839 1.031 1.130 1.227 1.325 1.416 1.506];
+
+firstVelocitiesR1 = [-0.839 -0.648 -0.549 -0.451 -0.354 -0.263 -0.173];
+secondVelocitiesR1 = [-0.839 -1.031 -1.130 -1.227 -1.325 -1.416 -1.506];
+
+firstVelocitiesR2 = [-0.419 -0.323 -0.275 -0.226 -0.176 -0.132 -0.087];
+secondVelocitiesR2 = [-0.419 -0.516 -0.563 -0.612 -0.662 -0.706 -0.751];
 
 condStimTypes = repmat({'combined_retinal_depth'},1,7);
 
-for iCond = 1: length(firstVelocities);
+for iCond = 1: length(firstVelocitiesL1);
     %general condition definitions
     conditionInfo(iCond).trialFun=@MoveLineTrial; %This defines what function
     %to call to draw the condition
@@ -22,7 +31,7 @@ for iCond = 1: length(firstVelocities);
     conditionInfo(iCond).nReps = 30; %number of repeats
     conditionInfo(iCond).giveFeedback = false;
     conditionInfo(iCond).depthStart = 0; %5cm behind the plane of the screen
-    conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];
+    conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocitiesL1(iCond))];
     
     %timings
     conditionInfo(iCond).stimDurationSection1 = 0.50; %approximate stimulus duration in seconds
@@ -40,36 +49,32 @@ for iCond = 1: length(firstVelocities);
     
     %line velocities
       
-    conditionInfo(iCond).L1velocityCmPerSecSection1 = firstVelocities(iCond); %cm/s
-    conditionInfo(iCond).L1velocityCmPerSecSection2 = secondVelocities(iCond); %cm/s
+    conditionInfo(iCond).L1velocityCmPerSecSection1 = firstVelocitiesL1(iCond); %cm/s
+    conditionInfo(iCond).L1velocityCmPerSecSection2 = secondVelocitiesL1(iCond); %cm/s
     
-    conditionInfo(iCond).L2velocityCmPerSecSection1 = firstVelocities(iCond);
-    conditionInfo(iCond).L2velocityCmPerSecSection2 = secondVelocities(iCond);
+    conditionInfo(iCond).L2velocityCmPerSecSection1 = firstVelocitiesL2(iCond);
+    conditionInfo(iCond).L2velocityCmPerSecSection2 = secondVelocitiesL2(iCond);
     
-    conditionInfo(iCond).R1velocityCmPerSecSection1 = firstVelocities(iCond);
-    conditionInfo(iCond).R1velocityCmPerSecSection2 = secondVelocities(iCond);
+    conditionInfo(iCond).R1velocityCmPerSecSection1 = firstVelocitiesR1(iCond);
+    conditionInfo(iCond).R1velocityCmPerSecSection2 = secondVelocitiesR1(iCond);
     
-    conditionInfo(iCond).R2velocityCmPerSecSection1 = firstVelocities(iCond);
-    conditionInfo(iCond).R2velocityCmPerSecSection2 = secondVelocities(iCond);
+    conditionInfo(iCond).R2velocityCmPerSecSection1 = firstVelocitiesR2(iCond);
+    conditionInfo(iCond).R2velocityCmPerSecSection2 = secondVelocitiesR2(iCond);
     
-
-      %here as a work around this being used by all of the other conditions
-      %in MoveLineTrial. Exist doesn't seem to be having the desired
-      %effect.
     
     %null condition
     nullCondition = conditionInfo(iCond);
-    nullCondition.L1velocityCmPerSecSection1 = 0.63;
-    nullCondition.L1velocityCmPerSecSection2 = 0.63;
+    nullCondition.L1velocityCmPerSecSection1 = 0.419;
+    nullCondition.L1velocityCmPerSecSection2 = 0.419;
     
-    nullCondition.L2velocityCmPerSecSection1 = 0.63;
-    nullCondition.L2velocityCmPerSecSection2 = 0.63;
+    nullCondition.L2velocityCmPerSecSection1 = 0.839;
+    nullCondition.L2velocityCmPerSecSection2 = 0.839;
     
-    nullCondition.R1velocityCmPerSecSection1 = 0.63;
-    nullCondition.R1velocityCmPerSecSection2 = 0.63;
+    nullCondition.R1velocityCmPerSecSection1 = -0.839;
+    nullCondition.R1velocityCmPerSecSection2 = -0.839;
     
-    nullCondition.R2velocityCmPerSecSection1 = 0.63;
-    nullCondition.R2velocityCmPerSecSection2 = 0.63;
+    nullCondition.R2velocityCmPerSecSection1 = -0.419;
+    nullCondition.R2velocityCmPerSecSection2 = -0.419;
     
     nullCondition.stimType = condStimTypes(iCond);
     conditionInfo(iCond).nullCondition = nullCondition;
