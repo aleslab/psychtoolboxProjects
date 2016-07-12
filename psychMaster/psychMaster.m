@@ -96,8 +96,6 @@ end
 
 
 expInfo     = struct();
-InitializePsychSound(1);
-
 
 %Check for preferences.  Preferences enable  easy configuration changes for
 %different machines without having to hardcode things.
@@ -391,34 +389,20 @@ end;
                     
                     trialData.nullFirst = nullFirst;
                     
-                    %Basic audio information for interval beeps and audio
-                    %feedback
-                    audioInfo.nOutputChannels = 2;
-                    audioInfo.samplingFreq = 48000;
-                    audioInfo.nReps = 1;
-                    audioInfo.beepLength = 0.25; %in seconds
-                    audioInfo.startCue = 0; %starts immediately on call
-                    audioInfo.ibi = 0.1; %inter-beep interval; only used for the second interval
-                    audioInfo.pahandle = PsychPortAudio('Open', [], 1, 1, audioInfo.samplingFreq, audioInfo.nOutputChannels);
-                    
-                    if ~isfield(conditionInfo, 'intervalBeep')
-                        conditionInfo(thisCond).intervalBeep = false;
-                    end
-                    
                     %option to make a beep before the first interval
                     if conditionInfo(thisCond).intervalBeep
                         
-                        PsychPortAudio('Volume', audioInfo.pahandle, 0.5); %the volume of the beep
+                        PsychPortAudio('Volume', expInfo.audioInfo.pahandle, 0.5); %the volume of the beep
                         
-                        intervalBeep = MakeBeep(500, audioInfo.beepLength, audioInfo.samplingFreq);
+                        intervalBeep = MakeBeep(500, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
                         
-                        PsychPortAudio('FillBuffer', audioInfo.pahandle, [intervalBeep; intervalBeep]);
+                        PsychPortAudio('FillBuffer', expInfo.audioInfo.pahandle, [intervalBeep; intervalBeep]);
                         
-                        PsychPortAudio('Start', audioInfo.pahandle, audioInfo.nReps, audioInfo.startCue);
+                        PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
                         
-                        WaitSecs(audioInfo.beepLength);
+                        WaitSecs(expInfo.audioInfo.beepLength);
                         
-                        PsychPortAudio('Stop', audioInfo.pahandle);
+                        PsychPortAudio('Stop', expInfo.audioInfo.pahandle);
                         
                     end
                     
@@ -429,17 +413,15 @@ end;
                     
                     if conditionInfo(thisCond).intervalBeep
                         
-                        PsychPortAudio('Start', audioInfo.pahandle, audioInfo.nReps, audioInfo.startCue);
+                        PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
                         
-                        WaitSecs(audioInfo.beepLength + audioInfo.ibi);
+                        WaitSecs(expInfo.audioInfo.beepLength + expInfo.audioInfo.ibi);
                         
-                        PsychPortAudio('Start', audioInfo.pahandle, audioInfo.nReps, audioInfo.startCue);
+                        PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
                         
-                        WaitSecs(audioInfo.beepLength);
+                        WaitSecs(expInfo.audioInfo.beepLength);
                         
-                        PsychPortAudio('Stop', audioInfo.pahandle);
-                        
-                        expInfo.audioInfo = audioInfo;
+                        PsychPortAudio('Stop', expInfo.audioInfo.pahandle);
                         
                     end
                     
@@ -575,11 +557,7 @@ end;
             
             
             experimentData(iTrial).condNumber = thisCond;
-            
-            if ~isfield(conditionInfo, 'giveAudioFeedback')
-                conditionInfo(thisCond).giveAudioFeedback = false;
-            end
-            
+                        
             if ~trialData.validTrial  %trial not valid
                 
                 if trialData.abortNow
@@ -628,8 +606,6 @@ end;
                 
             elseif conditionInfo(thisCond).giveAudioFeedback
                 
-                audioInfo.postFeedbackPause = 0.25;
-                
                 fixationInfo.fixationType = 'cross';
                 fixationInfo.responseSquare = 0;
                 fixationInfo.apetureType = 'frame';
@@ -639,31 +615,29 @@ end;
                 
                 if experimentData(iTrial).isResponseCorrect;
                     
-                    correctBeep = MakeBeep(750, audioInfo.beepLength, audioInfo.samplingFreq);
+                    correctBeep = MakeBeep(750, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
                     
-                    PsychPortAudio('FillBuffer', audioInfo.pahandle, [correctBeep; correctBeep]);
+                    PsychPortAudio('FillBuffer', expInfo.audioInfo.pahandle, [correctBeep; correctBeep]);
                     
-                    PsychPortAudio('Start', audioInfo.pahandle, audioInfo.nReps, audioInfo.startCue);
+                    PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
                     
-                    WaitSecs(audioInfo.beepLength + audioInfo.postFeedbackPause);
+                    WaitSecs(expInfo.audioInfo.beepLength + expInfo.audioInfo.postFeedbackPause);
                     
-                    PsychPortAudio('Stop', audioInfo.pahandle);
+                    PsychPortAudio('Stop', expInfo.audioInfo.pahandle);
                     
                 else
                     
-                    incorrectBeep = MakeBeep(250, audioInfo.beepLength, audioInfo.samplingFreq);
+                    incorrectBeep = MakeBeep(250, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
                     
-                    PsychPortAudio('FillBuffer', audioInfo.pahandle, [incorrectBeep; incorrectBeep]);
+                    PsychPortAudio('FillBuffer', expInfo.audioInfo.pahandle, [incorrectBeep; incorrectBeep]);
                     
-                    PsychPortAudio('Start', audioInfo.pahandle, audioInfo.nReps, audioInfo.startCue);
+                    PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
                     
-                    WaitSecs(audioInfo.beepLength + audioInfo.postFeedbackPause);
+                    WaitSecs(expInfo.audioInfo.beepLength + expInfo.audioInfo.postFeedbackPause);
                     
-                    PsychPortAudio('Stop', audioInfo.pahandle);
+                    PsychPortAudio('Stop', expInfo.audioInfo.pahandle);
                     
                 end
-                
-                expInfo.audioInfo.audioFeedback.postFeedbackPause = audioInfo.postFeedbackPause;
                 
             end
             

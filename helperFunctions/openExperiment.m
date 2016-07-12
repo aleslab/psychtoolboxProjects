@@ -5,21 +5,21 @@ function expInfo = openExperiment( expInfo)
 %	expInfo.monitorWidth     - viewing width of monitor (cm)
 %	expInfo.viewingDistance  - distance from participant to monitor (cm)
 %   expInfo.screenNum        - screen number for experiment (defaults to  max)
-%   expInfo.stereoMode       -                    
+%   expInfo.stereoMode       -
 %   expInfo.useFullScreen: Boolean, True will open a full screen window FALSE
-%   will open a 500 pixel window. 
+%   will open a 500 pixel window.
 %
 % returns expInfo structure with fields:
 % bckgnd  - Value of the background level
-% curWindow - Pointer to the current window 
+% curWindow - Pointer to the current window
 % screenRect - the screen rectangle
 % monRefresh - monitor refresh rate in Hz.
 % ifi        - the interframe interval in seconds
 % frameDur   - frame duration in milliseconds
-% center     -  coordinates of the monitor center. 
-% ppd        - pixels per degree 
+% center     -  coordinates of the monitor center.
+% ppd        - pixels per degree
 % pixPerCm   - pixels per centimeter
-% useKbQueue - Defaults to false. Override if needed 
+% useKbQueue - Defaults to false. Override if needed
 %            - Determines if program should use KbQueue's to get keyboard
 
 
@@ -35,7 +35,7 @@ function expInfo = openExperiment( expInfo)
 %
 % This is a line that is easily skipped/missed but is important
 % Various default setup options, including color as float 0-1;
-% 
+%
 PsychDefaultSetup(2)
 
 
@@ -48,7 +48,7 @@ end
 
 %By default choose an external monitor if connected.
 if ~isfield(expInfo,'screenNum')
-    expInfo.screenNum = max(Screen('Screens'));  
+    expInfo.screenNum = max(Screen('Screens'));
 end
 
 %Default is mono mode
@@ -56,12 +56,12 @@ if ~isfield(expInfo,'stereoMode')
     expInfo.stereoMode = 0;
 end
 
-%Default viewing distance 
+%Default viewing distance
 if ~isfield(expInfo,'viewingDistance')
     expInfo.viewingDistance = 57;
 end
 
-%Default to testing in a small window 
+%Default to testing in a small window
 if ~isfield(expInfo,'useFullScreen')
     if expInfo.screenNum >0
         expInfo.useFullScreen = true;
@@ -79,7 +79,7 @@ if ~isfield(expInfo,'monitorWidth')
     expInfo.monitorWidth = w/10; %Convert to cm from mm
 end
 
-   
+
 
 if expInfo.useFullScreen == true
     windowRect = [];
@@ -103,7 +103,7 @@ Screen('Preference', 'VisualDebugLevel',2);
 
 % Set the background to the background value.
 expInfo.bckgnd = 0.5;
-%This uses the new "psychImaging" pipeline. 
+%This uses the new "psychImaging" pipeline.
 [expInfo.curWindow, expInfo.screenRect] = PsychImaging('OpenWindow', expInfo.screenNum, expInfo.bckgnd,windowRect,[],[], expInfo.stereoMode);
 expInfo.dontclear = 0; % 1 gives incremental drawing (does not clear buffer after flip)
 expInfo.modeInfo =Screen('Resolution', expInfo.screenNum);
@@ -161,8 +161,20 @@ expInfo.pixPerCm = pixelWidth/expInfo.monitorWidth;
 
 
 
-% InitializePsychSound
-% 
+InitializePsychSound
+
+%Basic audio information for interval beeps and audio
+%feedback
+audioInfo.nOutputChannels = 2;
+audioInfo.samplingFreq = 48000;
+audioInfo.nReps = 1;
+audioInfo.beepLength = 0.25; %in seconds
+audioInfo.startCue = 0; %starts immediately on call
+audioInfo.ibi = 0.05; %inter-beep interval; only used for the second interval
+audioInfo.pahandle = PsychPortAudio('Open', [], 1, 1, audioInfo.samplingFreq, audioInfo.nOutputChannels);
+audioInfo.postFeedbackPause = 0.25;
+
+expInfo.audioInfo = audioInfo;
 % expInfo.pahandle = PsychPortAudio('Open', [], [], 0, [], 2);
 
 
@@ -173,7 +185,7 @@ Screen('BlendFunction', expInfo.curWindow,  GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
 %Setup some defaults for keyboard interactions. Can be overridden by your
 %experiment.
 %Turn off KbQueue's because they can be fragile on untested systems.
-%If you need high performance responses turn them on. 
+%If you need high performance responses turn them on.
 expInfo.useKbQueue = false;
 KbName('UnifyKeyNames');
 expInfo.deviceIndex = [];
@@ -181,15 +193,15 @@ ListenChar(2);
 
 
 if isfield(expInfo,'enablePowermate') && expInfo.enablePowermate
-dev = PsychHID('devices');
-
-for iDev = 1:length(dev)
-
-    if  dev(iDev).vendorID== 1917 && dev(iDev).productID == 1040
-         expInfo.powermateId = iDev;
-         break;
+    dev = PsychHID('devices');
+    
+    for iDev = 1:length(dev)
+        
+        if  dev(iDev).vendorID== 1917 && dev(iDev).productID == 1040
+            expInfo.powermateId = iDev;
+            break;
+        end
     end
-end
 end
 
 
