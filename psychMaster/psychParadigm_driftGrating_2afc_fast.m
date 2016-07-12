@@ -38,7 +38,7 @@ conditionInfo(iCond).isNullCorrect = false;
 conditionInfo(iCond).nReps = 10; %number of repeats
 conditionInfo(iCond).intervalBeep = true;
 conditionInfo(iCond).giveAudioFeedback = true;
-conditionInfo(iCond).giveFeedback = false;
+conditionInfo(iCond).giveFeedback = true;
 conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];
 
 %standard (null) condition
