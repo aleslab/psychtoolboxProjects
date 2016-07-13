@@ -42,10 +42,10 @@ for iCond = 1: length(firstVelocitiesL1);
     conditionInfo(iCond).responseDuration = 3;    %Post trial window for waiting for a response
     
     % line start positions
-    conditionInfo(iCond).L1StartPos = -1;
-    conditionInfo(iCond).L2StartPos = 1;
-    conditionInfo(iCond).R1StartPos = -1;
-    conditionInfo(iCond).R2StartPos = 1;
+    conditionInfo(iCond).L1StartPos = -1.1869; %-1 at depth of 107cm, 10cm behind fixation
+    conditionInfo(iCond).L2StartPos = 0.6262; %1 at depth of 107cm
+    conditionInfo(iCond).R1StartPos = -0.6262; %-1 at depth of 107cm
+    conditionInfo(iCond).R2StartPos = 1.1869; %1 at 107cm in depth
     
     %line velocities
       
