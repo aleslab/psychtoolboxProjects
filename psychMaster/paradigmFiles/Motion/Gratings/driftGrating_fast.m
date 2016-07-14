@@ -1,4 +1,4 @@
-function [conditionInfo, expInfo] = psychParadigm_driftGrating_2afc_fast(expInfo)
+function [conditionInfo, expInfo] = driftGrating_fast(expInfo)
 
 expInfo = moveLineDefaultSettings(expInfo); %contains information for the 
 %stereomode, viewing distance and information that should be displayed at 

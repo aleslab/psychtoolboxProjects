@@ -1,10 +1,10 @@
-function [conditionInfo, expInfo] = psychParadigm_MoveLine_2afc_cdAway(expInfo)
+function [conditionInfo, expInfo] = MoveLine_real_cd_away(expInfo)
 
 %Paradigm file for the cd stimulus. One vertical line moving in each eye.
 %paradigmName is what will be prepended to data files
 expInfo = moveLineDefaultSettings(expInfo);
 
-expInfo.paradigmName = 'MoveLine_cd_away';
+expInfo.paradigmName = 'MoveLine_real_cd_away';
 %% conditions
 
 %This defines what function to call to draw the condition

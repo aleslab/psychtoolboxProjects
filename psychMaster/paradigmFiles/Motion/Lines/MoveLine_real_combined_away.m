@@ -1,11 +1,11 @@
-function [conditionInfo, expInfo] = psychParadigm_MoveLine_2afc_combinedAway(expInfo)
+function [conditionInfo, expInfo] = MoveLine_real_combined_away(expInfo)
 
 %Paradigm file for the combined looming and cd stimulus. Two vertical lines
 %moving in each eye.
 %paradigmName is what will be prepended to data files
 expInfo = moveLineDefaultSettings(expInfo);
 
-expInfo.paradigmName = 'MoveLine_combined_away';
+expInfo.paradigmName = 'MoveLine_real_combined_away';
 %% conditions
 firstVelocities = [20:2.5:35];
 condStimTypes = cat(2, repmat( {'combined'},1,7));

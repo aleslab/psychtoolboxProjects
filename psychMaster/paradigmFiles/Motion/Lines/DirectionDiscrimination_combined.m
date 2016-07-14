@@ -1,4 +1,4 @@
-function [conditionInfo, expInfo] = psychParadigm_MoveLine_DirectionDiscrimination_combined(expInfo)
+function [conditionInfo, expInfo] = DirectionDiscrimination_combined(expInfo)
 
 %Paradigm file for determining what direction of movement people see when
 %presented with stimuli that are programmed to be moving towards, away,
@@ -7,7 +7,7 @@ function [conditionInfo, expInfo] = psychParadigm_MoveLine_DirectionDiscriminati
 
 expInfo = moveLineDefaultSettings(expInfo);
 expInfo.instructions = 'What direction did \nthe stimulus move in?';
-expInfo.paradigmName = 'MoveLine_DirectionDiscrimination_combined';
+expInfo.paradigmName = 'DirectionDiscrimination_combined';
 %% conditions
 firstVelocities = cat(2,repmat([-20, 20],1,4)); % first section velocities are all 20cms-1 but in different directions
 condStimTypes = cat(2, repmat( {'combined'},1,4) , repmat( {'lateralCombined'},1,4)); %condition types cd cd lateralCd lateralCd

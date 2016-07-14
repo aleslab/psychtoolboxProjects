@@ -1,10 +1,10 @@
-function [conditionInfo, expInfo] = psychParadigm_MoveLine_2afc_combined_fast_retinal_speed(expInfo)
+function [conditionInfo, expInfo] = MoveLine_CRS_lateral_fast(expInfo)
 
 %Paradigm file for the combined looming and cd stimulus. Two vertical lines
 %moving in each eye.
 expInfo = moveLineDefaultSettings(expInfo);
 %paradigmName is what will be prepended to data files
-expInfo.paradigmName = 'MoveLine_combined_constant_retinal_speed_fast';
+expInfo.paradigmName = 'MoveLine_CRS_lateral_fast';
 
 %% conditions
 firstVelocities = 8:-1:2;

@@ -1,13 +1,12 @@
-function [conditionInfo, expInfo] = psychParadigm_MoveLine_2afc_cd(expInfo)
+function [conditionInfo, expInfo] = MoveLine_real_cd_towards(expInfo)
 
 %Paradigm file for the cd stimulus. One vertical line moving in each eye.
 %paradigmName is what will be prepended to data files
 expInfo = moveLineDefaultSettings(expInfo);
 
-expInfo.paradigmName = 'MoveLine_cd_towards';
+expInfo.paradigmName = 'MoveLine_real_cd_towards';
 %% conditions
 firstVelocities = [-20:2.5:-5 -20:2.5:-5];
-%firstVelocities = [-20:-2.5:-35 -20:-2.5:-35];
 condStimTypes = cat(2, repmat( {'cd'},1,7) , repmat( {'lateralCd'},1,7));
 
 for iCond = 1: length(firstVelocities);
