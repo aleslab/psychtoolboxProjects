@@ -1,23 +1,23 @@
-function [conditionInfo, expInfo] = psychParadigm_MoveLine_2afc_combined_slow_CRS_depth(expInfo)
+function [conditionInfo, expInfo] = psychParadigm_MoveLine_2afc_combined_mid_CRS_depth(expInfo)
 
 %Paradigm file for the combined looming and cd stimulus. Two vertical lines
 %moving in each eye.
 expInfo = moveLineDefaultSettings(expInfo);
 %paradigmName is what will be prepended to data files
-expInfo.paradigmName = 'MoveLine_combined_CRS_depth_slow';
+expInfo.paradigmName = 'MoveLine_combined_CRS_depth_mid';
 
 %% conditions
-firstVelocitiesL1 = [0.419 0.323 0.275 0.226 0.176 0.132 0.087];
-secondVelocitiesL1 = [0.419 0.516 0.563 0.612 0.662 0.706 0.751];
+firstVelocitiesL1 = [0.896 0.598 0.497 0.398 0.308 0.226 0.141];
+secondVelocitiesL1 = [0.896 1.194 1.295 1.394 1.484 1.566 1.645];
 
-firstVelocitiesL2 = [0.839 0.648 0.549 0.451 0.354 0.263 0.173];
-secondVelocitiesL2 = [0.839 1.031 1.130 1.227 1.325 1.416 1.506];
+firstVelocitiesL2 = [1.790 1.196 0.993 0.799 0.618 0.451 0.288];
+secondVelocitiesL2 = [1.790 2.384 2.588 2.782 2.963 3.129 3.287];
 
-firstVelocitiesR1 = [-0.839 -0.648 -0.549 -0.451 -0.354 -0.263 -0.173];
-secondVelocitiesR1 = [-0.839 -1.031 -1.130 -1.227 -1.325 -1.416 -1.506];
+firstVelocitiesR1 = [-1.790 -1.196 -0.993 -0.799 -0.618 -0.451 -0.288];
+secondVelocitiesR1 = [-1.790 -2.384 -2.588 -2.782 -2.963 -3.129 -3.287];
 
-firstVelocitiesR2 = [-0.419 -0.323 -0.275 -0.226 -0.176 -0.132 -0.087];
-secondVelocitiesR2 = [-0.419 -0.516 -0.563 -0.612 -0.662 -0.706 -0.751];
+firstVelocitiesR2 = [-0.896 -0.598 -0.497 -0.398 -0.308 -0.226 -0.141];
+secondVelocitiesR2 = [-0.896 -1.194 -1.295 -1.394 -1.484 -1.566 -1.645];
 
 condStimTypes = repmat({'combined_retinal_depth'},1,7);
 
@@ -42,10 +42,10 @@ for iCond = 1: length(firstVelocitiesL1);
     conditionInfo(iCond).responseDuration = 3;    %Post trial window for waiting for a response
     
     % line start positions
-    conditionInfo(iCond).L1StartPos = -1.1869; %-1 at depth of 107cm, 10cm behind fixation
-    conditionInfo(iCond).L2StartPos = 0.6262; %1 at depth of 107cm
-    conditionInfo(iCond).R1StartPos = -0.6262; %-1 at depth of 107cm
-    conditionInfo(iCond).R2StartPos = 1.1869; %1 at 107cm in depth
+    conditionInfo(iCond).L1StartPos = -1.3419; %-1 at depth of 117cm, 20cm behind fixation
+    conditionInfo(iCond).L2StartPos = 0.3162; %1 at depth of 117cm
+    conditionInfo(iCond).R1StartPos = -0.3162; %-1 in depth
+    conditionInfo(iCond).R2StartPos = 1.3419; %1 in depth
     
     %line velocities
       
@@ -64,17 +64,17 @@ for iCond = 1: length(firstVelocitiesL1);
     
     %null condition
     nullCondition = conditionInfo(iCond);
-    nullCondition.L1velocityCmPerSecSection1 = 0.419;
-    nullCondition.L1velocityCmPerSecSection2 = 0.419;
+    nullCondition.L1velocityCmPerSecSection1 = 0.896;
+    nullCondition.L1velocityCmPerSecSection2 = 0.896;
     
-    nullCondition.L2velocityCmPerSecSection1 = 0.839;
-    nullCondition.L2velocityCmPerSecSection2 = 0.839;
+    nullCondition.L2velocityCmPerSecSection1 = 1.790;
+    nullCondition.L2velocityCmPerSecSection2 = 1.790;
     
-    nullCondition.R1velocityCmPerSecSection1 = -0.839;
-    nullCondition.R1velocityCmPerSecSection2 = -0.839;
+    nullCondition.R1velocityCmPerSecSection1 = -1.790;
+    nullCondition.R1velocityCmPerSecSection2 = -1.790;
     
-    nullCondition.R2velocityCmPerSecSection1 = -0.419;
-    nullCondition.R2velocityCmPerSecSection2 = -0.419;
+    nullCondition.R2velocityCmPerSecSection1 = -0.896;
+    nullCondition.R2velocityCmPerSecSection2 = -0.896;
     
     nullCondition.stimType = condStimTypes(iCond);
     conditionInfo(iCond).nullCondition = nullCondition;
