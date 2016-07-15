@@ -1,4 +1,4 @@
-function [] = testProjectionGui();
+function [] = guiDemoCalculateScreenPosition();
 %cm
 screenDist = 92;
 screenHalfWidth = 50;

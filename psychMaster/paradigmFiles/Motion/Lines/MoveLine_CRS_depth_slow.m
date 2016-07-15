@@ -1,10 +1,10 @@
-function [conditionInfo, expInfo] = psychParadigm_MoveLine_2afc_combined_slow_CRS_depth(expInfo)
+function [conditionInfo, expInfo] = MoveLine_CRS_depth_slow(expInfo)
 
 %Paradigm file for the combined looming and cd stimulus. Two vertical lines
 %moving in each eye.
 expInfo = moveLineDefaultSettings(expInfo);
 %paradigmName is what will be prepended to data files
-expInfo.paradigmName = 'MoveLine_combined_CRS_depth_slow';
+expInfo.paradigmName = 'MoveLine_CRS_depth_slow';
 
 %% conditions
 firstVelocitiesL1 = [0.419 0.323 0.275 0.226 0.176 0.132 0.087];
