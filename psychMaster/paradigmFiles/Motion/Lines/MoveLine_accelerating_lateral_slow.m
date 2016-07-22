@@ -1,14 +1,14 @@
-function [conditionInfo, expInfo] = MoveLine_real_slow(expInfo)
+function [conditionInfo, expInfo] = MoveLine_accelerating_lateral_slow(expInfo)
 
 %Paradigm file for the combined looming and cd stimulus. Two vertical lines
 %moving in each eye.
 expInfo = moveLineDefaultSettings(expInfo);
 %paradigmName is what will be prepended to data files
-expInfo.paradigmName = 'MoveLine_real_slow';
+expInfo.paradigmName = 'MoveLine_accelerating_lateral_slow';
 
 %% conditions
 firstVelocities = [-20:2.5:-5];
-condStimTypes = repmat( {'combined'},1,7);
+condStimTypes = repmat( {'lateralCombined'},1,7);
 
 for iCond = 1: length(firstVelocities);
 %This defines what function to call to draw the condition
