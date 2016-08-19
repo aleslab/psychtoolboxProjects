@@ -10,6 +10,13 @@ expInfo.paradigmName = 'MoveLine_accelerating_lateral_slow';
 firstVelocities = [-20:2.5:-5];
 condStimTypes = repmat( {'lateralCombined'},1,7);
 
+%these are the speeds in cm/s on the screen for this condition, as
+%calculated using calculateScreenAcceleration
+s1lowerspeeds = [0.508 0.446 0.381 0.319 0.254 0.191 0.127];
+s1upperspeeds = [0.618 0.528 0.440 0.358 0.280 0.205 0.133];
+s2lowerspeeds = [0.618 0.677 0.734 0.787 0.838 0.886 0.934];
+s2upperspeeds = [0.767 0.863 0.959 1.0553 1.151 1.247 1.343];
+
 for iCond = 1: length(firstVelocities);
 %This defines what function to call to draw the condition
 conditionInfo(iCond).trialFun=@MoveLineTrial;
@@ -32,6 +39,11 @@ conditionInfo(iCond).nReps = 10; %number of repeats
 conditionInfo(iCond).giveFeedback = false;
 conditionInfo(iCond).depthStart = 10; %5cm behind the plane of the screen
 conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];
+
+conditionInfo(iCond).lateralCmPerSecS1lower = s1lowerspeeds(iCond);
+conditionInfo(iCond).lateralCmPerSecS1upper = s1upperspeeds(iCond);
+conditionInfo(iCond).lateralCmPerSecS2lower = s2lowerspeeds(iCond);
+conditionInfo(iCond).lateralCmPerSecS2upper = s2upperspeeds(iCond);
 
 %defining the null condition
 nullCondition = conditionInfo(iCond); %setting it to be the same as other conditions
