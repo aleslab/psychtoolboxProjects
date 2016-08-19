@@ -25,7 +25,7 @@ function [] = psychMaster(sessionInfo)
 %               with a simple WaitSecs() call so the iti is AT LEAST this long
 %
 %
-%   Optional fields with defaults in []:
+%   Optional fields with defaults in []:f
 %   label        = [''] A short string that identifies the condition
 %                  e.g. 'vertical', 'Contrast: 25', or  'Target: Red'
 %   giveFeedback = [false] Bolean whether to print feedback after trial
