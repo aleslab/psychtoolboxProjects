@@ -32,6 +32,7 @@ conditionInfo(iCond).isNullCorrect = false;
 conditionInfo(iCond).objectOneStartPos = -1.315; %when there are two lines in each eye, the start position of the first line
 conditionInfo(iCond).objectTwoStartPos = 0.685; %the start position of the second line in each eye
 conditionInfo(iCond).nReps = 10; %number of repeats
+conditionInfo(iCond).intervalBeep = true;
 conditionInfo(iCond).giveFeedback = false;
 conditionInfo(iCond).depthStart = 0; %5cm behind the plane of the screen
 conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];

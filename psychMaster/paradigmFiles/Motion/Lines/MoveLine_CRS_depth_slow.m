@@ -32,6 +32,7 @@ for iCond = 1: length(firstVelocitiesL1);
     conditionInfo(iCond).stimType         = condStimTypes{iCond};
     conditionInfo(iCond).isNullCorrect = false;
     conditionInfo(iCond).nReps = 10; %number of repeats
+    conditionInfo(iCond).intervalBeep = true;
     conditionInfo(iCond).giveFeedback = false;
     conditionInfo(iCond).depthStart = 0; %5cm behind the plane of the screen
     conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocitiesL1(iCond))];
