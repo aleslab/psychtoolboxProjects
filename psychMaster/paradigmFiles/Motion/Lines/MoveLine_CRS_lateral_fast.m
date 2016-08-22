@@ -7,8 +7,8 @@ expInfo = moveLineDefaultSettings(expInfo);
 expInfo.paradigmName = 'MoveLine_CRS_lateral_fast';
 
 %% conditions
-firstVelocities = 8:-1:2;
-condStimTypes = repmat({'combined_retinal_lateral'},1,7);
+firstVelocities = [6 2];
+condStimTypes = repmat({'combined_retinal_lateral'},1,2);
 
 for iCond = 1: length(firstVelocities);
 %This defines what function to call to draw the condition
@@ -29,9 +29,9 @@ conditionInfo(iCond).velocityCmPerSecSection2 = (16)-(conditionInfo(iCond).veloc
 conditionInfo(iCond).isNullCorrect = false;
 conditionInfo(iCond).objectOneStartPos = -5; %when there are two lines in each eye, the start position of the first line
 conditionInfo(iCond).objectTwoStartPos = -3; %the start position of the second line in each eye
-conditionInfo(iCond).nReps = 10; %number of repeats
+conditionInfo(iCond).nReps = 30; %number of repeats
 conditionInfo(iCond).giveAudioFeedback = false;
-conditionInfo(iCond).intervalBeep = false;
+conditionInfo(iCond).intervalBeep = true;
 conditionInfo(iCond).giveFeedback = false;
 conditionInfo(iCond).depthStart = 0; %5cm behind the plane of the screen
 conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];

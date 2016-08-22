@@ -1,4 +1,4 @@
-function [conditionInfo, expInfo] = driftGrating_fast(expInfo)
+function [conditionInfo, expInfo] = driftGrating_fast_feedback(expInfo)
 
 expInfo = moveLineDefaultSettings(expInfo); %contains information for the 
 %stereomode, viewing distance and information that should be displayed at 
@@ -6,7 +6,7 @@ expInfo = moveLineDefaultSettings(expInfo); %contains information for the
 %needed for the drifting sinusoidal grating experiments as the moving line 
 %experiments, so it makes sense to use this here.
 
-expInfo.paradigmName = 'driftGrating_fast';
+expInfo.paradigmName = 'driftGrating_fast_feedback';
 
 %% conditions
 firstVelocities = [6 2];
@@ -37,7 +37,7 @@ conditionInfo(iCond).xOffset = 0;
 conditionInfo(iCond).isNullCorrect = false;
 conditionInfo(iCond).nReps = 30; %number of repeats
 conditionInfo(iCond).intervalBeep = true;
-conditionInfo(iCond).giveAudioFeedback = false;
+conditionInfo(iCond).giveAudioFeedback = true;
 conditionInfo(iCond).giveFeedback = false;
 conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];
 
