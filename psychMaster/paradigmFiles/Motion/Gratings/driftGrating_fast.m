@@ -1,4 +1,4 @@
-function [conditionInfo, expInfo] = psychParadigm_driftGrating_2afc_fast(expInfo)
+function [conditionInfo, expInfo] = driftGrating_fast(expInfo)
 
 expInfo = moveLineDefaultSettings(expInfo); %contains information for the 
 %stereomode, viewing distance and information that should be displayed at 
@@ -9,8 +9,8 @@ expInfo = moveLineDefaultSettings(expInfo); %contains information for the
 expInfo.paradigmName = 'driftGrating_fast';
 
 %% conditions
-firstVelocities = 8:-1:2;
-condStimTypes = repmat( {'grating'},1,7);
+firstVelocities = [6 2];
+condStimTypes = repmat( {'grating'},1,2);
 
 for iCond = 1: length(firstVelocities);
     %general
@@ -35,9 +35,9 @@ conditionInfo(iCond).xOffset = 0;
 
 %repeats, which is correct, feedback, labelling etc.
 conditionInfo(iCond).isNullCorrect = false;
-conditionInfo(iCond).nReps = 10; %number of repeats
+conditionInfo(iCond).nReps = 30; %number of repeats
 conditionInfo(iCond).intervalBeep = true;
-conditionInfo(iCond).giveAudioFeedback = true;
+conditionInfo(iCond).giveAudioFeedback = false;
 conditionInfo(iCond).giveFeedback = false;
 conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];
 

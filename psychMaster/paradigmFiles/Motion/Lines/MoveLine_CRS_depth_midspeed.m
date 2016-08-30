@@ -1,10 +1,10 @@
-function [conditionInfo, expInfo] = psychParadigm_MoveLine_2afc_combined_mid_CRS_depth(expInfo)
+function [conditionInfo, expInfo] = MoveLine_CRS_depth_midspeed(expInfo)
 
 %Paradigm file for the combined looming and cd stimulus. Two vertical lines
 %moving in each eye.
 expInfo = moveLineDefaultSettings(expInfo);
 %paradigmName is what will be prepended to data files
-expInfo.paradigmName = 'MoveLine_combined_CRS_depth_mid';
+expInfo.paradigmName = 'MoveLine_CRS_depth_midspeed';
 
 %% conditions
 firstVelocitiesL1 = [0.896 0.598 0.497 0.398 0.308 0.226 0.141];
@@ -19,6 +19,9 @@ secondVelocitiesR1 = [-1.790 -2.384 -2.588 -2.782 -2.963 -3.129 -3.287];
 firstVelocitiesR2 = [-0.896 -0.598 -0.497 -0.398 -0.308 -0.226 -0.141];
 secondVelocitiesR2 = [-0.896 -1.194 -1.295 -1.394 -1.484 -1.566 -1.645];
 
+s1depthSpeeds = [49.8 35.8 30.5 25.1 19.9 14.9 9.7];
+s2depthSpeeds = [32.3 46.3 51.6 56.9 62.1 67.1 72.3];
+
 condStimTypes = repmat({'combined_retinal_depth'},1,7);
 
 for iCond = 1: length(firstVelocitiesL1);
@@ -28,7 +31,8 @@ for iCond = 1: length(firstVelocitiesL1);
     conditionInfo(iCond).type             = '2afc';
     conditionInfo(iCond).stimType         = condStimTypes{iCond};
     conditionInfo(iCond).isNullCorrect = false;
-    conditionInfo(iCond).nReps = 30; %number of repeats
+    conditionInfo(iCond).nReps = 10; %number of repeats
+    conditionInfo(iCond).intervalBeep = true;
     conditionInfo(iCond).giveFeedback = false;
     conditionInfo(iCond).depthStart = 0; %5cm behind the plane of the screen
     conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocitiesL1(iCond))];
@@ -61,6 +65,9 @@ for iCond = 1: length(firstVelocitiesL1);
     conditionInfo(iCond).R2velocityCmPerSecSection1 = firstVelocitiesR2(iCond);
     conditionInfo(iCond).R2velocityCmPerSecSection2 = secondVelocitiesR2(iCond);
     
+    
+    conditionInfo(iCond).depthSpeedSection1 = s1depthSpeeds(iCond);
+    conditionInfo(iCond).depthSpeedSection2 = s2depthSpeeds(iCond);
     
     %null condition
     nullCondition = conditionInfo(iCond);

@@ -1,14 +1,13 @@
-function [conditionInfo, expInfo] = psychParadigm_MoveLine_2afc_looming(expInfo)
+function [conditionInfo, expInfo] = MoveLine_real_looming_towards(expInfo)
 
 %Paradigm file for the looming stimulus. Two norizontal lines moving in each eye.
 %paradigmName is what will be prepended to data files
 expInfo = moveLineDefaultSettings(expInfo);
 
-expInfo.paradigmName = 'MoveLine_looming_towards';
+expInfo.paradigmName = 'MoveLine_real_looming_towards';
 
 %% conditions
 firstVelocities = [-20:2.5:-5];
-%firstVelocities = [-20:-2.5:-35];
 condStimTypes = cat(2, repmat( {'looming'},1,7));
 
 for iCond = 1: length(firstVelocities);

@@ -1,10 +1,10 @@
-function [conditionInfo, expInfo] = psychParadigm_MoveLine_2afc_combined_midspeed(expInfo)
+function [conditionInfo, expInfo] = MoveLine_accelerating_depth_midspeed(expInfo)
 
 %Paradigm file for the combined looming and cd stimulus. Two vertical lines
 %moving in each eye.
 expInfo = moveLineDefaultSettings(expInfo);
 %paradigmName is what will be prepended to data files
-expInfo.paradigmName = 'MoveLine_combined_towards';
+expInfo.paradigmName = 'MoveLine_accelerating_depth_midspeed';
 
 %% conditions
 firstVelocities = [-40:5:-10];
@@ -29,6 +29,7 @@ conditionInfo(iCond).isNullCorrect = false;
 conditionInfo(iCond).objectOneStartPos = -1; %when there are two lines in each eye, the start position of the first line
 conditionInfo(iCond).objectTwoStartPos = 1; %the start position of the second line in each eye
 conditionInfo(iCond).nReps = 10; %number of repeats
+conditionInfo(iCond).intervalBeep = true;
 conditionInfo(iCond).giveFeedback = false;
 conditionInfo(iCond).depthStart = 20; %5cm behind the plane of the screen
 conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];
