@@ -81,11 +81,15 @@ y = 0;
 lastT = GetSecs;
 allT = [];
 allY = [];
+
+%flip to screen
+
+screen ('Flip', window);
 %for iFrame = 1:nFrames
 
-     if expInfo.enablePowermate
-         err=PsychHID('ReceiveReports',expInfo.powermateId,options);
-     end
+   %  if expInfo.enablePowermate
+       %  err=PsychHID('ReceiveReports',expInfo.powermateId,options);
+    % end
 
     if iFrame>=stimStartFrame
     orient = orient+orientationSigma*randn(); %orient of gabor
