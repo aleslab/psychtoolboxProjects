@@ -7,7 +7,6 @@ expInfo.enablePowermate = true;
 expInfo.viewingDistance = 57;
 if expInfo.enablePowermate
 dev = PsychHID('devices');
-
 for iDev = 1:length(dev)
 
     if  dev(iDev).vendorID== 1917 && dev(iDev).productID == 1040
@@ -15,3 +14,4 @@ for iDev = 1:length(dev)
          break;
     end
 end
+end 

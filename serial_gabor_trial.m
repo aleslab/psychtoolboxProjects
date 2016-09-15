@@ -85,14 +85,16 @@ allY = [];
 %flip to screen
 
 screen ('Flip', window);
+
 %for iFrame = 1:nFrames
+for iFrame = 1
 
    %  if expInfo.enablePowermate
        %  err=PsychHID('ReceiveReports',expInfo.powermateId,options);
     % end
 
-    if iFrame>=stimStartFrame
-    orient = orient+orientationSigma*randn(); %orient of gabor
+    %if iFrame>=stimStartFrame
+    %orient = orient+orientationSigma*randn(); %orient of gabor
     %end
     
     %creates a gabor texture. this has to be in the loop beacuse we want to
@@ -125,6 +127,7 @@ screen ('Flip', window);
      end
     
     flipTimes(iFrame)=Screen('Flip', expInfo.curWindow);
+    WaitSecs(2);
     
     if isfield(expInfo,'writeMovie') && expInfo.writeMovie
         Screen('AddFrameToMovie', expInfo.curWindow,...
