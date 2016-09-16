@@ -85,6 +85,11 @@ allY = [];
 %flip to screen
 
 screen ('Flip', window);
+stimStartTime= Screen('Flip,'window);
+requestedStimEndTime=stimStartTime + stimDuration;
+actualStimEndTime=Screen('flip', window, requestedStimEndTime);
+
+
 
 
 %for iFrame = 1:nFrames
