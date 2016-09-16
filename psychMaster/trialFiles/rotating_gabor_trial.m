@@ -127,7 +127,8 @@ for iFrame = 1:nFrames
             CenterRect([0 0 1024 1024], Screen('Rect', expInfo.curWindow)));
     end
     
-    if expInfo.enablePowermate
+    if expIn
+        fo.enablePowermate
         err=PsychHID('ReceiveReports',expInfo.powermateId,options);
         r=PsychHID('GiveMeReports',expInfo.powermateId);
         if ~isempty(r)
