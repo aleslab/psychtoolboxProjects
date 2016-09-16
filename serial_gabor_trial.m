@@ -85,6 +85,7 @@ allY = [];
 %flip to screen
 
 screen ('Flip', window);
+%wait secs 2?
 stimStartTime= Screen('Flip,'window);
 requestedStimEndTime=stimStartTime + stimDuration;
 actualStimEndTime=Screen('flip', window, requestedStimEndTime);
@@ -133,7 +134,7 @@ for iFrame = 1
      end
     
     flipTimes(iFrame)=Screen('Flip', expInfo.curWindow);
-    WaitSecs(2);
+    %WaitSecs(2);
     
     if isfield(expInfo,'writeMovie') && expInfo.writeMovie
         Screen('AddFrameToMovie', expInfo.curWindow,...
