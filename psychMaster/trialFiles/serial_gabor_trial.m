@@ -82,13 +82,12 @@ lastT = GetSecs;
 allT = [];
 allY = [];
 
-%flip to screen
-
-screen ('Flip', window);
-%wait secs 2?
-stimStartTime= Screen('Flip,'window);
-requestedStimEndTime=stimStartTime + stimDuration;
-actualStimEndTime=Screen('flip', window, requestedStimEndTime);
+%%%%%%%%
+%%%% Put code that  draws the gabor here %%%%%
+%%%%%%%%%%
+stimStartTime= Screen('Flip',expInfo.curWindow);
+requestedStimEndTime=stimStartTime + conditionInfo.stimDuration;
+actualStimEndTime=Screen('Flip', expInfo.curWindow, requestedStimEndTime);
 
 
 
