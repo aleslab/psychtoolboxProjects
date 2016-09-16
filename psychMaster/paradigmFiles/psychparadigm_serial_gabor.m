@@ -1,37 +1,38 @@
-function [conditionInfo,expInfo] = psychparadigm_serial_gabor_trial(expInfo)
-expInfo.paradigmName = 'randomtrack';
+function [conditionInfo,expInfo] = psychparadigm_serial_gabor(expInfo)
+expInfo.paradigmName = 'whitneyReplication';
 
 % use kbQueue's as they have high performance
 expInfo.useKbQueue = false;
-expInfo.enablePowermate = true;
+expInfo.enablePowermate = false;
 expInfo.viewingDistance = 57;
+
+
 if expInfo.enablePowermate
-dev = PsychHID('devices');
-
-for iDev = 1:length(dev)
-
-    if  dev(iDev).vendorID== 1917 && dev(iDev).productID == 1040
-         expInfo.powermateId = iDev;
-         break;
+    dev = PsychHID('devices');
+    
+    for iDev = 1:length(dev)
+        
+        if  dev(iDev).vendorID== 1917 && dev(iDev).productID == 1040
+            expInfo.powermateId = iDev;
+            break;
+        end
     end
-end
 end
 
 
 %Lets add an experiment wide setting here:
 
-expInfo.instructions = ['Try to move the mouse left or right to try and follow the changing orientation of the stimuli. Press enter to start'];
-     
+expInfo.instructions = ['Write Brief Instructions Here']     
 %This defines what function to call to draw the condition
 %Crucial: requires the @ sign prefix.  Because it needs it to be a
 %"function handle"
-conditionInfo(1).trialFun=@rotating_gabor_trial;
+conditionInfo(1).trialFun=@serial_gabor_trial;
 conditionInfo(1).giveFeedback = true;
 
 % %Condition definitions
 %Condition 1, lets set some defaults:
-conditionInfo(1).stimDuration     = 5; %approximate stimulus duration in seconds
-conditionInfo(1).preStimDuration  = 2;  %Static time before stimulus change
+conditionInfo(1).stimDuration     = 1; %approximate stimulus duration in seconds
+conditionInfo(1).preStimDuration  = 1;  %Static time before stimulus change
 
 conditionInfo(1).postStimDuration = 0;  %static time aftter stimulus change
 conditionInfo(1).iti              = 1;     %Minimum Inter Trial Interval
