@@ -73,6 +73,36 @@ end
 %%%% Put code that  draws the gabor here %%%%%
 %%%%%%%%%%
 
+%Dimnesion of the region where we will draw the gabor in pixels
+gaborDimPix = windowRect(4)/2;
+
+%sigma of Gaussian
+sigma=gaborDimPix / 7;
+
+%Obvious parameters of gabor
+orientation = 0;
+contrast = 0.04
+aspectRatio = 1.0;
+phase = 0;
+
+%spatial frequency(cycles per pixel)
+numCycles= 5;
+freq=numCycles / gaborDimPix;
+
+%build a procedural gabor texture
+backgroundOffset = [0.5 0.5 0.5 0.0];
+disableNorm = 1;
+preContrastMultiplier = 0.5;
+gabortex = CreateProceduralGabor(window,gaborDimPix,[],...
+    backgroundfOffset, disableNorm, precontrastMultiplier);
+%randomise the phaseof the the gabor and make a properites matirx
+propertiesMat = [phase, freq, sigma, contrast, aspectRatio, 0, 0, 0];
+
+%draw the Gabor
+Scree('DrawTextures', window, gabortex, [],[], orientation, [], [], [], [],...
+    kpsychDontDoRotation, propertiesMat');
+
+
 stimStartTime= Screen('Flip',expInfo.curWindow);
 requestedStimEndTime=stimStartTime + conditionInfo.stimDuration;
 actualStimEndTime=Screen('Flip', expInfo.curWindow, requestedStimEndTime);
@@ -84,97 +114,97 @@ trialData.stimStartTime = stimStartTime;
 trialData.stimEndTime   = actualStimEndTime;
 
 
-% %for iFrame = 1:nFrames
-% for iFrame = 1
+for iFrame = 1:nFrames
+for iFrame = 1
 % 
 %
 %     
 %     %creates a gabor texture. this has to be in the loop beacuse we want to
 %     %create a new gabor on every frame we present.
-%     my_gabor = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient);
-%     my_noise = conditionInfo.noiseSigma.*randn(size(my_gabor));
-%     my_noise = max(min(my_noise,.25),-.25);
+     my_gabor = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient);
+     my_noise = conditionInfo.noiseSigma.*randn(size(my_gabor));
+     my_noise = max(min(my_noise,.25),-.25);
 %     %convert it to a texture 'tex'
-%     tex=Screen('makeTexture', expInfo.curWindow, my_gabor+my_noise);
-%     Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
-%     Screen('DrawLines', expInfo.curWindow, xy,lineWidth,lineColor,expInfo.center);
+    tex=Screen('makeTexture', expInfo.curWindow, my_gabor+my_noise);
+    Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
+    Screen('DrawLines', expInfo.curWindow, xy,lineWidth,lineColor,expInfo.center);
 % 
 %     
 %     
 %     
-%      if expInfo.enablePowermate
-%          Screen('DrawingFinished',expInfo.curWindow,expInfo.dontclear);
-%          err=PsychHID('ReceiveReports',expInfo.powermateId,options);
-%      end
+      if expInfo.enablePowermate
+         Screen('DrawingFinished',expInfo.curWindow,expInfo.dontclear);
+         err=PsychHID('ReceiveReports',expInfo.powermateId,options);
+      end
 %     
-%     flipTimes(iFrame)=Screen('Flip', expInfo.curWindow);
-%     %WaitSecs(2);
+     flipTimes(iFrame)=Screen('Flip', expInfo.curWindow);
+     WaitSecs(2);
 %     
-%     if isfield(expInfo,'writeMovie') && expInfo.writeMovie
-%         Screen('AddFrameToMovie', expInfo.curWindow,...
-%             CenterRect([0 0 1024 1024], Screen('Rect', expInfo.curWindow)));
-%     end
+     if isfield(expInfo,'writeMovie') && expInfo.writeMovie
+         Screen('AddFrameToMovie', expInfo.curWindow,...
+            CenterRect([0 0 1024 1024], Screen('Rect', expInfo.curWindow)));
+    end
 %     
-%     if expInfo.enablePowermate
-%         err=PsychHID('ReceiveReports',expInfo.powermateId,options);
-%         r=PsychHID('GiveMeReports',expInfo.powermateId);
-%         if ~isempty(r)
-%             lastY = y(end);
-%             y =[cat(1,r(:).report)];
-%             y = typecast(uint8(y(:,2)),'int8');
-%             y = double(y);
-%             y = [lastY; y];
-%             t = [ 1000*([ lastT r(:).time]-r(1).time) ];
-%             lastT = r(end).time;
+    if expInfo.enablePowermate
+         err=PsychHID('ReceiveReports',expInfo.powermateId,options);
+         r=PsychHID('GiveMeReports',expInfo.powermateId);
+         if ~isempty(r)
+             lastY = y(end);
+             y =[cat(1,r(:).report)];
+             y = typecast(uint8(y(:,2)),'int8');
+             y = double(y);
+             y = [lastY; y];
+             t = [ 1000*([ lastT r(:).time]-r(1).time) ];
+             lastT = r(end).time;
 %             
-%             report(iFrame).r = r;
+             report(iFrame).r = r;
 %             
-%             thisShift = .5*trapz(t,y);
-%             totalShift= totalShift-thisShift;            
-%         end
-%         y = 0;
-%         lastT = GetSecs;
+             thisShift = .5*trapz(t,y);
+             totalShift= totalShift-thisShift;            
+         end
+         y = 0;
+         lastT = GetSecs;
 %         
-%         trialData.respOri(iFrame) =  initLineOri+totalShift;
-%     else
-%         [x,y] = GetMouse(expInfo.curWindow);
-%         trialData.mousePos(iFrame,1) = x-xStart;
-%         trialData.mousePos(iFrame,2) = y-yStart;
-%         trialData.respOri(iFrame) = initLineOri+.5*(x-xStart);
-%     end
+         trialData.respOri(iFrame) =  initLineOri+totalShift;
+     else
+         [x,y] = GetMouse(expInfo.curWindow);
+         trialData.mousePos(iFrame,1) = x-xStart;
+         trialData.mousePos(iFrame,2) = y-yStart;
+         trialData.respOri(iFrame) = initLineOri+.5*(x-xStart);
+     end
 %     
-%     trialData.stimOri(iFrame) = orient;
-%     %Rotation matrix; 
-%     rotMtx = [cosd(trialData.respOri(iFrame)) -sind(trialData.respOri(iFrame));...
-%           sind(trialData.respOri(iFrame)) cosd(trialData.respOri(iFrame))];
-%     xy = rotMtx'*initXy;
+     trialData.stimOri(iFrame) = orient;
+     %Rotation matrix; 
+     rotMtx = [cosd(trialData.respOri(iFrame)) -sind(trialData.respOri(iFrame));...
+           sind(trialData.respOri(iFrame)) cosd(trialData.respOri(iFrame))];
+     xy = rotMtx'*initXy;
 %     
-%     if expInfo.enablePowermate
-%         err=PsychHID('ReceiveReports',expInfo.powermateId,options);
-%     end
-%     %release the texture after we flip because we will redraw again in this
+     if expInfo.enablePowermate
+         err=PsychHID('ReceiveReports',expInfo.powermateId,options);
+     end
+    %release the texture after we flip because we will redraw again in this
 %     %loop.
-%     Screen('Close', tex);
-%     if expInfo.useKbQueue
-%         [ trialData.pressed, trialData.firstPress]=KbQueueCheck(expInfo.deviceIndex);
-%     else
-%         [ trialData.pressed, secs, keyCode]=KbCheck(expInfo.deviceIndex);
-%         trialData.firstPress = secs*keyCode;
-%     end
+     Screen('Close', tex);
+     if expInfo.useKbQueue
+         [ trialData.pressed, trialData.firstPress]=KbQueueCheck(expInfo.deviceIndex);
+     else
+        [ trialData.pressed, secs, keyCode]=KbCheck(expInfo.deviceIndex);
+        trialData.firstPress = secs*keyCode;
+     end
 %     
 %     
 %     %Pressed too early.  Abort trial and put in some default values in the
 %     %returned data.
-%     if trialData.pressed
-%         %         trialData.pressed = false;
-%         %         trialData.firstPress = zeros(size(trialData.firstPress));
-%         flipTimes(iFrame)=Screen('Flip', expInfo.curWindow);
-%         trialData.flipTimes = flipTimes;
-%         trialData.validTrial = false;
-%         return;
+    if trialData.pressed
+                  trialData.pressed = false;
+%                 trialData.firstPress = zeros(size(trialData.firstPress));
+        flipTimes(iFrame)=Screen('Flip', expInfo.curWindow);
+        trialData.flipTimes = flipTimes;
+        trialData.validTrial = false;
+        return;
 %         
 % 
-%     end
+    end
 %     
 % end
 % 
@@ -198,8 +228,8 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
 %Reset times to be with respect to trial end.
 %trialData.firstPress = trialData.firstPress-trialData.flipTimes(end);
 
-    function getParticipantResponse()
-        
+ function = getParticipantResponse()
+ 
         waitingForResponse = true;
         initLineOri  = 360*rand();
         totalShift = 0;
