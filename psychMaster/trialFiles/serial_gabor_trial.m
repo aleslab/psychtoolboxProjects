@@ -115,7 +115,7 @@ trialData.stimEndTime   = actualStimEndTime;
 
 
 for iFrame = 1:nFrames
-for iFrame = 1
+%for iFrame = 1
 % 
 %
 %     
@@ -247,7 +247,7 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
              
             if isfield(expInfo,'writeMovie') && expInfo.writeMovie
                 Screen('AddFrameToMovie', expInfo.curWindow,...
-                    CenterRect([0 0 1024 1024], Screen('Rect', expInfo.curWindow)));
+                CenterRect([0 0 1024 1024], Screen('Rect', expInfo.curWindow)));
             end
             
             if expInfo.enablePowermate
@@ -295,13 +295,12 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
             
             
         
-            end
+        end
         
         trialData.respOri = thisOrient;
-        
-        
-    end
+ end 
+end 
 
 
-end
+
 
