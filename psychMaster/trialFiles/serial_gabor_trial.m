@@ -32,12 +32,12 @@ end
 
 %parameters for gabor
 
-radiusPix = expInfo.ppd*conditionInfo.stimRadiusDeg;    % stimSize in degrees x pixels per degree.
-sigmaPix  = expInfo.ppd*conditionInfo.sigma;  % standard deviation in degrees iinto pixels
-cyclesPerSigma = conditionInfo.freq;    %cycles per standaard devaion
-contrast = conditionInfo.contrast;   % contrast 
-phase = 90;      %phase of gabor
-destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
+%radiusPix = expInfo.ppd*conditionInfo.stimRadiusDeg;    % stimSize in degrees x pixels per degree.
+%sigmaPix  = expInfo.ppd*conditionInfo.sigma;  % standard deviation in degrees iinto pixels
+%cyclesPerSigma = conditionInfo.freq;    %cycles per standaard devaion
+%contrast = conditionInfo.contrast;   % contrast 
+%phase = 90;      %phase of gabor
+%destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
 
 orientationSigma=conditionInfo.orientationSigma;
 
@@ -69,9 +69,7 @@ end
 
 
 
-%%%%%%%%
-%%%% Put code that  draws the gabor here %%%%%
-%%%%%%%%%%
+
 
 %Dimnesion of the region where we will draw the gabor in pixels
 gaborDimPix = windowRect(4)/2;
@@ -107,7 +105,7 @@ stimStartTime= Screen('Flip',expInfo.curWindow);
 requestedStimEndTime=stimStartTime + conditionInfo.stimDuration;
 actualStimEndTime=Screen('Flip', expInfo.curWindow, requestedStimEndTime);
 
-
+%%%%%
 getParticipantResponse();
 
 trialData.stimStartTime = stimStartTime;
@@ -228,13 +226,12 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
 %Reset times to be with respect to trial end.
 %trialData.firstPress = trialData.firstPress-trialData.flipTimes(end);
 
- function = getParticipantResponse()
- 
-        waitingForResponse = true;
-        initLineOri  = 360*rand();
-        totalShift = 0;
-        [xStart,yStart] = GetMouse(expInfo.curWindow);
-        y = 0;
+function = getParticipantResponse()
+           waitingForResponse = true;
+           initLineOri  = 360*rand();
+           totalShift = 0;
+           xStart,yStart] = GetMouse(expInfo.curWindow);
+           y = 0;
       
        
         %Rotation matrix;
@@ -248,7 +245,7 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
             if isfield(expInfo,'writeMovie') && expInfo.writeMovie
                 Screen('AddFrameToMovie', expInfo.curWindow,...
                 CenterRect([0 0 1024 1024], Screen('Rect', expInfo.curWindow)));
-            end
+end
             
             if expInfo.enablePowermate
                 err=PsychHID('ReceiveReports',expInfo.powermateId,options);
