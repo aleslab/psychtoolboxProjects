@@ -32,12 +32,12 @@ end
 
 %parameters for gabor
 
-%radiusPix = expInfo.ppd*conditionInfo.stimRadiusDeg;    % stimSize in degrees x pixels per degree.
-%sigmaPix  = expInfo.ppd*conditionInfo.sigma;  % standard deviation in degrees iinto pixels
-%cyclesPerSigma = conditionInfo.freq;    %cycles per standaard devaion
-%contrast = conditionInfo.contrast;   % contrast 
-%phase = 90;      %phase of gabor
-%destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
+radiusPix = expInfo.ppd*conditionInfo.stimRadiusDeg;    % stimSize in degrees x pixels per degree.
+sigmaPix  = expInfo.ppd*conditionInfo.sigma;  % standard deviation in degrees iinto pixels
+cyclesPerSigma = conditionInfo.freq;    %cycles per standaard devaion
+contrast = conditionInfo.contrast;   % contrast 
+phase = 90;      %phase of gabor
+destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
 
 orientationSigma=conditionInfo.orientationSigma;
 
@@ -69,42 +69,17 @@ end
 
 %put gabor code in here?
 
+my_gabor = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient);
+    my_noise = conditionInfo.noiseSigma.*randn(size(my_gabor));
+    my_noise = max(min(my_noise,.25),-.25);
 
-
-%Dimnesion of the region where we will draw the gabor in pixels
-gaborDimPix = windowRect(4)/2;
-
-%sigma of Gaussian
-sigma=gaborDimPix / 7;
-
-%Obvious parameters of gabor
-orientation = 0;
-contrast = 0.04
-aspectRatio = 1.0;
-phase = 0;
-
-%spatial frequency(cycles per pixel)
-numCycles= 5;
-freq=numCycles / gaborDimPix;
-
-%build a procedural gabor texture
-backgroundOffset = [0.5 0.5 0.5 0.0];
-disableNorm = 1;
-preContrastMultiplier = 0.5;
-gabortex = CreateProceduralGabor(window,gaborDimPix,[],...
-    backgroundfOffset, disableNorm, precontrastMultiplier);
-%randomise the phaseof the the gabor and make a properites matirx
-propertiesMat = [phase, freq, sigma, contrast, aspectRatio, 0, 0, 0];
-
-%draw the Gabor
-Screen('DrawTextures', window, gabortex, [],[], orientation, [], [], [], [],...
-    kpsychDontDoRotation, propertiesMat');
 
 
 stimStartTime= Screen('Flip',expInfo.curWindow);
 requestedStimEndTime=stimStartTime + conditionInfo.stimDuration;
 actualStimEndTime=Screen('Flip', expInfo.curWindow, requestedStimEndTime);
 
+end
 
 %getParticipantResponse();
 
