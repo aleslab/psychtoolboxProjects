@@ -67,7 +67,7 @@ if isfield(expInfo,'enablePowermate')
 end
 
 
-
+%put gabor code in here?
 
 
 
