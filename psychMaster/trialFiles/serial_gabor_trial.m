@@ -1,18 +1,18 @@
 function [trialData] = serial_gabor_trial(expInfo, conditionInfo)
-
+% 
 totalDuration = conditionInfo.preStimDuration+conditionInfo.stimDuration;
 nFrames = round(totalDuration / expInfo.ifi);
 nPreStimFrames=round(conditionInfo.preStimDuration/expInfo.ifi);
 stimStartFrame = nPreStimFrames+1;
 
-trialData.actualDuration = nFrames*expInfo.ifi;
+%trialData.actualDuration = nFrames*expInfo.ifi;
 trialData.validTrial = false;
 trialData.abortNow   = false;
-%Strictly speaking this  isn't the _best_ way to setup the timing
-%for rendering the stimulus but whatever.
+% %Strictly speaking this  isn't the _best_ way to setup the timing
+% %for rendering the stimulus but whatever.
 conditionInfo.stimStartTime = GetSecs; %Get current time to start the clock
-flipTimes = nan(nFrames,1);
-trialData.mousePos = nan(nFrames,2);
+flipTimes = 2;
+% trialData.mousePos = nan(nFrames,2);
 trialData.respOri  = nan(nFrames,1);
 trialData.stimOri  = nan(nFrames,1);
 
@@ -32,14 +32,14 @@ end
 
 %parameters for gabor
 
-radiusPix = expInfo.ppd*conditionInfo.stimRadiusDeg;    % stimSize in degrees x pixels per degree.
-sigmaPix  = expInfo.ppd*conditionInfo.sigma;  % standard deviation in degrees iinto pixels
-cyclesPerSigma = conditionInfo.freq;    %cycles per standaard devaion
-contrast = conditionInfo.contrast;   % contrast 
+radiusPix =    300;%expInfo.ppd*conditionInfo.stimRadiusDeg;    % stimSize in degrees x pixels per degree.
+sigmaPix  = 2; %expInfo.ppd*conditionInfo.sigma;  % standard deviation in degrees iinto pixels
+cyclesPerSigma =   20 %conditionInfo.freq;    %cycles per standaard devaion
+contrast =  0.25;%conditionInfo.contrast;   % contrast 
 phase = 90;      %phase of gabor
-destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
+destRect = 300; %[ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
 
-orientationSigma=conditionInfo.orientationSigma;
+% orientationSigma=  15; %conditionInfo.orientationSigma;
 
 %initAngularVelocity = 0;
 %F = [1 0;0 1;];
@@ -48,38 +48,66 @@ orient = 360*(rand);
 
 %Some parameters for the response line
 lineWidth = 4;
-lineLength = expInfo.ppd*3; %Line length in pixels
+lineLength =   100; %Line length in pixels
 lineColor = [ 0 1 0 1];
 
 
-if isfield(expInfo,'writeMovie') && expInfo.writeMovie
-    movie = Screen('CreateMovie', expInfo.curWindow, 'MyTestMovie.mov', 1024, 1024, 30, ':CodecSettings=Videoquality=.9 Profile=2');
-end
+% if isfield(expInfo,'writeMovie'); % expInfo.writeMovie
+%     movie = Screen('CreateMovie'); %, %expInfo.curWindow,& 'MyTestMovie.mov', 1024, 1024, 30, ':CodecSettings=Videoquality=.9 Profile=2');
+% end
 % 
 
 
 
-if isfield(expInfo,'enablePowermate') 
-    if expInfo.enablePowermate
-        options.secs=0.0001;
-        err=PsychHID('ReceiveReports',expInfo.powermateId,options);
-    end
-end
+% if isfield(expInfo,'enablePowermate') 
+%     if expInfo.enablePowermate
+%         options.secs=0.0001;
+%         err=PsychHID('ReceiveReports',expInfo.powermateId,options);
+%     end
+% end
+% Open the screen
+[window, windowRect] = PsychImaging('OpenWindow', screenNumber, grey, [], 32, 2,...
+    [], [],  kPsychNeed32BPCFloat);
 
 
 %put gabor code in here?
 
-my_gabor = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient);
-    my_noise = conditionInfo.noiseSigma.*randn(size(my_gabor));
-    my_noise = max(min(my_noise,.25),-.25);
+% Dimension of the region where will draw the Gabor in pixels
+gaborDimPix = windowRect(4) / 2;
 
+% Sigma of Gaussian
+sigma = gaborDimPix / 7;
+
+% Obvious Parameters
+orientation = 0;
+contrast = 0.8;
+aspectRatio = 1.0;
+phase = 0;
+
+% Spatial Frequency (Cycles Per Pixel)
+% One Cycle = Grey-Black-Grey-White-Grey i.e. One Black and One White Lobe
+numCycles = 5;
+freq = numCycles / gaborDimPix;
+
+
+% my_gabor = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient);
+% my_noise = conditionInfo.noiseSigma.*randn(size(my_gabor));
+% my_noise = max(min(my_noise,.25),-.25);
+
+tex=Screen('makeTexture', expInfo.curWindow, my_gabor+my_noise);
+
+Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
+Screen('DrawLines', expInfo.curWindow, xy,lineWidth,lineColor,expInfo.center);
+
+flipTimes(iFrame)=Screen('Flip', expInfo.curWindow);
 
 
 stimStartTime= Screen('Flip',expInfo.curWindow);
 requestedStimEndTime=stimStartTime + conditionInfo.stimDuration;
 actualStimEndTime=Screen('Flip', expInfo.curWindow, requestedStimEndTime);
 
-end
+
+
 
 %getParticipantResponse();
 
@@ -250,7 +278,7 @@ end
                 %    waitingForResponse = false;
                  %   trialData.responseTime = GetSecs;
                % else
-                    thisOrient = initLineOri+.5*(x-xStart);
+                   % thisOrient = initLineOri+.5*(x-xStart);
              %   end
                 
          %   end
