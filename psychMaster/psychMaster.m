@@ -90,7 +90,7 @@ if ~exist('sessionInfo','var') || isempty(sessionInfo)
     sessionInfo.psychMasterVer = psychMasterVer;
     [~,ptbVerStruct]=PsychtoolboxVersion;
     sessionInfo.ptbVersion = ptbVerStruct;
-    rng('shuffle');
+    rng('default');
     sessionInfo.randomSeed = rng;
 end
 

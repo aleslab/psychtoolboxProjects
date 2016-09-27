@@ -69,8 +69,8 @@ end
 
 
 %draw the Gabor
-Screen('DrawTextures', window, gabortex, [],[], orientation, [], [], [], [],...
-    kpsychDontDoRotation, propertiesMat');
+%Screen('DrawTextures', window, gabortex, [],[], orientation, [], [], [], [],...
+    %kpsychDontDoRotation, propertiesMat');
 
  %create a new gabor on every frame we present.
     my_gabor = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient);
@@ -79,7 +79,7 @@ Screen('DrawTextures', window, gabortex, [],[], orientation, [], [], [], [],...
     %convert it to a texture 'tex'
    tex=Screen('makeTexture', expInfo.curWindow, my_gabor+my_noise);
    Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
-   Screen('DrawLines', expInfo.curWindow, xy,lineWidth,lineColor,expInfo.center);
+   %Screen('DrawLines', expInfo.curWindow, xy,lineWidth,lineColor,expInfo.center);
    
    
 %code that draws gabor
@@ -97,8 +97,7 @@ contrast = 0.8;
 aspectRatio = 1.0;
 phase = 0;
 
-% Spatial Frequency (Cycles Per Pixel)
-% One Cycle = Grey-Black-Grey-White-Grey i.e. One Black and One White Lobe
+Spatial Frequency (Cycles Per Pixel) One Cycle = Grey-Black-Grey-White-Grey i.e. One Black and One White Lobe
 numCycles = 5;
 freq = numCycles / gaborDimPix;
 
