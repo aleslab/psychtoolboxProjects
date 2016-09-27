@@ -97,7 +97,7 @@ contrast = 0.8;
 aspectRatio = 1.0;
 phase = 0;
 
-Spatial Frequency (Cycles Per Pixel) One Cycle = Grey-Black-Grey-White-Grey i.e. One Black and One White Lobe
+%Spatial Frequency (Cycles Per Pixel) One Cycle = Grey-Black-Grey-White-Grey i.e. One Black and One White Lobe
 numCycles = 5;
 freq = numCycles / gaborDimPix;
 
