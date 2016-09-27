@@ -31,8 +31,6 @@ if expInfo.useKbQueue
 end
 
 %parameters for gabor
-
-<<<<<<< HEAD
 radiusPix =    300;%expInfo.ppd*conditionInfo.stimRadiusDeg;    % stimSize in degrees x pixels per degree.
 sigmaPix  = 2; %expInfo.ppd*conditionInfo.sigma;  % standard deviation in degrees iinto pixels
 cyclesPerSigma =   20 %conditionInfo.freq;    %cycles per standaard devaion
