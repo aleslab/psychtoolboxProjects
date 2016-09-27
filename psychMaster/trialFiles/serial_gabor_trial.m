@@ -123,9 +123,11 @@ actualStimEndTime=Screen('Flip', expInfo.curWindow, requestedStimEndTime);
 
 Screen('Flip', window);
 
+kbStrokeWait
+
+end
 
 
-end 
 
 
 
