@@ -30,7 +30,7 @@ function expInfo = openExperiment( expInfo)
 %that stuff.  But has implications for anything that calls this function.
 %THerefore, I think the nuclear clear all should be elsewhere and carefully
 %considered/tested.
-%clear PsychHID;
+clear PsychHID;
 
 %
 % This is a line that is easily skipped/missed but is important

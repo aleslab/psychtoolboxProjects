@@ -75,9 +75,26 @@ function [] = psychMaster(sessionInfo)
 %Initial setup
 
 psychMasterVer = '0.20';
-%Save matlab output to file:
+
 thisFile = mfilename('fullpath');
 [thisDir, ~, ~] = fileparts(thisFile);
+
+
+%Check if path is correct, if not try and fix it. 
+if ~checkPath()
+    disp('<><><><><><> PSYCH MASTER <><><><><><><>')
+    setupPath();
+    if ~checkPath()
+        disp('PATH NOT CORRECT!  Attempts to fix failed!  ABORTING!')
+        disp('This problem suggests that files have been moved or cannot be found.')
+        disp('You will have to setup your path manually or fix the broken structure.')
+        return;
+    end
+    disp('Path was not setup correctly, but we auto fixed it.  In the future  check your path setup')
+end
+
+
+%Save matlab output to file:
 diaryName = fullfile(thisDir,['tmp_MatlabLog_' datestr(now,'yyyymmdd_HHMMSS') '.txt' ]);
 diary(diaryName);
 
@@ -276,7 +293,9 @@ catch
 end;
 
 
-%pulled this into it's own nested function in order to clean up the main
+%This is the main guts of psychMaster. It handles all the experimental
+%control. 
+%It is in it's own nested function in order to clean up the main
 %code and to enable easier GUI control of trials
     function mainExperimentLoop()
         
@@ -297,8 +316,7 @@ end;
         idx = 1;
         for iCond = 1:nConditions,
             perCondData(iCond).correctResponse = [];
-            
-            
+                        
             for iRep = 1:conditionInfo(iCond).nReps,
                 conditionList(idx) = iCond;
                 idx = idx+1;
@@ -650,7 +668,44 @@ end;
     end
 
 
+%Check that expected functions are in the path.
+%This is just a quick and dirty check of a couple of functions
+    function pathIsCorrect = checkPath()
+        %Determine if the path is setup correctly by looking for a few key files
+        %Add more files here as needed
+        requiredFunctionList = { 'pmGui' 'openExperiment' };
+        nFunctions = length(requiredFunctionList);
+        
+        pathIsCorrect = true;
+        for iFunction = 1:nFunctions
+            
+            if ~exist(requiredFunctionList{iFunction},'file')
+                pathIsCorrect = false;
+                break;
+            end
+        end
+        
+    end
 
+    function setupPath()
+        
+        
+        %find where this function is being called from. 
+        thisFile = mfilename('fullpath');
+        [thisDir, ~, ~] = fileparts(thisFile);
+        
+        %For now just grab this and all subdirectories
+        newPath2Add = genpath(thisDir);
+
+        %Note: think about adding some code to check for path issues here
+        
+        %Add them to the path.  
+        addpath(newPath2Add);
+        
+    end
+
+
+%This function handles saving everything about an experiment. 
     function saveResults()
         %This block saves information for the session.
         
@@ -711,5 +766,7 @@ end;
         
         delete(diaryName);
     end
+
+
 
 end
