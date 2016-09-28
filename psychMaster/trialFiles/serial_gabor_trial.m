@@ -15,7 +15,7 @@ flipTimes = nan(nFrames,1);
 trialData.mousePos = nan(nFrames,2);
 trialData.respOri  = nan(nFrames,1);
 trialData.stimOri  = nan(nFrames,1);
-
+trialData.feedbackMsg = ' ';
 % %Now lets setup response gathering
 % KBqueue's are the better way to get responses, quick and accurate but they can be
 % fragile on different systems
