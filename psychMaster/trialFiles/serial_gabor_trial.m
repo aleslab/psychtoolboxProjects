@@ -6,7 +6,7 @@ nPreStimFrames=round(conditionInfo.preStimDuration/expInfo.ifi);
 stimStartFrame = nPreStimFrames+1;
 
 trialData.actualDuration = nFrames*expInfo.ifi;
-trialData.validTrial = true;
+trialData.validTrial = false;
 trialData.abortNow   = false;
 %Strictly speaking this  isn't the _best_ way to setup the timing
 %for rendering the stimulus but whatever.
@@ -86,8 +86,9 @@ stimStartTime= Screen('Flip',expInfo.curWindow);
 requestedStimEndTime=stimStartTime + conditionInfo.stimDuration;
 actualStimEndTime=Screen('Flip', expInfo.curWindow, requestedStimEndTime);
 
+Screen('Flip', window);
 
-KbStrokeWait
+kbStrokeWait
 
 end
 
