@@ -81,6 +81,23 @@ end
    Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
    %Screen('DrawLines', expInfo.curWindow, xy,lineWidth,lineColor,expInfo.center);
    
+   
+
+% Build a procedural gabor texture (Note: to get a "standard" Gabor patch
+% we set a grey background offset, disable normalisation, and set a
+% pre-contrast multiplier of 0.5.
+% For full details see:
+% https://groups.yahoo.com/neo/groups/psychtoolbox/conversations/topics/9174
+% backgroundOffset = [0.5 0.5 0.5 0.0];
+% disableNorm = 1;
+% preContrastMultiplier = 0.5;
+% gabortex = CreateProceduralGabor(ExpInfo.Curwindow, gaborDimPix, gaborDimPix, [],...
+%     backgroundOffset, disableNorm, preContrastMultiplier);
+% 
+% % Randomise the phase of the Gabors and make a properties matrix.
+% propertiesMat = [phase, freq, sigma, contrast, aspectRatio, 0, 0, 0];
+% 
+
 
 stimStartTime= Screen('Flip',expInfo.curWindow);
 requestedStimEndTime=stimStartTime + conditionInfo.stimDuration;
