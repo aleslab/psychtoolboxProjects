@@ -68,18 +68,18 @@ if isfield(expInfo,'enablePowermate')
 end
 
 
-%draw the Gabor
-%Screen('DrawTextures', window, gabortex, [],[], orientation, [], [], [], [],...
+draw the Gabor
+Screen('DrawTextures', window, gabortex, [],[], orientation, [], [], [], [],...
     %kpsychDontDoRotation, propertiesMat');
 
  %create a new gabor on every frame we present.
-    my_gabor = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient);
-    my_noise = conditionInfo.noiseSigma.*randn(size(my_gabor));
-    my_noise = max(min(my_noise,.25),-.25);
-    %convert it to a texture 'tex'
-   tex=Screen('makeTexture', expInfo.curWindow, my_gabor+my_noise);
-   Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
-   %Screen('DrawLines', expInfo.curWindow, xy,lineWidth,lineColor,expInfo.center);
+ my_gabor = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient);
+ my_noise = conditionInfo.noiseSigma.*randn(size(my_gabor));
+ my_noise = max(min(my_noise,.25),-.25);
+ %convert it to a texture 'tex'
+ tex=Screen('makeTexture', expInfo.curWindow, my_gabor+my_noise);
+ Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
+ %Screen('DrawLines', expInfo.curWindow, xy,lineWidth,lineColor,expInfo.center);
    
    
 
