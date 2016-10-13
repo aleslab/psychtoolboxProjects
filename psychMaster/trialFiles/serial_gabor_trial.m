@@ -78,6 +78,7 @@ getParticipantResponse();
 trialData.stimStartTime = stimStartTime;
 trialData.stimEndTime   = actualStimEndTime;
 trialData.validTrial = true;
+trialData.stimOri = orient;
 trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
 
 
