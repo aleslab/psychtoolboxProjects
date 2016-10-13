@@ -351,8 +351,14 @@ end;
                     %ISI happens before a trial starts, this isn't a super-accurate way
                     %to create an ISI, it makes an ISI at LEAST this big.
                     WaitSecs(conditionInfo(thisCond).iti);
+
                     
                     [trialData] = conditionInfo(thisCond).trialFun(expInfo,conditionInfo(thisCond));
+                        
+                    %Now validate that this structure
+                    %This checks for fields needed by the rest of the code
+                    %if they don't exist they're given default values
+                    trialData = validateTrialData(trialData);
                     
                     
                     %Here we'll add the response collection
@@ -425,6 +431,7 @@ end;
                     end
                     
                     [trialData.firstCond] = conditionInfo(thisCond).trialFun(expInfo,firstCond);
+                   
                     WaitSecs(conditionInfo(thisCond).iti);
                     
                     %option to make a beep before the second interval
@@ -444,6 +451,12 @@ end;
                     end
                     
                     [trialData.secondCond] = conditionInfo(thisCond).trialFun(expInfo,secondCond);
+                    
+                    %Now validate that this structure
+                    %This checks for fields needed by the rest of the code
+                    %if they don't exist they're given default values
+                    trialData = validateTrialData(trialData);
+                    
                     
                     fixationInfo.fixationType = 'cross';
                     fixationInfo.responseSquare = 1;
@@ -509,9 +522,15 @@ end;
                             trialData.feedbackMsg = 'Incorrect';
                         end
                     end
+                    
                 case 'directionreport'
                     
                     [trialData] = conditionInfo(thisCond).trialFun(expInfo,conditionInfo(thisCond));
+                    %Now validate that this structure
+                    %This checks for fields needed by the rest of the code
+                    %if they don't exist they're given default values
+                    trialData = validateTrialData(trialData);
+                    
                     
                     fixationInfo.fixationType = 'cross';
                     fixationInfo.responseSquare = 1;
