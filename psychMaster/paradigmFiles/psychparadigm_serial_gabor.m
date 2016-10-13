@@ -51,15 +51,15 @@ conditionInfo(1).orientationSigma = 5;
 conditionInfo(1).label = 'Contrast: 0.25'
 
 
-conditionInfo(2) = conditionInfo(1);
-conditionInfo(2).orientationSigma = 5;
-conditionInfo(2).contrast = 0.04 ;
-conditionInfo(2).label = 'Contrast: 0.04'
-
-conditionInfo(3) = conditionInfo(1);
-conditionInfo(3).orientationSigma = 5;
-conditionInfo(3).contrast = 0.08;
-conditionInfo(3).label = 'Contrast: 0.08'
+% conditionInfo(2) = conditionInfo(1);
+% conditionInfo(2).orientationSigma = 5;
+% conditionInfo(2).contrast = 0.04 ;
+% conditionInfo(2).label = 'Contrast: 0.04'
+% 
+% conditionInfo(3) = conditionInfo(1);
+% conditionInfo(3).orientationSigma = 5;
+% conditionInfo(3).contrast = 0.08;
+% conditionInfo(3).label = 'Contrast: 0.08'
 
 
 
