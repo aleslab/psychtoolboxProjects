@@ -22,7 +22,7 @@ end
 
 %Lets add an experiment wide setting here:
 
-expInfo.instructions = ['Write Brief Instructions Here']     
+expInfo.instructions = ['Try and align the green line with the orientation you have just seen!']     
 %This defines what function to call to draw the condition
 %Crucial: requires the @ sign prefix.  Because it needs it to be a
 %"function handle"
@@ -40,7 +40,7 @@ conditionInfo(1).responseDuration  = 0;    %Post trial window for waiting for a 
 
 conditionInfo(1).sigma             =2; %standard deviation of the gabor in degrees
 conditionInfo(1).freq              =1; %frequency of the gabor in cycles per sigma. 
-conditionInfo(1).nReps             = 5; %% number of trials to present this condition. 
+conditionInfo(1).nReps             = 20; %% number of trials to present this condition. 
 conditionInfo(1).stimRadiusDeg  = 6;    %stimulus size in degree;
 
 conditionInfo(1).contrast = 0.25;
