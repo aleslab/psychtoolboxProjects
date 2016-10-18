@@ -1,5 +1,5 @@
 function [trialData] = serial_gabor_trial(expInfo, conditionInfo)
-
+%test edit
 
 trialData.validTrial = true;
 trialData.abortNow   = false;
