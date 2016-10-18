@@ -72,9 +72,12 @@ stimStartTime= Screen('Flip',expInfo.curWindow);
 requestedStimEndTime=stimStartTime + conditionInfo.stimDuration;
 
 %draw mask here (1 line using my_noise)
+tex=Screen('makeTexture', expInfo.curWindow, my_noise);
+%Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
 
-actualStimEndTime=Screen('Flip', expInfo.curWindow, requestedStimEndTime);
 %calculate mask offset time
+my_noise.stimStartTime = GetSecs;
+
 %requestedMaskEndTime = actualStimEndTime + ???
 actualMaskEndTime = Screen('Flip', expInfo.curWindow, requestedMaskEndTime);
 

@@ -31,7 +31,7 @@ conditionInfo(1).giveFeedback = true;
 
 % %Condition definitions
 %Condition 1, lets set some defaults:
-conditionInfo(1).stimDuration     = 1; %approximate stimulus duration in seconds
+conditionInfo(1).stimDuration     = 0.5; %approximate stimulus duration in seconds
 conditionInfo(1).preStimDuration  = 1;  %Static time before stimulus change
 
 conditionInfo(1).postStimDuration = 0;  %static time aftter stimulus change
