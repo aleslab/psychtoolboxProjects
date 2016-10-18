@@ -22,7 +22,8 @@ end
 
 %Lets add an experiment wide setting here:
 
-expInfo.instructions = ['Try and align the green line with the orientation you have just seen!']     
+expInfo.instructions = ['Try and align the green line \n' ...
+                        'with the orientation you have just seen!' ];     
 %This defines what function to call to draw the condition
 %Crucial: requires the @ sign prefix.  Because it needs it to be a
 %"function handle"

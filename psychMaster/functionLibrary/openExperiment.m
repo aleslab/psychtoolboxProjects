@@ -171,7 +171,7 @@ audioInfo.nReps = 1;
 audioInfo.beepLength = 0.25; %in seconds
 audioInfo.startCue = 0; %starts immediately on call
 audioInfo.ibi = 0.05; %inter-beep interval; only used for the second interval
-audioInfo.pahandle = PsychPortAudio('Open', [], 1, 1, audioInfo.samplingFreq, audioInfo.nOutputChannels);
+audioInfo.pahandle = [];%PsychPortAudio('Open', [], 1, 1, audioInfo.samplingFreq, audioInfo.nOutputChannels);
 audioInfo.postFeedbackPause = 0.25;
 
 expInfo.audioInfo = audioInfo;

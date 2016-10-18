@@ -40,7 +40,7 @@ orient = 360*(rand);
 %Some parameters for the response line
 lineWidth = 4;
 lineLength = expInfo.ppd*3; %Line length in pixels
-lineColor = [ 0 1 0 1];
+lineColor = [ 1 1 1 1];
 
 
 if isfield(expInfo,'writeMovie') && expInfo.writeMovie
@@ -64,7 +64,7 @@ end
 my_gabor = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient);
 my_noise = conditionInfo.noiseSigma.*randn(size(my_gabor));
 %my_noise = max(min(my_noise,.5),-.25);
-%convert it to a texture 'tex'§
+%convert it to a texture 'tex'ï¿½
 tex=Screen('makeTexture', expInfo.curWindow, my_gabor+my_noise);
 %draw the Gabor
 Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
@@ -101,6 +101,7 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
     function getParticipantResponse()
         waitingForResponse = true;
         
+        SetMouse(expInfo.center(1),expInfo.center(2),expInfo.curWindow)
         %Randomize the line orientation
         initLineOri  = 360*rand();
         totalShift = 0;

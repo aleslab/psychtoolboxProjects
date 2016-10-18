@@ -34,7 +34,8 @@ samples = 1;
 % Obtains the XYZ colour correction matrix specific to the ColorCAL II
 % being used, via the CDC port. This is a separate function (see further
 % below in this script).
-cMatrix = ColorCal2Serial('ReadColorMatrix');
+%cMatrix = ColorCal2Serial('ReadColorMatrix');
+cMatrix = ColorCal2('ReadColorMatrix');
 
 myCorrectionMatrix = cMatrix(1:3,:);
 
@@ -84,7 +85,10 @@ for iValue = 1:nValues
                
         % Ask the ColorCAL II to take a measurement. It will return 3 values.
         % This is a separate function (see further below in this script).
-        s = ColorCal2Serial('MeasureXYZ');
+   %     s = ColorCal2Serial('MeasureXYZ');
+   clear ColorCal2;
+      s = ColorCal2('MeasureXYZ');
+
         correctedValues = myCorrectionMatrix * [s.x s.y s.z]';
         % The returned values need to be multiplied by the ColorCAL II's
         % individual calibration matrix, as retrieved earlier. This will
