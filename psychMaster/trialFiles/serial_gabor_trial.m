@@ -68,10 +68,18 @@ my_noise = conditionInfo.noiseSigma.*randn(size(my_gabor));
 tex=Screen('makeTexture', expInfo.curWindow, my_gabor+my_noise);
 %draw the Gabor
 Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
-
 stimStartTime= Screen('Flip',expInfo.curWindow);
 requestedStimEndTime=stimStartTime + conditionInfo.stimDuration;
+
+%draw mask here (1 line using my_noise)
+
 actualStimEndTime=Screen('Flip', expInfo.curWindow, requestedStimEndTime);
+%calculate mask offset time
+%requestedMaskEndTime = actualStimEndTime + ???
+actualMaskEndTime = Screen('Flip', expInfo.curWindow, requestedMaskEndTime);
+
+%requestedFixEndTime = actualMaskEndTime + ???
+actualFixEndTime = Screen('Flip', expInfo.curWindow, requestedFixEndTime);
 
 getParticipantResponse();
 
