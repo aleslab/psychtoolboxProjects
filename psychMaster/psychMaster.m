@@ -231,17 +231,13 @@ try
     expInfo = openExperiment(expInfo);
     
     
-    %Show instructions and wait for a keypress.
-    DrawFormattedTextStereo(expInfo.curWindow, expInfo.instructions,'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
-    Screen('Flip', expInfo.curWindow);
-    KbStrokeWait();
-    
-    
+    %Initialize experiment data, this makes sure the experiment data
+    %scope spans all the subfunctions.
     experimentData = struct();
-    
     %This function handles everything for the experimental trials.
     mainExperimentLoop();
     
+    %If 
     while sessionInfo.returnToGui
         
         [sessionInfo,expInfo,conditionInfo] = pmGui(sessionInfo,expInfo,sessionInfo.backupConditionInfo);
@@ -254,7 +250,9 @@ try
             return;
         end
         
-        
+        %Initialize experiment data, this makes sure the experiment data
+        %scope spans all the subfunctions.
+        experimentData = struct();
         %This function handles everything for the experimental trials.
         mainExperimentLoop();
     end
@@ -276,9 +274,8 @@ catch
     
     %JMA: Fix this to gracefully release KbQueue's on error
     %Need to do the following but we may not have expInfo in the event of an error.
-    %    if expInfo.useKbQueue
-    %        KbQueueRelease(expInfo.deviceIndex);
-    %    end
+    %So we will just call to release all queue's that exist.
+    KbQueueRelease();
     
     disp('caught')
     errorMsg = lasterror;
@@ -309,31 +306,28 @@ end;
             expInfo.pauseInfo = 'Paused';
         end
         
-        %lets enumerate the total number of trials we need.
-        %This type of loop construction where the index is incremented by
-        %the loop is STRONGLY advised against. But I'm lazy and this works
-        %Much more elegant and error-proof ways.
-        idx = 1;
-        for iCond = 1:nConditions,
-            perCondData(iCond).correctResponse = [];
-                        
-            for iRep = 1:conditionInfo(iCond).nReps,
-                conditionList(idx) = iCond;
-                idx = idx+1;
-            end
-            
-        end
         
-        %Now lets do a quick randomization. This is an old way to accomplish a
-        %permutation
-        [~,idx]=sort(rand(size(conditionList)));
-        conditionList = conditionList(idx);
+       %Determine trial randomization
+       %Should rename conditionList to trialList to make it more clearly
+       %explanatory and consistent with makeTrialList();
+       conditionList = makeTrialList(expInfo,conditionInfo);
         
         %Let's start the expeirment
         %we're going to use a while loop so we can easily add trials for
         %invalid trials.
         
+        %If returnToGui is set that means it's a test trial so set we don't need to show the instructions
+        %Only show the instructions if we've run a complete experiment. 
+        if ~sessionInfo.returnToGui
+            %Show instructions and wait for a keypress.
+            DrawFormattedTextStereo(expInfo.curWindow, expInfo.instructions,'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
+            Screen('Flip', expInfo.curWindow);
+            KbStrokeWait();
+        end
+        
+       
         iTrial = 1;
+ 
         while iTrial <=length(conditionList)
             
             validTrialList(iTrial)= true;  %initialize this index variable to keep track of bad/aborted trials
@@ -601,8 +595,14 @@ end;
                     break;
                 end
                 
-                %Should add a message to the subject that they were too slow.
-                conditionList(end+1) = conditionList(iTrial);
+                %If the structure is blocked add a trial to the current
+                %block.  %JMA: TEST THIS CAREFULLY. Not full vetted
+                if strcmpi(expInfo.randomizationType,'blocked')
+                    thisCond = conditionList(iTrial);
+                    conditionList(iTrial+1:end+1) =[ thisCond conditionList(iTrial+1:end)];
+                else %For other trial randomizations just add the current condition to the end.                   
+                    conditionList(end+1) = conditionList(iTrial);
+                end
                 validTrialList(iTrial) = false;
                 experimentData(iTrial).validTrial = false;
                 
