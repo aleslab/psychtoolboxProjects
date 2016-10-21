@@ -6,6 +6,9 @@ tmp_*
 #Default datafile location psychMaster
 psychMaster/Data/*
 
+#Default datafile location psychMaster
+Data/*
+
 #OSX files
 .DS_store
 
