@@ -64,26 +64,29 @@ end
 my_gabor = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient);
 my_noise = conditionInfo.noiseSigma.*randn(size(my_gabor));
 %my_noise = max(min(my_noise,.5),-.25);
-%convert it to a texture 'tex'�
+%convert it to a texture 'tex'
 tex=Screen('makeTexture', expInfo.curWindow, my_gabor+my_noise);
+
 %draw the Gabor
 Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
 stimStartTime= Screen('Flip',expInfo.curWindow);
 requestedStimEndTime=stimStartTime + conditionInfo.stimDuration;
 Screen('Close',tex);
-%draw mask here (1 line using my_noise)
+
+%draw the mask
 noiseMask = conditionInfo.noiseSigma.*randn(size(my_gabor));
 maskTex=Screen('makeTexture', expInfo.curWindow, noiseMask+0.5);
 Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
 
-%calculate mask offset time
+
 actualStimEndTime=Screen('Flip', expInfo.curWindow, requestedStimEndTime);
 Screen('Close',maskTex);
 
-
+%calculate mask offset time
 requestedMaskEndTime = actualStimEndTime + 1;
 actualMaskEndTime = Screen('Flip', expInfo.curWindow, requestedMaskEndTime);
 
+%Calculate the fixation offset time
 requestedFixEndTime = actualMaskEndTime + 0.25;
 actualFixEndTime = Screen('Flip', expInfo.curWindow, requestedFixEndTime);
 
@@ -91,8 +94,11 @@ getParticipantResponse();
 
 trialData.stimStartTime = stimStartTime;
 trialData.stimEndTime   = actualStimEndTime;
+trialData.maskEndTime   = actualMaskEndTime;
+trialData.fixEndTime    = actualFixEndTime;
+
 trialData.validTrial = true;
-trialData.stimOri = orient;
+trialData.stimOri = wrapTo180(orient); %wrapTo180 makes angle go from[-180 180];
 trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
 
 
@@ -147,8 +153,9 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
                 [x,y,buttons] = GetMouse(expInfo.curWindow);
                 
                 if any(buttons); %Ok got a response lets quit
-                    waitingForResponse = false;
                     trialData.responseTime = GetSecs;
+                    waitingForResponse = false;
+                    
                 else
                     thisOrient = initLineOri+.25*(x-xStart);
                 end
@@ -169,7 +176,7 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
             
         end
         
-        trialData.respOri = thisOrient;
+        trialData.respOri = wrapTo180(thisOrient);
     end
 end
 % % %
