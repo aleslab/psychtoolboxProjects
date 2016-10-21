@@ -17,16 +17,6 @@ function [ delta ] = minAngleDiff(a,b )
 %% 10/2016 - created by Justin Ales
 %
 
-When comparing angles it is easy to Detailed explanation goes here
-
-
-% ax = cosd(a);
-% ay = sind(a);
-% 
-% bx = cosd(b);
-% by = sind(b);
-% 
-% 
 
 %Wrap to +/- 180 to  
 a = wrapTo180(a);
@@ -38,11 +28,18 @@ b = wrapTo180(b);
 
 %This is where I figure out the minimum angle .
 %I do this by chaining some trigonometry operations together.
+%First take the raw difference between the angles. 
+%Convert this difference into the vector form using sin and cos
+%than return convert back to an angle using the 4 quadrant inverse tangent.
+%Example: this makes any difference over 180 degrees return the equivalent
+%difference that's under 180.
 D=a-b;
 bFlip = b-180;
 
 delta = atan2d(sind(D),cosd(D));
 
+%Now check what the angle difference is going the other way around the
+%clock. This is the critical step that mirror reverses 
 dFlip = a-bFlip;
 deltaFlip = atan2d(sind(dFlip),cosd(dFlip));
 
@@ -66,6 +63,4 @@ end
 
     
 
-
-end
 
