@@ -125,8 +125,10 @@ if ~isempty(getpref('psychMaster'))
         base = [];
     end
     
-    if isempty(base),
-        setpref('psychMaster','base',pwd);
+    if isempty(base),   
+         pathToPM = which('psychMaster');
+         [base] = fileparts(pathToPM);
+         setpref('psychMaster','base',base);
         disp(['Setting psychMaster directory preference to: ' pwd]);
     else
         disp(['Setting psychMaster home directory: ' base]);
