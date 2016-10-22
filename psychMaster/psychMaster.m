@@ -56,7 +56,21 @@ function [] = psychMaster(sessionInfo)
 %   expInfo defines experiment wide settings. Mostly things that are
 %   for PsychToolbox.  But also other things that are aren't specific to a
 %   specific condition.  Mostly these are things that may be needed outside
-%   the "trialFun".
+%   the "trialFun". See help openExperiment for more information.
+%
+%   Notable expInfo fields:
+%   viewingDistance =  [57] The viewing distance in cm. 
+%     
+%   instructions    = [''] A message to display before the start of
+%                      experiment
+%
+%   randomizationType = ['random'] a short string that sets how trials are
+%                      randomized it can take the following values:
+%              'random' - fully randomize all conditions
+%              'blocked' - repeatedly present a condition nReps time than
+%                          switch conditions. But present conditions in random order.
+%   
+%   stereoMode = [0] A number selecting a PTB stereomode. 
 %
 %   psychMaster will loop over the different conditions in the paradigm
 %   file and run the conditionInfo.trialFun function to render the
@@ -336,6 +350,22 @@ end;
             feedbackColor = [1];
             
             thisCond = conditionList(iTrial);
+            
+            if strcmpi(expInfo.randomizationType,'blocked')
+                %In the block design lets put a message and
+                %pause when blocks change
+                if iTrial >1 && thisCond ~= conditionList(iTrial-1)
+                    
+                    %In the future add code here to enable custom block
+                    %messages
+                    blockMessage = 'Block Completed. Press any key to start next block';
+                    DrawFormattedTextStereo(expInfo.curWindow, blockMessage,...
+                        'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
+                    Screen('Flip', expInfo.curWindow);
+                    KbStrokeWait();
+                    
+                end
+            end
             
             %decide how to display trial depending on what type of trial it is.
             switch lower(conditionInfo(thisCond).type)
