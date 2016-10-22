@@ -212,7 +212,7 @@ try
     set(handles.paradigmNameBox,'String',handles.expInfo.paradigmName);
     
     
-    handles.conditionInfo = validateConditions(handles.conditionInfo);
+    handles.conditionInfo = validateConditions(handles.expInfo,handles.conditionInfo);
     condNameList = {};
     for iCond = 1:length(handles.conditionInfo)
        

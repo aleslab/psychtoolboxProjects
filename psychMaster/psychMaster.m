@@ -237,7 +237,7 @@ try
     %This function handles everything for the experimental trials.
     mainExperimentLoop();
     
-    %If 
+    %If returnToGui is TRUE we ran a test trial and want the gui to pop-up
     while sessionInfo.returnToGui
         
         [sessionInfo,expInfo,conditionInfo] = pmGui(sessionInfo,expInfo,sessionInfo.backupConditionInfo);
@@ -296,7 +296,7 @@ end;
 %code and to enable easier GUI control of trials
     function mainExperimentLoop()
         
-        conditionInfo = validateConditions(conditionInfo);
+        conditionInfo = validateConditions(expInfo,conditionInfo);
         
         %This code randomizes the condition order
         
@@ -452,13 +452,12 @@ end;
                     trialData = validateTrialData(trialData);
                     
                     
-                    fixationInfo.fixationType = 'cross';
-                    fixationInfo.responseSquare = 1;
-                    fixationInfo.apetureType = 'frame';
-                    
+                    fixationInfo(1).fixationType = 'cross';
+                    fixationInfo(2).fixationType = 'square';
+                    fixationInfo(3).fixationType = 'noiseFrame';                                        
                     expInfo = drawFixation(expInfo, fixationInfo);
+                    
                     Screen('Flip', expInfo.curWindow);
-                    Screen('close', expInfo.fixationTextures);
                     
                     [responseData] = getResponse(expInfo,conditionInfo(thisCond).responseDuration);
                     
@@ -526,13 +525,13 @@ end;
                     trialData = validateTrialData(trialData);
                     
                     
-                    fixationInfo.fixationType = 'cross';
-                    fixationInfo.responseSquare = 1;
-                    fixationInfo.apetureType = 'frame';
-                    
+   
+                    fixationInfo(1).fixationType = 'cross';
+                    fixationInfo(2).fixationType = 'square';
+                    fixationInfo(3).fixationType = 'noiseFrame';                                        
                     expInfo = drawFixation(expInfo, fixationInfo);
+
                     Screen('Flip', expInfo.curWindow);
-                    Screen('close', expInfo.fixationTextures);
                     
                     [responseData] = getResponse(expInfo,conditionInfo(thisCond).responseDuration);
                     
@@ -604,51 +603,47 @@ end;
                     conditionList(end+1) = conditionList(iTrial);
                 end
                 validTrialList(iTrial) = false;
-                experimentData(iTrial).validTrial = false;
-                
-                fixationInfo.fixationType = '';
-                fixationInfo.responseSquare = 0;
-                fixationInfo.apetureType = 'frame';
-                
+                experimentData(iTrial).validTrial = false;                                
                 
                 DrawFormattedTextStereo(expInfo.curWindow, 'Invalid trial','center', 'center', 1);
                 
+              
+                fixationInfo(1).fixationType = 'noiseFrame';
                 expInfo = drawFixation(expInfo, fixationInfo);
-                
+
                 Screen('Flip', expInfo.curWindow);
-                Screen('close', expInfo.fixationTextures);
                 WaitSecs(.5);
+                
                 expInfo = drawFixation(expInfo, fixationInfo);
                 Screen('Flip', expInfo.curWindow);
-                Screen('close', expInfo.fixationTextures);
                 
                 %valid response made, should we give feedback?
             elseif conditionInfo(thisCond).giveFeedback
                 %Give feedback:
-                fixationInfo.fixationType = '';
-                fixationInfo.responseSquare = 0;
-                fixationInfo.apetureType = 'frame';
+          
                 
                 DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
                     'center', 'center', feedbackColor);
                 
+ 
+                fixationInfo(1).fixationType = 'noiseFrame';
+
                 expInfo = drawFixation(expInfo, fixationInfo);
-                
                 Screen('Flip', expInfo.curWindow);
-                Screen('close', expInfo.fixationTextures);
                 WaitSecs(1.5);
+                
                 expInfo = drawFixation(expInfo, fixationInfo);
                 Screen('Flip', expInfo.curWindow);
-                Screen('close', expInfo.fixationTextures);
                 
             elseif conditionInfo(thisCond).giveAudioFeedback
                 
-                fixationInfo.fixationType = 'cross';
-                fixationInfo.responseSquare = 0;
-                fixationInfo.apetureType = 'frame';
+                
+                fixationInfo(1).fixationType = 'cross';              
+                fixationInfo(2).fixationType = 'noiseFrame';
                 expInfo = drawFixation(expInfo, fixationInfo);
+
                 Screen('Flip', expInfo.curWindow);
-                Screen('close', expInfo.fixationTextures);
+                
                 
                 if experimentData(iTrial).isResponseCorrect;
                     

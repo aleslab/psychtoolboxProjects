@@ -188,9 +188,11 @@ expInfo.audioInfo = audioInfo;
 % expInfo.pahandle = PsychPortAudio('Open', [], [], 0, [], 2);
 
 
+%Set default font size.
 Screen('TextSize', expInfo.curWindow, 60);
 Screen('BlendFunction', expInfo.curWindow,  GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+expInfo.windowInfo = Screen('GetWindowInfo', expInfo.curWindow);
 
 %Setup some defaults for keyboard interactions. Can be overridden by your
 %experiment.

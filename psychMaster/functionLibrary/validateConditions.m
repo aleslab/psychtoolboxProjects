@@ -1,4 +1,4 @@
-function [ conditionInfo ] = validateConditions( conditionInfo )
+function [ conditionInfo ] = validateConditions( expInfo, conditionInfo )
 %validateConditions Ensures that conditionInfo has required fields
 %   This function checks to see if all required fields are set in each
 %   condition.  If not it sets things to a default value 
