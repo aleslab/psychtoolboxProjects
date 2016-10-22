@@ -37,14 +37,14 @@ for iCond = 1:nCond,
     
     
     %validate 2afc specific fields
-    if strcmp(lower(conditionInfo(iCond).type),'2afc')
+    if strcmpi(conditionInfo(iCond).type,'2afc')
         
         checkFields(iCond,fieldList2afc)
         
     end
     
     %validate simpleResponse specific fields
-    if strcmp(lower(conditionInfo(iCond).type),'simpleresponse')
+    if strcmpi(conditionInfo(iCond).type,'simpleresponse')
         
         checkFields(iCond,fieldListSimpleResponse)
         
