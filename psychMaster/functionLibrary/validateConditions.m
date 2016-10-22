@@ -35,7 +35,6 @@ for iCond = 1:nCond,
     
     checkFields(iCond,fieldListCommon)
     
-    
     %validate 2afc specific fields
     if strcmpi(conditionInfo(iCond).type,'2afc')
         

@@ -41,7 +41,7 @@ if ~isfield(fixationInfo,'fixColor') || isempty(fixationInfo.fixColor)
 end
 
 %Switchyard to determine what to draw.
-switch lower(fixationInfo.fixationType)
+switch lower(fixationInfo.type)
     
     
     case 'cross'
@@ -56,7 +56,7 @@ switch lower(fixationInfo.fixationType)
         Screen('DrawLines', expInfo.curWindow, fixCoords, fixationInfo.fixLineWidthPix, ...
             fixationInfo.fixColor, expInfo.center, 0);
         
-    case 'box'
+    case 'square'
         %Consider changing this code to a framerect instead of lines for
         %simplicity.
         if ~isfield(fixationInfo,'size') || isempty(fixationInfo.size)

@@ -480,12 +480,10 @@ end;
                     %This checks for fields needed by the rest of the code
                     %if they don't exist they're given default values
                     trialData = validateTrialData(trialData);
-                    
-                    
-                    fixationInfo(1).fixationType = 'cross';
-                    fixationInfo(2).fixationType = 'square';
-                    fixationInfo(3).fixationType = 'noiseFrame';                                        
-                    expInfo = drawFixation(expInfo, fixationInfo);
+                                                                        
+                    expInfo = drawFixation(expInfo, expInfo.fixationInfo);                    
+                    responseMarker.type = 'square';
+                    expInfo = drawFixation(expInfo, responseMarker);
                     
                     Screen('Flip', expInfo.curWindow);
                     
@@ -555,11 +553,9 @@ end;
                     trialData = validateTrialData(trialData);
                     
                     
-   
-                    fixationInfo(1).fixationType = 'cross';
-                    fixationInfo(2).fixationType = 'square';
-                    fixationInfo(3).fixationType = 'noiseFrame';                                        
-                    expInfo = drawFixation(expInfo, fixationInfo);
+                    expInfo = drawFixation(expInfo, expInfo.fixationInfo);
+                    responseMarker.type = 'square';
+                    expInfo = drawFixation(expInfo, responseMarker);
 
                     Screen('Flip', expInfo.curWindow);
                     
@@ -638,13 +634,13 @@ end;
                 DrawFormattedTextStereo(expInfo.curWindow, 'Invalid trial','center', 'center', 1);
                 
               
-                fixationInfo(1).fixationType = 'noiseFrame';
-                expInfo = drawFixation(expInfo, fixationInfo);
+              
+                expInfo = drawFixation(expInfo, expInfo.fixationInfo);
 
                 Screen('Flip', expInfo.curWindow);
                 WaitSecs(.5);
                 
-                expInfo = drawFixation(expInfo, fixationInfo);
+                expInfo = drawFixation(expInfo, expInfo.fixationInfo);
                 Screen('Flip', expInfo.curWindow);
                 
                 %valid response made, should we give feedback?
@@ -655,22 +651,17 @@ end;
                 DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
                     'center', 'center', feedbackColor);
                 
- 
-                fixationInfo(1).fixationType = 'noiseFrame';
-
-                expInfo = drawFixation(expInfo, fixationInfo);
+                expInfo = drawFixation(expInfo, expInfo.fixationInfo);
                 Screen('Flip', expInfo.curWindow);
                 WaitSecs(1.5);
                 
-                expInfo = drawFixation(expInfo, fixationInfo);
+                expInfo = drawFixation(expInfo, expInfo.fixationInfo);
                 Screen('Flip', expInfo.curWindow);
                 
             elseif conditionInfo(thisCond).giveAudioFeedback
                 
                 
-                fixationInfo(1).fixationType = 'cross';              
-                fixationInfo(2).fixationType = 'noiseFrame';
-                expInfo = drawFixation(expInfo, fixationInfo);
+                expInfo = drawFixation(expInfo, expInfo.fixationInfo);
 
                 Screen('Flip', expInfo.curWindow);
                 

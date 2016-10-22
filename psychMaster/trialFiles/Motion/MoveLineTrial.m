@@ -44,9 +44,9 @@ trialData.validTrial = false;
 trialData.abortNow   = false;
 
 expInfo.lw = 1;
-fixationInfo(1).fixationType    = 'cross';
+fixationInfo(1).type    = 'cross';
 fixationInfo(1).fixLineWidthPix = 1;
-fixationInfo(2).fixationType = 'noiseFrame';
+fixationInfo(2).type = 'noiseFrame';
 expInfo = drawFixation(expInfo, fixationInfo);
 vbl=Screen('Flip', expInfo.curWindow); %flipping to the screen
 
