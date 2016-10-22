@@ -56,7 +56,21 @@ function [] = psychMaster(sessionInfo)
 %   expInfo defines experiment wide settings. Mostly things that are
 %   for PsychToolbox.  But also other things that are aren't specific to a
 %   specific condition.  Mostly these are things that may be needed outside
-%   the "trialFun".
+%   the "trialFun". See help openExperiment for more information.
+%
+%   Notable expInfo fields:
+%   viewingDistance =  [57] The viewing distance in cm. 
+%     
+%   instructions    = [''] A message to display before the start of
+%                      experiment
+%
+%   randomizationType = ['random'] a short string that sets how trials are
+%                      randomized it can take the following values:
+%              'random' - fully randomize all conditions
+%              'blocked' - repeatedly present a condition nReps time than
+%                          switch conditions. But present conditions in random order.
+%   
+%   stereoMode = [0] A number selecting a PTB stereomode. 
 %
 %   psychMaster will loop over the different conditions in the paradigm
 %   file and run the conditionInfo.trialFun function to render the
@@ -239,7 +253,7 @@ try
     %This function handles everything for the experimental trials.
     mainExperimentLoop();
     
-    %If 
+    %If returnToGui is TRUE we ran a test trial and want the gui to pop-up
     while sessionInfo.returnToGui
         
         [sessionInfo,expInfo,conditionInfo] = pmGui(sessionInfo,expInfo,sessionInfo.backupConditionInfo);
@@ -298,7 +312,7 @@ end;
 %code and to enable easier GUI control of trials
     function mainExperimentLoop()
         
-        conditionInfo = validateConditions(conditionInfo);
+        conditionInfo = validateConditions(expInfo,conditionInfo);
         
         %This code randomizes the condition order
         
@@ -338,6 +352,22 @@ end;
             feedbackColor = [1];
             
             thisCond = conditionList(iTrial);
+            
+            if strcmpi(expInfo.randomizationType,'blocked')
+                %In the block design lets put a message and
+                %pause when blocks change
+                if iTrial >1 && thisCond ~= conditionList(iTrial-1)
+                    
+                    %In the future add code here to enable custom block
+                    %messages
+                    blockMessage = 'Block Completed. Press any key to start next block';
+                    DrawFormattedTextStereo(expInfo.curWindow, blockMessage,...
+                        'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
+                    Screen('Flip', expInfo.curWindow);
+                    KbStrokeWait();
+                    
+                end
+            end
             
             %decide how to display trial depending on what type of trial it is.
             switch lower(conditionInfo(thisCond).type)
@@ -452,15 +482,12 @@ end;
                     %This checks for fields needed by the rest of the code
                     %if they don't exist they're given default values
                     trialData = validateTrialData(trialData);
+                                                                        
+                    expInfo = drawFixation(expInfo, expInfo.fixationInfo);                    
+                    responseMarker.type = 'square';
+                    expInfo = drawFixation(expInfo, responseMarker);
                     
-                    
-                    fixationInfo.fixationType = 'cross';
-                    fixationInfo.responseSquare = 1;
-                    fixationInfo.apetureType = 'frame';
-                    
-                    expInfo = drawFixation(expInfo, fixationInfo);
                     Screen('Flip', expInfo.curWindow);
-                    Screen('close', expInfo.fixationTextures);
                     
                     [responseData] = getResponse(expInfo,conditionInfo(thisCond).responseDuration);
                     
@@ -528,13 +555,11 @@ end;
                     trialData = validateTrialData(trialData);
                     
                     
-                    fixationInfo.fixationType = 'cross';
-                    fixationInfo.responseSquare = 1;
-                    fixationInfo.apetureType = 'frame';
-                    
-                    expInfo = drawFixation(expInfo, fixationInfo);
+                    expInfo = drawFixation(expInfo, expInfo.fixationInfo);
+                    responseMarker.type = 'square';
+                    expInfo = drawFixation(expInfo, responseMarker);
+
                     Screen('Flip', expInfo.curWindow);
-                    Screen('close', expInfo.fixationTextures);
                     
                     [responseData] = getResponse(expInfo,conditionInfo(thisCond).responseDuration);
                     
@@ -606,51 +631,42 @@ end;
                     conditionList(end+1) = conditionList(iTrial);
                 end
                 validTrialList(iTrial) = false;
-                experimentData(iTrial).validTrial = false;
-                
-                fixationInfo.fixationType = '';
-                fixationInfo.responseSquare = 0;
-                fixationInfo.apetureType = 'frame';
-                
+                experimentData(iTrial).validTrial = false;                                
                 
                 DrawFormattedTextStereo(expInfo.curWindow, 'Invalid trial','center', 'center', 1);
                 
-                expInfo = drawFixation(expInfo, fixationInfo);
-                
+              
+              
+                expInfo = drawFixation(expInfo, expInfo.fixationInfo);
+
                 Screen('Flip', expInfo.curWindow);
-                Screen('close', expInfo.fixationTextures);
                 WaitSecs(.5);
-                expInfo = drawFixation(expInfo, fixationInfo);
+                
+                expInfo = drawFixation(expInfo, expInfo.fixationInfo);
                 Screen('Flip', expInfo.curWindow);
-                Screen('close', expInfo.fixationTextures);
                 
                 %valid response made, should we give feedback?
             elseif conditionInfo(thisCond).giveFeedback
                 %Give feedback:
-                fixationInfo.fixationType = '';
-                fixationInfo.responseSquare = 0;
-                fixationInfo.apetureType = 'frame';
+          
                 
                 DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
                     'center', 'center', feedbackColor);
                 
-                expInfo = drawFixation(expInfo, fixationInfo);
-                
+                expInfo = drawFixation(expInfo, expInfo.fixationInfo);
                 Screen('Flip', expInfo.curWindow);
-                Screen('close', expInfo.fixationTextures);
                 WaitSecs(1.5);
-                expInfo = drawFixation(expInfo, fixationInfo);
+                
+                expInfo = drawFixation(expInfo, expInfo.fixationInfo);
                 Screen('Flip', expInfo.curWindow);
-                Screen('close', expInfo.fixationTextures);
                 
             elseif conditionInfo(thisCond).giveAudioFeedback
                 
-                fixationInfo.fixationType = 'cross';
-                fixationInfo.responseSquare = 0;
-                fixationInfo.apetureType = 'frame';
-                expInfo = drawFixation(expInfo, fixationInfo);
+                
+                expInfo = drawFixation(expInfo, expInfo.fixationInfo);
+
                 Screen('Flip', expInfo.curWindow);
-                Screen('close', expInfo.fixationTextures);
+                
                 
                 if experimentData(iTrial).isResponseCorrect;
                     
