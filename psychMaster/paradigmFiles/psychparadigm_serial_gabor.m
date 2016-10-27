@@ -22,8 +22,9 @@ end
 
 %Lets add an experiment wide setting here:
 
-expInfo.instructions = ['Try and align the green line \n' ...
-                        'with the orientation you have just seen!' ];     
+expInfo.instructions = ['Try and align the black line \n' ...
+                        'with the orientation of the pattern  \n'...
+                        'you have just seen!' ];     
 %This defines what function to call to draw the condition
 %Crucial: requires the @ sign prefix.  Because it needs it to be a
 %"function handle"
@@ -41,15 +42,15 @@ conditionInfo(1).responseDuration  = 0;    %Post trial window for waiting for a 
 
 conditionInfo(1).sigma             =2; %standard deviation of the gabor in degrees
 conditionInfo(1).freq              =1; %frequency of the gabor in cycles per sigma. 
-conditionInfo(1).nReps             = 30; %% number of trials to present this condition. 
+conditionInfo(1).nReps             = 10; %% number of trials to present this condition. 
 conditionInfo(1).stimRadiusDeg  = 6;    %stimulus size in degree;
 
-conditionInfo(1).contrast = 0.04;
+conditionInfo(1).contrast = 0.05;
 conditionInfo(1).noiseSigma = .15;
 conditionInfo(1).orientationSigma = 5;
 %Implement arbitrary forward models. 
 %conditionInfo(1).forwardModel = [ 1 0 ]; %Forward model
-conditionInfo(1).label = 'Contrast: 0.04';
+conditionInfo(1).label = 'Contrast: 0.05';
 
 conditionInfo(2) = conditionInfo(1);
 conditionInfo(2).orientationSigma = 5;
@@ -58,8 +59,8 @@ conditionInfo(2).label = 'Contrast: 0.08';
 
 conditionInfo(3) = conditionInfo(1);
 conditionInfo(3).orientationSigma = 5;
-conditionInfo(3).contrast = 0.15;
-conditionInfo(3).label = 'Contrast: 0.15';
+conditionInfo(3).contrast = 0.20;
+conditionInfo(3).label = 'Contrast: 0.20';
 
 
 
