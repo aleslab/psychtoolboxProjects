@@ -24,7 +24,7 @@ for iTrial = 1:length(experimentData),
     thisCond = experimentData(iTrial).condNumber;
     
     %If this is NOT a valid trial skip it and move on.
-    if ~experimentData(iTrial).validTrial
+    if ~experimentData(iTrial).validTrial || isempty(experimentData(iTrial).trialData)
         continue;
     end
     
