@@ -29,7 +29,7 @@ expInfo.instructions = ['Try and align the black line \n' ...
 %Crucial: requires the @ sign prefix.  Because it needs it to be a
 %"function handle"
 conditionInfo(1).trialFun=@serial_gabor_trial;
-conditionInfo(1).giveFeedback = true;
+conditionInfo(1).giveFeedback = false;
 
 % %Condition definitions
 %Condition 1, lets set some defaults:
@@ -43,7 +43,7 @@ conditionInfo(1).responseDuration  = 0;    %Post trial window for waiting for a 
 conditionInfo(1).sigma             =2; %standard deviation of the gabor in degrees
 conditionInfo(1).freq              =1; %frequency of the gabor in cycles per sigma. 
 conditionInfo(1).nReps             = 20; %% number of trials to present this condition. 
-conditionInfo(1).stimRadiusDeg  = 6;    %stimulus size in degree;
+conditionInfo(1).stimRadiusDeg     =   6;    %stimulus size in degree;
 
 conditionInfo(1).contrast = 0.05;
 conditionInfo(1).noiseSigma = .15;
@@ -54,8 +54,8 @@ conditionInfo(1).label = 'Contrast: 0.05';
 
 conditionInfo(2) = conditionInfo(1);
 conditionInfo(2).orientationSigma = 5;
-conditionInfo(2).contrast = 0.08 ;
-conditionInfo(2).label = 'Contrast: 0.08';
+conditionInfo(2).contrast = 0.10 ;
+conditionInfo(2).label = 'Contrast: 0.10';
 
 conditionInfo(3) = conditionInfo(1);
 conditionInfo(3).orientationSigma = 5;
