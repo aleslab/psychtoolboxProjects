@@ -633,12 +633,14 @@ end;
                 
                 DrawFormattedTextStereo(expInfo.curWindow, 'Invalid trial','center', 'center', 1);
                 
-              
+              expInfo.fixationInfo(1).type = '';
               
                 expInfo = drawFixation(expInfo, expInfo.fixationInfo);
 
                 Screen('Flip', expInfo.curWindow);
                 WaitSecs(.5);
+                
+                expInfo.fixationInfo(1).type = 'cross';
                 
                 expInfo = drawFixation(expInfo, expInfo.fixationInfo);
                 Screen('Flip', expInfo.curWindow);
@@ -651,9 +653,13 @@ end;
                 DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
                     'center', 'center', feedbackColor);
                 
+                expInfo.fixationInfo(1).type = '';
+                
                 expInfo = drawFixation(expInfo, expInfo.fixationInfo);
                 Screen('Flip', expInfo.curWindow);
                 WaitSecs(1.5);
+                
+                expInfo.fixationInfo(1).type = 'cross';
                 
                 expInfo = drawFixation(expInfo, expInfo.fixationInfo);
                 Screen('Flip', expInfo.curWindow);

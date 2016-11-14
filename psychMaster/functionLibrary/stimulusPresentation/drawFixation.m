@@ -47,7 +47,12 @@ switch lower(fixationInfo.type)
     case 'cross'
         
         if ~isfield(fixationInfo,'size') || isempty(fixationInfo.size)
-            fixationInfo.size = 10/expInfo.ppd; %Default cross size is 10 pixels for backwards compatability.
+            fixationInfo.size = 20/expInfo.ppd; %Default cross size is 10 
+            %pixels for backwards compatability. -- AL: Each arm of the 
+            %cross was 10 pixels previously, so the line size for drawing 
+            %the horizontal and vertical lines to make the cross was 20 pixels. 
+            %With 10 pixels as the size the fixation cross is too small, so 
+            %I've changed it to 20 so that it is consistent with how my experiment was run previously.
         end
         
         fixCrossPix    = expInfo.ppd*fixationInfo.size;
