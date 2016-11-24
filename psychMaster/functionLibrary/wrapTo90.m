@@ -14,12 +14,15 @@ function [ angle ] = wrapTo90( angle )
 angle = wrapTo180(angle);
 
 %Now we can mirror flip any angles over 90 to lay in the [-90 90] range
-if angle>90
-    angle = angle-180;
-elseif angle<=-90
-    angle = angle+180;
-else
-    angle = angle;
-end
+% if angle>90
+%     angle = angle-180;
+% elseif angle<=-90
+%     angle = angle+180;
+% else
+%     angle = angle;
+% end
+
+angle(angle>90)   = angle(angle>90)-180;
+angle(angle<=-90) = angle(angle<=-90) + 180;
 end
 
