@@ -106,10 +106,12 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
 %powermate. The funtion ends when a mouse button is clicked.
     function getParticipantResponse()
         waitingForResponse = true;
+        responseStartTime = GetSecs;
         
         SetMouse(expInfo.center(1),expInfo.center(2),expInfo.curWindow)
         %Randomize the line orientation
         initLineOri  = 360*rand();
+        thisOrient = initLineOri;
         totalShift = 0;
         [xStart,yStart] = GetMouse(expInfo.curWindow);
         y = 0;
@@ -152,8 +154,9 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
             else %use the mouse
                 [x,y,buttons] = GetMouse(expInfo.curWindow);
                 
-                if any(buttons); %Ok got a response lets quit
-                    trialData.responseTime = GetSecs;
+                timeNow = GetSecs;
+                if any(buttons) && timeNow>(responseStartTime+.2); %Ok got a response lets quit
+                    trialData.responseTime = timeNow;
                     waitingForResponse = false;
                     
                 else
