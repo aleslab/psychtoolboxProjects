@@ -34,9 +34,9 @@ destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
 
 %initAngularVelocity = 0;
 %F = [1 0;0 1;];
-persistent orient;
 
- 
+
+persistent orient;
 orient  = randi([-30 30],1,20)+randn*10;
 
 
@@ -188,3 +188,5 @@ end
 % % %
 % % %
 % % %
+
+
