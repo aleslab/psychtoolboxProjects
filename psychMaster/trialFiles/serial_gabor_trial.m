@@ -1,5 +1,11 @@
 function [trialData] = serial_gabor_trial(expInfo, conditionInfo)
-%test edit
+
+persistent previousOrientation
+
+if isempty( previousOrientation)
+    %%Change this later !!%
+    previousOrientation = 0;
+end
 
 trialData.validTrial = true;
 trialData.abortNow   = false;
@@ -36,6 +42,7 @@ destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
 %F = [1 0;0 1;];
 
 orient = 360*(rand);
+
 
 %Some parameters for the response line
 lineWidth = 4;
