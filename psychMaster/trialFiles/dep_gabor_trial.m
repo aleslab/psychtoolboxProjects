@@ -35,7 +35,10 @@ destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
 %initAngularVelocity = 0;
 %F = [1 0;0 1;];
 persistent orient;
-orient =  60*randn*10;
+
+ 
+orient  = randi([-30 30],1,20)+randn*10;
+
 
 %Some parameters for the response line
 lineWidth = 4;

@@ -22,7 +22,7 @@ end
 
 %Lets add an experiment wide setting here:
 
-expInfo.instructions = ['Try and align the black line \n' ...
+expInfo.instructions = ['Try and align the white line \n' ...
                         'with the orientation of the pattern  \n'...
                         'you have just seen!' ];     
 %This defines what function to call to draw the condition
@@ -42,25 +42,16 @@ conditionInfo(1).responseDuration  = 0;    %Post trial window for waiting for a 
 
 conditionInfo(1).sigma             =2; %standard deviation of the gabor in degrees
 conditionInfo(1).freq              =1; %frequency of the gabor in cycles per sigma. 
-conditionInfo(1).nReps             = 6; %% number of trials to present this condition. 
-conditionInfo(1).stimRadiusDeg     =   3;    %stimulus size in degree;
+conditionInfo(1).nReps             = 2; %% number of trials to present this condition. 
+conditionInfo(1).stimRadiusDeg     =   8;    %stimulus size in degree;
 
-conditionInfo(1).contrast = 0.05;
+conditionInfo(1).contrast = 0.10;
 conditionInfo(1).noiseSigma = .15;
 conditionInfo(1).orientationSigma = 5;
 %Implement arbitrary forward models. 
 %conditionInfo(1).forwardModel = [ 1 0 ]; %Forward model
-conditionInfo(1).label = 'Contrast: 0.05';
+conditionInfo(1).label = 'Contrast: 0.10';
 
-conditionInfo(2) = conditionInfo(1);
-conditionInfo(2).orientationSigma = 5;
-conditionInfo(2).contrast = 0.10 ;
-conditionInfo(2).label = 'Contrast: 0.10';
-
-conditionInfo(3) = conditionInfo(1);
-conditionInfo(3).orientationSigma = 5;
-conditionInfo(3).contrast = 0.20;
-conditionInfo(3).label = 'Contrast: 0.20';
 
 
 
