@@ -28,8 +28,8 @@ expInfo.instructions = ['Try and align the white line \n' ...
 %This defines what function to call to draw the condition
 %Crucial: requires the @ sign prefix.  Because it needs it to be a
 %"function handle"
-conditionInfo(1).trialFun=@dep_gabor_trial;
-%conditionInfo(1).trialFun=@serial_gabor_trial;
+
+conditionInfo(1).trialFun=@serial_gabor_trial;
 conditionInfo(1).giveFeedback = false;
 
 % %Condition definitions
