@@ -34,7 +34,7 @@ destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
 
 %initAngularVelocity = 0;
 %F = [1 0;0 1;];
-
+persistent orient
 angle = 60*rand(1000,1);
 
 orient (1)=0;
