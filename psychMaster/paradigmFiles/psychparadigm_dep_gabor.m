@@ -1,5 +1,5 @@
-function [conditionInfo,expInfo] = psychparadigm_serial_gabor(expInfo)
-expInfo.paradigmName = 'whitneyReplication';
+function [conditionInfo,expInfo] = psychparadigm_dep_gabor(expInfo)
+expInfo.paradigmName = 'dependent';
 
 % use kbQueue's as they have high performance
 expInfo.useKbQueue = false;
@@ -61,7 +61,6 @@ conditionInfo(3) = conditionInfo(1);
 conditionInfo(3).orientationSigma = 5;
 conditionInfo(3).contrast = 0.20;
 conditionInfo(3).label = 'Contrast: 0.20';
-
 
 
 
