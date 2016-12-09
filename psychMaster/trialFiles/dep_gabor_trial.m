@@ -36,9 +36,8 @@ destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
 %F = [1 0;0 1;];
 persistent orient;
 if isempty(orient);
-orient =0;
-end
 orient (1)=360*rand;
+end
 orient = orient + randn*10;
 
 
