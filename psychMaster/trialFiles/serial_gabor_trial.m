@@ -40,7 +40,6 @@ destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
 
 %initAngularVelocity = 0;
 %F = [1 0;0 1;];
-persistent orient
 orient = 360*(rand);
 
 
