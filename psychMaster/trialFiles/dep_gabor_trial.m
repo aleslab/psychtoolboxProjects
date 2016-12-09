@@ -38,6 +38,7 @@ persistent orient;
 if isempty(orient);
 orient =0;
 end
+orient (1)=360*rand;
 orient = orient + randn*10;
 
 
