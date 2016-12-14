@@ -3,21 +3,11 @@ expInfo.paradigmName = 'dependent';
 
 % use kbQueue's as they have high performance
 expInfo.useKbQueue = false;
-expInfo.enablePowermate = false;
+expInfo.enablePowermate = true;
 expInfo.viewingDistance = 57;
 
 
-if expInfo.enablePowermate
-    dev = PsychHID('devices');
-    
-    for iDev = 1:length(dev)
-        
-        if  dev(iDev).vendorID== 1917 && dev(iDev).productID == 1040
-            expInfo.powermateId = iDev;
-            break;
-        end
-    end
-end
+
 
 
 %Lets add an experiment wide setting here:
@@ -47,7 +37,7 @@ conditionInfo(1).stimRadiusDeg     =   8;    %stimulus size in degree;
 
 conditionInfo(1).contrast = 0.10;
 conditionInfo(1).noiseSigma = .15;
-conditionInfo(1).orientationSigma = 5;
+conditionInfo(1).orientationSigma = 10;
 %Implement arbitrary forward models. 
 %conditionInfo(1).forwardModel = [ 1 0 ]; %Forward model
 conditionInfo(1).label = 'Contrast: 0.10';

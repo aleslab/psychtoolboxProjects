@@ -38,7 +38,7 @@ persistent orient;
 if isempty(orient);
 orient (1)=360*rand;
 end
-orient = orient + randn*10;
+orient = orient + randn*conditionInfo.orientationSigma;
 
 
 
@@ -46,21 +46,11 @@ orient = orient + randn*10;
 %Some parameters for the response line
 lineWidth = 4;
 lineLength = expInfo.ppd*3; %Line length in pixels
-lineColor = [ 1 1 1 1];
+lineColor = [ 1];
 
 
 if isfield(expInfo,'writeMovie') && expInfo.writeMovie
     movie = Screen('CreateMovie', expInfo.curWindow, 'MyTestMovie.mov', 1024, 1024, 30, ':CodecSettings=Videoquality=.9 Profile=2');
-end
-
-
-
-
-if isfield(expInfo,'enablePowermate')
-    if expInfo.enablePowermate
-        options.secs=0.0001;
-        err=PsychHID('ReceiveReports',expInfo.powermateId,options);
-    end
 end
 
 
@@ -114,12 +104,20 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
         waitingForResponse = true;
         responseStartTime = GetSecs;
         
-        SetMouse(expInfo.center(1),expInfo.center(2),expInfo.curWindow)
+        %SetMouse(expInfo.center(1),expInfo.center(2),expInfo.curWindow)
         %Randomize the line orientation
         initLineOri  = 360*rand();
         thisOrient = initLineOri;
         totalShift = 0;
-        [xStart,yStart] = GetMouse(expInfo.curWindow);
+        
+        if expInfo.enablePowermate
+            [buttons, dialPos] = PsychPowerMate('Get', expInfo.powermateId);
+
+            xStart = -2*dialPos;
+        else %use the mouse
+            [xStart,yStart] = GetMouse(expInfo.curWindow);
+        end
+       
         y = 0;
         
         
@@ -137,39 +135,22 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
             end
             
             if expInfo.enablePowermate
-                err=PsychHID('ReceiveReports',expInfo.powermateId,options);
-                r=PsychHID('GiveMeReports',expInfo.powermateId);
-                if ~isempty(r)
-                    lastY = y(end);
-                    y =[cat(1,r(:).report)];
-                    y = typecast(uint8(y(:,2)),'int8');
-                    y = double(y);
-                    y = [lastY; y];
-                    t = [ 1000*([ lastT r(:).time]-r(1).time) ];
-                    lastT = r(end).time;
-                    
-                    report(iFrame).r = r;
-                    
-                    thisShift = .5*trapz(t,y);
-                    totalShift= totalShift-thisShift;
-                end
-                y = 0;
-                lastT = GetSecs;
-                
-                thisOrient =  initLineOri+totalShift;
+                [buttons, dialPos] = PsychPowerMate('Get', expInfo.powermateId);
+                x = -1.5*dialPos;
             else %use the mouse
                 [x,y,buttons] = GetMouse(expInfo.curWindow);
-                
-                timeNow = GetSecs;
-                if any(buttons) && timeNow>(responseStartTime+.2); %Ok got a response lets quit
-                    trialData.responseTime = timeNow;
-                    waitingForResponse = false;
-                    
-                else
-                    thisOrient = initLineOri+.25*(x-xStart);
-                end
-                
             end
+            
+            timeNow = GetSecs;
+            if any(buttons) && timeNow>(responseStartTime+.2); %Ok got a response lets quit
+                trialData.responseTime = timeNow;
+                waitingForResponse = false;
+                
+            else
+                thisOrient = initLineOri+.25*(x-xStart);
+            end
+            
+            
             
             
             %Rotation matrix;
