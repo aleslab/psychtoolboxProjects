@@ -87,10 +87,7 @@ if ~isfield(expInfo,'useFullScreen')
     end
 end
 
-%If we're running full screen lets hide the mouse cursor from view.
-if expInfo.useFullScreen == true
-    HideCursor(expInfo.screenNum);
-end
+
 
 
 %This is not always a reliable way to get screen width.  MEASURE IT!!
@@ -128,6 +125,11 @@ expInfo.bckgnd = 0.5;
 [expInfo.curWindow, expInfo.screenRect] = PsychImaging('OpenWindow', expInfo.screenNum, expInfo.bckgnd,windowRect,[],[], expInfo.stereoMode);
 expInfo.dontclear = 0; % 1 gives incremental drawing (does not clear buffer after flip)
 expInfo.modeInfo =Screen('Resolution', expInfo.screenNum);
+
+%If we're running full screen lets hide the mouse cursor from view.
+if expInfo.useFullScreen == true
+    HideCursor(expInfo.screenNum);
+end
 
 %Verify size calibration video mode:
 if isfield(expInfo,'sizeCalibInfo')
@@ -216,18 +218,10 @@ expInfo.deviceIndex = [];
 ListenChar(2);
 
 
-if isfield(expInfo,'enablePowermate') && expInfo.enablePowermate
-    dev = PsychHID('devices');
-    
-    for iDev = 1:length(dev)
-        
-        if  dev(iDev).vendorID== 1917 && dev(iDev).productID == 1040
-            expInfo.powermateId = iDev;
-            break;
-        end
-    end
+%If using the powermate find it's handle. 
+if expInfo.enablePowermate
+   expInfo.powermateId = PsychPowerMate('Open');
 end
-
 
 
 end
