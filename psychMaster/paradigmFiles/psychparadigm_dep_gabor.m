@@ -20,6 +20,7 @@ expInfo.instructions = ['Try and align the white line \n' ...
 %"function handle"
 conditionInfo(1).trialFun=@dep_gabor_trial;
 conditionInfo(1).giveFeedback = false;
+conditionInfo(1).powermateSpeed = 4;
 
 % %Condition definitions
 %Condition 1, lets set some defaults:
