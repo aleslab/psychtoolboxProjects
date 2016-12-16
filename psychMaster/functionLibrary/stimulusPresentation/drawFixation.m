@@ -7,7 +7,9 @@ function [expInfo] = drawFixation(expInfo, fixationInfo)
 %
 % ADD INSTRUCTIONS FOR DIFFERENT FIXATION OPTIONS HERE
 %
-
+% type: 'cross', 'square','noiseFrame'
+% color: 
+% lineWidthPix: 
 
 nElements = length(fixationInfo);
 
@@ -32,12 +34,12 @@ end
 function [expInfo] = drawFixationMono(expInfo,fixationInfo)
 
 
-if  ~isfield(fixationInfo,'fixLineWidthPix') || isempty(fixationInfo.fixLineWidthPix)
-    fixationInfo.fixLineWidthPix = 1; %the line width of the fixation cross
+if  ~isfield(fixationInfo,'lineWidthPix') || isempty(fixationInfo.lineWidthPix)
+    fixationInfo.lineWidthPix = 1; %the line width of the fixation cross
 end
 
-if ~isfield(fixationInfo,'fixColor') || isempty(fixationInfo.fixColor)
-    fixationInfo.fixColor = 0; %the color of the fixation cross.
+if ~isfield(fixationInfo,'color') || isempty(fixationInfo.color)
+    fixationInfo.color = 0; %the color of the fixation cross.
 end
 
 %Switchyard to determine what to draw.
@@ -53,8 +55,8 @@ switch lower(fixationInfo.type)
         fixCrossPix    = expInfo.ppd*fixationInfo.size;
         fixCoords = [-fixCrossPix fixCrossPix 0 0;... %fixation cross x coordinates
             0 0 -fixCrossPix fixCrossPix]; %fixation cross y coordinates
-        Screen('DrawLines', expInfo.curWindow, fixCoords, fixationInfo.fixLineWidthPix, ...
-            fixationInfo.fixColor, expInfo.center, 0);
+        Screen('DrawLines', expInfo.curWindow, fixCoords, fixationInfo.lineWidthPix, ...
+            fixationInfo.color, expInfo.center, 0);
         
     case 'square'
         %Consider changing this code to a framerect instead of lines for
@@ -73,8 +75,8 @@ switch lower(fixationInfo.type)
         boxYcoords = [PointY1 PointY2 PointY1 PointY2 PointY1 PointY1 PointY2 PointY2];
         boxCoords = [boxXcoords; boxYcoords];
         
-        Screen('DrawLines', expInfo.curWindow, boxCoords, fixationInfo.fixLineWidthPix, ...
-            fixationInfo.fixColor);
+        Screen('DrawLines', expInfo.curWindow, boxCoords, fixationInfo.lineWidthPix, ...
+            fixationInfo.color);
         
         %% apeture drawing
         
