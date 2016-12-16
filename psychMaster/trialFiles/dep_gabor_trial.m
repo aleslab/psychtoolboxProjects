@@ -46,7 +46,7 @@ orient = orient + randn*conditionInfo.orientationSigma;
 %Some parameters for the response line
 lineWidth = 4;
 lineLength = expInfo.ppd*3; %Line length in pixels
-lineColor = [ 1];
+lineColor = [1];
 
 
 if isfield(expInfo,'writeMovie') && expInfo.writeMovie
