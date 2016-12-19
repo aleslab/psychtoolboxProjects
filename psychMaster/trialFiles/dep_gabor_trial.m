@@ -103,8 +103,10 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
     function getParticipantResponse()
         waitingForResponse = true;
         responseStartTime = GetSecs;
+        lastFlipTime = responseStartTime;
+        pollingInterval = 2*expInfo.ifi;
         
-        %SetMouse(expInfo.center(1),expInfo.center(2),expInfo.curWindow)
+        SetMouse(expInfo.center(1),expInfo.center(2),expInfo.curWindow)
         %Randomize the line orientation
         initLineOri  = 360*rand();
         thisOrient = initLineOri;
@@ -120,6 +122,7 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
         end
        
         y = 0;
+        x = xStart;
         
         %Store every the response angles. 
         nSamplesInit = round(15/expInfo.ifi)
@@ -143,13 +146,14 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
                 lastDialPos = dialPos;
                 [pMateButton, dialPos] = PsychPowerMate('Get', expInfo.powermateId);
                  [~,~,mouseButtons] = GetMouse(expInfo.curWindow);
-                 
+             
                  buttons = [pMateButton mouseButtons];
-                 dialVelocity = dialPos-lastDialPos;
-                 displacement = max(conditionInfo.powermateSpeed*dialVelocity,...
-                     conditionInfo.powermateAccel*dialVelocity^2)
-                 
-                 x = x+displacement;
+                 dialSpeed = abs(dialPos-lastDialPos);
+                 dialDir   = sign(dialPos-lastDialPos);
+                 displacement = max(conditionInfo.powermateSpeed*dialSpeed,...
+                     conditionInfo.powermateAccel*dialSpeed^1.85);
+                  
+                 x = x-dialDir*displacement;
                  
                  
                  
@@ -163,6 +167,8 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
                 waitingForResponse = false;
                 
             else
+                
+                
                 thisOrient = initLineOri+.25*(x-xStart);
             end
             
@@ -175,12 +181,12 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
             xy = rotMtx'*initXy;
             
             Screen('DrawLines', expInfo.curWindow, xy,lineWidth,lineColor,expInfo.center,1);
-            
-            thisFlipTime = Screen('Flip', expInfo.curWindow);
+       
+            thisFlipTime = Screen('Flip', expInfo.curWindow,lastFlipTime+pollingInterval+expInfo.ifi/2);
             trialData.allRespData(responseIdx,1) = thisOrient; 
-            trialData.allRespData(responseIdx,1) = thisFlipTime; 
+            trialData.allRespData(responseIdx,2) = thisFlipTime; 
             responseIdx = responseIdx+1;
-            
+            lastFlipTime = thisFlipTime;
         end
         
         trialData.respStartTime = responseStartTime;
