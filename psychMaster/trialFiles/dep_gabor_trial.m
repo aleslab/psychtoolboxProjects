@@ -113,7 +113,7 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
         if expInfo.enablePowermate
             [buttons, dialPos] = PsychPowerMate('Get', expInfo.powermateId);
 
-            xStart = conditionInfo.powermateSpeed*dialPos;
+            xStart = dialPos;
             
         else %use the mouse
             [xStart,yStart] = GetMouse(expInfo.curWindow);
@@ -140,12 +140,19 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
             end
             
             if expInfo.enablePowermate
+                lastDialPos = dialPos;
                 [pMateButton, dialPos] = PsychPowerMate('Get', expInfo.powermateId);
                  [~,~,mouseButtons] = GetMouse(expInfo.curWindow);
                  
                  buttons = [pMateButton mouseButtons];
+                 dialVelocity = dialPos-lastDialPos;
+                 displacement = max(conditionInfo.powermateSpeed*dialVelocity,...
+                     conditionInfo.powermateAccel*dialVelocity^2)
                  
-                 x = -conditionInfo.powermateSpeed*dialPos;
+                 x = x+displacement;
+                 
+                 
+                 
             else %use the mouse
                 [x,y,buttons] = GetMouse(expInfo.curWindow);
             end
