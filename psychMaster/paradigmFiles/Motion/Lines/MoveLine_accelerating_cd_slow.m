@@ -1,13 +1,13 @@
-function [conditionInfo, expInfo] = MoveLine_real_cd_towards(expInfo)
+function [conditionInfo, expInfo] = MoveLine_accelerating_cd_slow(expInfo)
 
 %Paradigm file for the cd stimulus. One vertical line moving in each eye.
 %paradigmName is what will be prepended to data files
 expInfo = moveLineDefaultSettings(expInfo);
 
-expInfo.paradigmName = 'MoveLine_real_cd_towards';
+expInfo.paradigmName = 'MoveLine_accelerating_cd_slow';
 %% conditions
-firstVelocities = [-20:2.5:-5 -20:2.5:-5];
-condStimTypes = cat(2, repmat( {'cd'},1,7) , repmat( {'lateralCd'},1,7));
+firstVelocities = [-20:2.5:-5];
+condStimTypes = repmat( {'cd'},1,7);
 
 for iCond = 1: length(firstVelocities);
 %This defines what function to call to draw the condition
@@ -27,6 +27,7 @@ conditionInfo(iCond).velocityCmPerSecSection2 = (-40)-(conditionInfo(iCond).velo
 conditionInfo(iCond).isNullCorrect = false;
 conditionInfo(iCond).startPos = 0;
 conditionInfo(iCond).nReps = 10; %number of repeats
+conditionInfo(iCond).intervalBeep = true;
 conditionInfo(iCond).giveFeedback = false;
 conditionInfo(iCond).depthStart = 10; %5cm behind the plane of the screen
 conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];

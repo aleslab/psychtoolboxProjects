@@ -1,10 +1,10 @@
-function [conditionInfo, expInfo] = MoveLine_real_looming_towards(expInfo)
+function [conditionInfo, expInfo] = MoveLine_accelerating_looming_slow(expInfo)
 
-%Paradigm file for the looming stimulus. Two norizontal lines moving in each eye.
+%Paradigm file for the looming stimulus. Two horizontal lines moving in each eye.
 %paradigmName is what will be prepended to data files
 expInfo = moveLineDefaultSettings(expInfo);
 
-expInfo.paradigmName = 'MoveLine_real_looming_towards';
+expInfo.paradigmName = 'MoveLine_accelerating_looming_slow';
 
 %% conditions
 firstVelocities = [-20:2.5:-5];
@@ -29,6 +29,7 @@ conditionInfo(iCond).isNullCorrect = false;
 conditionInfo(iCond).horizontalOneStartPos = 1; %a y coordinate. the others are x. 
 conditionInfo(iCond).horizontalTwoStartPos = -1;
 conditionInfo(iCond).nReps = 10; %number of repeats
+conditionInfo(iCond).intervalBeep = true;
 conditionInfo(iCond).giveFeedback = false;
 conditionInfo(iCond).depthStart = 10; %5cm behind the plane of the screen
 conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];
