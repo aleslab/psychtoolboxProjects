@@ -121,12 +121,16 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
        
         y = 0;
         
+        %Store every the response angles. 
+        nSamplesInit = round(15/expInfo.ifi)
+        trialData.allRespData = NaN(nSamplesInit,2);
         
         %Rotation matrix;
         rotMtx = [cosd(initLineOri) -sind(initLineOri);...
             sind(initLineOri) cosd(initLineOri)];
         initXy = [0 0; lineLength -lineLength];
         xy = rotMtx'*initXy;
+        responseIdx = 1;
         
         while waitingForResponse
             
@@ -165,12 +169,14 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
             
             Screen('DrawLines', expInfo.curWindow, xy,lineWidth,lineColor,expInfo.center,1);
             
-            Screen('Flip', expInfo.curWindow);
-            
-            
+            thisFlipTime = Screen('Flip', expInfo.curWindow);
+            trialData.allRespData(responseIdx,1) = thisOrient; 
+            trialData.allRespData(responseIdx,1) = thisFlipTime; 
+            responseIdx = responseIdx+1;
             
         end
         
+        trialData.respStartTime = responseStartTime;
         trialData.respOri = wrapTo180(thisOrient);
     end
 end
