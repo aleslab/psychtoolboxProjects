@@ -42,6 +42,13 @@ conditionInfo(1).orientationSigma = 10;
 %Implement arbitrary forward models. 
 %conditionInfo(1).forwardModel = [ 1 0 ]; %Forward model
 conditionInfo(1).label = 'Contrast: 0.10';
+
+conditionInfo(2) = conditionInfo(1);
+conditionInfo(2).orientationSigma = 5;
+conditionInfo(2).contrast = 0.10 ;
+conditionInfo(2).label = 'Contrast: 0.10';
+
+
 end
 
 
