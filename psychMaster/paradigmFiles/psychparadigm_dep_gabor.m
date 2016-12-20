@@ -39,7 +39,7 @@ conditionInfo(1).stimRadiusDeg     =   8;    %stimulus size in degree;
 
 conditionInfo(1).contrast = 0.05;
 conditionInfo(1).noiseSigma = .15;
-conditionInfo(1).orientationSigma = 10; %standard dev of the stim orientation change  
+conditionInfo(1).orientationSigma = 11.552; %standard dev of the stim orientation change  
 %Implement arbitrary forward models. 
 %conditionInfo(1).forwardModel = [ 1 0 ]; %Forward model
 conditionInfo(1).label = 'Contrast: 0.05';
