@@ -29,7 +29,7 @@ conditionInfo(iCond).startPos = 0;
 conditionInfo(iCond).nReps = 10; %number of repeats
 conditionInfo(iCond).intervalBeep = true;
 conditionInfo(iCond).giveFeedback = false;
-conditionInfo(iCond).depthStart = 10; %5cm behind the plane of the screen
+conditionInfo(iCond).depthStart = 10; 
 conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];
 
 nullCondition = conditionInfo(iCond);
