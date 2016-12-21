@@ -121,6 +121,7 @@ if ~exist('sessionInfo','var') || isempty(sessionInfo)
     sessionInfo.psychMasterVer = psychMasterVer;
     [~,ptbVerStruct]=PsychtoolboxVersion;
     sessionInfo.ptbVersion = ptbVerStruct;
+    rng('default'); %Need to reset the rng before shuffling in case the legacy RNG has activated before we started psychMaster
     rng('shuffle');
     sessionInfo.randomSeed = rng;
 end
