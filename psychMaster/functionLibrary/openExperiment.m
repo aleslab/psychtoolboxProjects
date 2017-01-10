@@ -171,6 +171,7 @@ expInfo.center = [expInfo.screenRect(3) expInfo.screenRect(4)]/2;   	% coordinat
 [pixelWidth, pixelHeight]=Screen('WindowSize', expInfo.screenNum);
 
 
+expInfo.screenSizePixels = [pixelWidth, pixelHeight];
 % determine pixels per degree
 % (pix/screen) * ... (screen/rad) * ... rad/deg
 expInfo.ppd = pi * pixelWidth / atan(expInfo.monitorWidth/expInfo.viewingDistance/2) / 360;    % pixels per degree

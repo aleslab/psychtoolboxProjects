@@ -15,9 +15,9 @@ function [trialData] = driftSineGratingTrial(expInfo, conditionInfo)
 trialData.validTrial = false;
 trialData.abortNow   = false;
 
-fixationInfo.fixationType = 'cross';
-fixationInfo.responseSquare = 0;
-fixationInfo.apetureType = 'frame';
+fixationInfo(1).type    = 'cross';
+fixationInfo(1).fixLineWidthPix = 1;
+fixationInfo(2).type = 'noiseFrame';
 expInfo = drawFixation(expInfo, fixationInfo);
 
 vbl=Screen('Flip', expInfo.curWindow);
