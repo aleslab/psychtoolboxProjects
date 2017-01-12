@@ -640,10 +640,12 @@ end;
                         'center', 'center', 1);
                 else %if a stereo mode blank out everything but the noise frame.
                     
+                    %look for a noise frame element in the fixation 
                     frameIndex = find(strcmpi( {expInfo.fixationInfo.type},'noiseframe'),1,'first');
                     
-                    if isempty(frameIndex)...
-                            || ~isfield(expInfo.fixationInfo(frameIndex),'size') ...
+                    if isempty(frameIndex)
+                        frameSize = 0;
+                    elseif  ~isfield(expInfo.fixationInfo(frameIndex),'size') ...
                             || isempty(expInfo.fixationInfo(frameIndex).size)
                         frameSize = 100;
                     else
@@ -682,10 +684,12 @@ end;
                         'center', 'center', feedbackColor);
                 else %if a stereo mode blank out everything but the noise frame. 
                     
+                    %See if we are drawing a noise frame;
                     frameIndex = find(strcmpi( {expInfo.fixationInfo.type},'noiseframe'),1,'first');
 
-                    if isempty(frameIndex)...
-                           || ~isfield(expInfo.fixationInfo(frameIndex),'size') ...
+                    if isempty(frameIndex)
+                        frameSize = 0;
+                    elseif ~isfield(expInfo.fixationInfo(frameIndex),'size') ...
                            || isempty(expInfo.fixationInfo(frameIndex).size)
                         frameSize = 100;
                     else
