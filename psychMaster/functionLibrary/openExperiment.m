@@ -62,6 +62,7 @@ end
 if expInfo.stereoMode ~=0
     expInfo.fixationInfo(1).type = 'cross';
     expInfo.fixationInfo(2).type = 'noiseFrame';
+    expInfo.fixationInfo(2).size = 100;
 else
     expInfo.fixationInfo(1).type = '';
 end

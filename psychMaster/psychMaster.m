@@ -633,19 +633,33 @@ end;
                 
                 expInfo = drawFixation(expInfo, expInfo.fixationInfo);
                 
-                if expInfo.stereoMode == 4;
-                    expInfo.backRect = [expInfo.fixrectSize, expInfo.fixrectSize, (expInfo.screenSizePixels(1)./2) - expInfo.fixrectSize, expInfo.screenSizePixels(2) - expInfo.fixrectSize];
+                if expInfo.stereoMode == 0;
+                    expInfo.backRect = [0, 0, expInfo.screenSizePixels(1), expInfo.screenSizePixels(2)];
+                    Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
+                    DrawFormattedTextStereo(expInfo.curWindow, 'Invalid trial',...
+                        'center', 'center', 1);
+                else %if a stereo mode blank out everything but the noise frame.
+                    
+                    frameIndex = find(strcmpi( {expInfo.fixationInfo.type},'noiseframe'),1,'first');
+                    
+                    if isempty(frameIndex)...
+                            || ~isfield(expInfo.fixationInfo(frameIndex),'size') ...
+                            || isempty(expInfo.fixationInfo(frameIndex).size)
+                        frameSize = 100;
+                    else
+                        frameSize = expInfo.fixationInfo(frameIndex).size;
+                    end
+                    
+                    expInfo.backRect = [frameSize, ...
+                        frameSize, ...
+                        (expInfo.screenSizePixels(1)./2) - frameSize, ...
+                        expInfo.screenSizePixels(2) - frameSize];
                     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
                     Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
                     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
                     Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
-                    DrawFormattedTextStereo(expInfo.curWindow, 'Invalid trial','center', 'center', 1);
-                    
-                else
-                    expInfo.backRect = [0, 0, expInfo.screenSizePixels(1), expInfo.screenSizePixels(2)];
-                    Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
-                    DrawFormattedTextStereo(expInfo.curWindow, 'Invalid trial','center', 'center', 1);
-                    
+                    DrawFormattedTextStereo(expInfo.curWindow, 'Invalid trial',...
+                        'center', 'center', 1);
                 end
                 
                 Screen('Flip', expInfo.curWindow);
@@ -661,17 +675,30 @@ end;
                 
                 expInfo = drawFixation(expInfo, expInfo.fixationInfo);
                 
-                if expInfo.stereoMode == 4;
-                    expInfo.backRect = [expInfo.fixrectSize, expInfo.fixrectSize, (expInfo.screenSizePixels(1)./2) - expInfo.fixrectSize, expInfo.screenSizePixels(2) - expInfo.fixrectSize];
-                    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-                    Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
-                    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
+                if expInfo.stereoMode == 0;
+                    expInfo.backRect = [0, 0, expInfo.screenSizePixels(1), expInfo.screenSizePixels(2)];
                     Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
                     DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
                         'center', 'center', feedbackColor);
+                else %if a stereo mode blank out everything but the noise frame. 
                     
-                else
-                    expInfo.backRect = [0, 0, expInfo.screenSizePixels(1), expInfo.screenSizePixels(2)];
+                    frameIndex = find(strcmpi( {expInfo.fixationInfo.type},'noiseframe'),1,'first');
+
+                    if isempty(frameIndex)...
+                           || ~isfield(expInfo.fixationInfo(frameIndex),'size') ...
+                           || isempty(expInfo.fixationInfo(frameIndex).size)
+                        frameSize = 100;
+                    else
+                        frameSize = expInfo.fixationInfo(frameIndex).size;
+                    end
+                    
+                    expInfo.backRect = [frameSize, ...
+                        frameSize, ...
+                        (expInfo.screenSizePixels(1)./2) - frameSize, ...
+                        expInfo.screenSizePixels(2) - frameSize];
+                    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+                    Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
+                    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
                     Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
                     DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
                         'center', 'center', feedbackColor);
