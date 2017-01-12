@@ -6,4 +6,5 @@ function closeExperiment()
 Priority(0);
 RestoreCluts;
 Screen('CloseAll');
+PsychPortAudio('Close');
 ListenChar(0);

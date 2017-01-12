@@ -5,7 +5,7 @@ function [conditionInfo, screenInfo] = psychParadigm_exampleExperiment(screenInf
 
 %paradigmName is what will be prepended to data files
 screenInfo.paradigmName = 'noiseDetect';
-
+screenInfo.randomizationType = 'blocked';
 %Let's use kbQueue's because they have high performance.
 screenInfo.useKbQueue = true;
 
@@ -43,12 +43,12 @@ conditionInfo(1).stimRadiusCm   = 1;    %stimulus size in cm;
 
 conditionInfo(2) = conditionInfo(1);
 conditionInfo(2).targetAmp = .10;
-conditionInfo(2).nReps = 1;
+conditionInfo(2).nReps = 4;
 
 conditionInfo(3) = conditionInfo(1);
 conditionInfo(3).targetAmp = .30;
-conditionInfo(3).nReps = 1;
+conditionInfo(3).nReps = 4;
 
 conditionInfo(4) = conditionInfo(1);
 conditionInfo(4).targetAmp = .80;
-conditionInfo(4).nReps = 10;
+conditionInfo(4).nReps = 4;

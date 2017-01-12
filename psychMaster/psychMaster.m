@@ -56,7 +56,21 @@ function [] = psychMaster(sessionInfo)
 %   expInfo defines experiment wide settings. Mostly things that are
 %   for PsychToolbox.  But also other things that are aren't specific to a
 %   specific condition.  Mostly these are things that may be needed outside
-%   the "trialFun".
+%   the "trialFun". See help openExperiment for more information.
+%
+%   Notable expInfo fields:
+%   viewingDistance =  [57] The viewing distance in cm. 
+%     
+%   instructions    = [''] A message to display before the start of
+%                      experiment
+%
+%   randomizationType = ['random'] a short string that sets how trials are
+%                      randomized it can take the following values:
+%              'random' - fully randomize all conditions
+%              'blocked' - repeatedly present a condition nReps time than
+%                          switch conditions. But present conditions in random order.
+%   
+%   stereoMode = [0] A number selecting a PTB stereomode. 
 %
 %   psychMaster will loop over the different conditions in the paradigm
 %   file and run the conditionInfo.trialFun function to render the
@@ -75,9 +89,26 @@ function [] = psychMaster(sessionInfo)
 %Initial setup
 
 psychMasterVer = '0.20';
-%Save matlab output to file:
+
 thisFile = mfilename('fullpath');
 [thisDir, ~, ~] = fileparts(thisFile);
+
+
+%Check if path is correct, if not try and fix it. 
+if ~checkPath()
+    disp('<><><><><><> PSYCH MASTER <><><><><><><>')
+    setupPath();
+    if ~checkPath()
+        disp('PATH NOT CORRECT!  Attempts to fix failed!  ABORTING!')
+        disp('This problem suggests that files have been moved or cannot be found.')
+        disp('You will have to setup your path manually or fix the broken structure.')
+        return;
+    end
+    disp('Path was not setup correctly, but we auto fixed it.  In the future  check your path setup')
+end
+
+
+%Save matlab output to file:
 diaryName = fullfile(thisDir,['tmp_MatlabLog_' datestr(now,'yyyymmdd_HHMMSS') '.txt' ]);
 diary(diaryName);
 
@@ -90,6 +121,7 @@ if ~exist('sessionInfo','var') || isempty(sessionInfo)
     sessionInfo.psychMasterVer = psychMasterVer;
     [~,ptbVerStruct]=PsychtoolboxVersion;
     sessionInfo.ptbVersion = ptbVerStruct;
+    rng('default'); %Need to reset the rng before shuffling in case the legacy RNG has activated before we started psychMaster
     rng('shuffle');
     sessionInfo.randomSeed = rng;
 end
@@ -214,17 +246,13 @@ try
     expInfo = openExperiment(expInfo);
     
     
-    %Show instructions and wait for a keypress.
-    DrawFormattedTextStereo(expInfo.curWindow, expInfo.instructions,'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
-    Screen('Flip', expInfo.curWindow);
-    KbStrokeWait();
-    
-    
+    %Initialize experiment data, this makes sure the experiment data
+    %scope spans all the subfunctions.
     experimentData = struct();
-    
     %This function handles everything for the experimental trials.
     mainExperimentLoop();
     
+    %If 
     while sessionInfo.returnToGui
         
         [sessionInfo,expInfo,conditionInfo] = pmGui(sessionInfo,expInfo,sessionInfo.backupConditionInfo);
@@ -237,7 +265,9 @@ try
             return;
         end
         
-        
+        %Initialize experiment data, this makes sure the experiment data
+        %scope spans all the subfunctions.
+        experimentData = struct();
         %This function handles everything for the experimental trials.
         mainExperimentLoop();
     end
@@ -259,9 +289,8 @@ catch
     
     %JMA: Fix this to gracefully release KbQueue's on error
     %Need to do the following but we may not have expInfo in the event of an error.
-    %    if expInfo.useKbQueue
-    %        KbQueueRelease(expInfo.deviceIndex);
-    %    end
+    %So we will just call to release all queue's that exist.
+    KbQueueRelease();
     
     disp('caught')
     errorMsg = lasterror;
@@ -276,7 +305,9 @@ catch
 end;
 
 
-%pulled this into it's own nested function in order to clean up the main
+%This is the main guts of psychMaster. It handles all the experimental
+%control. 
+%It is in it's own nested function in order to clean up the main
 %code and to enable easier GUI control of trials
     function mainExperimentLoop()
         
@@ -290,32 +321,28 @@ end;
             expInfo.pauseInfo = 'Paused';
         end
         
-        %lets enumerate the total number of trials we need.
-        %This type of loop construction where the index is incremented by
-        %the loop is STRONGLY advised against. But I'm lazy and this works
-        %Much more elegant and error-proof ways.
-        idx = 1;
-        for iCond = 1:nConditions,
-            perCondData(iCond).correctResponse = [];
-            
-            
-            for iRep = 1:conditionInfo(iCond).nReps,
-                conditionList(idx) = iCond;
-                idx = idx+1;
-            end
-            
-        end
         
-        %Now lets do a quick randomization. This is an old way to accomplish a
-        %permutation
-        [~,idx]=sort(rand(size(conditionList)));
-        conditionList = conditionList(idx);
+       %Determine trial randomization
+       %Should rename conditionList to trialList to make it more clearly
+       %explanatory and consistent with makeTrialList();
+       conditionList = makeTrialList(expInfo,conditionInfo);
         
         %Let's start the expeirment
         %we're going to use a while loop so we can easily add trials for
         %invalid trials.
         
+        %If returnToGui is set that means it's a test trial so set we don't need to show the instructions
+        %Only show the instructions if we've run a complete experiment. 
+        if ~sessionInfo.returnToGui
+            %Show instructions and wait for a keypress.
+            DrawFormattedTextStereo(expInfo.curWindow, expInfo.instructions,'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
+            Screen('Flip', expInfo.curWindow);
+            KbStrokeWait();
+        end
+        
+       
         iTrial = 1;
+ 
         while iTrial <=length(conditionList)
             
             validTrialList(iTrial)= true;  %initialize this index variable to keep track of bad/aborted trials
@@ -325,6 +352,22 @@ end;
             
             thisCond = conditionList(iTrial);
             
+            if strcmpi(expInfo.randomizationType,'blocked')
+                %In the block design lets put a message and
+                %pause when blocks change
+                if iTrial >1 && thisCond ~= conditionList(iTrial-1)
+                    
+                    %In the future add code here to enable custom block
+                    %messages
+                    blockMessage = 'Block Completed. Press any key to start next block';
+                    DrawFormattedTextStereo(expInfo.curWindow, blockMessage,...
+                        'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
+                    Screen('Flip', expInfo.curWindow);
+                    KbStrokeWait();
+                    
+                end
+            end
+            
             %decide how to display trial depending on what type of trial it is.
             switch lower(conditionInfo(thisCond).type)
                 %generic trials just fire the trial function. Everything is
@@ -333,8 +376,14 @@ end;
                     %ISI happens before a trial starts, this isn't a super-accurate way
                     %to create an ISI, it makes an ISI at LEAST this big.
                     WaitSecs(conditionInfo(thisCond).iti);
+
                     
                     [trialData] = conditionInfo(thisCond).trialFun(expInfo,conditionInfo(thisCond));
+                        
+                    %Now validate that this structure
+                    %This checks for fields needed by the rest of the code
+                    %if they don't exist they're given default values
+                    trialData = validateTrialData(trialData);
                     
                     
                     %Here we'll add the response collection
@@ -407,6 +456,7 @@ end;
                     end
                     
                     [trialData.firstCond] = conditionInfo(thisCond).trialFun(expInfo,firstCond);
+                   
                     WaitSecs(conditionInfo(thisCond).iti);
                     
                     %option to make a beep before the second interval
@@ -426,6 +476,12 @@ end;
                     end
                     
                     [trialData.secondCond] = conditionInfo(thisCond).trialFun(expInfo,secondCond);
+                    
+                    %Now validate that this structure
+                    %This checks for fields needed by the rest of the code
+                    %if they don't exist they're given default values
+                    trialData = validateTrialData(trialData);
+                    
                     
                     fixationInfo.fixationType = 'cross';
                     fixationInfo.responseSquare = 1;
@@ -491,9 +547,15 @@ end;
                             trialData.feedbackMsg = 'Incorrect';
                         end
                     end
+                    
                 case 'directionreport'
                     
                     [trialData] = conditionInfo(thisCond).trialFun(expInfo,conditionInfo(thisCond));
+                    %Now validate that this structure
+                    %This checks for fields needed by the rest of the code
+                    %if they don't exist they're given default values
+                    trialData = validateTrialData(trialData);
+                    
                     
                     fixationInfo.fixationType = 'cross';
                     fixationInfo.responseSquare = 1;
@@ -564,8 +626,14 @@ end;
                     break;
                 end
                 
-                %Should add a message to the subject that they were too slow.
-                conditionList(end+1) = conditionList(iTrial);
+                %If the structure is blocked add a trial to the current
+                %block.  %JMA: TEST THIS CAREFULLY. Not full vetted
+                if strcmpi(expInfo.randomizationType,'blocked')
+                    thisCond = conditionList(iTrial);
+                    conditionList(iTrial+1:end+1) =[ thisCond conditionList(iTrial+1:end)];
+                else %For other trial randomizations just add the current condition to the end.                   
+                    conditionList(end+1) = conditionList(iTrial);
+                end
                 validTrialList(iTrial) = false;
                 experimentData(iTrial).validTrial = false;
                 
@@ -650,7 +718,44 @@ end;
     end
 
 
+%Check that expected functions are in the path.
+%This is just a quick and dirty check of a couple of functions
+    function pathIsCorrect = checkPath()
+        %Determine if the path is setup correctly by looking for a few key files
+        %Add more files here as needed
+        requiredFunctionList = { 'pmGui' 'openExperiment' };
+        nFunctions = length(requiredFunctionList);
+        
+        pathIsCorrect = true;
+        for iFunction = 1:nFunctions
+            
+            if ~exist(requiredFunctionList{iFunction},'file')
+                pathIsCorrect = false;
+                break;
+            end
+        end
+        
+    end
 
+    function setupPath()
+        
+        
+        %find where this function is being called from. 
+        thisFile = mfilename('fullpath');
+        [thisDir, ~, ~] = fileparts(thisFile);
+        
+        %For now just grab this and all subdirectories
+        newPath2Add = genpath(thisDir);
+
+        %Note: think about adding some code to check for path issues here
+        
+        %Add them to the path.  
+        addpath(newPath2Add);
+        
+    end
+
+
+%This function handles saving everything about an experiment. 
     function saveResults()
         %This block saves information for the session.
         
@@ -711,5 +816,7 @@ end;
         
         delete(diaryName);
     end
+
+
 
 end

@@ -30,7 +30,7 @@ function expInfo = openExperiment( expInfo)
 %that stuff.  But has implications for anything that calls this function.
 %THerefore, I think the nuclear clear all should be elsewhere and carefully
 %considered/tested.
-%clear PsychHID;
+clear PsychHID;
 
 %
 % This is a line that is easily skipped/missed but is important
@@ -41,6 +41,7 @@ PsychDefaultSetup(2)
 
 
 defaultWindowRect = [0 0 720 720];
+
 
 if nargin==0 || isempty(expInfo)
     expInfo = struct();
@@ -61,6 +62,11 @@ if ~isfield(expInfo,'viewingDistance')
     expInfo.viewingDistance = 57;
 end
 
+%Default fully randomize everything
+if ~isfield(expInfo,'randomizationType')
+    expInfo.randomizationType = 'random';
+end
+
 %Default to testing in a small window
 if ~isfield(expInfo,'useFullScreen')
     if expInfo.screenNum >0
@@ -70,6 +76,10 @@ if ~isfield(expInfo,'useFullScreen')
     end
 end
 
+%If we're running full screen lets hide the mouse cursor from view.
+if expInfo.useFullScreen == true
+    HideCursor(expInfo.screenNum);
+end
 
 
 %This is not always a reliable way to get screen width.  MEASURE IT!!
@@ -185,7 +195,8 @@ Screen('BlendFunction', expInfo.curWindow,  GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
 %Setup some defaults for keyboard interactions. Can be overridden by your
 %experiment.
 %Turn off KbQueue's because they can be fragile on untested systems.
-%If you need high performance responses turn them on.
+%If you need high performance responses turn them on. But be careful and 
+%read the help and the help for ListenChar
 expInfo.useKbQueue = false;
 KbName('UnifyKeyNames');
 expInfo.deviceIndex = [];
