@@ -21,11 +21,6 @@ fixationInfo(2).type = 'noiseFrame';
 expInfo = drawFixation(expInfo, fixationInfo);
 
 vbl=Screen('Flip', expInfo.curWindow);
-Screen('close', expInfo.fixationTextures); %destroying all of the created
-%textures from drawFixation (the apeture frame). This is really important
-%because otherwise all of the textures that are created are stored, filling
-%the memory and eventually causing a huge number of flips to be missed --
-%giving horrible lag and performance issues.
 
 %the number of frames for each section of an interval
 nFramesPreStim = round(conditionInfo.preStimDuration/expInfo.ifi);
@@ -92,7 +87,6 @@ for iFrame = 1:nFramesPreStim
     expInfo = drawFixation(expInfo, fixationInfo);
     vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
     Screen('close', gratingTex);
-    Screen('close', expInfo.fixationTextures);
     trialData.flipTimes(frameIdx) = vbl;
     frameIdx = frameIdx+1;
     
@@ -111,7 +105,6 @@ for iFrame = 1:nFramesSection1
     expInfo = drawFixation(expInfo, fixationInfo);
     vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
     Screen('close', gratingTex);
-    Screen('close', expInfo.fixationTextures);
     trialData.flipTimes(frameIdx) = vbl;
     frameIdx = frameIdx+1;
     
@@ -136,7 +129,6 @@ for iFrame = 1:nFramesSection2
     expInfo = drawFixation(expInfo, fixationInfo);
     vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
     Screen('close', gratingTex);
-    Screen('close', expInfo.fixationTextures);
     trialData.flipTimes(frameIdx) = vbl;
     frameIdx = frameIdx+1;
     
@@ -149,8 +141,7 @@ end
 expInfo = drawFixation(expInfo, fixationInfo);
 
 Screen('Flip', expInfo.curWindow);
-Screen('close', gratingTex);
-Screen('close', expInfo.fixationTextures);
+%Screen('close', gratingTex);
 
 trialData.flipTimes(frameIdx) = vbl; %another way of keeping track of the
 %flip times and making sure that everything is performing as it should.
