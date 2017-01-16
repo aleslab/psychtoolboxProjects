@@ -64,11 +64,11 @@ switch lower(fixationInfo.type)
     case 'square'
         %Consider changing this code to a framerect instead of lines for
         %simplicity.
-        if ~isfield(fixationInfo,'size') || isempty(fixationInfo.size)
-            fixationInfo.size = 30/expInfo.ppd; %Default box size is 30 pixels for backwards compatability.
+        if ~isfield(fixationInfo,'boxSize') || isempty(fixationInfo.boxSize)
+            fixationInfo.boxSize = 30/expInfo.ppd; %Default box size is 30 pixels for backwards compatability.
         end
         
-        boxSizePix = expInfo.ppd*fixationInfo.size;
+        boxSizePix = expInfo.ppd*fixationInfo.boxSize;
         leftPointX = expInfo.center(1) - boxSizePix; %x centre is expInfo.center(1)
         rightPointX = expInfo.center(1) + boxSizePix;
         PointY1 = expInfo.center(2) + boxSizePix; %y centre is expInfo.center(2)
