@@ -634,7 +634,7 @@ end;
                 expInfo = drawFixation(expInfo, expInfo.fixationInfo);
                 
                 if expInfo.stereoMode == 0;
-                    expInfo.backRect = [0, 0, expInfo.screenSizePixels(1), expInfo.screenSizePixels(2)];
+                    expInfo.backRect = [0, 0, expInfo.windowSizePixels(1), expInfo.windowSizePixels(2)];
                     Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
                     DrawFormattedTextStereo(expInfo.curWindow, 'Invalid trial',...
                         'center', 'center', 1);
@@ -654,8 +654,10 @@ end;
                     
                     expInfo.backRect = [frameSize, ...
                         frameSize, ...
-                        (expInfo.screenSizePixels(1)./2) - frameSize, ...
-                        expInfo.screenSizePixels(2) - frameSize];
+                        expInfo.windowSizePixels(1) - frameSize, ...
+                        expInfo.windowSizePixels(2) - frameSize];
+                    
+                    backRect = [expInfo.backRect];
                     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
                     Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
                     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
@@ -678,7 +680,7 @@ end;
                 expInfo = drawFixation(expInfo, expInfo.fixationInfo);
                 
                 if expInfo.stereoMode == 0;
-                    expInfo.backRect = [0, 0, expInfo.screenSizePixels(1), expInfo.screenSizePixels(2)];
+                    expInfo.backRect = [0, 0, expInfo.windowSizePixels(1), expInfo.windowSizePixels(2)];
                     Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
                     DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
                         'center', 'center', feedbackColor);
@@ -698,8 +700,8 @@ end;
                     
                     expInfo.backRect = [frameSize, ...
                         frameSize, ...
-                        (expInfo.screenSizePixels(1)./2) - frameSize, ...
-                        expInfo.screenSizePixels(2) - frameSize];
+                        expInfo.windowSizePixels(1) - frameSize, ...
+                        expInfo.windowSizePixels(2) - frameSize];
                     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
                     Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
                     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);

@@ -95,7 +95,7 @@ end
 %This is not always a reliable way to get screen width.  MEASURE IT!!
 %But it's the best guess we can do.
 if ~isfield(expInfo,'monitorWidth')
-    [w, h]=Screen('DisplaySize',expInfo.screenNum)
+    [w, h]=Screen('DisplaySize',expInfo.screenNum);
     expInfo.monitorWidth = w/10; %Convert to cm from mm
 end
 
@@ -171,8 +171,6 @@ expInfo.center = [expInfo.screenRect(3) expInfo.screenRect(4)]/2;   	% coordinat
 
 [pixelWidth, pixelHeight]=Screen('WindowSize', expInfo.screenNum);
 
-
-expInfo.screenSizePixels = [pixelWidth, pixelHeight];
 % determine pixels per degree
 % (pix/screen) * ... (screen/rad) * ... rad/deg
 expInfo.ppd = pi * pixelWidth / atan(expInfo.monitorWidth/expInfo.viewingDistance/2) / 360;    % pixels per degree
@@ -180,6 +178,8 @@ expInfo.ppd = pi * pixelWidth / atan(expInfo.monitorWidth/expInfo.viewingDistanc
 % screenWidth (pixels) / screenWidth (cm)
 expInfo.pixPerCm = pixelWidth/expInfo.monitorWidth;
 
+
+expInfo.windowSizePixels = [windowRect(3), windowRect(4)];
 
 
 InitializePsychSound
