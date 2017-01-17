@@ -1,5 +1,6 @@
 function [conditionInfo,expInfo] = psychparadigm_dep_gabor(expInfo)
 expInfo.paradigmName = 'dependent';
+expInfo.randomizationType = 'blocked';
 
 % use kbQueue's as they have high performance
 expInfo.useKbQueue = false;
