@@ -178,20 +178,9 @@ expInfo.ppd = pi * pixelWidth / atan(expInfo.monitorWidth/expInfo.viewingDistanc
 % screenWidth (pixels) / screenWidth (cm)
 expInfo.pixPerCm = pixelWidth/expInfo.monitorWidth;
 
+[pixelWidthWin, pixelHeightWin] = Screen('WindowSize', expInfo.curWindow);
 
-if ~isfield(expInfo,'useFullScreen')
-    
-    expInfo.windowSizePixels = [windowRect(3), windowRect(4)];
-    
-elseif isfield(expInfo, 'useFullScreen') && expInfo.stereoMode ~=0
-    
-    expInfo.windowSizePixels = [(pixelWidth/2), pixelHeight];
-    
-else 
-    
-    expInfo.windowSizePixels = [pixelWidth, pixelHeight];
-    
-end
+    expInfo.windowSizePixels = [pixelWidthWin, pixelHeightWin];
 
 
 InitializePsychSound
