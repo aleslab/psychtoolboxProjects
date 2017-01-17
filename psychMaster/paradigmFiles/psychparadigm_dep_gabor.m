@@ -11,6 +11,8 @@ expInfo.viewingDistance = 57;
 
 
 
+
+
 %Lets add an experiment wide setting here:
 
 expInfo.instructions = ['Try and align the white line \n' ...
