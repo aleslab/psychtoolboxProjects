@@ -46,8 +46,8 @@ conditionInfo(1).orientationSigma = 11.552; %standard dev of the stim orientatio
 conditionInfo(1).label = 'Contrast: 0.05';
 
 conditionInfo(2) = conditionInfo(1);
-conditionInfo(2).contrast = 0.10 ;
-conditionInfo(2).label = 'Contrast: 0.10';
+conditionInfo(2).contrast = 0.20 ;
+conditionInfo(2).label = 'Contrast: 0.20';
 
 
 end
