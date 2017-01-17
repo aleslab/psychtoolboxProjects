@@ -179,7 +179,19 @@ expInfo.ppd = pi * pixelWidth / atan(expInfo.monitorWidth/expInfo.viewingDistanc
 expInfo.pixPerCm = pixelWidth/expInfo.monitorWidth;
 
 
-expInfo.windowSizePixels = [windowRect(3), windowRect(4)];
+if ~isfield(expInfo,'useFullScreen')
+    
+    expInfo.windowSizePixels = [windowRect(3), windowRect(4)];
+    
+elseif isfield(expInfo, 'useFullScreen') && expInfo.stereoMode ~=0
+    
+    expInfo.windowSizePixels = [(pixelWidth/2), pixelHeight];
+    
+else 
+    
+    expInfo.windowSizePixels = [pixelWidth, pixelHeight];
+    
+end
 
 
 InitializePsychSound
@@ -208,7 +220,7 @@ expInfo.windowInfo = Screen('GetWindowInfo', expInfo.curWindow);
 %Setup some defaults for keyboard interactions. Can be overridden by your
 %experiment.
 %Turn off KbQueue's because they can be fragile on untested systems.
-%If you need high performance responses turn them on. But be careful and 
+%If you need high performance responses turn them on. But be careful and
 %read the help and the help for ListenChar
 expInfo.useKbQueue = false;
 KbName('UnifyKeyNames');
