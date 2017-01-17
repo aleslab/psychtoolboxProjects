@@ -1,5 +1,7 @@
 function [conditionInfo,expInfo] = psychparadigm_serial_gabor(expInfo)
 expInfo.paradigmName = 'whitneyReplication';
+expInfo.randomizationType = 'blocked';
+
 
 % use kbQueue's as they have high performance
 expInfo.useKbQueue = false;
