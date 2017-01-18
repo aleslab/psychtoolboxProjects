@@ -283,8 +283,8 @@ try
     
     
     saveResults();
+    closeExperiment();  
     cleanupPsychMaster();
-    closeExperiment();
     
     
     
@@ -297,7 +297,6 @@ catch exception
     
    
 
-    closeExperiment;
     
     
     if exist('experimentData','var') && ~isempty(experimentData)
@@ -308,6 +307,8 @@ catch exception
         saveResults();
     end
     
+    
+    closeExperiment;
     cleanupPsychMaster();
     disp('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
     disp('!!!!!   Experiment Shutdown Due to Error          !!!!!!!!')
@@ -756,8 +757,14 @@ end;
     function saveResults()
         %This block saves information for the session.
         
+        %Get the final state of the window to know if anything changes from
+        %starting the experiment and update the missed flip counters.
+        expInfo.finalWindowInfo = Screen('GetWindowInfo', expInfo.curWindow);
+        
         sessionInfo.expInfo = expInfo;
         sessionInfo.conditionInfo = conditionInfo;
+        
+        
         %Now get our path, and find the files used
         P = mfilename('fullpath');
         [localDir] = fileparts(P);
