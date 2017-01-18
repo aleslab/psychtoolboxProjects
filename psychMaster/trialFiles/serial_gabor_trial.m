@@ -108,26 +108,125 @@ trialData.stimOri = wrapTo180(orient); %wrapTo180 makes angle go from[-180 180];
 trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
 
 
+% %This subroutine draws a line and allows it to be adjusted with a mouse or
+% %powermate. The funtion ends when a mouse button is clicked.
+%     function getParticipantResponse()
+%         waitingForResponse = true;
+%         responseStartTime = GetSecs;
+%         
+%         SetMouse(expInfo.center(1),expInfo.center(2),expInfo.curWindow)
+%         %Randomize the line orientation
+%         initLineOri  = 360*rand();
+%         thisOrient = initLineOri;
+%         totalShift = 0;
+%         [xStart,yStart] = GetMouse(expInfo.curWindow);
+%         y = 0;
+%         
+%         
+%         %Rotation matrix;
+%         rotMtx = [cosd(initLineOri) -sind(initLineOri);...
+%             sind(initLineOri) cosd(initLineOri)];
+%         initXy = [0 0; lineLength -lineLength];
+%         xy = rotMtx'*initXy;
+%         
+%         while waitingForResponse
+%             
+%             if isfield(expInfo,'writeMovie') && expInfo.writeMovie
+%                 Screen('AddFrameToMovie', expInfo.curWindow,...
+%                     CenterRect([0 0 1024 1024], Screen('Rect', expInfo.curWindow)));
+%             end
+%             
+%             if expInfo.enablePowermate
+%                 err=PsychHID('ReceiveReports',expInfo.powermateId,options);
+%                 r=PsychHID('GiveMeReports',expInfo.powermateId);
+%                 if ~isempty(r)
+%                     lastY = y(end);
+%                     y =[cat(1,r(:).report)];
+%                     y = typecast(uint8(y(:,2)),'int8');
+%                     y = double(y);
+%                     y = [lastY; y];
+%                     t = [ 1000*([ lastT r(:).time]-r(1).time) ];
+%                     lastT = r(end).time;
+%                     
+%                     report(iFrame).r = r;
+%                     
+%                     thisShift = .5*trapz(t,y);
+%                     totalShift= totalShift-thisShift;
+%                 end
+%                 y = 0;
+%                 lastT = GetSecs;
+%                 
+%                 thisOrient =  initLineOri+totalShift;
+%             else %use the mouse
+%                 [x,y,buttons] = GetMouse(expInfo.curWindow);
+%                 
+%                 timeNow = GetSecs;
+%                 if any(buttons) && timeNow>(responseStartTime+.2); %Ok got a response lets quit
+%                     trialData.responseTime = timeNow;
+%                     waitingForResponse = false;
+%                     
+%                 else
+%                     thisOrient = initLineOri+.25*(x-xStart);
+%                 end
+%                 
+%             end
+%             
+%             
+%             %Rotation matrix;
+%             rotMtx = [cosd(thisOrient) -sind(thisOrient);...
+%                 sind(thisOrient) cosd(thisOrient)];
+%             xy = rotMtx'*initXy;
+%             
+%             Screen('DrawLines', expInfo.curWindow, xy,lineWidth,lineColor,expInfo.center,1);
+%             
+%             Screen('Flip', expInfo.curWindow);
+%             
+%             
+%             
+%         end
+%         
+%         trialData.respOri = wrapTo180(thisOrient);
+%     end
+% end
+% % % %
+% % % %
+% % % %
 %This subroutine draws a line and allows it to be adjusted with a mouse or
 %powermate. The funtion ends when a mouse button is clicked.
     function getParticipantResponse()
         waitingForResponse = true;
         responseStartTime = GetSecs;
+        lastFlipTime = responseStartTime;
+        pollingInterval = 2*expInfo.ifi;
         
         SetMouse(expInfo.center(1),expInfo.center(2),expInfo.curWindow)
         %Randomize the line orientation
         initLineOri  = 360*rand();
         thisOrient = initLineOri;
         totalShift = 0;
-        [xStart,yStart] = GetMouse(expInfo.curWindow);
-        y = 0;
         
+        if expInfo.enablePowermate
+            [buttons, dialPos] = PsychPowerMate('Get', expInfo.powermateId);
+
+            xStart = dialPos;
+            
+        else %use the mouse
+            [xStart,yStart] = GetMouse(expInfo.curWindow);
+        end
+       
+        y = 0;
+        x = xStart;
+        
+        %Store every the response angles. 
+        nSamplesInit = round(15/expInfo.ifi)
+        trialData.allRespData = NaN(nSamplesInit,2);
         
         %Rotation matrix;
         rotMtx = [cosd(initLineOri) -sind(initLineOri);...
             sind(initLineOri) cosd(initLineOri)];
         initXy = [0 0; lineLength -lineLength];
         xy = rotMtx'*initXy;
+        responseIdx = 1;
         
         while waitingForResponse
             
@@ -137,39 +236,36 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
             end
             
             if expInfo.enablePowermate
-                err=PsychHID('ReceiveReports',expInfo.powermateId,options);
-                r=PsychHID('GiveMeReports',expInfo.powermateId);
-                if ~isempty(r)
-                    lastY = y(end);
-                    y =[cat(1,r(:).report)];
-                    y = typecast(uint8(y(:,2)),'int8');
-                    y = double(y);
-                    y = [lastY; y];
-                    t = [ 1000*([ lastT r(:).time]-r(1).time) ];
-                    lastT = r(end).time;
-                    
-                    report(iFrame).r = r;
-                    
-                    thisShift = .5*trapz(t,y);
-                    totalShift= totalShift-thisShift;
-                end
-                y = 0;
-                lastT = GetSecs;
-                
-                thisOrient =  initLineOri+totalShift;
+                lastDialPos = dialPos;
+                [pMateButton, dialPos] = PsychPowerMate('Get', expInfo.powermateId);
+                 [~,~,mouseButtons] = GetMouse(expInfo.curWindow);
+             
+                 buttons = [pMateButton mouseButtons];
+                 dialSpeed = abs(dialPos-lastDialPos);
+                 dialDir   = sign(dialPos-lastDialPos);
+                 displacement = max(conditionInfo.powermateSpeed*dialSpeed,...
+                     conditionInfo.powermateAccel*dialSpeed^1.85);
+                  
+                 x = x-dialDir*displacement;
+                 
+                 
+                 
             else %use the mouse
                 [x,y,buttons] = GetMouse(expInfo.curWindow);
-                
-                timeNow = GetSecs;
-                if any(buttons) && timeNow>(responseStartTime+.2); %Ok got a response lets quit
-                    trialData.responseTime = timeNow;
-                    waitingForResponse = false;
-                    
-                else
-                    thisOrient = initLineOri+.25*(x-xStart);
-                end
-                
             end
+            
+            timeNow = GetSecs;
+            if any(buttons) && timeNow>(responseStartTime+.2); %Ok got a response lets quit
+                trialData.responseTime = timeNow;
+                waitingForResponse = false;
+                
+            else
+                
+                
+                thisOrient = initLineOri+.25*(x-xStart);
+            end
+            
+            
             
             
             %Rotation matrix;
@@ -178,16 +274,22 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
             xy = rotMtx'*initXy;
             
             Screen('DrawLines', expInfo.curWindow, xy,lineWidth,lineColor,expInfo.center,1);
-            
-            Screen('Flip', expInfo.curWindow);
-            
-            
-            
+       
+            thisFlipTime = Screen('Flip', expInfo.curWindow,lastFlipTime+pollingInterval+expInfo.ifi/2);
+            trialData.allRespData(responseIdx,1) = thisOrient; 
+            trialData.allRespData(responseIdx,2) = thisFlipTime; 
+            responseIdx = responseIdx+1;
+            lastFlipTime = thisFlipTime;
         end
         
+        trialData.respStartTime = responseStartTime;
         trialData.respOri = wrapTo180(thisOrient);
     end
 end
 % % %
 % % %
 % % %
+
+
+
+
