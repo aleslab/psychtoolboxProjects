@@ -32,13 +32,24 @@ contrast = conditionInfo.contrast;   % contrast
 phase = 90;      %phase of gabor
 destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
 
-%initAngularVelocity = 0;
-%F = [1 0;0 1;];
+
+%If no update is specified default to brownian.
+if ~isfield( conditionInfo, 'updateMethod') || isempty(conditionInfo.updateMethod)
+    conditionInfo.updateMethod = 'brownian';
+end
+
 persistent orient;
 if isempty(orient);
-orient (1)=360*rand;
+    orient=360*rand;
 end
-orient = orient + randn*conditionInfo.orientationSigma;
+
+switch lower(conditionInfo.updateMethod)
+    case 'brownian' %brownian motion updates from last trial
+        orient = orient + randn*conditionInfo.orientationSigma;
+    case 'uniform' %draws a uniform orientation from 360 degrees
+        orient = rand*360;
+        
+end
 
 
 
@@ -125,7 +136,7 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
         x = xStart;
         
         %Store every the response angles. 
-        nSamplesInit = round(15/expInfo.ifi)
+        nSamplesInit = round(15/expInfo.ifi);
         trialData.allRespData = NaN(nSamplesInit,2);
         
         %Rotation matrix;

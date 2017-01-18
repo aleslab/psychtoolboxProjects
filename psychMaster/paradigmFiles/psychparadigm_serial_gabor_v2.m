@@ -1,17 +1,11 @@
-function [conditionInfo,expInfo] = psychparadigm_dep_gabor(expInfo)
-expInfo.paradigmName = 'dependent';
+function [conditionInfo,expInfo] = psychparadigm_serial_gabor_v2(expInfo)
+expInfo.paradigmName = 'blockedWhitneyRep';
 expInfo.randomizationType = 'blocked';
 
 % use kbQueue's as they have high performance
 expInfo.useKbQueue = false;
-expInfo.enablePowermate = true;
+expInfo.enablePowermate = false;
 expInfo.viewingDistance = 57;
-
-
-
-
-
-
 
 %Lets add an experiment wide setting here:
 
@@ -32,7 +26,7 @@ conditionInfo(1).powermateAccel = 3;
 %orientationSigma to set the update size.
 %'uniform' randomly chooses an orientation from 0-360 degrees on each
 %trial.
-conditionInfo(1).updateMethod = 'brownian';
+conditionInfo(1).updateMethod = 'uniform';
 
 % %Condition definitions
 %Condition 1, lets set some defaults:
@@ -45,7 +39,7 @@ conditionInfo(1).responseDuration  = 0;    %Post trial window for waiting for a 
 
 conditionInfo(1).sigma             =2; %standard deviation of the gabor in degrees
 conditionInfo(1).freq              =1; %frequency of the gabor in cycles per sigma. 
-conditionInfo(1).nReps             = 105; %% number of trials to present this condition. 
+conditionInfo(1).nReps             = 2%70; %% number of trials to present this condition. 
 conditionInfo(1).stimRadiusDeg     =   8;    %stimulus size in degree;
 
 conditionInfo(1).contrast = 0.05;
@@ -56,9 +50,12 @@ conditionInfo(1).orientationSigma = 11.552; %standard dev of the stim orientatio
 conditionInfo(1).label = 'Contrast: 0.05';
 
 conditionInfo(2) = conditionInfo(1);
-conditionInfo(2).contrast = 0.20 ;
-conditionInfo(2).label = 'Contrast: 0.20';
+conditionInfo(2).contrast = 0.10 ;
+conditionInfo(2).label = 'Contrast: 0.10';
 
+conditionInfo(3) = conditionInfo(1);
+conditionInfo(3).contrast = 0.20 ;
+conditionInfo(3).label = 'Contrast: 0.20';
 
 end
 
