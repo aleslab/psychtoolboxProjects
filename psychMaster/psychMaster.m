@@ -93,6 +93,8 @@ psychMasterVer = '0.20';
 thisFile = mfilename('fullpath');
 [thisDir, ~, ~] = fileparts(thisFile);
 
+%Try using the "onCleanup" function to detect ctrl-C aborts
+%finishup = onCleanup(@nonExpectedExit);
 
 %Check if path is correct, if not try and fix it. 
 if ~checkPath()
@@ -286,23 +288,31 @@ try
     
     
     
-catch
+catch exception
     
     %JMA: Fix this to gracefully release KbQueue's on error
     %Need to do the following but we may not have expInfo in the event of an error.
     %So we will just call to release all queue's that exist.
     KbQueueRelease();
     
-    disp('caught')
-    errorMsg = lasterror;
+   
+
+    closeExperiment;
+    
     
     if exist('experimentData','var') && ~isempty(experimentData)
+        disp('Attempting to save data')
+        sessionInfo.exception = exception;
+        sessionInfo.report = getReport(exception);
+        sessionInfo.psychlasterror = psychlasterror;
         saveResults();
     end
-    cleanupPsychMaster();
-    closeExperiment;
-    psychrethrow(psychlasterror);
     
+    cleanupPsychMaster();
+    disp('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+    disp('!!!!!   Experiment Shutdown Due to Error          !!!!!!!!')
+    rethrow(exception);
+    %psychrethrow(psychlasterror);  
 end;
 
 
@@ -760,6 +770,7 @@ end;
             sessionInfo.mfileBackup(iFile).content = fileread(mfiles{iFile});
         end
         
+        diary OFF 
         %Now save the diary:
         sessionInfo.diary = fileread(diaryName);
         
@@ -797,8 +808,7 @@ end;
         
     end
 
-%This is a function that handles cleaning up things specific to this file
-%deleting the tempory diary.
+
     function cleanupPsychMaster()
         
         delete(diaryName);
