@@ -44,13 +44,11 @@ trialData.validTrial = false;
 trialData.abortNow   = false;
 
 expInfo.lw = 1;
-fixationInfo.fixationType = 'cross';
-fixationInfo.responseSquare = 0;
-fixationInfo.apetureType = 'frame';
-
+fixationInfo(1).type    = 'cross';
+fixationInfo(1).fixLineWidthPix = 1;
+fixationInfo(2).type = 'noiseFrame';
 expInfo = drawFixation(expInfo, fixationInfo);
 vbl=Screen('Flip', expInfo.curWindow); %flipping to the screen
-Screen('close', expInfo.fixationTextures);
 
 
 %eye information
@@ -125,7 +123,7 @@ if strcmp(conditionInfo.stimType, 'cd'); %%strcmp seems to work better than == f
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
     end
@@ -141,7 +139,7 @@ if strcmp(conditionInfo.stimType, 'cd'); %%strcmp seems to work better than == f
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -170,7 +168,7 @@ if strcmp(conditionInfo.stimType, 'cd'); %%strcmp seems to work better than == f
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -214,7 +212,7 @@ elseif strcmp(conditionInfo.stimType, 'lateralCd');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
     end
@@ -230,7 +228,7 @@ elseif strcmp(conditionInfo.stimType, 'lateralCd');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -259,7 +257,7 @@ elseif strcmp(conditionInfo.stimType, 'lateralCd');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -331,7 +329,7 @@ elseif strcmp(conditionInfo.stimType, 'combined');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -354,7 +352,7 @@ elseif strcmp(conditionInfo.stimType, 'combined');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -405,7 +403,7 @@ elseif strcmp(conditionInfo.stimType, 'combined');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -486,7 +484,7 @@ elseif strcmp(conditionInfo.stimType, 'combined_retinal_lateral');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -505,7 +503,7 @@ elseif strcmp(conditionInfo.stimType, 'combined_retinal_lateral');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -550,7 +548,7 @@ elseif strcmp(conditionInfo.stimType, 'combined_retinal_lateral');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -627,7 +625,7 @@ elseif strcmp(conditionInfo.stimType, 'combined_retinal_depth');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -647,7 +645,7 @@ elseif strcmp(conditionInfo.stimType, 'combined_retinal_depth');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -683,7 +681,7 @@ elseif strcmp(conditionInfo.stimType, 'combined_retinal_depth');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -745,7 +743,7 @@ elseif strcmp(conditionInfo.stimType, 'lateralCombined');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -763,7 +761,7 @@ elseif strcmp(conditionInfo.stimType, 'lateralCombined');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -802,7 +800,7 @@ elseif strcmp(conditionInfo.stimType, 'lateralCombined');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -881,7 +879,7 @@ elseif strcmp(conditionInfo.stimType, 'looming');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -904,7 +902,7 @@ elseif strcmp(conditionInfo.stimType, 'looming');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -949,7 +947,7 @@ elseif strcmp(conditionInfo.stimType, 'looming');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-        Screen('close', expInfo.fixationTextures);
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -983,7 +981,7 @@ end
 expInfo = drawFixation(expInfo, fixationInfo);
 
 Screen('Flip', expInfo.curWindow); %the final necessary flip.
-Screen('close', expInfo.fixationTextures);
+
 trialData.flipTimes(frameIdx) = vbl;
 frameIdx = frameIdx+1;
 
