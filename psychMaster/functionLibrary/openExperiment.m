@@ -59,14 +59,15 @@ end
 
 %For stereo modes default mode has a fixation cross and a frame to aid
 %holding fixation.
-if expInfo.stereoMode ~=0
-    expInfo.fixationInfo(1).type = 'cross';
-    expInfo.fixationInfo(2).type = 'noiseFrame';
-    expInfo.fixationInfo(2).size = 100;
-else
-    expInfo.fixationInfo(1).type = '';
+if ~isfield(expInfo,'fixationInfo')    
+    if expInfo.stereoMode ~=0
+        expInfo.fixationInfo(1).type = 'cross';
+        expInfo.fixationInfo(2).type = 'noiseFrame';
+        expInfo.fixationInfo(2).size = 100;
+    else
+        expInfo.fixationInfo(1).type = '';
+    end
 end
-
 %Default viewing distance
 if ~isfield(expInfo,'viewingDistance')
     expInfo.viewingDistance = 57;
