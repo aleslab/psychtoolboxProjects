@@ -5,7 +5,7 @@ expInfo.randomizationType = 'blocked';
 
 % use kbQueue's as they have high performance
 expInfo.useKbQueue = false;
-expInfo.enablePowermate = true;
+expInfo.enablePowermate = false;
 expInfo.viewingDistance = 57;
 
 
