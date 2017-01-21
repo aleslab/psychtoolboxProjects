@@ -22,7 +22,7 @@ function varargout = dataBrowser(varargin)
 
 % Edit the above text to modify the response to help dataBrowser
 
-% Last Modified by GUIDE v2.5 21-Jan-2017 15:29:47
+% Last Modified by GUIDE v2.5 21-Jan-2017 16:14:44
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -293,3 +293,33 @@ function listbox4_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in inspectConditionBtn.
+function inspectConditionBtn_Callback(hObject, eventdata, handles)
+% hObject    handle to inspectConditionBtn (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+selectedCondition = get(handles.listbox4,'Value');
+
+diffFieldNameList = {};
+sessionIdx = handles.dataInfo.byParadigm(handles.selPdgm).byParticipant(handles.selPpt).fileIndices(handles.selSession);
+conditionInfo = handles.dataInfo.sessionInfo(sessionIdx).conditionInfo;
+
+for iCond = 1:length(conditionInfo),
+    if iCond == selectedCondition
+        continue;
+    end
+    
+    fieldnames = findStructDifferences(...
+        conditionInfo(selectedCondition),conditionInfo(iCond));
+    
+    %Tricky use of grouping operator: []  
+    %for concatenating cell arrays [cell1 cell2] works
+    %unique() removes duplicates.
+    diffFieldNameList = unique([diffFieldNameList fieldnames ]);
+end
+
+
+[hPropsPane, editedConditionInfo] =propertiesGUI( conditionInfo(selectedCondition),diffFieldNameList);
