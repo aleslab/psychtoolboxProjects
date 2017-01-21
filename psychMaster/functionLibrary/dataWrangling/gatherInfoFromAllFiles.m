@@ -2,7 +2,16 @@ function [ dataInfo ] = gatherInfoFromAllFiles( directory )
 %gatherInfoFromAllFiles Gathers information about  ptbCorgi datafiles 
 %
 %[dataInfo] = gatherInfoFromAllFiles( directory )
-
+% %d = 
+% 
+%        participantSessionList: {1x4 cell}
+%     byParticipantParadigmName: {1x4 cell}
+%                     fileNames: {1x49 cell}
+%                  paradigmList: {1x8 cell}
+%           paradigmFileIndices: {1x8 cell}
+%                    byParadigm: [1x8 struct]
+%               participantList: {1x4 cell}
+%               sessionGrouping: {1x4 cell}
 
 fileList = dir(fullfile(directory,'*.mat'));
 
@@ -15,6 +24,7 @@ fieldsToGather = { ...
 
 idx=1; %This is lazy and dangerous - JMA
 %This loop looks at all files and extracts the session info from each
+atLeastOneFileLoaded = false;
 for iFile = 1:length(fileList),
     
     if fileList(iFile).isdir==true;
@@ -22,38 +32,53 @@ for iFile = 1:length(fileList),
     end
     
     thisFile = fullfile(directory,fileList(iFile).name);
-
+    
     %skip unix world hidden files
     if strncmp(thisFile,'.',1)
         display(['skipping folder: ' thisFile])
         continue;
     end
-
+    
     %lazy handling of loading the info.
     try
         load(thisFile,'sessionInfo');
+        
+        
+        %Now gather the info we need.
+        %This uses dynamic field names to simplify (Haha!) the code
+        for iField = 1:length(fieldsToGather),
+            allSessionInfo(idx).(fieldsToGather{iField}) = sessionInfo.(fieldsToGather{iField});
+        end
+        
+        if isempty(allSessionInfo(idx).conditionInfo)
+            allSessionInfo(idx).conditionInfo(1).label = 'ERROR! File Missing ConditionInfo';
+        end
+        
+        %Sometimes structs in structs makes life more difficult.
+        %some files don't have a specific name set.  Default to the name of
+        %the paradigm function.
+        try
+            allSessionInfo(idx).paradigmName = sessionInfo.expInfo.paradigmName;
+        catch
+            allSessionInfo(idx).paradigmName = func2str( sessionInfo.paradigmFun );
+        end
+        
+        [thisPath thisName thisExt] = fileparts(thisFile);
+        allSessionInfo(idx).dataFileFullPath = thisFile;
+        
+        allSessionInfo(idx).dataFileName = [thisName thisExt];
+        allSessionInfo(idx).dataFilePath = thisPath;
+        idx = idx+1;
+        atLeastOneFileLoaded = true;
     catch
         continue
     end
     
-    %Now gather the info we need.
-    %This uses dynamic field names to simplify (Ha!) the code
-    for iField = 1:length(fieldsToGather),        
-        allSessionInfo(idx).(fieldsToGather{iField}) = sessionInfo.(fieldsToGather{iField});
-    end
-    
-    %Sometimes structs in structs makes life more difficult.
-    %some files don't have a specific name set.  Default to the name of
-    %the paradigm function. 
-    try
-        allSessionInfo(idx).paradigmName = sessionInfo.expInfo.paradigmName;
-    catch
-        allSessionInfo(idx).paradigmName = func2str( sessionInfo.paradigmFun );
-    end
-    
-    
-   allSessionInfo(idx).dataFile = thisFile;
-   idx = idx+1;
+end
+
+if ~atLeastOneFileLoaded
+    dataInfo = [];
+    return
 end
 
 %Now we're going to organize things into various lists that will make
@@ -71,7 +96,7 @@ for iPpt = 1:length(participantList),
     %understand, and more useful for gui control. 
     participantSessionList = find(participantSessionList);
     dataInfo.participantSessionList{iPpt} = participantSessionList;
-    dataInfo.participantParadigmList{iPpt} = unique({allSessionInfo(participantSessionList).paradigmName});
+    dataInfo.byParticipantParadigmName{iPpt} = unique({allSessionInfo(participantSessionList).paradigmName});
     
     %Now lets go through each session find all sessions with identical
     %conditions. This loop compares all conditions.   There is tricky
@@ -115,9 +140,50 @@ for iPpt = 1:length(participantList),
     sessionGrouping{iPpt} = unique(conditionComparison,'rows');
 end
 
+dataInfo.fullPathFileName        = {allSessionInfo.dataFileFullPath};
+dataInfo.fileNames               = {allSessionInfo.dataFileName};
+dataInfo.filePath               = {allSessionInfo.dataFilePath};
+dataInfo.sessionInfo            = allSessionInfo;
+
+dataInfo.paradigmList    = unique([dataInfo.byParticipantParadigmName{:}]);
+%Now find the participants for each participant
+for iParadigm = 1:length(dataInfo.paradigmList),
+    
+    thisParadigm = dataInfo.paradigmList{iParadigm};
+    thisParadigmFileIndices = strcmp(thisParadigm,{allSessionInfo.paradigmName});
+    
+    %Change this form a logical index to numeric. Easier for people to
+    %understand, and more useful for gui control, but trivially slower for small lists. 
+    thisParadigmFileIndices  = find(thisParadigmFileIndices);
+    dataInfo.paradigmFileIndices{iParadigm} = thisParadigmFileIndices;
+
+    
+ 
+    dataInfo.byParadigm(iParadigm).paradigmName = thisParadigm;
+    dataInfo.byParadigm(iParadigm).participantList = {}; 
+    dataInfo.byParadigm(iParadigm).byParticipant = [];
+    % Loop through participants and check if they've done this paradigm.
+    for iPpt = 1:length(participantList),            
+        %Did they do this paradigm?
+        if any(strcmp(thisParadigm,dataInfo.byParticipantParadigmName{iPpt}));  
+            %This is some dangerous growing of indices within a loop
+            %
+            dataInfo.byParadigm(iParadigm).participantList{end+1} = participantList{iPpt};
+            dataInfo.byParadigm(iParadigm).byParticipant(end+1).name = participantList{iPpt};
+            
+            fileIndices = intersect(dataInfo.participantSessionList{iPpt},dataInfo.paradigmFileIndices{iParadigm});
+            dataInfo.byParadigm(iParadigm).byParticipant(end).fileIndices = fileIndices;
+            dataInfo.byParadigm(iParadigm).byParticipant(end).fileNames = dataInfo.fileNames(fileIndices);
+            dataInfo.byParadigm(iParadigm).byParticipant(end).sessionInfo = dataInfo.sessionInfo(fileIndices);
+
+        end
+    end
+    
+    
+end
 
 dataInfo.participantList = participantList;
-dataInfo.filelist        = {allSessionInfo.dataFile};
+
 dataInfo.sessionGrouping = sessionGrouping;
 
 
