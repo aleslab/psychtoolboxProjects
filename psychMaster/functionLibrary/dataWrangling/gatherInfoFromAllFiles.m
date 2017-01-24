@@ -48,7 +48,11 @@ for iFile = 1:length(fileList),
     try
         load(thisFile,'sessionInfo');
         
-        
+        if ~exist('sessionInfo','var')
+            disp(['Not a valid ptbCorgi Session file: ' thisFile]);
+            continue
+        end
+            
         %Now gather the info we need.
         %This uses dynamic field names to simplify (Haha!) the code
         for iField = 1:length(fieldsToGather),
