@@ -14,7 +14,7 @@ end
 
 %Another guide issue is that the first argument is used for other callback
 %use.
-ptbCorgiData = dataBrowser([],chosenDirectory);
+ptbCorgiData = ptbCorgiDataBrowser([],chosenDirectory);
 
 ptbCorgiMakeDataBrowserModal = false;
 

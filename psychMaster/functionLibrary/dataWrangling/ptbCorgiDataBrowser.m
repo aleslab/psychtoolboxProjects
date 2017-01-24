@@ -1,35 +1,35 @@
-function varargout = dataBrowser(varargin)
-% DATABROWSER MATLAB code for dataBrowser.fig
-%      DATABROWSER, by itself, creates a new DATABROWSER or raises the existing
+function varargout = ptbCorgiDataBrowser(varargin)
+% PTBCORGIDATABROWSER MATLAB code for ptbCorgiDataBrowser.fig
+%      PTBCORGIDATABROWSER, by itself, creates a new PTBCORGIDATABROWSER or raises the existing
 %      singleton*.
 %
-%      H = DATABROWSER returns the handle to a new DATABROWSER or the handle to
+%      H = PTBCORGIDATABROWSER returns the handle to a new PTBCORGIDATABROWSER or the handle to
 %      the existing singleton*.
 %
-%      DATABROWSER('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in DATABROWSER.M with the given input arguments.
+%      PTBCORGIDATABROWSER('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in PTBCORGIDATABROWSER.M with the given input arguments.
 %
-%      DATABROWSER('Property','Value',...) creates a new DATABROWSER or raises the
+%      PTBCORGIDATABROWSER('Property','Value',...) creates a new PTBCORGIDATABROWSER or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before dataBrowser_OpeningFcn gets called.  An
+%      applied to the GUI before ptbCorgiDataBrowser_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to dataBrowser_OpeningFcn via varargin.
+%      stop.  All inputs are passed to ptbCorgiDataBrowser_OpeningFcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help dataBrowser
+% Edit the above text to modify the response to help ptbCorgiDataBrowser
 
-% Last Modified by GUIDE v2.5 24-Jan-2017 11:30:07
+% Last Modified by GUIDE v2.5 24-Jan-2017 11:57:15
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @dataBrowser_OpeningFcn, ...
-                   'gui_OutputFcn',  @dataBrowser_OutputFcn, ...
+                   'gui_OpeningFcn', @ptbCorgiDataBrowser_OpeningFcn, ...
+                   'gui_OutputFcn',  @ptbCorgiDataBrowser_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -44,13 +44,13 @@ end
 % End initialization code - DO NOT EDIT
 
 
-% --- Executes just before dataBrowser is made visible.
-function dataBrowser_OpeningFcn(hObject, eventdata, handles, varargin)
+% --- Executes just before ptbCorgiDataBrowser is made visible.
+function ptbCorgiDataBrowser_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to dataBrowser (see VARARGIN)
+% varargin   command line arguments to ptbCorgiDataBrowser (see VARARGIN)
 
 global ptbCorgiMakeDataBrowserModal
 if isempty(ptbCorgiMakeDataBrowserModal)
@@ -69,7 +69,7 @@ if ptbCorgiMakeDataBrowserModal == true
     handles.datadir = varargin{2};
     
 else    
-    % Choose default command line output for dataBrowser
+    % Choose default command line output for ptbCorgiDataBrowser
     handles.output = hObject;
     if ispref('psychMaster','datadir');
         handles.datadir = getpref('psychMaster','datadir');
@@ -93,7 +93,7 @@ end
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = dataBrowser_OutputFcn(hObject, eventdata, handles) 
+function varargout = ptbCorgiDataBrowser_OutputFcn(hObject, eventdata, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
