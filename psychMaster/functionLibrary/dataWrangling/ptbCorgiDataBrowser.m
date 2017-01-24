@@ -1,5 +1,6 @@
 function varargout = ptbCorgiDataBrowser(varargin)
 % PTBCORGIDATABROWSER MATLAB code for ptbCorgiDataBrowser.fig
+
 %      PTBCORGIDATABROWSER, by itself, creates a new PTBCORGIDATABROWSER or raises the existing
 %      singleton*.
 %
@@ -368,6 +369,8 @@ handles = guidata(hObject);
 %     filesToLoad =
 % else
 iParadigm = get(handles.listbox1,'Value');
+contents = get(handles.listbox1,'String');
+paradigmName = contents{iParadigm};
 
 nPpt = length(handles.dataInfo.byParadigm(iParadigm).participantList);
 
@@ -379,6 +382,7 @@ else
 end
 
 % end
+
 
 
 for iPpt = 1:length(selectedPpt)
@@ -412,17 +416,24 @@ for iPpt = 1:length(selectedPpt)
     
 end
 
+handles.output.paradigmName    = paradigmName;
+handles.output.participantList = {loadedData(:).participantID};
+handles.output.nParticipants = length(handles.output.participantList);
+handles.output.conditionInfo = loadedData(1).sessionInfo.conditionInfo;
+handles.output.nConditions = length(loadedData(1).sessionInfo.conditionInfo);
+handles.output.participantData = loadedData;
+
+
 global ptbCorgiMakeDataBrowserModal
 % The figure can be deleted now
-if ptbCorgiMakeDataBrowserModal == true
-    handles.output = loadedData;
+if ptbCorgiMakeDataBrowserModal == true    
     % Update handles structure
     guidata(hObject, handles);
     uiresume(handles.dataBrowserParent);
 
 else
     outputVarName = get(handles.outputVarNameEditBox,'String');
-    assignin('base',outputVarName,loadedData);
+    assignin('base',outputVarName,handles.output);
 end
 
 
