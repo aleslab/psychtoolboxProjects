@@ -36,6 +36,8 @@ for iTrial = 1:length(experimentData),
     thisTrialData.condNumber = thisCond;
     thisTrialData.trialNumber = iTrial;
     sortedTrialData(thisCond).trialData(thisRep) = thisTrialData;
+    sortedTrialData(thisCond).condNumber = thisCond;
+    sortedTrialData(thisCond).label = sessionInfo.conditionInfo(thisCond).label;
 
 end
 

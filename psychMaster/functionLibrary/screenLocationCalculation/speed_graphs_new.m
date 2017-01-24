@@ -24,7 +24,7 @@ for i = 1:nt
      xpos(i) = pos(1); %x position of the line in x y coordinates converted from x y z
      xposVARad(i) = (atan(xpos(i)./97)); %theta = atan(screenPos/viewingdistance) in radians
      xposVAdeg(i) = rad2deg(xposVARad(i)); %convert to degrees
-     xposVA(i) = xposVAdeg(i)*120; %*2 for 2 eyes, *60 into arcmin
+     xposVA(i) = xposVAdeg(i)*60; %*2 for 2 eyes, *60 into arcmin
      
 end
 

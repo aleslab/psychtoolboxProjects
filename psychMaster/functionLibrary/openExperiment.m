@@ -59,15 +59,15 @@ end
 
 %For stereo modes default mode has a fixation cross and a frame to aid
 %holding fixation.
-if ~isfield(expInfo,'fixationInfo')
+if ~isfield(expInfo,'fixationInfo')    
     if expInfo.stereoMode ~=0
         expInfo.fixationInfo(1).type = 'cross';
         expInfo.fixationInfo(2).type = 'noiseFrame';
+        expInfo.fixationInfo(2).size = 100;
     else
         expInfo.fixationInfo(1).type = '';
     end
 end
-
 %Default viewing distance
 if ~isfield(expInfo,'viewingDistance')
     expInfo.viewingDistance = 57;
@@ -93,7 +93,7 @@ end
 %This is not always a reliable way to get screen width.  MEASURE IT!!
 %But it's the best guess we can do.
 if ~isfield(expInfo,'monitorWidth')
-    [w, h]=Screen('DisplaySize',expInfo.screenNum)
+    [w, h]=Screen('DisplaySize',expInfo.screenNum);
     expInfo.monitorWidth = w/10; %Convert to cm from mm
 end
 
@@ -174,7 +174,6 @@ expInfo.center = [expInfo.screenRect(3) expInfo.screenRect(4)]/2;   	% coordinat
 
 [pixelWidth, pixelHeight]=Screen('WindowSize', expInfo.screenNum);
 
-
 % determine pixels per degree
 % (pix/screen) * ... (screen/rad) * ... rad/deg
 expInfo.ppd = pi * pixelWidth / atan(expInfo.monitorWidth/expInfo.viewingDistance/2) / 360;    % pixels per degree
@@ -182,6 +181,9 @@ expInfo.ppd = pi * pixelWidth / atan(expInfo.monitorWidth/expInfo.viewingDistanc
 % screenWidth (pixels) / screenWidth (cm)
 expInfo.pixPerCm = pixelWidth/expInfo.monitorWidth;
 
+[pixelWidthWin, pixelHeightWin] = Screen('WindowSize', expInfo.curWindow);
+
+    expInfo.windowSizePixels = [pixelWidthWin, pixelHeightWin];
 
 
 InitializePsychSound
@@ -210,7 +212,7 @@ expInfo.windowInfo = Screen('GetWindowInfo', expInfo.curWindow);
 %Setup some defaults for keyboard interactions. Can be overridden by your
 %experiment.
 %Turn off KbQueue's because they can be fragile on untested systems.
-%If you need high performance responses turn them on. But be careful and 
+%If you need high performance responses turn them on. But be careful and
 %read the help and the help for ListenChar
 expInfo.useKbQueue = false;
 KbName('UnifyKeyNames');
