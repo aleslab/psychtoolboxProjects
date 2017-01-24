@@ -22,7 +22,7 @@ function varargout = dataBrowser(varargin)
 
 % Edit the above text to modify the response to help dataBrowser
 
-% Last Modified by GUIDE v2.5 21-Jan-2017 16:14:44
+% Last Modified by GUIDE v2.5 24-Jan-2017 11:30:07
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -52,23 +52,44 @@ function dataBrowser_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to dataBrowser (see VARARGIN)
 
-% Choose default command line output for dataBrowser
-handles.output = hObject;
-
-if ispref('psychMaster','datadir');
-    handles.datadir = getpref('psychMaster','datadir');
-else
-    handles.datadir = [];
+global ptbCorgiMakeDataBrowserModal
+if isempty(ptbCorgiMakeDataBrowserModal)
+    ptbCorgiMakeDataBrowserModal = false;
 end
 
-  
+
+
+
+if ptbCorgiMakeDataBrowserModal == true
+    %Sets the button that will close the gui
+    uicontrol(handles.loadDataBtn);
+    % UIWAIT makes pmGui wait for user response (see UIRESUME)
+    
+    handles.output = [];
+    handles.datadir = varargin{2};
+    
+else    
+    % Choose default command line output for dataBrowser
+    handles.output = hObject;
+    if ispref('psychMaster','datadir');
+        handles.datadir = getpref('psychMaster','datadir');
+    else
+        handles.datadir = [];
+    end
+end
+
 % Update handles structure
 guidata(hObject, handles);
 
-loadData(hObject);  
+loadDataInfo(hObject);  
+%If we want a modal box wait till done now. 
+if ptbCorgiMakeDataBrowserModal == true
+    % UIWAIT makes pmGui wait for user response (see UIRESUME)
+    uiwait(handles.dataBrowserParent);
+end
 
-% UIWAIT makes dataBrowser wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
+
+
 
 
 % --- Outputs from this function are returned to the command line.
@@ -80,8 +101,15 @@ function varargout = dataBrowser_OutputFcn(hObject, eventdata, handles)
 
 % Get default command line output from handles structure
 varargout{1} = handles.output;
+global ptbCorgiMakeDataBrowserModal
+% The figure can be deleted now
+if ptbCorgiMakeDataBrowserModal == true
+    delete(handles.dataBrowserParent);
+end
 
-function loadData(hObject)
+
+%This function loads and gathers information from all the data files
+function loadDataInfo(hObject)
 %Load the data from the data directory.
 handles = guidata(hObject);
 
@@ -123,6 +151,7 @@ set(handles.listbox4,'Enable','on');
 
 % Update handles structure
 guidata(hObject, handles);
+
 
 function resetLists(hObject);
 handles = guidata(hObject);
@@ -267,7 +296,7 @@ dirName = uigetdir();
 handles.datadir = dirName;
 % Update handles structure
 guidata(hObject, handles);
-loadData(hObject);
+loadDataInfo(hObject);
 % Update handles structure
 guidata(hObject, handles);
 
@@ -323,3 +352,155 @@ end
 
 
 [hPropsPane, editedConditionInfo] =propertiesGUI( conditionInfo(selectedCondition),diffFieldNameList);
+
+
+% --- Executes on button press in loadDataBtn.
+function loadDataBtn_Callback(hObject, eventdata, handles)
+% hObject    handle to loadDataBtn (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles = guidata(hObject);
+
+
+
+% if get(handles.loadAllFilesRadio,'Value')==1
+%     
+%     filesToLoad =
+% else
+iParadigm = get(handles.listbox1,'Value');
+
+nPpt = length(handles.dataInfo.byParadigm(iParadigm).participantList);
+
+
+if get(handles.loadAllPptRadio,'Value')==1
+  selectedPpt = 1:nPpt;
+else
+  selectedPpt = get(handles.listbox2,'Value');
+end
+
+% end
+
+
+for iPpt = 1:length(selectedPpt)
+
+    %this is annoying way to index and make subset. 
+    fullPptListIdx = selectedPpt(iPpt);
+    
+    if get(handles.loadAllFilesRadio,'Value')==1
+         fileList = handles.dataInfo.byParadigm(iParadigm).byParticipant(fullPptListIdx).fileNames;
+    else
+        selectedFiles = get(handles.listbox3,'Value');
+        fileList = handles.dataInfo.byParadigm(iParadigm).byParticipant(fullPptListIdx).fileNames(selectedFiles);
+    end
+          
+    %try t0 load the data
+    try
+        [loadedData(iPpt).sessionInfo, loadedData(iPpt).experimentData] = loadMultipleSessionFiles(fileList);
+        loadedData(iPpt).participantID = handles.dataInfo.byParadigm(iParadigm).byParticipant(fullPptListIdx).name;
+        
+        if get(handles.organizeDataCheck,'Value')==1
+            loadedData(iPpt).sortedTrialData = organizeData(loadedData(iPpt).sessionInfo,loadedData(iPpt).experimentData);
+        end
+    catch ME
+        disp(['Error loading data from participant: ' ...
+            handles.dataInfo.byParadigm(iParadigm).byParticipant(fullPptListIdx).name]);
+        loadedData(iPpt).errorInfo = ME;
+        loadedData(iPpt).message = 'Error loading data';
+        loadedData(iPpt).errorLoadingParticipant = true;
+    end
+    
+    
+end
+
+global ptbCorgiMakeDataBrowserModal
+% The figure can be deleted now
+if ptbCorgiMakeDataBrowserModal == true
+    handles.output = loadedData;
+    % Update handles structure
+    guidata(hObject, handles);
+    uiresume(handles.dataBrowserParent);
+
+else
+    outputVarName = get(handles.outputVarNameEditBox,'String');
+    assignin('base',outputVarName,loadedData);
+end
+
+
+
+
+
+
+function outputVarNameEditBox_Callback(hObject, eventdata, handles)
+% hObject    handle to outputVarNameEditBox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of outputVarNameEditBox as text
+%        str2double(get(hObject,'String')) returns contents of outputVarNameEditBox as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function outputVarNameEditBox_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to outputVarNameEditBox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in organizeDataCheck.
+function organizeDataCheck_Callback(hObject, eventdata, handles)
+% hObject    handle to organizeDataCheck (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of organizeDataCheck
+
+
+% --- Executes on button press in loadSelectedFilesRadio.
+function loadSelectedFilesRadio_Callback(hObject, eventdata, handles)
+% hObject    handle to loadSelectedFilesRadio (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of loadSelectedFilesRadio
+
+if get(hObject,'Value') == get(hObject,'Max')
+    set(handles.loadAllPptRadio,'Value', 0);
+    set(handles.loadSelectedPptRadio,'Value', 1);
+end
+
+
+% --- Executes on button press in loadAllPptRadio.
+function loadAllPptRadio_Callback(hObject, eventdata, handles)
+% hObject    handle to loadAllPptRadio (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of loadAllPptRadio
+
+if get(handles.loadSelectedFilesRadio,'Value') == 1,
+    set(handles.loadAllPptRadio,'Value', 0);
+    set(handles.loadSelectedPptRadio,'Value', 1);
+    f = errordlg('Loading single file requires loading single participant','Selection Error')
+end
+
+
+% --- Executes when user attempts to close dataBrowserParent.
+function dataBrowserParent_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to dataBrowserParent (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: delete(hObject) closes the figure
+if isequal(get(hObject, 'waitstatus'), 'waiting')
+    % The GUI is still in UIWAIT, us UIRESUME
+    uiresume(hObject);
+else
+    % The GUI is no longer waiting, just close it
+    delete(hObject);
+end
