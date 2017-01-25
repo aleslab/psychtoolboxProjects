@@ -1,6 +1,37 @@
 function varargout = ptbCorgiDataBrowser(varargin)
-% PTBCORGIDATABROWSER MATLAB code for ptbCorgiDataBrowser.fig
+% PTBCORGIDATABROWSER GUI to use to browse and load ptbCorgi projects
+%
+%      ptbCorgiDataBrowser()
+%
+%      This function creates a GUI that is used to browse multiple data
+%      created by ptbCorgi.  It allows for easily loading multiple
+%      particpant datasets, and will create a variable in the matlab
+%      containing the loaded data. This function chooses which sessions to
+%      group together by looking at condition parameters and will only
+%      group together conditions with identical condition parameters (ignoring
+%      number of repetitions).
+%      It will also optionally concatenate multiple session files and 
+%      organize and sort data by condition.
+%
+%      For use in scripts see also: UIGETPTBCORGIDATA
+%
+%      Returned data is a structure with the fields:
+% 
+%     paradigmName    = string containing paradigm name.
+%     participantList = a cell array with the participant IDs for those  included in the data
+%     nParticipants = number of participants. 
+%     conditionInfo = conditionInfo structure from the paradigm that was run.
+%     nConditions = number of conditions
+% 
+%     participantData =  A structure with each element being data loaded from a participant 
+%                        (i.e. participantData(1) corresponds to data from participantList{1}).
+% 
+%          sessionInfo      = sessionInfo structure from psychMaster
+%          experimentData   = experimentData structure from psychMaster
+%          participantID    = id for this participant. 
+%          sortedTrialData  = Data sorted by condition number as returned from organizeData();
 
+%These comments are created by GUIDE
 %      PTBCORGIDATABROWSER, by itself, creates a new PTBCORGIDATABROWSER or raises the existing
 %      singleton*.
 %
