@@ -42,8 +42,8 @@ switch lower(expInfo.randomizationType)
         condList = 1:nConditions;        
         %Now lets do a quick randomization. This is an old way to accomplish a
         %permutation
-        [~,idx]=sort(rand(size(condList)));
-        condList = condList(idx);        
+        [~,permuteIdx]=sort(rand(size(condList)));
+        condList = condList(permuteIdx);        
         
         for iCond = condList,                        
             for iRep = 1:conditionInfo(iCond).nReps,
