@@ -54,7 +54,7 @@ function varargout = ptbCorgiDataBrowser(varargin)
 
 % Edit the above text to modify the response to help ptbCorgiDataBrowser
 
-% Last Modified by GUIDE v2.5 24-Jan-2017 11:57:15
+% Last Modified by GUIDE v2.5 26-Jan-2017 14:14:42
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -172,6 +172,9 @@ sessionIdx = handles.dataInfo.byParadigm(handles.selPdgm).byParticipant(handles.
 conditionLabels = {handles.dataInfo.sessionInfo(sessionIdx).conditionInfo.label};
 set(handles.listbox4,'String',conditionLabels);
 
+set(handles.participantIdEditText,'String',...
+    handles.dataInfo.byParadigm(handles.selPdgm).byParticipant(handles.selPpt).name)
+
 set(handles.listbox1,'Value',handles.selPdgm);
 set(handles.listbox2,'Value',handles.selPpt);
 set(handles.listbox3,'Value',handles.selSession);
@@ -231,6 +234,10 @@ sessionIdx = handles.dataInfo.byParadigm(handles.selPdgm).byParticipant(handles.
 conditionLabels = {handles.dataInfo.sessionInfo(sessionIdx).conditionInfo.label};
 set(handles.listbox4,'String',conditionLabels);
 set(handles.listbox4,'Value',handles.selCondition);
+
+set(handles.participantIdEditText,'String',...
+    handles.dataInfo.byParadigm(handles.selPdgm).byParticipant(handles.selPpt).name)
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -270,6 +277,10 @@ sessionIdx = handles.dataInfo.byParadigm(handles.selPdgm).byParticipant(handles.
 conditionLabels = {handles.dataInfo.sessionInfo(sessionIdx).conditionInfo.label};
 set(handles.listbox4,'String',conditionLabels);
 set(handles.listbox4,'Value',handles.selCondition);
+
+set(handles.participantIdEditText,'String',...
+    handles.dataInfo.byParadigm(handles.selPdgm).byParticipant(handles.selPpt).name)
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -329,8 +340,6 @@ handles.datadir = dirName;
 % Update handles structure
 guidata(hObject, handles);
 loadDataInfo(hObject);
-% Update handles structure
-guidata(hObject, handles);
 
 
 % --- Executes on selection change in listbox4.
@@ -391,7 +400,7 @@ function loadDataBtn_Callback(hObject, eventdata, handles)
 % hObject    handle to loadDataBtn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles = guidata(hObject);
+%handles = guidata(hObject);
 
 
 
@@ -546,3 +555,74 @@ else
     % The GUI is no longer waiting, just close it
     delete(hObject);
 end
+
+
+
+function participantIdEditText_Callback(hObject, eventdata, handles)
+% hObject    handle to participantIdEditText (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of participantIdEditText as text
+%        str2double(get(hObject,'String')) returns contents of participantIdEditText as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function participantIdEditText_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to participantIdEditText (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in changeAndSaveBtn.
+function changeAndSaveBtn_Callback(hObject, eventdata, handles)
+% hObject    handle to changeAndSaveBtn (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+iParadigm = get(handles.listbox1,'Value');
+contents = get(handles.listbox1,'String');
+paradigmName = contents{iParadigm};
+newPptId = get(handles.participantIdEditText,'String');
+
+nPpt = length(handles.dataInfo.byParadigm(iParadigm).participantList);
+
+
+selectedPpt = get(handles.listbox2,'Value');
+contets = get(handles.listbox2,'String');
+selectedPptId = contents{selectedPpt};
+
+% end
+
+
+
+if get(handles.loadAllFilesRadio,'Value')==1
+    fileList = handles.dataInfo.byParadigm(iParadigm).byParticipant(selectedPpt).fileNames;
+else
+    selectedFiles = get(handles.listbox3,'Value');
+    fileList = handles.dataInfo.byParadigm(iParadigm).byParticipant(selectedPpt).fileNames(selectedFiles);
+end
+          
+for iFile = 1:length(fileList)
+
+    thisFileData = load(fileList{iFile});
+    thisFileData.sessionInfo.isEdited = true;
+    thisFileData.sessionInfo.previousPptId = selectedPptId;
+    thisFileData.sessionInfo.participantID = newPptId;
+    
+    save(fileList{iFile},'-struct','thisFileData')
+    
+end
+
+resetLists(hObject);
+loadDataInfo(hObject);
+
+
+
