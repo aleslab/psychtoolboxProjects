@@ -102,7 +102,7 @@ if ptbCorgiMakeDataBrowserModal == true
     
 else    
     % Choose default command line output for ptbCorgiDataBrowser
-    handles.output = hObject;
+    handles.output = [];
     if ispref('psychMaster','datadir');
         handles.datadir = getpref('psychMaster','datadir');
     else
@@ -596,7 +596,7 @@ nPpt = length(handles.dataInfo.byParadigm(iParadigm).participantList);
 
 
 selectedPpt = get(handles.listbox2,'Value');
-contets = get(handles.listbox2,'String');
+contents = get(handles.listbox2,'String');
 selectedPptId = contents{selectedPpt};
 
 % end
