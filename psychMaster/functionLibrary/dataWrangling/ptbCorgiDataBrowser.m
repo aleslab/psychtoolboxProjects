@@ -98,18 +98,33 @@ if ptbCorgiMakeDataBrowserModal == true
     % UIWAIT makes pmGui wait for user response (see UIRESUME)
     
     handles.output = [];
-    handles.datadir = varargin{2};
+    
+    
+    if isempty(varargin{2}) 
+        if ispref('ptbCorgiDataBrowser','lastDataDir')
+            handles.datadir = getpref('ptbCorgiDataBrowser','lastDataDir');
+        else
+            handles.datadir = pwd;
+        end
+    else   
+        handles.datadir = varargin{2};
+    end
     
 else    
     % Choose default command line output for ptbCorgiDataBrowser
     handles.output = [];
-    if ispref('psychMaster','datadir');
+
+    if ispref('ptbCorgiDataBrowser','lastDataDir')
+        handles.datadir = getpref('ptbCorgiDataBrowser','lastDataDir');
+    elseif ispref('psychMaster','datadir');
         handles.datadir = getpref('psychMaster','datadir');
     else
         handles.datadir = [];
     end
 end
 
+
+        
 % Update handles structure
 guidata(hObject, handles);
 
@@ -337,6 +352,7 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 
 dirName = uigetdir();
 handles.datadir = dirName;
+setpref('ptbCorgiDataBrowser','lastDataDir',dirName)
 % Update handles structure
 guidata(hObject, handles);
 loadDataInfo(hObject);
