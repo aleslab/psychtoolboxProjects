@@ -445,19 +445,28 @@ for iPpt = 1:length(selectedPpt)
         if get(handles.organizeDataCheck,'Value')==1
             loadedData(iPpt).sortedTrialData = organizeData(loadedData(iPpt).sessionInfo,loadedData(iPpt).experimentData);
         end
+        
+        validParticipantData(iPpt) = true;
     catch ME
         disp(['Error loading data from participant: ' ...
             handles.dataInfo.byParadigm(iParadigm).byParticipant(fullPptListIdx).name]);
         loadedData(iPpt).errorInfo = ME;
         loadedData(iPpt).message = 'Error loading data';
         loadedData(iPpt).errorLoadingParticipant = true;
+        loadedData(iPpt).participantID = handles.dataInfo.byParadigm(iParadigm).byParticipant(fullPptListIdx).name;
+        validParticipantData(iPpt) = false;
     end
     
     
 end
 
+participantErrors = loadedData(~validParticipantData);
+loadedData = loadedData(validParticipantData);
+
 handles.output.paradigmName    = paradigmName;
 handles.output.participantList = {loadedData(:).participantID};
+handles.output.participantErrorList = {participantErrors(:).participantID};
+
 handles.output.nParticipants = length(handles.output.participantList);
 handles.output.conditionInfo = loadedData(1).sessionInfo.conditionInfo;
 handles.output.nConditions = length(loadedData(1).sessionInfo.conditionInfo);
@@ -604,12 +613,14 @@ selectedPptId = contents{selectedPpt};
 
 
 if get(handles.loadAllFilesRadio,'Value')==1
-    fileList = handles.dataInfo.byParadigm(iParadigm).byParticipant(selectedPpt).fileNames;
+    fileList = handles.dataInfo.byParadigm(iParadigm).byParticipant(selectedPpt).fileIndices;
 else
     selectedFiles = get(handles.listbox3,'Value');
-    fileList = handles.dataInfo.byParadigm(iParadigm).byParticipant(selectedPpt).fileNames(selectedFiles);
+    fileList = handles.dataInfo.byParadigm(iParadigm).byParticipant(selectedPpt).fileIndices(selectedFiles);
 end
-          
+
+fileList = handles.dataInfo.fullPathFileName(fileList);
+
 for iFile = 1:length(fileList)
 
     thisFileData = load(fileList{iFile});
