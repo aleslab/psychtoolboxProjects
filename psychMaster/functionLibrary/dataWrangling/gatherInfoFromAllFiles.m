@@ -53,6 +53,12 @@ for iFile = 1:length(fileList),
             continue
         end
             
+        if isfield(sessionInfo,'isConcatenatedSessionFile') ...
+                && sessionInfo.isConcatenatedSessionFile == true
+            disp(['Skipping previously concatenated file : ' thisFile]);
+            continue
+        end
+        
         %Now gather the info we need.
         %This uses dynamic field names to simplify (Haha!) the code
         for iField = 1:length(fieldsToGather),

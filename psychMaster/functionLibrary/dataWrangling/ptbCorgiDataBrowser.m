@@ -1,5 +1,37 @@
 function varargout = ptbCorgiDataBrowser(varargin)
-% PTBCORGIDATABROWSER MATLAB code for ptbCorgiDataBrowser.fig
+% PTBCORGIDATABROWSER GUI to use to browse and load ptbCorgi projects
+%
+%      ptbCorgiDataBrowser()
+%
+%      This function creates a GUI that is used to browse multiple data
+%      created by ptbCorgi.  It allows for easily loading multiple
+%      particpant datasets, and will create a variable in the matlab
+%      containing the loaded data. This function chooses which sessions to
+%      group together by looking at condition parameters and will only
+%      group together conditions with identical condition parameters (ignoring
+%      number of repetitions).
+%      It will also optionally concatenate multiple session files and 
+%      organize and sort data by condition.
+%
+%      For use in scripts see also: UIGETPTBCORGIDATA
+%
+%      Returned data is a structure with the fields:
+% 
+%     paradigmName    = string containing paradigm name.
+%     participantList = a cell array with the participant IDs for those  included in the data
+%     nParticipants = number of participants. 
+%     conditionInfo = conditionInfo structure from the paradigm that was run.
+%     nConditions = number of conditions
+% 
+%     participantData =  A structure with each element being data loaded from a participant 
+%                        (i.e. participantData(1) corresponds to data from participantList{1}).
+% 
+%          sessionInfo      = sessionInfo structure from psychMaster
+%          experimentData   = experimentData structure from psychMaster
+%          participantID    = id for this participant. 
+%          sortedTrialData  = Data sorted by condition number as returned from organizeData();
+
+%These comments are created by GUIDE
 %      PTBCORGIDATABROWSER, by itself, creates a new PTBCORGIDATABROWSER or raises the existing
 %      singleton*.
 %
@@ -22,7 +54,7 @@ function varargout = ptbCorgiDataBrowser(varargin)
 
 % Edit the above text to modify the response to help ptbCorgiDataBrowser
 
-% Last Modified by GUIDE v2.5 24-Jan-2017 11:57:15
+% Last Modified by GUIDE v2.5 26-Jan-2017 14:14:42
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -66,18 +98,33 @@ if ptbCorgiMakeDataBrowserModal == true
     % UIWAIT makes pmGui wait for user response (see UIRESUME)
     
     handles.output = [];
-    handles.datadir = varargin{2};
+    
+    
+    if isempty(varargin{2}) 
+        if ispref('ptbCorgiDataBrowser','lastDataDir')
+            handles.datadir = getpref('ptbCorgiDataBrowser','lastDataDir');
+        else
+            handles.datadir = pwd;
+        end
+    else   
+        handles.datadir = varargin{2};
+    end
     
 else    
     % Choose default command line output for ptbCorgiDataBrowser
-    handles.output = hObject;
-    if ispref('psychMaster','datadir');
+    handles.output = [];
+
+    if ispref('ptbCorgiDataBrowser','lastDataDir')
+        handles.datadir = getpref('ptbCorgiDataBrowser','lastDataDir');
+    elseif ispref('psychMaster','datadir');
         handles.datadir = getpref('psychMaster','datadir');
     else
         handles.datadir = [];
     end
 end
 
+
+        
 % Update handles structure
 guidata(hObject, handles);
 
@@ -140,6 +187,9 @@ sessionIdx = handles.dataInfo.byParadigm(handles.selPdgm).byParticipant(handles.
 conditionLabels = {handles.dataInfo.sessionInfo(sessionIdx).conditionInfo.label};
 set(handles.listbox4,'String',conditionLabels);
 
+set(handles.participantIdEditText,'String',...
+    handles.dataInfo.byParadigm(handles.selPdgm).byParticipant(handles.selPpt).name)
+
 set(handles.listbox1,'Value',handles.selPdgm);
 set(handles.listbox2,'Value',handles.selPpt);
 set(handles.listbox3,'Value',handles.selSession);
@@ -199,6 +249,10 @@ sessionIdx = handles.dataInfo.byParadigm(handles.selPdgm).byParticipant(handles.
 conditionLabels = {handles.dataInfo.sessionInfo(sessionIdx).conditionInfo.label};
 set(handles.listbox4,'String',conditionLabels);
 set(handles.listbox4,'Value',handles.selCondition);
+
+set(handles.participantIdEditText,'String',...
+    handles.dataInfo.byParadigm(handles.selPdgm).byParticipant(handles.selPpt).name)
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -238,6 +292,10 @@ sessionIdx = handles.dataInfo.byParadigm(handles.selPdgm).byParticipant(handles.
 conditionLabels = {handles.dataInfo.sessionInfo(sessionIdx).conditionInfo.label};
 set(handles.listbox4,'String',conditionLabels);
 set(handles.listbox4,'Value',handles.selCondition);
+
+set(handles.participantIdEditText,'String',...
+    handles.dataInfo.byParadigm(handles.selPdgm).byParticipant(handles.selPpt).name)
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -294,11 +352,10 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 
 dirName = uigetdir();
 handles.datadir = dirName;
+setpref('ptbCorgiDataBrowser','lastDataDir',dirName)
 % Update handles structure
 guidata(hObject, handles);
 loadDataInfo(hObject);
-% Update handles structure
-guidata(hObject, handles);
 
 
 % --- Executes on selection change in listbox4.
@@ -359,7 +416,7 @@ function loadDataBtn_Callback(hObject, eventdata, handles)
 % hObject    handle to loadDataBtn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles = guidata(hObject);
+%handles = guidata(hObject);
 
 
 
@@ -368,6 +425,8 @@ handles = guidata(hObject);
 %     filesToLoad =
 % else
 iParadigm = get(handles.listbox1,'Value');
+contents = get(handles.listbox1,'String');
+paradigmName = contents{iParadigm};
 
 nPpt = length(handles.dataInfo.byParadigm(iParadigm).participantList);
 
@@ -379,6 +438,7 @@ else
 end
 
 % end
+
 
 
 for iPpt = 1:length(selectedPpt)
@@ -401,28 +461,44 @@ for iPpt = 1:length(selectedPpt)
         if get(handles.organizeDataCheck,'Value')==1
             loadedData(iPpt).sortedTrialData = organizeData(loadedData(iPpt).sessionInfo,loadedData(iPpt).experimentData);
         end
+        
+        validParticipantData(iPpt) = true;
     catch ME
         disp(['Error loading data from participant: ' ...
             handles.dataInfo.byParadigm(iParadigm).byParticipant(fullPptListIdx).name]);
         loadedData(iPpt).errorInfo = ME;
         loadedData(iPpt).message = 'Error loading data';
         loadedData(iPpt).errorLoadingParticipant = true;
+        loadedData(iPpt).participantID = handles.dataInfo.byParadigm(iParadigm).byParticipant(fullPptListIdx).name;
+        validParticipantData(iPpt) = false;
     end
     
     
 end
 
+participantErrors = loadedData(~validParticipantData);
+loadedData = loadedData(validParticipantData);
+
+handles.output.paradigmName    = paradigmName;
+handles.output.participantList = {loadedData(:).participantID};
+handles.output.participantErrorList = {participantErrors(:).participantID};
+
+handles.output.nParticipants = length(handles.output.participantList);
+handles.output.conditionInfo = loadedData(1).sessionInfo.conditionInfo;
+handles.output.nConditions = length(loadedData(1).sessionInfo.conditionInfo);
+handles.output.participantData = loadedData;
+
+
 global ptbCorgiMakeDataBrowserModal
 % The figure can be deleted now
-if ptbCorgiMakeDataBrowserModal == true
-    handles.output = loadedData;
+if ptbCorgiMakeDataBrowserModal == true    
     % Update handles structure
     guidata(hObject, handles);
     uiresume(handles.dataBrowserParent);
 
 else
     outputVarName = get(handles.outputVarNameEditBox,'String');
-    assignin('base',outputVarName,loadedData);
+    assignin('base',outputVarName,handles.output);
 end
 
 
@@ -504,3 +580,76 @@ else
     % The GUI is no longer waiting, just close it
     delete(hObject);
 end
+
+
+
+function participantIdEditText_Callback(hObject, eventdata, handles)
+% hObject    handle to participantIdEditText (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of participantIdEditText as text
+%        str2double(get(hObject,'String')) returns contents of participantIdEditText as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function participantIdEditText_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to participantIdEditText (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in changeAndSaveBtn.
+function changeAndSaveBtn_Callback(hObject, eventdata, handles)
+% hObject    handle to changeAndSaveBtn (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+iParadigm = get(handles.listbox1,'Value');
+contents = get(handles.listbox1,'String');
+paradigmName = contents{iParadigm};
+newPptId = get(handles.participantIdEditText,'String');
+
+nPpt = length(handles.dataInfo.byParadigm(iParadigm).participantList);
+
+
+selectedPpt = get(handles.listbox2,'Value');
+contents = get(handles.listbox2,'String');
+selectedPptId = contents{selectedPpt};
+
+% end
+
+
+
+if get(handles.loadAllFilesRadio,'Value')==1
+    fileList = handles.dataInfo.byParadigm(iParadigm).byParticipant(selectedPpt).fileIndices;
+else
+    selectedFiles = get(handles.listbox3,'Value');
+    fileList = handles.dataInfo.byParadigm(iParadigm).byParticipant(selectedPpt).fileIndices(selectedFiles);
+end
+
+fileList = handles.dataInfo.fullPathFileName(fileList);
+
+for iFile = 1:length(fileList)
+
+    thisFileData = load(fileList{iFile});
+    thisFileData.sessionInfo.isEdited = true;
+    thisFileData.sessionInfo.previousPptId = selectedPptId;
+    thisFileData.sessionInfo.participantID = newPptId;
+    
+    save(fileList{iFile},'-struct','thisFileData')
+    
+end
+
+resetLists(hObject);
+loadDataInfo(hObject);
+
+
+

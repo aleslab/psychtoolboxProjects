@@ -126,6 +126,8 @@ if ~exist('sessionInfo','var') || isempty(sessionInfo)
     rng('default'); %Need to reset the rng before shuffling in case the legacy RNG has activated before we started psychMaster
     rng('shuffle');
     sessionInfo.randomSeed = rng;
+    %Initialize this variable to false to catch when sessions exit early.
+    sessionInfo.sessionCompleted = false;
 end
 
 
@@ -282,7 +284,7 @@ try
     end
     
     
-    
+    sessionInfo.sessionCompleted = true;
     saveResults();
     closeExperiment();  
     cleanupPsychMaster();
@@ -305,6 +307,7 @@ catch exception
         sessionInfo.exception = exception;
         sessionInfo.report = getReport(exception);
         sessionInfo.psychlasterror = psychlasterror;
+        sessionInfo.sessionCompleted = false;
         saveResults();
     end
     

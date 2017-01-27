@@ -35,6 +35,10 @@ for iTrial = 1:length(experimentData),
     thisTrialData = experimentData(iTrial).trialData;
     thisTrialData.condNumber = thisCond;
     thisTrialData.trialNumber = iTrial;
+    if isfield(sessionInfo,'trialToSessionIdx')
+        thisTrialData.sessionIdx = sessionInfo.trialToSessionIdx(iTrial);
+    end
+    
     sortedTrialData(thisCond).trialData(thisRep) = thisTrialData;
     sortedTrialData(thisCond).condNumber = thisCond;
     sortedTrialData(thisCond).label = sessionInfo.conditionInfo(thisCond).label;
