@@ -30,8 +30,9 @@ global ptbCorgiMakeDataBrowserModal
 
 ptbCorgiMakeDataBrowserModal = true;
 
-if nargin <1 || isempty(chosenDirectory)
-    chosenDirectory = pwd;
+
+if nargin <1 
+    chosenDirectory = [];
 end
 
 %Another guide issue is that the first argument is used for other callback
