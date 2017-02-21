@@ -88,12 +88,13 @@ function [] = psychMaster(sessionInfo)
 
 %Initial setup
 
-psychMasterVer = '0.20';
+psychMasterVer = '0.30';
 
 thisFile = mfilename('fullpath');
 [thisDir, ~, ~] = fileparts(thisFile);
 
 %Try using the "onCleanup" function to detect ctrl-C aborts
+%But this doesn't work easily.  
 %finishup = onCleanup(@nonExpectedExit);
 
 %Check if path is correct, if not try and fix it.
@@ -116,11 +117,15 @@ diary(diaryName);
 
 %the sessionInfo structure is used to store information about the current session
 %that is being run
+%If it doesn't exist or is empty we are starting a new session. 
+%So we need to initialize sessionInfo. 
 if ~exist('sessionInfo','var') || isempty(sessionInfo)
     %  sessionInfo.participantID = input('What is the participant ID:  ','s');
     %store the date. use: datestr(sessionInfo.sessionDate) to make human readable
     sessionInfo.sessionDate = now;
     sessionInfo.psychMasterVer = psychMasterVer;
+    sessionInfo.participantID = 'null';
+    sessionInfo.tag           = '';
     [~,ptbVerStruct]=PsychtoolboxVersion;
     sessionInfo.ptbVersion = ptbVerStruct;
     rng('default'); %Need to reset the rng before shuffling in case the legacy RNG has activated before we started psychMaster
@@ -852,7 +857,8 @@ end;
         end
         
         filename = [ filePrefix '_' ...
-            sessionInfo.participantID '_' datestr(now,'yyyymmdd_HHMMSS') '.mat'];
+            sessionInfo.participantID '_' sessionInfo.tag '_' ...
+            datestr(now,'yyyymmdd_HHMMSS') '.mat'];
         
         if ispref('psychMaster','datadir');
             datadir = getpref('psychMaster','datadir');

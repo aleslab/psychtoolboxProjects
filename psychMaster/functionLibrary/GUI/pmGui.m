@@ -22,7 +22,7 @@ function varargout = pmGui(varargin)
 
 % Edit the above text to modify the response to help pmGui
 
-% Last Modified by GUIDE v2.5 21-Feb-2016 19:40:06
+% Last Modified by GUIDE v2.5 14-Feb-2017 11:31:18
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -95,8 +95,18 @@ if ispref('psychMaster','lastParticipantId')
 else
     lastParticipantId = [];
 end
+
+if ispref('psychMaster','lastSessionTag')
+    lastSessionTag = getpref('psychMaster','lastSessionTag');
+else
+    lastSessionTag = [];
+end
+
 set(handles.participantIdText,'String',lastParticipantId);
 handles.sessionInfo.participantID = lastParticipantId;
+
+set(handles.sessionTagText,'String',lastSessionTag);
+handles.sessionInfo.tag = lastSessionTag;
 
 infoString = [  'v' handles.sessionInfo.psychMasterVer ' git SHA: ' handles.sessionInfo.gitHash(1:7)];
 set(handles.versionInfoTextBox,'String',infoString);
@@ -418,3 +428,29 @@ handles.sessionInfo.userCancelled = false;
 guidata(hObject,handles)
 uiresume(handles.pmGuiParentFig);
 %pmGuiParentFig_CloseRequestFcn(handles.pmGuiParentFig, eventdata, handles);
+
+
+
+function sessionTagText_Callback(hObject, eventdata, handles)
+% hObject    handle to sessionTagText (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of sessionTagText as text
+%        str2double(get(hObject,'String')) returns contents of sessionTagText as a double
+
+handles.sessionInfo.tag = get(hObject,'String');
+setpref('psychMaster','lastSessionTag',handles.sessionInfo.participantID);
+guidata(hObject,handles)
+
+% --- Executes during object creation, after setting all properties.
+function sessionTagText_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to sessionTagText (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
