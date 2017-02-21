@@ -440,7 +440,7 @@ function sessionTagText_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of sessionTagText as a double
 
 handles.sessionInfo.tag = get(hObject,'String');
-setpref('psychMaster','lastSessionTag',handles.sessionInfo.participantID);
+setpref('psychMaster','lastSessionTag',handles.sessionInfo.tag);
 guidata(hObject,handles)
 
 % --- Executes during object creation, after setting all properties.
