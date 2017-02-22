@@ -111,6 +111,47 @@ handles.sessionInfo.tag = lastSessionTag;
 infoString = [  'v' handles.sessionInfo.psychMasterVer ' git SHA: ' handles.sessionInfo.gitHash(1:7)];
 set(handles.versionInfoTextBox,'String',infoString);
 
+%Report the size calibration status.
+if ~isfield(handles.expInfo, 'sizeCalibInfo')
+   set(handles.sizeCalibLoadText,'String','Size Calibration Not Loaded');
+   set(handles.sizeCalibLoadText,'BackgroundColor',[1 .2 .2]);
+   screenNum = max(Screen('Screens'));
+   [w, h]=Screen('DisplaySize',screenNum);
+   monitorWidth = w/10; %Convert to cm from mm
+    
+   set(handles.monWidthText,'String',...
+       ['Guessing Monitor Width: ' num2str(monitorWidth) ' cm']);
+   set(handles.sizeCalibDateText,'String',['']);
+
+
+else
+    set(handles.sizeCalibLoadText,'String','Size Calibration Loaded');
+    set(handles.monWidthText,'String',...
+    ['Monitor Width: ' num2str(handles.expInfo.monitorWidth) ' CM']);
+ 
+dateString = datestr(handles.expInfo.sizeCalibInfo.date,'dd-mm-YYYY')
+   set(handles.sizeCalibDateText,'String',...
+       ['Measured On: ' dateString]);
+
+end
+
+%Report the luminance calibration status.
+if ~isfield(handles.expInfo, 'lumCalibInfo')
+    set(handles.lumCalibLoadText,'String','Luminance Calibration Not Loaded');
+    set(handles.lumCalibLoadText,'BackgroundColor',[1 .2 .2]);
+    set(handles.lumCalibDateText,'String',['']);
+    
+    
+else
+    set(handles.lumCalibLoadText,'String','Luminance Calibration Loaded');
+    
+    dateString = datestr(handles.expInfo.lumCalibInfo.date,'dd-mm-YYYY')
+    set(handles.lumCalibDateText,'String',...
+        ['Measured On: ' dateString]);
+    
+end
+
+
 % Update handles structure
 guidata(hObject, handles);
 movegui('center');
@@ -425,6 +466,7 @@ handles.conditionInfo = handles.conditionInfo(selectedCondition);
 handles.conditionInfo(1).nReps = 1;
 handles.sessionInfo.returnToGui = true;
 handles.sessionInfo.userCancelled = false;
+clear(func2str(handles.conditionInfo.trialFun));
 guidata(hObject,handles)
 uiresume(handles.pmGuiParentFig);
 %pmGuiParentFig_CloseRequestFcn(handles.pmGuiParentFig, eventdata, handles);
