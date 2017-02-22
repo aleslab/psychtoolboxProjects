@@ -266,9 +266,10 @@ try
     %If returnToGui is TRUE we ran a test trial and want the gui to pop-up
     while sessionInfo.returnToGui
         
+    
         [sessionInfo,expInfo,conditionInfo] = pmGui(sessionInfo,expInfo,sessionInfo.backupConditionInfo);
         drawnow; %<- required to actually close the gui.
-        
+
         %User canceled after opening experiment, just close and quit the function.
         if sessionInfo.userCancelled
             cleanupPsychMaster();

@@ -66,6 +66,7 @@ end
 % Update handles structure
 guidata(hObject, handles);
 
+ListenChar(0);
 if ispref('psychMaster','lastParadigmFile')
     lastParadigmFile = getpref('psychMaster','lastParadigmFile');
 else
@@ -154,7 +155,7 @@ end
 
 % Update handles structure
 guidata(hObject, handles);
-movegui('center');
+movegui('northeast');
 %set(handles.runExperimentBtn, 'Value', 1); 
 uicontrol(handles.runExperimentBtn) 
 % UIWAIT makes pmGui wait for user response (see UIRESUME)
@@ -202,7 +203,7 @@ function runExperimentBtn_Callback(hObject, eventdata, handles)
 handles.sessionInfo.returnToGui = false;
 handles.sessionInfo.userCancelled = false;
 guidata(hObject,handles);
-
+ListenChar(2);
 uiresume(handles.pmGuiParentFig);
 
 % --- Executes on button press in cancelBtn.
