@@ -54,7 +54,7 @@ function varargout = ptbCorgiDataBrowser(varargin)
 
 % Edit the above text to modify the response to help ptbCorgiDataBrowser
 
-% Last Modified by GUIDE v2.5 26-Jan-2017 14:14:42
+% Last Modified by GUIDE v2.5 14-Mar-2017 21:01:59
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -199,6 +199,7 @@ set(handles.listbox2,'Enable','on');
 set(handles.listbox3,'Enable','on');
 set(handles.listbox4,'Enable','on');
 
+set(handles.extractCodeMenu,'enable','On')
 % Update handles structure
 guidata(hObject, handles);
 
@@ -327,6 +328,7 @@ sessionIdx = handles.dataInfo.byParadigm(handles.selPdgm).byParticipant(handles.
 conditionLabels = {handles.dataInfo.sessionInfo(sessionIdx).conditionInfo.label};
 set(handles.listbox4,'String',conditionLabels);
 set(handles.listbox4,'Value',handles.selCondition);
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -652,4 +654,32 @@ resetLists(hObject);
 loadDataInfo(hObject);
 
 
+% --------------------------------------------------------------------
+function Untitled_1_Callback(hObject, eventdata, handles)
+% hObject    handle to Untitled_1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
 
+
+% --------------------------------------------------------------------
+function extractCodeMenu_Callback(hObject, eventdata, handles)
+% hObject    handle to extractCodeMenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+selectedFiles = get(handles.listbox3,'Value');
+content = get(handles.listbox3,'String');
+inputFile = content{selectedFiles};
+
+%Pull off the extension from the file.
+[pathstr, filename, ext ] = fileparts(inputFile);
+
+%Lets put things in a directory with the same name as the datafile.
+outputDataDir = fullfile(handles.datadir,['code_' filename]);
+
+extractCodeFromDatafile(inputFile,outputDataDir);
+
+
+
+
+ 
