@@ -18,6 +18,7 @@ Make changes to conditions persist across trial tests.
 Version History
 
 0.3: 
+Added ptbCorgiDataBrowser to support project level management.
 Added new fixation drawing code for ability to set fixation using paradigm files
 Added new session tag box to GUI
 Added new "block randomization" option for trial sequences
