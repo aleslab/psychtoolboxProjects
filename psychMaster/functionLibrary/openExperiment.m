@@ -221,7 +221,7 @@ ListenChar(2);
 
 
 %If using the powermate find it's handle. 
-if expInfo.enablePowermate
+if isfield(expInfo,'enablePowermate') && expInfo.enablePowermate
    expInfo.powermateId = PsychPowerMate('Open');
 end
 
