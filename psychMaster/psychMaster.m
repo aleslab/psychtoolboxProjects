@@ -227,19 +227,7 @@ try
     end
     
     
-    %Try to get the git commit hash and save it to the expInfo
-    %
-    %JMA: This only works for a current git repository.
-    %TODO: Add a mechanism for including this information in standalone
-    %builds.
-    [errorStatus,result]= system(['git --exec-path=' thisDir ' rev-parse --verify HEAD']);
-    
-    if ~errorStatus
-        %trim off trailing whitespace/line break
-        sessionInfo.gitHash = strtrim(result);
-    else
-        sessionInfo.gitHash = 'HASHERR';
-    end
+    sessionInfo.gitHash = ptbCorgiGitHash();
     
     %loop to enable firing single conditions for testing, could also be
     %extended to multiple blocks in the future.
