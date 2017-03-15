@@ -232,13 +232,13 @@ try
     %JMA: This only works for a current git repository.
     %TODO: Add a mechanism for including this information in standalone
     %builds.
-    %Fix this to get the right directory
-    [errorStatus,result]= system('git rev-parse --verify HEAD');
+    [errorStatus,result]= system(['git --exec-path=' thisDir ' rev-parse --verify HEAD']);
     
     if ~errorStatus
-        sessionInfo.gitHash = result;
+        %trim off trailing whitespace/line break
+        sessionInfo.gitHash = strtrim(result);
     else
-        sessionInfo.gitHash = '         ';
+        sessionInfo.gitHash = 'HASHERR';
     end
     
     %loop to enable firing single conditions for testing, could also be

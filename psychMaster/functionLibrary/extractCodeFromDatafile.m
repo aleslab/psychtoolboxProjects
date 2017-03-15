@@ -1,8 +1,9 @@
 function [  ] = extractCodeFromDatafile( inputFile, outputDirectory )
 %extractCodeFromDatafile Writes out all code files from a ptbCorgi datafile
 %[] = extractCodeFromDatafile( inputFile, [outputDirectory] )
-%   Detailed explanation goes here
-
+%   
+%     This function will load a ptbCorgi datafile and extracts the saved
+%     code in the datafile, and writes out all the mfiles that were saved.
 
 if nargin == 0
     help('extractCodeFromDatafile')
