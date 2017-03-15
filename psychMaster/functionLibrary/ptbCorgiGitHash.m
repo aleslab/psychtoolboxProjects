@@ -11,7 +11,7 @@ function [ gitHash ] = ptbCorgiGitHash(  )
 
 %This special identifier will make the git software replace the string 
 %the git hash when the code is "archived" or exported for a release.
-gitHashOnArchive = '$Format:%H$'
+gitHashOnArchive = '$Format:%H$';
 
 
 thisFile = mfilename('fullpath');
@@ -28,7 +28,7 @@ thisFile = mfilename('fullpath');
  if ~errorStatus
      %trim off trailing whitespace/line break
      gitHash = strtrim(result);
- elseif ~strcmp(gitHashOnArchive,strtrim(' $ F ormat:%H$ ')
+ elseif ~strcmp(gitHashOnArchive,strtrim(' $ F ormat:%H$ '));
      gitHash = gitHashOnArchive;
  else     
      gitHash = 'HASHERR';
