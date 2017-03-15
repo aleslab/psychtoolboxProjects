@@ -13,22 +13,34 @@ function [ gitHash ] = ptbCorgiGitHash(  )
 %the git hash when the code is "archived" or exported for a release.
 gitHashOnArchive = '$Format:%H$';
 
+%Using a silly white space addition to stop git from interpreting the
+%string as something to replace with the githash. That way we can double
+%check that the string was actually replaced.
+checkString = ' $ F ormat:%H$ ';
+checkString = checkString(~isspace(checkString));
 
 thisFile = mfilename('fullpath');
 [thisDir, ~, ~] = fileparts(thisFile);
 
- %Try to get the git commit hash and save it to the expInfo
- %
- %JMA: This only works for a current git repository.
- %TODO: Add a mechanism for including this information in standalone
- %builds.
- [errorStatus,result]= system(['git --exec-path=' thisDir ' rev-parse --verify HEAD']);
+
+ %Try to get the git commit hash 
+ % Check if thisFile is tracked in a git repository
+ 
+ [repoCheckError,repoCheckResult] = system(['git status ' thisFile ' --porcelain'])
+ 
+ %If we're in a git repository, try and load the hash
+ if ~repoCheckError
+     [hashCheckError,hashCheckResult] = system(['git --exec-path=' thisDir ' rev-parse --verify HEAD --porcelain'])
+ end
  
  %If we're in a git repo grab the current commit hash.
- if ~errorStatus
+ if ~repoCheckError && ~hashCheckError
      %trim off trailing whitespace/line break
-     gitHash = strtrim(result);
- elseif ~strcmp(gitHashOnArchive,strtrim(' $ F ormat:%H$ '));
+     gitHash = strtrim(hashCheckResult);
+     
+     %Using a silly white space addition to stop git from interpreting the
+     %string as something to replace with the githash.
+ elseif ~strcmp(gitHashOnArchive,checkString);
      gitHash = gitHashOnArchive;
  else     
      gitHash = 'HASHERR';
