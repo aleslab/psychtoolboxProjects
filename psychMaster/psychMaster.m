@@ -88,7 +88,7 @@ function [] = psychMaster(sessionInfo)
 
 %Initial setup
 
-psychMasterVer = '0.30';
+psychMasterVer = '0.31.0';
 
 thisFile = mfilename('fullpath');
 [thisDir, ~, ~] = fileparts(thisFile);

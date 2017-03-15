@@ -11,13 +11,12 @@ Issue #7 Create an automatic format to create paradigms
 Add a check for if psychmaster changed from last run and warn user.  
  
 
-Done:
-Make changes to conditions persist across trial tests.
-
-
 Version History
+0.31.0
+Switched to semantic version numbering
 
 0.3: 
+Added code to save git commit SHA when code is exported from git.
 Added code to extract and code archived in datafiles
 Added ptbCorgiDataBrowser to support project level management.
 Added new fixation drawing code for ability to set fixation using paradigm files
