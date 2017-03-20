@@ -183,24 +183,36 @@ expInfo.pixPerCm = pixelWidth/expInfo.monitorWidth;
 
 [pixelWidthWin, pixelHeightWin] = Screen('WindowSize', expInfo.curWindow);
 
-    expInfo.windowSizePixels = [pixelWidthWin, pixelHeightWin];
+expInfo.windowSizePixels = [pixelWidthWin, pixelHeightWin];
 
 
-InitializePsychSound
 
-%Basic audio information for interval beeps and audio
-%feedback
-audioInfo.nOutputChannels = 2;
-audioInfo.samplingFreq = 48000;
-audioInfo.nReps = 1;
-audioInfo.beepLength = 0.25; %in seconds
-audioInfo.startCue = 0; %starts immediately on call
-audioInfo.ibi = 0.05; %inter-beep interval; only used for the second interval
-audioInfo.pahandle = [];%PsychPortAudio('Open', [], 1, 1, audioInfo.samplingFreq, audioInfo.nOutputChannels);
-audioInfo.postFeedbackPause = 0.25;
+%Figure out a better way of handling turning on/off audio.
+if ~isfield(expInfo,'enableAudio')
+    expInfo.enableAudio = true;
+end
 
-expInfo.audioInfo = audioInfo;
-% expInfo.pahandle = PsychPortAudio('Open', [], [], 0, [], 2);
+if expInfo.enableAudio
+    InitializePsychSound
+    
+    %Basic audio information for interval beeps and audio
+    %feedback
+    
+    audioInfo.nOutputChannels = 2;
+    audioInfo.samplingFreq = 48000;
+    audioInfo.nReps = 1;
+    audioInfo.beepLength = 0.25; %in seconds
+    audioInfo.beepFreq = 500;
+    audioInfo.startCue = 0; %starts immediately on call
+    audioInfo.ibi = 0.05; %inter-beep interval; only used for the second interval
+    audioInfo.pahandle = [];%PsychPortAudio('Open', [], 1, 1, audioInfo.samplingFreq, audioInfo.nOutputChannels);
+    audioInfo.postFeedbackPause = 0.25;
+    thisBeep = MakeBeep(500, audioInfo.beepLength, audioInfo.samplingFreq);
+    audioInfo.intervalBeep = [thisBeep; thisBeep];
+    audioInfo.pahandle = PsychPortAudio('Open', [], [], 0, [], 2);
+    expInfo.audioInfo = audioInfo;
+    
+end
 
 
 %Set default font size.
