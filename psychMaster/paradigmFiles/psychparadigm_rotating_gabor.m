@@ -42,23 +42,23 @@ conditionInfo(1).freq              =1; %frequency of the gabor in cycles per sig
 conditionInfo(1).nReps             = 5; %% number of trials to present this condition. 
 conditionInfo(1).stimRadiusDeg  = 6;    %stimulus size in degree;
 
-conditionInfo(1).contrast = 0.25;
+conditionInfo(1).contrast = 0.5;
 conditionInfo(1).noiseSigma = .15;
 conditionInfo(1).orientationSigma = 5;
 %Implement arbitrary forward models. 
 %conditionInfo(1).forwardModel = [ 1 0 ]; %Forward model
-conditionInfo(1).label = 'Contrast: 0.25'
+conditionInfo(1).label = 'Contrast: 0.05';
 
 
 conditionInfo(2) = conditionInfo(1);
 conditionInfo(2).orientationSigma = 5;
-conditionInfo(2).contrast = 0.04 ;
-conditionInfo(2).label = 'Contrast: 0.04'
+conditionInfo(2).contrast = 0.20 ;
+conditionInfo(2).label = 'Contrast: 0.20';
 
-conditionInfo(3) = conditionInfo(1);
-conditionInfo(3).orientationSigma = 5;
-conditionInfo(3).contrast = 0.08;
-conditionInfo(3).label = 'Contrast: 0.08'
+% conditionInfo(3) = conditionInfo(1);
+% conditionInfo(3).orientationSigma = 5;
+% conditionInfo(3).contrast = 0.08;
+% conditionInfo(3).label = 'Contrast: 0.08'
 
 
 
