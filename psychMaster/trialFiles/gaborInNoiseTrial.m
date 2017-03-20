@@ -1,5 +1,12 @@
 function [trialData] = gaborInNoiseTrial(expInfo, conditionInfo)
-%test edit
+%gaborInNoiseTrial Function to do a basic gabor in noise
+%[trialData] = gaborInNoiseTrial(expInfo, conditionInfo)
+%
+%fields:
+%
+%stimRadiusDeg
+%sigma
+
 
 trialData.validTrial = true;
 trialData.abortNow   = false;
@@ -35,13 +42,6 @@ destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
 orient = conditionInfo.orientation;
 
 
-
-%Some parameters for the response line
-lineWidth = 4;
-lineLength = expInfo.ppd*3; %Line length in pixels
-lineColor = [1];
-
-
 if isfield(expInfo,'writeMovie') && expInfo.writeMovie
     movie = Screen('CreateMovie', expInfo.curWindow, 'MyTestMovie.mov', 1024, 1024, 30, ':CodecSettings=Videoquality=.9 Profile=2');
 end
@@ -60,34 +60,45 @@ tex=Screen('makeTexture', expInfo.curWindow, my_gabor+my_noise);
 Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
 stimStartTime= Screen('Flip',expInfo.curWindow);
 requestedStimEndTime=stimStartTime + conditionInfo.stimDuration;
-Screen('Close',tex);
-
-%draw the mask
-noiseMask = conditionInfo.noiseSigma.*randn(size(my_gabor));
-maskTex=Screen('makeTexture', expInfo.curWindow, noiseMask+0.5);
-Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
 
 
-actualStimEndTime=Screen('Flip', expInfo.curWindow, requestedStimEndTime);
-Screen('Close',maskTex);
+%Make it empty
+maskTex = [];
+%If we want to show a postStim
+if conditionInfo.postStimMaskDuration >0
 
-%calculate mask offset time
-requestedMaskEndTime = actualStimEndTime + 1;
-actualMaskEndTime = Screen('Flip', expInfo.curWindow, requestedMaskEndTime);
+    %draw the mask
+    noiseMask = conditionInfo.noiseSigma.*randn(size(my_gabor));
+    maskTex=Screen('makeTexture', expInfo.curWindow, noiseMask+0.5);
+    Screen('DrawTexture', expInfo.curWindow, maskTex, [], destRect, [], 0);
+    actualStimEndTime=Screen('Flip', expInfo.curWindow, requestedStimEndTime);
+    
+    %calculate mask offset time
+    requestedMaskEndTime = actualStimEndTime + conditionInfo.postStimMaskDuration;
+    actualMaskEndTime = Screen('Flip', expInfo.curWindow, requestedMaskEndTime);
+    trialData.maskEndTime   = actualMaskEndTime;
+else
+    
+    actualStimEndTime=Screen('Flip', expInfo.curWindow, requestedStimEndTime);
+end
 
-%Calculate the fixation offset time
-requestedFixEndTime = actualMaskEndTime + 0.25;
-actualFixEndTime = Screen('Flip', expInfo.curWindow, requestedFixEndTime);
+
 
 
 trialData.stimStartTime = stimStartTime;
 trialData.stimEndTime   = actualStimEndTime;
-trialData.maskEndTime   = actualMaskEndTime;
-trialData.fixEndTime    = actualFixEndTime;
+
+% trialData.fixEndTime    = actualFixEndTime;
 
 trialData.validTrial = true;
 trialData.stimOri = wrapTo180(orient); %wrapTo180 makes angle go from[-180 180];
 
+%clean up textures:
+if ~isempty(maskTex)
+    Screen('Close',maskTex);
+end
+
+Screen('Close',tex);
 
 
 
