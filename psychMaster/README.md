@@ -14,6 +14,10 @@ Add a check for if psychmaster changed from last run and warn user.
 Version History
 0.31.0
 Switched to semantic version numbering
+Added ability to randomize arbitrary fields in the condition structure
+Added new way to specify 2afc experiment allowing the change of randomized fields
+Fixed crackle from audio feedback.
+Made it possible to play audio feedback at the same time as displaying written feedback
 
 0.3: 
 Added code to save git commit SHA when code is exported from git.
