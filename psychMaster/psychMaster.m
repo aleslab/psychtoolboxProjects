@@ -157,6 +157,7 @@ end
 
 
 expInfo     = struct();
+initConditionInfo = struct();
 
 %Check for preferences.  Preferences enable  easy configuration changes for
 %different machines without having to hardcode things.
@@ -343,7 +344,9 @@ end;
         
         conditionInfo = validateConditions(expInfo,conditionInfo);
         
-        %This code randomizes the condition order
+        %Contains the information in conditionInfo before trials start that
+        %could potentially change values.
+        initConditionInfo = conditionInfo;
         
         nConditions = length(conditionInfo);
         
@@ -471,19 +474,20 @@ end;
                     
                     nullFirst = rand()>.5;
                     
-                    %If nullCondition is empty, check for an target
-                    %specification
-                    if isempty(conditionInfo(thisCond).nullCondition)
-                        if ~isempty(conditionInfo(thisCond).targetFieldname);
+                    %If targetFieldname is set use this to setup the
+                    %condition values.
+                    if ~isempty(conditionInfo(thisCond).targetFieldname);
                             conditionInfo(thisCond).nullCondition = conditionInfo(thisCond);
                             fieldname = conditionInfo(thisCond).targetFieldname;
                             delta     = conditionInfo(thisCond).targetDelta;
                             conditionInfo(thisCond).(fieldname) = conditionInfo(thisCond).(fieldname) +delta;
-                        else
-                            error('Error in 2afc condition specification');
-                        end
+                            
+                            experimentData(iTrial).targetFieldname = fieldname;
+                            experimentData(iTrial).targetValue = conditionInfo(thisCond).(fieldname);
+                            experimentData(iTrial).nullValue = conditionInfo(thisCond).nullCondition.(fieldname);
+                            experimentData(iTrial).targetDelta = delta;
                     end
-                        
+            
                     
                     if nullFirst
                         firstCond = conditionInfo(thisCond).nullCondition;
@@ -681,6 +685,8 @@ end;
             
             
             experimentData(iTrial).condNumber = thisCond;
+            experimentData(iTrial).condInfo = conditionInfo(thisCond);
+            
             
             if ~trialData.validTrial  %trial not valid
                 
@@ -800,10 +806,8 @@ end;
                     PsychPortAudio('FillBuffer', expInfo.audioInfo.pahandle, [correctBeep; correctBeep]);
                     
                     PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
-                    
-                    WaitSecs(expInfo.audioInfo.beepLength + expInfo.audioInfo.postFeedbackPause);
-                    
-                    PsychPortAudio('Stop', expInfo.audioInfo.pahandle);
+                                        
+                    PsychPortAudio('Stop', expInfo.audioInfo.pahandle,1);
                     
                 else
                     
@@ -812,10 +816,8 @@ end;
                     PsychPortAudio('FillBuffer', expInfo.audioInfo.pahandle, [incorrectBeep; incorrectBeep]);
                     
                     PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
-                    
-                    WaitSecs(expInfo.audioInfo.beepLength + expInfo.audioInfo.postFeedbackPause);
-                    
-                    PsychPortAudio('Stop', expInfo.audioInfo.pahandle);
+                                        
+                    PsychPortAudio('Stop', expInfo.audioInfo.pahandle,1);
                     
                 end
                 
@@ -876,8 +878,8 @@ end;
         expInfo.finalWindowInfo = Screen('GetWindowInfo', expInfo.curWindow);
         
         sessionInfo.expInfo = expInfo;
-        sessionInfo.conditionInfo = conditionInfo;
-        
+        sessionInfo.conditionInfo = initConditionInfo;
+        sessionInfo.condInfoAfterExperimentFinished = conditionInfo;
         
         %Now get our path, and find the files used
         P = mfilename('fullpath');

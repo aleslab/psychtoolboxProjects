@@ -20,6 +20,7 @@ fieldList2afc = {...
 'nullCondition',[];...
 'isNullCorrect',false;...
 'responseDuration',3;...
+'targetFieldname',[];...
 };
 
 fieldListSimpleResponse = {...
@@ -59,6 +60,15 @@ for iCond = 1:nCond,
         
         checkFields(iCond,fieldList2afc)
         
+        %Can't use both a nullConditiom and a targetFieldname. 
+        if ~isempty(conditionInfo(iCond).nullCondition) ...
+                && ~isempty(conditionInfo(iCond).targetFieldname)
+            
+            error('Error validating condition information: invalid 2afc specification. Cannot set both nullCondition and targetFieldname.')
+            
+        end
+        
+        
     end
     
     %validate simpleResponse specific fields
@@ -67,6 +77,7 @@ for iCond = 1:nCond,
         checkFields(iCond,fieldListSimpleResponse)
         
     end
+    
     
     
     
