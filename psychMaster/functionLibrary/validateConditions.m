@@ -12,7 +12,8 @@ fieldListCommon = {...
 'giveFeedback',false;...
 'giveAudioFeedback',false;...
 'intervalBeep', false;...
-'label',[],...
+'label',[];...
+'randomizeField',[];...
 };  
 
 fieldList2afc = {...
@@ -35,6 +36,24 @@ for iCond = 1:nCond,
     
     checkFields(iCond,fieldListCommon)
     
+    %If we randomize fields, Set Default field value to a warning string
+    if ~isempty(conditionInfo(iCond).randomizeField)
+        
+        try
+            nFields = length(conditionInfo(iCond).randomizeField);
+            
+            for iName = 1:nFields
+                fieldname = conditionInfo(iCond).randomizeField(iName).fieldname;
+                conditionInfo(iCond).(fieldname) = '!!RANDOMIZED ON EACH TRIAL!!';
+                
+            end
+        catch ME
+            warning('Incorrect specification of randomizeField in condition')            
+            rethrow(ME);
+            
+        end
+    end
+    
     %validate 2afc specific fields
     if strcmpi(conditionInfo(iCond).type,'2afc')
         
@@ -48,6 +67,7 @@ for iCond = 1:nCond,
         checkFields(iCond,fieldListSimpleResponse)
         
     end
+    
     
     
 end

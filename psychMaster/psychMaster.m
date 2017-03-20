@@ -39,19 +39,37 @@ function [] = psychMaster(sessionInfo)
 %          '2afc'     -  This will implement 2 temporal alternative forced
 %                        choice. This option will collect responses and
 %                        will optionally provide feedback (if giveFeedback is set to TRUE).
-%                          Requires 2 extra fields:
+%                          2afc can be specified in two ways. First you can
+%                          provide a complete description of the null
+%                          stimulus. 
+% 
 %                          nullCondition = a conditionInfo structure with a
 %                                          single condition that will be used
 %                                          as the comparison
-%                          isNullCorrect = [false] a boolean that sets which
-%                                          condition is the correct condition.
-%                                          If set to true the null condition
-%                                          is treated as correct. If set to
-%                                          false (default) the other condition
-%                                          is considered correct.
+%                         or you can specify the fieldname that will be
+%                         used to set the target value and a "delta" or
+%                         increment. This is used when a random value is
+%                         being set on every trial
+%                          targetFieldname = string name of field
+%                          targetDelta     = amount to change
+%                                           (targetFieldname) by (i.e. +1, -10)
+%                            
 %   'directionreport' - For dealing with data from a direction
 %                       discrimination task where there are 8 different
 %                       options for response in a "circle".
+%   'randomizeField'  - [] This option allows for randomizing an aspect of a
+%                     condition on each trial. It is a structure with as
+%                     many entries as fields to randomize.  For each entry
+%                     the following values determine the randomization:
+%                        fieldname = a string indicating which field to randomize 
+%                        type = ['gaussian'] or 'uniform','custom'
+%                        param = For gaussian it is the mean and
+%                        standard deviation, For uniform it's the upper and
+%                        lower bounds. If 'custom' it is a handle to the
+%                        function to call to generate the random value.
+%                  
+%
+%
 %
 %   expInfo defines experiment wide settings. Mostly things that are
 %   for PsychToolbox.  But also other things that are aren't specific to a
@@ -71,6 +89,8 @@ function [] = psychMaster(sessionInfo)
 %                          switch conditions. But present conditions in random order.
 %
 %   stereoMode = [0] A number selecting a PTB stereomode.
+%
+%
 %
 %   psychMaster will loop over the different conditions in the paradigm
 %   file and run the conditionInfo.trialFun function to render the
@@ -353,6 +373,10 @@ end;
         
         iTrial = 1;
         
+        %Adding some info about the current trial to expInfo. This is so
+        %trialFun functions can use it.
+        expInfo.currentTrial.number = iTrial;
+        
         while iTrial <=length(conditionList)
             
             validTrialList(iTrial)= true;  %initialize this index variable to keep track of bad/aborted trials
@@ -361,6 +385,13 @@ end;
             feedbackColor = [1];
             
             thisCond = conditionList(iTrial);
+            
+            %Handle randomizing condition fields
+            %This changes the conditionInfo structure so is a bit of a
+            %danger. Well it's a very big danger. But it's the easiest way
+            %to implement changing things on the fly.             
+            conditionInfo(thisCond) = randomizeConditionField(conditionInfo(thisCond));
+
             
             if strcmpi(expInfo.randomizationType,'blocked')
                 %In the block design lets put a message and
@@ -377,6 +408,8 @@ end;
                     
                 end
             end
+            
+            
             
             %decide how to display trial depending on what type of trial it is.
             switch lower(conditionInfo(thisCond).type)
@@ -397,7 +430,7 @@ end;
                     
                     
                     %Here we'll add the response collection
-                    %There is a bit of redunancy with the 2afc code.  I
+                    %There is a bit of redunancy with the [-90,90,-90,90] code.  I
                     %don't like it but it will do for now.
                     if strcmp(lower(conditionInfo(thisCond).type),'simpleresponse')
                         
@@ -438,6 +471,20 @@ end;
                     
                     nullFirst = rand()>.5;
                     
+                    %If nullCondition is empty, check for an target
+                    %specification
+                    if isempty(conditionInfo(thisCond).nullCondition)
+                        if ~isempty(conditionInfo(thisCond).targetFieldname);
+                            conditionInfo(thisCond).nullCondition = conditionInfo(thisCond);
+                            fieldname = conditionInfo(thisCond).targetFieldname;
+                            delta     = conditionInfo(thisCond).targetDelta;
+                            conditionInfo(thisCond).(fieldname) = conditionInfo(thisCond).(fieldname) +delta;
+                        else
+                            error('Error in 2afc condition specification');
+                        end
+                    end
+                        
+                    
                     if nullFirst
                         firstCond = conditionInfo(thisCond).nullCondition;
                         secondCond = conditionInfo(thisCond);
@@ -447,15 +494,15 @@ end;
                     end
                     
                     trialData.nullFirst = nullFirst;
+                    expInfo.currentTrial.nullFirst = nullFirst;
                     
                     %option to make a beep before the first interval
                     if conditionInfo(thisCond).intervalBeep
                         
                         PsychPortAudio('Volume', expInfo.audioInfo.pahandle, 0.5); %the volume of the beep
                         
-                        intervalBeep = MakeBeep(500, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
+                        PsychPortAudio('FillBuffer', expInfo.audioInfo.pahandle, expInfo.audioInfo.intervalBeep);
                         
-                        PsychPortAudio('FillBuffer', expInfo.audioInfo.pahandle, [intervalBeep; intervalBeep]);
                         
                         PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
                         
@@ -465,7 +512,12 @@ end;
                         
                     end
                     
+                    %For nAFC type trials keep track of which one is being
+                    %shown now for the @trialFun
+                    expInfo.currentTrial.iAfc = 1;
+                    
                     [trialData.firstCond] = conditionInfo(thisCond).trialFun(expInfo,firstCond);
+                    expInfo.currentTrial.trialData = trialData;
                     
                     WaitSecs(conditionInfo(thisCond).iti);
                     
@@ -485,6 +537,10 @@ end;
                         
                     end
                     
+                    
+                    %For nAFC type trials keep track of which one is being
+                    %shown now for the @trialFun
+                    expInfo.currentTrial.iAfc = 2;
                     [trialData.secondCond] = conditionInfo(thisCond).trialFun(expInfo,secondCond);
                     
                     %Now validate that this structure
@@ -506,8 +562,8 @@ end;
                     
                     
                     if nullFirst
-                        %the null is now always the wrong answer because it doesn't
-                        %change speeds so if the null is first the correct response is j
+                        %the null is now always the wrong answer
+                        %so if the null is first the correct response is j
                         correctResponse = 'j';
                         incorrectResponse = 'f';
                     else %otherwise the null is second and the correct response is f

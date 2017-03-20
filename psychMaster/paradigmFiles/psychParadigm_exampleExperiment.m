@@ -4,7 +4,7 @@ function [conditionInfo, screenInfo] = psychParadigm_exampleExperiment(screenInf
 %conditionInfo contains per condition parameters.
 
 %paradigmName is what will be prepended to data files
-screenInfo.paradigmName = 'noiseDetect';
+screenInfo.paradigmName = 'exampleGaborInNoise';
 screenInfo.randomizationType = 'blocked';
 %Let's use kbQueue's because they have high performance.
 screenInfo.useKbQueue = true;
@@ -37,6 +37,7 @@ conditionInfo(1).freq = 4;
 conditionInfo(1).targetAmp = 0;
 conditionInfo(1).nReps = 2;
 conditionInfo(1).stimRadiusCm   = 1;    %stimulus size in cm;
+conditionInfo(1).label = 'Contrast: 0%'
 
 %For conditions 2-4 we're going to copy all the settings from condition 1
 %and just define what we want changed.
@@ -44,11 +45,14 @@ conditionInfo(1).stimRadiusCm   = 1;    %stimulus size in cm;
 conditionInfo(2) = conditionInfo(1);
 conditionInfo(2).targetAmp = .10;
 conditionInfo(2).nReps = 4;
+conditionInfo(2).label = 'Contrast: 10%'
 
 conditionInfo(3) = conditionInfo(1);
 conditionInfo(3).targetAmp = .30;
 conditionInfo(3).nReps = 4;
+conditionInfo(3).label = 'Contrast: 30%'
 
 conditionInfo(4) = conditionInfo(1);
 conditionInfo(4).targetAmp = .80;
 conditionInfo(4).nReps = 4;
+conditionInfo(4).label = 'Contrast: 80%'
