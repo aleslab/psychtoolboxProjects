@@ -506,9 +506,10 @@ end;
                         
                         PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
                         
-                        WaitSecs(expInfo.audioInfo.beepLength);
+                        %WaitSecs(expInfo.audioInfo.beepLength);
                         
-                        PsychPortAudio('Stop', expInfo.audioInfo.pahandle);
+                        PsychPortAudio('Stop', expInfo.audioInfo.pahandle,1);
+                        %PsychPortAudio('Stop', expInfo.audioInfo.pahandle);
                         
                     end
                     
@@ -531,9 +532,9 @@ end;
                         
                         PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
                         
-                        WaitSecs(expInfo.audioInfo.beepLength);
+                       % WaitSecs(expInfo.audioInfo.beepLength+1);
                         
-                        PsychPortAudio('Stop', expInfo.audioInfo.pahandle);
+                       PsychPortAudio('Stop', expInfo.audioInfo.pahandle,1);
                         
                     end
                     
