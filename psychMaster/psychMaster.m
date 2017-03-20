@@ -747,81 +747,85 @@ end;
                 expInfo = drawFixation(expInfo, expInfo.fixationInfo);
                 Screen('Flip', expInfo.curWindow);
                 
-                %valid response made, should we give feedback?
-            elseif conditionInfo(thisCond).giveFeedback
-                %Give feedback:
+                %valid response made, should we give audio or written feedback?
+            elseif conditionInfo(thisCond).giveFeedback ...
+                    || conditionInfo(thisCond).giveAudioFeedback
                 
+                
+                
+                %Draw up the fixation.
                 expInfo = drawFixation(expInfo, expInfo.fixationInfo);
                 
-                if expInfo.stereoMode == 0;
-                    expInfo.backRect = [0, 0, expInfo.windowSizePixels(1), expInfo.windowSizePixels(2)];
-                    Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
-                    DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
-                        'center', 'center', feedbackColor);
-                else %if a stereo mode blank out everything but the noise frame. 
+                %Draw written feedback if we're giving it.
+                if conditionInfo(thisCond).giveFeedback
                     
-                    %See if we are drawing a noise frame;
-                    frameIndex = find(strcmpi( {expInfo.fixationInfo.type},'noiseframe'),1,'first');
-
-                    if isempty(frameIndex)
-                        frameSize = 0;
-                    elseif ~isfield(expInfo.fixationInfo(frameIndex),'size') ...
-                           || isempty(expInfo.fixationInfo(frameIndex).size)
-                        frameSize = 100;
+                    if expInfo.stereoMode == 0;
+                        expInfo.backRect = [0, 0, expInfo.windowSizePixels(1), expInfo.windowSizePixels(2)];
+                        Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
+                        DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
+                            'center', 'center', feedbackColor);
+                    else %if a stereo mode blank out everything but the noise frame.
+                        
+                        %See if we are drawing a noise frame;
+                        frameIndex = find(strcmpi( {expInfo.fixationInfo.type},'noiseframe'),1,'first');
+                        
+                        if isempty(frameIndex)
+                            frameSize = 0;
+                        elseif ~isfield(expInfo.fixationInfo(frameIndex),'size') ...
+                                || isempty(expInfo.fixationInfo(frameIndex).size)
+                            frameSize = 100;
+                        else
+                            frameSize = expInfo.fixationInfo(frameIndex).size;
+                        end
+                        
+                        expInfo.backRect = [frameSize, ...
+                            frameSize, ...
+                            expInfo.windowSizePixels(1) - frameSize, ...
+                            expInfo.windowSizePixels(2) - frameSize];
+                        Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+                        Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
+                        Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
+                        Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
+                        DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
+                            'center', 'center', feedbackColor);
+                    end
+                end %closes: if conditionInfo(thisCond).giveFeedback
+                
+                %Start the audiofeedback right before the flip so it's
+                %roughly coincident with the written feedback.
+                if conditionInfo(thisCond).giveAudioFeedback
+                    
+                    
+                    
+                    if experimentData(iTrial).isResponseCorrect;
+                        
+                        correctBeep = MakeBeep(750, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
+                        PsychPortAudio('FillBuffer', expInfo.audioInfo.pahandle, [correctBeep; correctBeep]);
+                        PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
+                        %  PsychPortAudio('Stop', expInfo.audioInfo.pahandle,1);
+                        
                     else
-                        frameSize = expInfo.fixationInfo(frameIndex).size;
+                        
+                        incorrectBeep = MakeBeep(250, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
+                        PsychPortAudio('FillBuffer', expInfo.audioInfo.pahandle, [incorrectBeep; incorrectBeep]);
+                        PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
+                        % PsychPortAudio('Stop', expInfo.audioInfo.pahandle,1);
+                        
                     end
                     
-                    expInfo.backRect = [frameSize, ...
-                        frameSize, ...
-                        expInfo.windowSizePixels(1) - frameSize, ...
-                        expInfo.windowSizePixels(2) - frameSize];
-                    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-                    Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
-                    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-                    Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
-                    DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
-                        'center', 'center', feedbackColor);
                 end
                 
                 
                 Screen('Flip', expInfo.curWindow);
+                %Show feedback for 1.5 seconds
+                %JMA- Consider making this a tunable parameter.
                 WaitSecs(1.5);
                 
-                expInfo = drawFixation(expInfo, expInfo.fixationInfo);
-                Screen('Flip', expInfo.curWindow);
-                
-            elseif conditionInfo(thisCond).giveAudioFeedback
-                
-                
-                expInfo = drawFixation(expInfo, expInfo.fixationInfo);
-                
-                Screen('Flip', expInfo.curWindow);
-                
-                
-                if experimentData(iTrial).isResponseCorrect;
-                    
-                    correctBeep = MakeBeep(750, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
-                    
-                    PsychPortAudio('FillBuffer', expInfo.audioInfo.pahandle, [correctBeep; correctBeep]);
-                    
-                    PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
-                                        
-                    PsychPortAudio('Stop', expInfo.audioInfo.pahandle,1);
-                    
-                else
-                    
-                    incorrectBeep = MakeBeep(250, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
-                    
-                    PsychPortAudio('FillBuffer', expInfo.audioInfo.pahandle, [incorrectBeep; incorrectBeep]);
-                    
-                    PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
-                                        
-                    PsychPortAudio('Stop', expInfo.audioInfo.pahandle,1);
-                    
-                end
-                
-            end
+            end %closes: elseif conditionInfo(thisCond).giveFeedbac
+            
+            expInfo = drawFixation(expInfo, expInfo.fixationInfo);
+            Screen('Flip', expInfo.curWindow);
+            
             
             
             experimentData(iTrial).trialData = trialData;
