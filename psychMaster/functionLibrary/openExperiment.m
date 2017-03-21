@@ -57,17 +57,7 @@ if ~isfield(expInfo,'stereoMode')
     expInfo.stereoMode = 0;
 end
 
-%For stereo modes default mode has a fixation cross and a frame to aid
-%holding fixation.
-if ~isfield(expInfo,'fixationInfo')    
-    if expInfo.stereoMode ~=0
-        expInfo.fixationInfo(1).type = 'cross';
-        expInfo.fixationInfo(2).type = 'noiseFrame';
-        expInfo.fixationInfo(2).size = 100;
-    else
-        expInfo.fixationInfo(1).type = '';
-    end
-end
+
 %Default viewing distance
 if ~isfield(expInfo,'viewingDistance')
     expInfo.viewingDistance = 57;
@@ -186,6 +176,17 @@ expInfo.pixPerCm = pixelWidth/expInfo.monitorWidth;
 expInfo.windowSizePixels = [pixelWidthWin, pixelHeightWin];
 
 
+%For stereo modes default mode has a fixation cross and a frame to aid
+%holding fixation.
+if ~isfield(expInfo,'fixationInfo')    
+    if expInfo.stereoMode ~=0
+        expInfo.fixationInfo(1).type = 'cross';
+        expInfo.fixationInfo(2).type = 'noiseFrame';
+        expInfo.fixationInfo(2).size = 100/expInfo.ppd;
+    else
+        expInfo.fixationInfo(1).type = '';
+    end
+end
 
 %Figure out a better way of handling turning on/off audio.
 if ~isfield(expInfo,'enableAudio')

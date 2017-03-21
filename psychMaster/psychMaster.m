@@ -88,7 +88,9 @@ function [] = psychMaster(sessionInfo)
 %              'blocked' - repeatedly present a condition nReps time than
 %                          switch conditions. But present condition blocks in random order.
 %
-%   fixationInfo      = [] Is a structure containing 
+%   fixationInfo      = [] Is a structure containing the description of
+%                       what to draw for the fixation marker. 
+%                       See also drawFixation
 %   stereoMode        = [0] A number selecting a PTB stereomode.
 %
 %
@@ -722,18 +724,20 @@ end;
                     frameIndex = find(strcmpi( {expInfo.fixationInfo.type},'noiseframe'),1,'first');
                     
                     if isempty(frameIndex)
-                        frameSize = 0;
+                        frameSizeDeg = 0;
                     elseif  ~isfield(expInfo.fixationInfo(frameIndex),'size') ...
                             || isempty(expInfo.fixationInfo(frameIndex).size)
-                        frameSize = 100;
+                        frameSizeDeg = 100/expInfo.ppd;
                     else
-                        frameSize = expInfo.fixationInfo(frameIndex).size;
+                        frameSizeDeg = expInfo.fixationInfo(frameIndex).size;
                     end
                     
-                    expInfo.backRect = [frameSize, ...
-                        frameSize, ...
-                        expInfo.windowSizePixels(1) - frameSize, ...
-                        expInfo.windowSizePixels(2) - frameSize];
+                    frameSizePix = frameSizeDeg*expInfo.ppd;
+                    
+                    expInfo.backRect = [frameSizePix, ...
+                        frameSizePix, ...
+                        expInfo.windowSizePixels(1) - frameSizePix, ...
+                        expInfo.windowSizePixels(2) - frameSizePix];
                     
                     backRect = [expInfo.backRect];
                     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
@@ -774,18 +778,18 @@ end;
                         frameIndex = find(strcmpi( {expInfo.fixationInfo.type},'noiseframe'),1,'first');
                         
                         if isempty(frameIndex)
-                            frameSize = 0;
+                            frameSizeDeg = 0;
                         elseif ~isfield(expInfo.fixationInfo(frameIndex),'size') ...
                                 || isempty(expInfo.fixationInfo(frameIndex).size)
-                            frameSize = 100;
+                            frameSizeDeg = 100/expInfo.ppd;
                         else
-                            frameSize = expInfo.fixationInfo(frameIndex).size;
+                            frameSizeDeg = expInfo.fixationInfo(frameIndex).size;
                         end
-                        
+                        frameSizePix = frameSizeDeg*expInfo.ppd;
                         expInfo.backRect = [frameSize, ...
                             frameSize, ...
-                            expInfo.windowSizePixels(1) - frameSize, ...
-                            expInfo.windowSizePixels(2) - frameSize];
+                            expInfo.windowSizePixels(1) - frameSizePix, ...
+                            expInfo.windowSizePixels(2) - frameSizePix];
                         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
                         Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
                         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
