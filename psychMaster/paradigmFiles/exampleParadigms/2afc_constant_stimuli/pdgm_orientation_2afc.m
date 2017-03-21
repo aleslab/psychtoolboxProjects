@@ -14,10 +14,19 @@ expInfo.randomizationType = 'random';
 %Define the viewing distance.
 expInfo.viewingDistance = 57;
 
+%Setup a simple fixation cross.
+expInfo.fixationInfo(1).type  = 'cross';
+expInfo.fixationInfo(1).size  = .5;
+expInfo.fixationInfo(1).lineWidthPix = 2;
+expInfo.fixationInfo(1).color = 0;
+
 %Instructions are displayed once at the begining of an experiment
 expInfo.instructions = ['This is an orientation discrimination experiment\n' ...
-    'Press j is the 2nd stimulus is clockwise from the first\n'...
-    'Press f is the 2nd stimulus is anticlockwise from the first\n']
+    'Please judge whether or not the 2nd stimulus rotates clockwise\n' ...
+    'or anticlockwise from the 1st\n' ...
+    'Wait till the box appears before responding\n' ...
+    'Press ''j'' for clockwise \n'...
+    'Press ''f'' for anticlockwise\n']
 
 %This defines what function to call to draw the condition
 %Crucial: requires the @ sign prefix.  Because it needs it to be a
