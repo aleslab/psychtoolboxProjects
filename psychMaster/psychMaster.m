@@ -402,6 +402,8 @@ end;
         %Adding some info about the current trial to expInfo. This is so
         %trialFun functions can use it.
         expInfo.currentTrial.number = iTrial;
+        expInfo = drawFixation(expInfo, expInfo.fixationInfo);
+        Screen('Flip', expInfo.curWindow);
         
         while iTrial <=length(conditionList)
             
@@ -547,6 +549,8 @@ end;
                     [trialData.firstCond] = conditionInfo(thisCond).trialFun(expInfo,firstCond);
                     expInfo.currentTrial.trialData = trialData;
                     
+                    expInfo = drawFixation(expInfo, expInfo.fixationInfo);                    
+                    Screen('Flip', expInfo.curWindow);
                     WaitSecs(conditionInfo(thisCond).iti);
                     
                     %option to make a beep before the second interval
