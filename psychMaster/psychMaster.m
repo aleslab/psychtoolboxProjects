@@ -19,22 +19,21 @@ function [] = psychMaster(sessionInfo)
 %
 %   Mandatory fields: nReps, trialFun, iti
 %   trialFun  = a function handle to the trial function
+%               [ ADD MORE DOCUMENTATION HERE ] 
 %   nReps     = number of reptitions to run this condition
 %               (each condition can have a different number).
 %   iti       = The intertrial interval in seconds. Currently implemented
 %               with a simple WaitSecs() call so the iti is AT LEAST this long
 %
 %
-%   Optional fields with defaults in []:f
-%   label        = [''] A short string that identifies the condition
-%                  e.g. 'vertical', 'Contrast: 25', or  'Target: Red'
-%   giveFeedback = [false] Bolean whether to print feedback after trial
+%   Optional fields with defaults in []:
+%
 %   type = ['generic'] A string that identifies what type of trial, choices:
 %          'Generic'  -  The most basic trial handling. Only handles
 %                        randomizing, trial presentation and saving data.
 %                        The @trialFun will handle collecting responses and
 %                        feedback
-%    'simpleResponse' -  Like 'Generic' but waits for a response after
+%          'simpleResponse' -  Like 'Generic' but waits for a response after
 %                        every trial and saves it.
 %          '2afc'     -  This will implement 2 temporal alternative forced
 %                        choice. This option will collect responses and
@@ -44,29 +43,48 @@ function [] = psychMaster(sessionInfo)
 %                          stimulus. 
 % 
 %                          nullCondition = a conditionInfo structure with a
-%                                          single condition that will be used
-%                                          as the comparison
-%                         or you can specify the fieldname that will be
-%                         used to set the target value and a "delta" or
-%                         increment. This is used when a random value is
-%                         being set on every trial
+%                                          single condition that will be
+%                                          used as the comparison or you
+%                                          can specify the fieldname that
+%                                          will be used to set the target
+%                                          value and a "delta" or
+%                                          increment. This is used when a
+%                                          random value is being set on
+%                                          every trial
 %                          targetFieldname = string name of field
 %                          targetDelta     = amount to change
-%                                           (targetFieldname) by (i.e. +1, -10)
+%                                           (targetFieldname) by (i.e. +1,
+%                                           -10)
 %                            
-%   'directionreport' - For dealing with data from a direction
+%           'directionreport' - For dealing with data from a direction
 %                       discrimination task where there are 8 different
 %                       options for response in a "circle".
-%   'randomizeField'  - [] This option allows for randomizing an aspect of a
+%
+%   label        = [''] A short string that identifies the condition
+%                  e.g. 'vertical', 'Contrast: 25', or  'Target: Red'
+%
+%   giveFeedback = [false] Bolean whether to print feedback after trial.
+%                  2AFC mode automatically sets the message. But for other
+%                  modes your "trialfun" will display whatever string is in
+%                  trialData.feedbackMsg
+%
+%   giveAudioFeedback = [false] Bolean whether to play feedback sound after trial.
+%                  2AFC mode automatically sets the sound. But for other
+%                  modes your "trialfun" will display whatever string is in
+%                  trialData.feedbackSnd
+%
+%   randomizeField  - [] This option allows for randomizing an aspect of a
 %                     condition on each trial. It is a structure with as
 %                     many entries as fields to randomize.  For each entry
 %                     the following values determine the randomization:
 %                        fieldname = a string indicating which field to randomize 
-%                        type = ['gaussian'] or 'uniform','custom'
-%                        param = For gaussian it is the mean and
-%                        standard deviation, For uniform it's the upper and
-%                        lower bounds. If 'custom' it is a handle to the
-%                        function to call to generate the random value.
+%                        type      = ['gaussian'] or 'uniform','custom'
+%                        param     = For gaussian it is the mean and
+%                                    standard deviation, For uniform it's
+%                                    the upper and lower bounds. If
+%                                    'custom' it is a handle to the
+%                                    function to call to generate the
+%                                    random value.
 %                  
 %
 %
@@ -89,8 +107,10 @@ function [] = psychMaster(sessionInfo)
 %                          switch conditions. But present condition blocks in random order.
 %
 %   fixationInfo      = [] Is a structure containing the description of
-%                       what to draw for the fixation marker. 
+%                       what to draw for the fixation marker. Check the
+%                       help for drawFixation for a description.
 %                       See also drawFixation
+
 %   stereoMode        = [0] A number selecting a PTB stereomode.
 %
 %
