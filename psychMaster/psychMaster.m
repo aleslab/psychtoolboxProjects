@@ -77,18 +77,19 @@ function [] = psychMaster(sessionInfo)
 %   the "trialFun". See help openExperiment for more information.
 %
 %   Notable expInfo fields:
-%   viewingDistance =  [57] The viewing distance in cm.
+%   viewingDistance   =  [57] The viewing distance in cm.
 %
-%   instructions    = [''] A message to display before the start of
+%   instructions      = [''] A message to display before the start of
 %                      experiment
 %
 %   randomizationType = ['random'] a short string that sets how trials are
 %                      randomized it can take the following values:
 %              'random' - fully randomize all conditions
 %              'blocked' - repeatedly present a condition nReps time than
-%                          switch conditions. But present conditions in random order.
+%                          switch conditions. But present condition blocks in random order.
 %
-%   stereoMode = [0] A number selecting a PTB stereomode.
+%   fixationInfo      = [] Is a structure containing 
+%   stereoMode        = [0] A number selecting a PTB stereomode.
 %
 %
 %
@@ -608,11 +609,14 @@ end;
                             experimentData(iTrial).isResponseCorrect = true;
                             trialData.validTrial = true;
                             trialData.feedbackMsg = 'Correct';
-                            
+                            correctBeep = MakeBeep(750, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
+                            trialData.audioFeedbackSnd  = [correctBeep; correctBeep];
                         elseif trialData.firstPress(KbName(incorrectResponse))
                             experimentData(iTrial).isResponseCorrect = false;
                             trialData.validTrial = true;
                             trialData.feedbackMsg = 'Incorrect';
+                            incorrectBeep = MakeBeep(250, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
+                            trialData.audioFeedbackSnd  = [incorrectBeep; incorrectBeep];
                         end
                     end
                     
@@ -795,24 +799,9 @@ end;
                 %roughly coincident with the written feedback.
                 if conditionInfo(thisCond).giveAudioFeedback
                     
-                    
-                    
-                    if experimentData(iTrial).isResponseCorrect;
-                        
-                        correctBeep = MakeBeep(750, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
-                        PsychPortAudio('FillBuffer', expInfo.audioInfo.pahandle, [correctBeep; correctBeep]);
-                        PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
-                        %  PsychPortAudio('Stop', expInfo.audioInfo.pahandle,1);
-                        
-                    else
-                        
-                        incorrectBeep = MakeBeep(250, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
-                        PsychPortAudio('FillBuffer', expInfo.audioInfo.pahandle, [incorrectBeep; incorrectBeep]);
-                        PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
-                        % PsychPortAudio('Stop', expInfo.audioInfo.pahandle,1);
-                        
-                    end
-                    
+                    PsychPortAudio('FillBuffer', expInfo.audioInfo.pahandle, trialData.audioFeedbackSnd);
+                    PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
+                    %  PsychPortAudio('Stop', expInfo.audioInfo.pahandle,1);
                 end
                 
                 
