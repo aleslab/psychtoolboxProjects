@@ -24,3 +24,8 @@ assert(minAngleDiff(20,-20)==40,'Failure')
 assert(minAngleDiff(-80,80)==20,'Failure')
 %% 13
 assert(minAngleDiff(200,-200)==40,'Failure')
+%% 13 Check vector input
+
+delta = minAngleDiff([80 -80],[30 30]);
+assert(delta(1) == 50 && delta(2) == 70, 'Failure')
+

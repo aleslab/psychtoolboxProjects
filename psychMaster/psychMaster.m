@@ -19,39 +19,75 @@ function [] = psychMaster(sessionInfo)
 %
 %   Mandatory fields: nReps, trialFun, iti
 %   trialFun  = a function handle to the trial function
+%               [ ADD MORE DOCUMENTATION HERE ] 
 %   nReps     = number of reptitions to run this condition
 %               (each condition can have a different number).
 %   iti       = The intertrial interval in seconds. Currently implemented
 %               with a simple WaitSecs() call so the iti is AT LEAST this long
 %
 %
-%   Optional fields with defaults in []:f
-%   label        = [''] A short string that identifies the condition
-%                  e.g. 'vertical', 'Contrast: 25', or  'Target: Red'
-%   giveFeedback = [false] Bolean whether to print feedback after trial
+%   Optional fields with defaults in []:
+%
 %   type = ['generic'] A string that identifies what type of trial, choices:
 %          'Generic'  -  The most basic trial handling. Only handles
 %                        randomizing, trial presentation and saving data.
 %                        The @trialFun will handle collecting responses and
 %                        feedback
-%    'simpleResponse' -  Like 'Generic' but waits for a response after
+%          'simpleResponse' -  Like 'Generic' but waits for a response after
 %                        every trial and saves it.
 %          '2afc'     -  This will implement 2 temporal alternative forced
 %                        choice. This option will collect responses and
 %                        will optionally provide feedback (if giveFeedback is set to TRUE).
-%                          Requires 2 extra fields:
+%                          2afc can be specified in two ways. First you can
+%                          provide a complete description of the null
+%                          stimulus. 
+% 
 %                          nullCondition = a conditionInfo structure with a
-%                                          single condition that will be used
-%                                          as the comparison
-%                          isNullCorrect = [false] a boolean that sets which
-%                                          condition is the correct condition.
-%                                          If set to true the null condition
-%                                          is treated as correct. If set to
-%                                          false (default) the other condition
-%                                          is considered correct.
-%   'directionreport' - For dealing with data from a direction
+%                                          single condition that will be
+%                                          used as the comparison or you
+%                                          can specify the fieldname that
+%                                          will be used to set the target
+%                                          value and a "delta" or
+%                                          increment. This is used when a
+%                                          random value is being set on
+%                                          every trial
+%                          targetFieldname = string name of field
+%                          targetDelta     = amount to change
+%                                           (targetFieldname) by (i.e. +1,
+%                                           -10)
+%                            
+%           'directionreport' - For dealing with data from a direction
 %                       discrimination task where there are 8 different
 %                       options for response in a "circle".
+%
+%   label        = [''] A short string that identifies the condition
+%                  e.g. 'vertical', 'Contrast: 25', or  'Target: Red'
+%
+%   giveFeedback = [false] Bolean whether to print feedback after trial.
+%                  2AFC mode automatically sets the message. But for other
+%                  modes your "trialfun" will display whatever string is in
+%                  trialData.feedbackMsg
+%
+%   giveAudioFeedback = [false] Bolean whether to play feedback sound after trial.
+%                  2AFC mode automatically sets the sound. But for other
+%                  modes your "trialfun" will display whatever string is in
+%                  trialData.feedbackSnd
+%
+%   randomizeField  - [] This option allows for randomizing an aspect of a
+%                     condition on each trial. It is a structure with as
+%                     many entries as fields to randomize.  For each entry
+%                     the following values determine the randomization:
+%                        fieldname = a string indicating which field to randomize 
+%                        type      = ['gaussian'] or 'uniform','custom'
+%                        param     = For gaussian it is the mean and
+%                                    standard deviation, For uniform it's
+%                                    the upper and lower bounds. If
+%                                    'custom' it is a handle to the
+%                                    function to call to generate the
+%                                    random value.
+%                  
+%
+%
 %
 %   expInfo defines experiment wide settings. Mostly things that are
 %   for PsychToolbox.  But also other things that are aren't specific to a
@@ -59,18 +95,25 @@ function [] = psychMaster(sessionInfo)
 %   the "trialFun". See help openExperiment for more information.
 %
 %   Notable expInfo fields:
-%   viewingDistance =  [57] The viewing distance in cm.
+%   viewingDistance   =  [57] The viewing distance in cm.
 %
-%   instructions    = [''] A message to display before the start of
+%   instructions      = [''] A message to display before the start of
 %                      experiment
 %
 %   randomizationType = ['random'] a short string that sets how trials are
 %                      randomized it can take the following values:
 %              'random' - fully randomize all conditions
 %              'blocked' - repeatedly present a condition nReps time than
-%                          switch conditions. But present conditions in random order.
+%                          switch conditions. But present condition blocks in random order.
 %
-%   stereoMode = [0] A number selecting a PTB stereomode.
+%   fixationInfo      = [] Is a structure containing the description of
+%                       what to draw for the fixation marker. Check the
+%                       help for drawFixation for a description.
+%                       See also drawFixation
+
+%   stereoMode        = [0] A number selecting a PTB stereomode.
+%
+%
 %
 %   psychMaster will loop over the different conditions in the paradigm
 %   file and run the conditionInfo.trialFun function to render the
@@ -88,12 +131,13 @@ function [] = psychMaster(sessionInfo)
 
 %Initial setup
 
-psychMasterVer = '0.20';
+psychMasterVer = '0.31.0';
 
 thisFile = mfilename('fullpath');
 [thisDir, ~, ~] = fileparts(thisFile);
 
 %Try using the "onCleanup" function to detect ctrl-C aborts
+%But this doesn't work easily.  
 %finishup = onCleanup(@nonExpectedExit);
 
 %Check if path is correct, if not try and fix it.
@@ -116,11 +160,15 @@ diary(diaryName);
 
 %the sessionInfo structure is used to store information about the current session
 %that is being run
+%If it doesn't exist or is empty we are starting a new session. 
+%So we need to initialize sessionInfo. 
 if ~exist('sessionInfo','var') || isempty(sessionInfo)
     %  sessionInfo.participantID = input('What is the participant ID:  ','s');
     %store the date. use: datestr(sessionInfo.sessionDate) to make human readable
     sessionInfo.sessionDate = now;
     sessionInfo.psychMasterVer = psychMasterVer;
+    sessionInfo.participantID = 'null';
+    sessionInfo.tag           = '';
     [~,ptbVerStruct]=PsychtoolboxVersion;
     sessionInfo.ptbVersion = ptbVerStruct;
     rng('default'); %Need to reset the rng before shuffling in case the legacy RNG has activated before we started psychMaster
@@ -132,6 +180,7 @@ end
 
 
 expInfo     = struct();
+initConditionInfo = struct();
 
 %Check for preferences.  Preferences enable  easy configuration changes for
 %different machines without having to hardcode things.
@@ -222,19 +271,7 @@ try
     end
     
     
-    %Try to get the git commit hash and save it to the expInfo
-    %
-    %JMA: This only works for a current git repository.
-    %TODO: Add a mechanism for including this information in standalone
-    %builds.
-    %Fix this to get the right directory
-    [errorStatus,result]= system('git rev-parse --verify HEAD');
-    
-    if ~errorStatus
-        sessionInfo.gitHash = result;
-    else
-        sessionInfo.gitHash = '         ';
-    end
+    sessionInfo.gitHash = ptbCorgiGitHash();
     
     %loop to enable firing single conditions for testing, could also be
     %extended to multiple blocks in the future.
@@ -261,9 +298,10 @@ try
     %If returnToGui is TRUE we ran a test trial and want the gui to pop-up
     while sessionInfo.returnToGui
         
+    
         [sessionInfo,expInfo,conditionInfo] = pmGui(sessionInfo,expInfo,sessionInfo.backupConditionInfo);
         drawnow; %<- required to actually close the gui.
-        
+
         %User canceled after opening experiment, just close and quit the function.
         if sessionInfo.userCancelled
             cleanupPsychMaster();
@@ -329,7 +367,9 @@ end;
         
         conditionInfo = validateConditions(expInfo,conditionInfo);
         
-        %This code randomizes the condition order
+        %Contains the information in conditionInfo before trials start that
+        %could potentially change values.
+        initConditionInfo = conditionInfo;
         
         nConditions = length(conditionInfo);
         
@@ -359,6 +399,12 @@ end;
         
         iTrial = 1;
         
+        %Adding some info about the current trial to expInfo. This is so
+        %trialFun functions can use it.
+        expInfo.currentTrial.number = iTrial;
+        expInfo = drawFixation(expInfo, expInfo.fixationInfo);
+        Screen('Flip', expInfo.curWindow);
+        
         while iTrial <=length(conditionList)
             
             validTrialList(iTrial)= true;  %initialize this index variable to keep track of bad/aborted trials
@@ -367,6 +413,13 @@ end;
             feedbackColor = [1];
             
             thisCond = conditionList(iTrial);
+            
+            %Handle randomizing condition fields
+            %This changes the conditionInfo structure so is a bit of a
+            %danger. Well it's a very big danger. But it's the easiest way
+            %to implement changing things on the fly.             
+            conditionInfo(thisCond) = randomizeConditionField(conditionInfo(thisCond));
+
             
             if strcmpi(expInfo.randomizationType,'blocked')
                 %In the block design lets put a message and
@@ -383,6 +436,8 @@ end;
                     
                 end
             end
+            
+            
             
             %decide how to display trial depending on what type of trial it is.
             switch lower(conditionInfo(thisCond).type)
@@ -403,7 +458,7 @@ end;
                     
                     
                     %Here we'll add the response collection
-                    %There is a bit of redunancy with the 2afc code.  I
+                    %There is a bit of redunancy with the [-90,90,-90,90] code.  I
                     %don't like it but it will do for now.
                     if strcmp(lower(conditionInfo(thisCond).type),'simpleresponse')
                         
@@ -444,6 +499,21 @@ end;
                     
                     nullFirst = rand()>.5;
                     
+                    %If targetFieldname is set use this to setup the
+                    %condition values.
+                    if ~isempty(conditionInfo(thisCond).targetFieldname);
+                            conditionInfo(thisCond).nullCondition = conditionInfo(thisCond);
+                            fieldname = conditionInfo(thisCond).targetFieldname;
+                            delta     = conditionInfo(thisCond).targetDelta;
+                            conditionInfo(thisCond).(fieldname) = conditionInfo(thisCond).(fieldname) +delta;
+                            
+                            experimentData(iTrial).targetFieldname = fieldname;
+                            experimentData(iTrial).targetValue = conditionInfo(thisCond).(fieldname);
+                            experimentData(iTrial).nullValue = conditionInfo(thisCond).nullCondition.(fieldname);
+                            experimentData(iTrial).targetDelta = delta;
+                    end
+            
+                    
                     if nullFirst
                         firstCond = conditionInfo(thisCond).nullCondition;
                         secondCond = conditionInfo(thisCond);
@@ -453,26 +523,34 @@ end;
                     end
                     
                     trialData.nullFirst = nullFirst;
+                    expInfo.currentTrial.nullFirst = nullFirst;
                     
                     %option to make a beep before the first interval
                     if conditionInfo(thisCond).intervalBeep
                         
                         PsychPortAudio('Volume', expInfo.audioInfo.pahandle, 0.5); %the volume of the beep
                         
-                        intervalBeep = MakeBeep(500, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
+                        PsychPortAudio('FillBuffer', expInfo.audioInfo.pahandle, expInfo.audioInfo.intervalBeep);
                         
-                        PsychPortAudio('FillBuffer', expInfo.audioInfo.pahandle, [intervalBeep; intervalBeep]);
                         
                         PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
                         
-                        WaitSecs(expInfo.audioInfo.beepLength);
+                        %WaitSecs(expInfo.audioInfo.beepLength);
                         
-                        PsychPortAudio('Stop', expInfo.audioInfo.pahandle);
+                        PsychPortAudio('Stop', expInfo.audioInfo.pahandle,1);
+                        %PsychPortAudio('Stop', expInfo.audioInfo.pahandle);
                         
                     end
                     
-                    [trialData.firstCond] = conditionInfo(thisCond).trialFun(expInfo,firstCond);
+                    %For nAFC type trials keep track of which one is being
+                    %shown now for the @trialFun
+                    expInfo.currentTrial.iAfc = 1;
                     
+                    [trialData.firstCond] = conditionInfo(thisCond).trialFun(expInfo,firstCond);
+                    expInfo.currentTrial.trialData = trialData;
+                    
+                    expInfo = drawFixation(expInfo, expInfo.fixationInfo);                    
+                    Screen('Flip', expInfo.curWindow);
                     WaitSecs(conditionInfo(thisCond).iti);
                     
                     %option to make a beep before the second interval
@@ -485,12 +563,16 @@ end;
                         
                         PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
                         
-                        WaitSecs(expInfo.audioInfo.beepLength);
+                       % WaitSecs(expInfo.audioInfo.beepLength+1);
                         
-                        PsychPortAudio('Stop', expInfo.audioInfo.pahandle);
+                       PsychPortAudio('Stop', expInfo.audioInfo.pahandle,1);
                         
                     end
                     
+                    
+                    %For nAFC type trials keep track of which one is being
+                    %shown now for the @trialFun
+                    expInfo.currentTrial.iAfc = 2;
                     [trialData.secondCond] = conditionInfo(thisCond).trialFun(expInfo,secondCond);
                     
                     %Now validate that this structure
@@ -512,8 +594,8 @@ end;
                     
                     
                     if nullFirst
-                        %the null is now always the wrong answer because it doesn't
-                        %change speeds so if the null is first the correct response is j
+                        %the null is now always the wrong answer
+                        %so if the null is first the correct response is j
                         correctResponse = 'j';
                         incorrectResponse = 'f';
                     else %otherwise the null is second and the correct response is f
@@ -553,11 +635,14 @@ end;
                             experimentData(iTrial).isResponseCorrect = true;
                             trialData.validTrial = true;
                             trialData.feedbackMsg = 'Correct';
-                            
+                            correctBeep = MakeBeep(750, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
+                            trialData.audioFeedbackSnd  = [correctBeep; correctBeep];
                         elseif trialData.firstPress(KbName(incorrectResponse))
                             experimentData(iTrial).isResponseCorrect = false;
                             trialData.validTrial = true;
                             trialData.feedbackMsg = 'Incorrect';
+                            incorrectBeep = MakeBeep(250, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
+                            trialData.audioFeedbackSnd  = [incorrectBeep; incorrectBeep];
                         end
                     end
                     
@@ -630,6 +715,8 @@ end;
             
             
             experimentData(iTrial).condNumber = thisCond;
+            experimentData(iTrial).condInfo = conditionInfo(thisCond);
+            
             
             if ~trialData.validTrial  %trial not valid
                 
@@ -661,18 +748,20 @@ end;
                     frameIndex = find(strcmpi( {expInfo.fixationInfo.type},'noiseframe'),1,'first');
                     
                     if isempty(frameIndex)
-                        frameSize = 0;
+                        frameSizeDeg = 0;
                     elseif  ~isfield(expInfo.fixationInfo(frameIndex),'size') ...
                             || isempty(expInfo.fixationInfo(frameIndex).size)
-                        frameSize = 100;
+                        frameSizeDeg = 100/expInfo.ppd;
                     else
-                        frameSize = expInfo.fixationInfo(frameIndex).size;
+                        frameSizeDeg = expInfo.fixationInfo(frameIndex).size;
                     end
                     
-                    expInfo.backRect = [frameSize, ...
-                        frameSize, ...
-                        expInfo.windowSizePixels(1) - frameSize, ...
-                        expInfo.windowSizePixels(2) - frameSize];
+                    frameSizePix = frameSizeDeg*expInfo.ppd;
+                    
+                    expInfo.backRect = [frameSizePix, ...
+                        frameSizePix, ...
+                        expInfo.windowSizePixels(1) - frameSizePix, ...
+                        expInfo.windowSizePixels(2) - frameSizePix];
                     
                     backRect = [expInfo.backRect];
                     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
@@ -690,85 +779,70 @@ end;
                 expInfo = drawFixation(expInfo, expInfo.fixationInfo);
                 Screen('Flip', expInfo.curWindow);
                 
-                %valid response made, should we give feedback?
-            elseif conditionInfo(thisCond).giveFeedback
-                %Give feedback:
+                %valid response made, should we give audio or written feedback?
+            elseif conditionInfo(thisCond).giveFeedback ...
+                    || conditionInfo(thisCond).giveAudioFeedback
                 
+                
+                
+                %Draw up the fixation.
                 expInfo = drawFixation(expInfo, expInfo.fixationInfo);
                 
-                if expInfo.stereoMode == 0;
-                    expInfo.backRect = [0, 0, expInfo.windowSizePixels(1), expInfo.windowSizePixels(2)];
-                    Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
-                    DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
-                        'center', 'center', feedbackColor);
-                else %if a stereo mode blank out everything but the noise frame. 
+                %Draw written feedback if we're giving it.
+                if conditionInfo(thisCond).giveFeedback
                     
-                    %See if we are drawing a noise frame;
-                    frameIndex = find(strcmpi( {expInfo.fixationInfo.type},'noiseframe'),1,'first');
-
-                    if isempty(frameIndex)
-                        frameSize = 0;
-                    elseif ~isfield(expInfo.fixationInfo(frameIndex),'size') ...
-                           || isempty(expInfo.fixationInfo(frameIndex).size)
-                        frameSize = 100;
-                    else
-                        frameSize = expInfo.fixationInfo(frameIndex).size;
+                    if expInfo.stereoMode == 0;
+                        expInfo.backRect = [0, 0, expInfo.windowSizePixels(1), expInfo.windowSizePixels(2)];
+                        Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
+                        DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
+                            'center', 'center', feedbackColor);
+                    else %if a stereo mode blank out everything but the noise frame.
+                        
+                        %See if we are drawing a noise frame;
+                        frameIndex = find(strcmpi( {expInfo.fixationInfo.type},'noiseframe'),1,'first');
+                        
+                        if isempty(frameIndex)
+                            frameSizeDeg = 0;
+                        elseif ~isfield(expInfo.fixationInfo(frameIndex),'size') ...
+                                || isempty(expInfo.fixationInfo(frameIndex).size)
+                            frameSizeDeg = 100/expInfo.ppd;
+                        else
+                            frameSizeDeg = expInfo.fixationInfo(frameIndex).size;
+                        end
+                        frameSizePix = frameSizeDeg*expInfo.ppd;
+                        expInfo.backRect = [frameSize, ...
+                            frameSize, ...
+                            expInfo.windowSizePixels(1) - frameSizePix, ...
+                            expInfo.windowSizePixels(2) - frameSizePix];
+                        Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+                        Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
+                        Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
+                        Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
+                        DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
+                            'center', 'center', feedbackColor);
                     end
+                end %closes: if conditionInfo(thisCond).giveFeedback
+                
+                %Start the audiofeedback right before the flip so it's
+                %roughly coincident with the written feedback.
+                if conditionInfo(thisCond).giveAudioFeedback
                     
-                    expInfo.backRect = [frameSize, ...
-                        frameSize, ...
-                        expInfo.windowSizePixels(1) - frameSize, ...
-                        expInfo.windowSizePixels(2) - frameSize];
-                    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-                    Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
-                    Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-                    Screen('FillRect', expInfo.curWindow, expInfo.bckgnd, expInfo.backRect);
-                    DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
-                        'center', 'center', feedbackColor);
+                    PsychPortAudio('FillBuffer', expInfo.audioInfo.pahandle, trialData.audioFeedbackSnd);
+                    PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
+                    %  PsychPortAudio('Stop', expInfo.audioInfo.pahandle,1);
                 end
                 
                 
                 Screen('Flip', expInfo.curWindow);
+                %Show feedback for 1.5 seconds
+                %JMA- Consider making this a tunable parameter.
                 WaitSecs(1.5);
                 
-                expInfo = drawFixation(expInfo, expInfo.fixationInfo);
-                Screen('Flip', expInfo.curWindow);
-                
-            elseif conditionInfo(thisCond).giveAudioFeedback
-                
-                
-                expInfo = drawFixation(expInfo, expInfo.fixationInfo);
-                
-                Screen('Flip', expInfo.curWindow);
-                
-                
-                if experimentData(iTrial).isResponseCorrect;
-                    
-                    correctBeep = MakeBeep(750, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
-                    
-                    PsychPortAudio('FillBuffer', expInfo.audioInfo.pahandle, [correctBeep; correctBeep]);
-                    
-                    PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
-                    
-                    WaitSecs(expInfo.audioInfo.beepLength + expInfo.audioInfo.postFeedbackPause);
-                    
-                    PsychPortAudio('Stop', expInfo.audioInfo.pahandle);
-                    
-                else
-                    
-                    incorrectBeep = MakeBeep(250, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
-                    
-                    PsychPortAudio('FillBuffer', expInfo.audioInfo.pahandle, [incorrectBeep; incorrectBeep]);
-                    
-                    PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
-                    
-                    WaitSecs(expInfo.audioInfo.beepLength + expInfo.audioInfo.postFeedbackPause);
-                    
-                    PsychPortAudio('Stop', expInfo.audioInfo.pahandle);
-                    
-                end
-                
-            end
+            end %closes: elseif conditionInfo(thisCond).giveFeedbac
+            
+            expInfo = drawFixation(expInfo, expInfo.fixationInfo);
+            Screen('Flip', expInfo.curWindow);
+            
             
             
             experimentData(iTrial).trialData = trialData;
@@ -825,8 +899,8 @@ end;
         expInfo.finalWindowInfo = Screen('GetWindowInfo', expInfo.curWindow);
         
         sessionInfo.expInfo = expInfo;
-        sessionInfo.conditionInfo = conditionInfo;
-        
+        sessionInfo.conditionInfo = initConditionInfo;
+        sessionInfo.condInfoAfterExperimentFinished = conditionInfo;
         
         %Now get our path, and find the files used
         P = mfilename('fullpath');
@@ -852,7 +926,8 @@ end;
         end
         
         filename = [ filePrefix '_' ...
-            sessionInfo.participantID '_' datestr(now,'yyyymmdd_HHMMSS') '.mat'];
+            sessionInfo.participantID '_' sessionInfo.tag '_' ...
+            datestr(now,'yyyymmdd_HHMMSS') '.mat'];
         
         if ispref('psychMaster','datadir');
             datadir = getpref('psychMaster','datadir');

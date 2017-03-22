@@ -57,17 +57,7 @@ if ~isfield(expInfo,'stereoMode')
     expInfo.stereoMode = 0;
 end
 
-%For stereo modes default mode has a fixation cross and a frame to aid
-%holding fixation.
-if ~isfield(expInfo,'fixationInfo')    
-    if expInfo.stereoMode ~=0
-        expInfo.fixationInfo(1).type = 'cross';
-        expInfo.fixationInfo(2).type = 'noiseFrame';
-        expInfo.fixationInfo(2).size = 100;
-    else
-        expInfo.fixationInfo(1).type = '';
-    end
-end
+
 %Default viewing distance
 if ~isfield(expInfo,'viewingDistance')
     expInfo.viewingDistance = 57;
@@ -183,24 +173,47 @@ expInfo.pixPerCm = pixelWidth/expInfo.monitorWidth;
 
 [pixelWidthWin, pixelHeightWin] = Screen('WindowSize', expInfo.curWindow);
 
-    expInfo.windowSizePixels = [pixelWidthWin, pixelHeightWin];
+expInfo.windowSizePixels = [pixelWidthWin, pixelHeightWin];
 
 
-InitializePsychSound
+%For stereo modes default mode has a fixation cross and a frame to aid
+%holding fixation.
+if ~isfield(expInfo,'fixationInfo')    
+    if expInfo.stereoMode ~=0
+        expInfo.fixationInfo(1).type = 'cross';
+        expInfo.fixationInfo(2).type = 'noiseFrame';
+        expInfo.fixationInfo(2).size = 100/expInfo.ppd;
+    else
+        expInfo.fixationInfo(1).type = '';
+    end
+end
 
-%Basic audio information for interval beeps and audio
-%feedback
-audioInfo.nOutputChannels = 2;
-audioInfo.samplingFreq = 48000;
-audioInfo.nReps = 1;
-audioInfo.beepLength = 0.25; %in seconds
-audioInfo.startCue = 0; %starts immediately on call
-audioInfo.ibi = 0.05; %inter-beep interval; only used for the second interval
-audioInfo.pahandle = [];%PsychPortAudio('Open', [], 1, 1, audioInfo.samplingFreq, audioInfo.nOutputChannels);
-audioInfo.postFeedbackPause = 0.25;
+%Figure out a better way of handling turning on/off audio.
+if ~isfield(expInfo,'enableAudio')
+    expInfo.enableAudio = true;
+end
 
-expInfo.audioInfo = audioInfo;
-% expInfo.pahandle = PsychPortAudio('Open', [], [], 0, [], 2);
+if expInfo.enableAudio
+    InitializePsychSound
+    
+    %Basic audio information for interval beeps and audio
+    %feedback
+    
+    audioInfo.nOutputChannels = 2;
+    audioInfo.samplingFreq = 48000;
+    audioInfo.nReps = 1;
+    audioInfo.beepLength = 0.25; %in seconds
+    audioInfo.beepFreq = 500;
+    audioInfo.startCue = 0; %starts immediately on call
+    audioInfo.ibi = 0.05; %inter-beep interval; only used for the second interval
+    audioInfo.pahandle = [];%PsychPortAudio('Open', [], 1, 1, audioInfo.samplingFreq, audioInfo.nOutputChannels);
+    audioInfo.postFeedbackPause = 0.25;
+    thisBeep = MakeBeep(500, audioInfo.beepLength, audioInfo.samplingFreq);
+    audioInfo.intervalBeep = [thisBeep; thisBeep];
+    audioInfo.pahandle = PsychPortAudio('Open', [], [], 0, [], 2);
+    expInfo.audioInfo = audioInfo;
+    
+end
 
 
 %Set default font size.
@@ -221,7 +234,7 @@ ListenChar(2);
 
 
 %If using the powermate find it's handle. 
-if expInfo.enablePowermate
+if isfield(expInfo,'enablePowermate') && expInfo.enablePowermate
    expInfo.powermateId = PsychPowerMate('Open');
 end
 
