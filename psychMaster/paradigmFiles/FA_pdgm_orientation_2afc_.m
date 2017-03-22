@@ -1,4 +1,4 @@
-function [conditionInfo,expInfo] = pdgm_orientation_2afc(expInfo)
+function [conditionInfo,expInfo] = FA_pdgm_orientation_2afc(expInfo)
 %This is an example paradigm file that implements an orienatation
 %discrimination task. 
 
@@ -26,7 +26,7 @@ expInfo.instructions = ['This is an orientation discrimination experiment\n' ...
     'or anticlockwise from the 1st\n' ...
     'Wait till the box appears before responding\n' ...
     'Press ''j'' for clockwise \n'...
-    'Press ''f'' for anticlockwise\n']
+    'Press ''f'' for anticlockwise\n'];
 
 %This defines what function to call to draw the condition
 %Crucial: requires the @ sign prefix.  Because it needs it to be a
@@ -93,6 +93,15 @@ for iCond = 1:nCond,
     conditionInfo(iCond).label = ['Orientation Change: ' num2str(conditionInfo(iCond).targetDelta)];
 
 end
+
+
+conditionInfo(2) = conditionInfo(1);
+conditionInfo(2).contrast = 0.10 ;
+conditionInfo(2).label = 'Contrast: 0.10';
+
+conditionInfo(3) = conditionInfo(1);
+conditionInfo(3).contrast = 0.20 ;
+conditionInfo(3).label = 'Contrast: 0.20';
 
 
 
