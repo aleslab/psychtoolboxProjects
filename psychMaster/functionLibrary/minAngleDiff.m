@@ -45,9 +45,14 @@ deltaFlip = atan2d(sind(dFlip),cosd(dFlip));
 
 %deltaOther = 180-abs(delta);
 % 
-if abs(delta)>abs(deltaFlip)
-    delta = deltaFlip;
-end
+% if abs(delta)>abs(deltaFlip)
+%     delta = deltaFlip;
+% end
+
+%The if above only works for scalar inputs
+%This fixes the function to work for vector inputs
+flipIdx = abs(delta)>abs(deltaFlip);
+delta(flipIdx) = deltaFlip(flipIdx);
 
 %delta = min(abs(delta),abs(deltaFlip));
 
