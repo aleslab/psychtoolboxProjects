@@ -11,7 +11,7 @@ fixXCoords = [-fixCrossDimPix fixCrossDimPix 0 0]; %fixation cross x coordinates
 fixYCoords = [0 0 -fixCrossDimPix fixCrossDimPix]; %fixation cross y coordinates
 expInfo.FixCoords = [fixXCoords; fixYCoords]; %combined fixation cross coordinates
 expInfo.fixWidthPix = 1; %the line width of the fixation cross
-expInfo.lw = 1;
+expInfo.fixlw = 1;
 
 if strcmp(fixationInfo.fixationType, 'cross');
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
@@ -33,9 +33,9 @@ expInfo.boxCoords = [boxXcoords; boxYcoords];
 
 if fixationInfo.responseSquare == 1;
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-    Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw, 0);
+    Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.fixlw, 0);
     Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-    Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.lw, 0);
+    Screen('DrawLines', expInfo.curWindow, expInfo.boxCoords, expInfo.fixlw, 0);
 end
 
 %% apeture drawing
