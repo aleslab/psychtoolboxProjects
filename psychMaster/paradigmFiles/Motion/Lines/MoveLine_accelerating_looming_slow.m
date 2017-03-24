@@ -1,20 +1,21 @@
-function [conditionInfo, expInfo] = MoveLine_real_cd_towards(expInfo)
+function [conditionInfo, expInfo] = MoveLine_accelerating_looming_slow(expInfo)
 
-%Paradigm file for the cd stimulus. One vertical line moving in each eye.
+%Paradigm file for the looming stimulus. Two horizontal lines moving in each eye.
 %paradigmName is what will be prepended to data files
 expInfo = moveLineDefaultSettings(expInfo);
 
-expInfo.paradigmName = 'MoveLine_real_cd_towards';
+expInfo.paradigmName = 'MoveLine_accelerating_looming_slow';
+
 %% conditions
-firstVelocities = [-20:2.5:-5 -20:2.5:-5];
-condStimTypes = cat(2, repmat( {'cd'},1,7) , repmat( {'lateralCd'},1,7));
+firstVelocities = [-20:2.5:-5];
+condStimTypes = cat(2, repmat( {'looming'},1,7));
 
 for iCond = 1: length(firstVelocities);
 %This defines what function to call to draw the condition
 conditionInfo(iCond).trialFun=@MoveLineTrial;
 
 conditionInfo(iCond).type             = '2afc'; 
-conditionInfo(iCond).stimType         = condStimTypes{iCond}; 
+conditionInfo(iCond).stimType         = condStimTypes{iCond};
 conditionInfo(iCond).stimDurationSection1 = 0.50; %approximate stimulus duration in seconds
 conditionInfo(iCond).stimDurationSection2 = 0.50;
 conditionInfo(iCond).preStimDuration  = 0.25;  %Static time before stimulus change
@@ -25,10 +26,12 @@ conditionInfo(iCond).responseDuration = 3;    %Post trial window for waiting for
 conditionInfo(iCond).velocityCmPerSecSection1 = firstVelocities(iCond); %cm/s
 conditionInfo(iCond).velocityCmPerSecSection2 = (-40)-(conditionInfo(iCond).velocityCmPerSecSection1); %cm/s 
 conditionInfo(iCond).isNullCorrect = false;
-conditionInfo(iCond).startPos = 0;
+conditionInfo(iCond).horizontalOneStartPos = 1; %a y coordinate. the others are x. 
+conditionInfo(iCond).horizontalTwoStartPos = -1;
 conditionInfo(iCond).nReps = 10; %number of repeats
+conditionInfo(iCond).intervalBeep = true;
 conditionInfo(iCond).giveFeedback = false;
-conditionInfo(iCond).depthStart = 10; %5cm behind the plane of the screen
+conditionInfo(iCond).depthStart = 10; 
 conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];
 
 nullCondition = conditionInfo(iCond);
@@ -38,3 +41,4 @@ nullCondition.stimType = condStimTypes(iCond);
 conditionInfo(iCond).nullCondition = nullCondition;
 
 end
+
