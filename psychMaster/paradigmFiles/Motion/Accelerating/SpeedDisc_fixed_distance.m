@@ -1,10 +1,10 @@
-function [conditionInfo, expInfo] = MoveLine_accelerating_looming_speed_fixed_duration(expInfo)
+function [conditionInfo, expInfo] = SpeedDisc_fixed_distance(expInfo)
 
 %Paradigm file for the combined looming and cd stimulus. Two vertical lines
 %moving in each eye.
 expInfo = moveLineDefaultSettings(expInfo);
 %paradigmName is what will be prepended to data files
-expInfo.paradigmName = 'MoveLine_accelerating_looming_speed_fixed_duration';
+expInfo.paradigmName = 'SpeedDisc_fixed_distance';
 
 %% conditions
 firstVelocities = [-40:5:-10];
@@ -16,8 +16,9 @@ conditionInfo(iCond).trialFun=@MoveLineTrial;
 
 conditionInfo(iCond).type             = '2afc'; 
 conditionInfo(iCond).stimType         = condStimTypes{iCond};
-conditionInfo(iCond).stimDurationSection1 = 0; %approximate stimulus duration in seconds
+conditionInfo(iCond).stimDurationSection1 = 0.5; %approximate stimulus duration in seconds
 conditionInfo(iCond).stimDurationSection2 = 0.5;
+conditionInfo(iCond).fixedDistance = true;
 conditionInfo(iCond).preStimDuration  = 0.25;  %Static time before stimulus change
 conditionInfo(iCond).postStimDuration = 0;  %static time after stimulus change 
 %may need to reintroduce something for post stimduration because it can get confusing when doing the experiment
@@ -43,4 +44,7 @@ nullCondition.stimType = condStimTypes(iCond); %determining the stimulus type
 conditionInfo(iCond).nullCondition = nullCondition; %putting it as a field to be accessed within the condition info struct
 
 end
+
+
+
 

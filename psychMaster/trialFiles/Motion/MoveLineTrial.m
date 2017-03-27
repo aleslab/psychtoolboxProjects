@@ -86,12 +86,16 @@ nFramesTotal = nFramesPreStim + nFramesSection1 + nFramesSection2;
 %number of frames displayed during JMA: added round because  it needs to be
 %an integer. the duration (in seconds) that is specified
 
-if isfield(conditionInfo, 'velocityCmPerSecSection1')
+
+if isfield(conditionInfo, 'fixedDistance') && conditionInfo.fixedDistance 
     
-    velCmPerFrameSection1  = conditionInfo.velocityCmPerSecSection1*expInfo.ifi;
-    velCmPerFrameSection2  = conditionInfo.velocityCmPerSecSection2*expInfo.ifi;
+    velPerFrameInterval = conditionInfo.velocityCmPerSecSection2*expInfo.ifi;
     
-else
+    standardvelPerFrame = -0.6667;
+    normalisedVelPerFrame = velPerFrameInterval/standardvelPerFrame;
+    nFramesInterval = round((nFramesSection1 + nFramesSection2)/normalisedVelPerFrame);
+    
+elseif isfield(conditionInfo, 'L1velCmPerFrameSection1')
     
     L1velCmPerFrameSection1 = conditionInfo.L1velocityCmPerSecSection1*expInfo.ifi;
     L1velCmPerFrameSection2 = conditionInfo.L1velocityCmPerSecSection2*expInfo.ifi;
@@ -105,7 +109,12 @@ else
     R2velCmPerFrameSection1 = conditionInfo.R2velocityCmPerSecSection1*expInfo.ifi;
     R2velCmPerFrameSection2 = conditionInfo.R2velocityCmPerSecSection2*expInfo.ifi;
     
+else
+        velCmPerFrameSection1  = conditionInfo.velocityCmPerSecSection1*expInfo.ifi;
+    velCmPerFrameSection2  = conditionInfo.velocityCmPerSecSection2*expInfo.ifi;
 end
+
+velPerFrameInterval = conditionInfo.velocityCmPerSecSection2*expInfo.ifi;
 
 
 trialData.flipTimes = NaN(nFramesTotal,1);
@@ -143,12 +152,12 @@ if strcmp(conditionInfo.stimType, 'cd'); %%strcmp seems to work better than == f
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
-
+        
         if isfield(expInfo,'writeMovie') && expInfo.writeMovie
             Screen('AddFrameToMovie', expInfo.curWindow,...
                 movieRect);
         end
-
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
     end
@@ -164,12 +173,12 @@ if strcmp(conditionInfo.stimType, 'cd'); %%strcmp seems to work better than == f
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-
+        
         if isfield(expInfo,'writeMovie') && expInfo.writeMovie
             Screen('AddFrameToMovie', expInfo.curWindow,...
                 movieRect);
         end
-
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -198,12 +207,12 @@ if strcmp(conditionInfo.stimType, 'cd'); %%strcmp seems to work better than == f
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-
+        
         if isfield(expInfo,'writeMovie') && expInfo.writeMovie
             Screen('AddFrameToMovie', expInfo.curWindow,...
                 movieRect);
         end
-
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -247,12 +256,12 @@ elseif strcmp(conditionInfo.stimType, 'lateralCd');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
-
+        
         if isfield(expInfo,'writeMovie') && expInfo.writeMovie
             Screen('AddFrameToMovie', expInfo.curWindow,...
                 movieRect);
         end
-
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
     end
@@ -268,12 +277,12 @@ elseif strcmp(conditionInfo.stimType, 'lateralCd');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-
+        
         if isfield(expInfo,'writeMovie') && expInfo.writeMovie
             Screen('AddFrameToMovie', expInfo.curWindow,...
                 movieRect);
         end
-
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -302,12 +311,12 @@ elseif strcmp(conditionInfo.stimType, 'lateralCd');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-
+        
         if isfield(expInfo,'writeMovie') && expInfo.writeMovie
             Screen('AddFrameToMovie', expInfo.curWindow,...
                 movieRect);
         end
-
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -379,12 +388,12 @@ elseif strcmp(conditionInfo.stimType, 'combined');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
-
+        
         if isfield(expInfo,'writeMovie') && expInfo.writeMovie
             Screen('AddFrameToMovie', expInfo.curWindow,...
                 movieRect);
         end
-
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -407,12 +416,12 @@ elseif strcmp(conditionInfo.stimType, 'combined');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-
+        
         if isfield(expInfo,'writeMovie') && expInfo.writeMovie
             Screen('AddFrameToMovie', expInfo.curWindow,...
                 movieRect);
         end
-
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -463,12 +472,12 @@ elseif strcmp(conditionInfo.stimType, 'combined');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-
+        
         if isfield(expInfo,'writeMovie') && expInfo.writeMovie
             Screen('AddFrameToMovie', expInfo.curWindow,...
                 movieRect);
         end
-
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -549,12 +558,12 @@ elseif strcmp(conditionInfo.stimType, 'combined_retinal_lateral');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
-
+        
         if isfield(expInfo,'writeMovie') && expInfo.writeMovie
             Screen('AddFrameToMovie', expInfo.curWindow,...
                 movieRect);
         end
-
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -573,12 +582,12 @@ elseif strcmp(conditionInfo.stimType, 'combined_retinal_lateral');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-
+        
         if isfield(expInfo,'writeMovie') && expInfo.writeMovie
             Screen('AddFrameToMovie', expInfo.curWindow,...
                 movieRect);
         end
-
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -623,12 +632,12 @@ elseif strcmp(conditionInfo.stimType, 'combined_retinal_lateral');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-
+        
         if isfield(expInfo,'writeMovie') && expInfo.writeMovie
             Screen('AddFrameToMovie', expInfo.curWindow,...
                 movieRect);
         end
-
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -705,12 +714,12 @@ elseif strcmp(conditionInfo.stimType, 'combined_retinal_depth');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
-
+        
         if isfield(expInfo,'writeMovie') && expInfo.writeMovie
             Screen('AddFrameToMovie', expInfo.curWindow,...
                 movieRect);
         end
-
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -730,12 +739,12 @@ elseif strcmp(conditionInfo.stimType, 'combined_retinal_depth');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-
+        
         if isfield(expInfo,'writeMovie') && expInfo.writeMovie
             Screen('AddFrameToMovie', expInfo.curWindow,...
                 movieRect);
         end
-
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -771,12 +780,12 @@ elseif strcmp(conditionInfo.stimType, 'combined_retinal_depth');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-
+        
         if isfield(expInfo,'writeMovie') && expInfo.writeMovie
             Screen('AddFrameToMovie', expInfo.curWindow,...
                 movieRect);
         end
-
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -838,12 +847,12 @@ elseif strcmp(conditionInfo.stimType, 'lateralCombined');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
-
+        
         if isfield(expInfo,'writeMovie') && expInfo.writeMovie
             Screen('AddFrameToMovie', expInfo.curWindow,...
                 movieRect);
         end
-
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -861,12 +870,12 @@ elseif strcmp(conditionInfo.stimType, 'lateralCombined');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-
+        
         if isfield(expInfo,'writeMovie') && expInfo.writeMovie
             Screen('AddFrameToMovie', expInfo.curWindow,...
                 movieRect);
         end
-
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -905,12 +914,12 @@ elseif strcmp(conditionInfo.stimType, 'lateralCombined');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-
+        
         if isfield(expInfo,'writeMovie') && expInfo.writeMovie
             Screen('AddFrameToMovie', expInfo.curWindow,...
                 movieRect);
         end
-
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
@@ -989,116 +998,169 @@ elseif strcmp(conditionInfo.stimType, 'looming');
         
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
-
+        
         if isfield(expInfo,'writeMovie') && expInfo.writeMovie
             Screen('AddFrameToMovie', expInfo.curWindow,...
                 movieRect);
         end
-
+        
         trialData.flipTimes(frameIdx) = vbl;
         frameIdx = frameIdx+1;
         
     end
-    
-    for iFrame = 1:nFramesSection1, %same as for the other stimuli
+    if isfield(conditionInfo, 'fixedDistance') && conditionInfo.fixedDistance
+        for iFrame = 1:nFramesInterval
         % For the left eye
-        Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-        Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw); %draw line 1 = top line
-        Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw); %draw line 2 = bottom line
-        %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
-        %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw, 0); %draw line 2 = bottom line start
-        
-        %For the right eye
-        Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-        Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw);
-        Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw);
-        %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
-        %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw, 0); %draw line 2 = bottom line start
-        
-        expInfo = drawFixation(expInfo, fixationInfo);
-        vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-
-        if isfield(expInfo,'writeMovie') && expInfo.writeMovie
-            Screen('AddFrameToMovie', expInfo.curWindow,...
-                movieRect);
+            Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+            Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw); %draw line 1 = top line
+            Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw); %draw line 2 = bottom line
+            %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
+            %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw, 0); %draw line 2 = bottom line start
+            
+            %For the right eye
+            Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
+            Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw);
+            Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw);
+            %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
+            %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw, 0); %draw line 2 = bottom line start
+            
+            expInfo = drawFixation(expInfo, fixationInfo);
+            vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
+            
+            if isfield(expInfo,'writeMovie') && expInfo.writeMovie
+                Screen('AddFrameToMovie', expInfo.curWindow,...
+                    movieRect);
+            end
+            
+            trialData.flipTimes(frameIdx) = vbl;
+            frameIdx = frameIdx+1;
+            
+            %Calculating the new screen position for horizontal line 1
+            %in a similar way to how the new positions are calculated
+            %above.
+            %uses new calculateHorizontalScreenLocation function which
+            %is very similar to calculateScreenLocation but in terms of
+            %y and z rather than x and z.
+            objectOneCurrentHorizontalPosition(3) = objectOneCurrentHorizontalPosition(3) + velPerFrameInterval;
+            [screenOne] = calculateHorizontalScreenLocation(fixation, objectOneCurrentHorizontalPosition);
+            
+            HorizontalOnePixelDistance = expInfo.pixPerCm * screenOne(2);
+            HorizontalOneLinePos = round(expInfo.center(2) + HorizontalOnePixelDistance);
+            
+            %Calculating the new screen position for horizontal line 2
+            %in a similar way to how the new positions are calculated
+            %above.
+            objectTwoCurrentHorizontalPosition(3) = objectTwoCurrentHorizontalPosition(3) + velPerFrameInterval;
+            [screenTwo] = calculateHorizontalScreenLocation(fixation, objectTwoCurrentHorizontalPosition);
+            
+            HorizontalTwoPixelDistance = expInfo.pixPerCm * screenTwo(2);
+            HorizontalTwoLinePos = round(expInfo.center(2) + HorizontalTwoPixelDistance);
+            %Doing calculations for the second line position similarly
+            %to above.
         end
-
-        trialData.flipTimes(frameIdx) = vbl;
-        frameIdx = frameIdx+1;
         
-        %Calculating the new screen position for horizontal line 1
-        %in a similar way to how the new positions are calculated
-        %above.
-        %uses new calculateHorizontalScreenLocation function which
-        %is very similar to calculateScreenLocation but in terms of
-        %y and z rather than x and z.
-        objectOneCurrentHorizontalPosition(3) = objectOneCurrentHorizontalPosition(3) + velCmPerFrameSection1;
-        [screenOne] = calculateHorizontalScreenLocation(fixation, objectOneCurrentHorizontalPosition);
+    else
         
-        HorizontalOnePixelDistance = expInfo.pixPerCm * screenOne(2);
-        HorizontalOneLinePos = round(expInfo.center(2) + HorizontalOnePixelDistance);
-        
-        %Calculating the new screen position for horizontal line 2
-        %in a similar way to how the new positions are calculated
-        %above.
-        objectTwoCurrentHorizontalPosition(3) = objectTwoCurrentHorizontalPosition(3) + velCmPerFrameSection1;
-        [screenTwo] = calculateHorizontalScreenLocation(fixation, objectTwoCurrentHorizontalPosition);
-        
-        HorizontalTwoPixelDistance = expInfo.pixPerCm * screenTwo(2);
-        HorizontalTwoLinePos = round(expInfo.center(2) + HorizontalTwoPixelDistance);
-        %Doing calculations for the second line position similarly
-        %to above.
-    end
-    
-    for iFrame = 1:nFramesSection2, %same as for the other stimuli
-        % For the left eye
-        Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
-        Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw); %draw line 1 = top line
-        Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw); %draw line 2 = bottom line
-        %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
-        %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw, 0); %draw line 2 = bottom line start
-        
-        %For the right eye
-        Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
-        Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw);
-        Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw);
-        %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
-        %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw, 0); %draw line 2 = bottom line start
-        
-        expInfo = drawFixation(expInfo, fixationInfo);
-        vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
-
-        if isfield(expInfo,'writeMovie') && expInfo.writeMovie
-            Screen('AddFrameToMovie', expInfo.curWindow,...
-                movieRect);
+        for iFrame = 1:nFramesSection1, %same as for the other stimuli
+            % For the left eye
+            Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+            Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw); %draw line 1 = top line
+            Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw); %draw line 2 = bottom line
+            %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
+            %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw, 0); %draw line 2 = bottom line start
+            
+            %For the right eye
+            Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
+            Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw);
+            Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw);
+            %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
+            %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw, 0); %draw line 2 = bottom line start
+            
+            expInfo = drawFixation(expInfo, fixationInfo);
+            vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
+            
+            if isfield(expInfo,'writeMovie') && expInfo.writeMovie
+                Screen('AddFrameToMovie', expInfo.curWindow,...
+                    movieRect);
+            end
+            
+            trialData.flipTimes(frameIdx) = vbl;
+            frameIdx = frameIdx+1;
+            
+            %Calculating the new screen position for horizontal line 1
+            %in a similar way to how the new positions are calculated
+            %above.
+            %uses new calculateHorizontalScreenLocation function which
+            %is very similar to calculateScreenLocation but in terms of
+            %y and z rather than x and z.
+            objectOneCurrentHorizontalPosition(3) = objectOneCurrentHorizontalPosition(3) + velCmPerFrameSection1;
+            [screenOne] = calculateHorizontalScreenLocation(fixation, objectOneCurrentHorizontalPosition);
+            
+            HorizontalOnePixelDistance = expInfo.pixPerCm * screenOne(2);
+            HorizontalOneLinePos = round(expInfo.center(2) + HorizontalOnePixelDistance);
+            
+            %Calculating the new screen position for horizontal line 2
+            %in a similar way to how the new positions are calculated
+            %above.
+            objectTwoCurrentHorizontalPosition(3) = objectTwoCurrentHorizontalPosition(3) + velCmPerFrameSection1;
+            [screenTwo] = calculateHorizontalScreenLocation(fixation, objectTwoCurrentHorizontalPosition);
+            
+            HorizontalTwoPixelDistance = expInfo.pixPerCm * screenTwo(2);
+            HorizontalTwoLinePos = round(expInfo.center(2) + HorizontalTwoPixelDistance);
+            %Doing calculations for the second line position similarly
+            %to above.
         end
-
-        trialData.flipTimes(frameIdx) = vbl;
-        frameIdx = frameIdx+1;
         
-        %Calculating the new screen position for horizontal line 1
-        %in a similar way to how the new positions are calculated
-        %above.
-        %uses new calculateHorizontalScreenLocation function which
-        %is very similar to calculateScreenLocation but in terms of
-        %y and z rather than x and z.
-        objectOneCurrentHorizontalPosition(3) = objectOneCurrentHorizontalPosition(3) + velCmPerFrameSection2;
-        [screenOne] = calculateHorizontalScreenLocation(fixation, objectOneCurrentHorizontalPosition);
-        
-        HorizontalOnePixelDistance = expInfo.pixPerCm * screenOne(2);
-        HorizontalOneLinePos = round(expInfo.center(2) + HorizontalOnePixelDistance);
-        
-        %Calculating the new screen position for horizontal line 2
-        %in a similar way to how the new positions are calculated
-        %above.
-        objectTwoCurrentHorizontalPosition(3) = objectTwoCurrentHorizontalPosition(3) + velCmPerFrameSection2;
-        [screenTwo] = calculateHorizontalScreenLocation(fixation, objectTwoCurrentHorizontalPosition);
-        
-        HorizontalTwoPixelDistance = expInfo.pixPerCm * screenTwo(2);
-        HorizontalTwoLinePos = round(expInfo.center(2) + HorizontalTwoPixelDistance);
-        
-        %Doing calculations for the second line position similarly
-        %to above.
+        for iFrame = 1:nFramesSection2, %same as for the other stimuli
+            % For the left eye
+            Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
+            Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw); %draw line 1 = top line
+            Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw); %draw line 2 = bottom line
+            %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
+            %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw, 0); %draw line 2 = bottom line start
+            
+            %For the right eye
+            Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
+            Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw);
+            Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw);
+            %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePosStart, HorizontalOneLinePosStart], expInfo.lw, 0); %draw line 1 = top line start
+            %Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePosStart, HorizontalTwoLinePosStart], expInfo.lw, 0); %draw line 2 = bottom line start
+            
+            expInfo = drawFixation(expInfo, fixationInfo);
+            vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
+            
+            if isfield(expInfo,'writeMovie') && expInfo.writeMovie
+                Screen('AddFrameToMovie', expInfo.curWindow,...
+                    movieRect);
+            end
+            
+            trialData.flipTimes(frameIdx) = vbl;
+            frameIdx = frameIdx+1;
+            
+            %Calculating the new screen position for horizontal line 1
+            %in a similar way to how the new positions are calculated
+            %above.
+            %uses new calculateHorizontalScreenLocation function which
+            %is very similar to calculateScreenLocation but in terms of
+            %y and z rather than x and z.
+            objectOneCurrentHorizontalPosition(3) = objectOneCurrentHorizontalPosition(3) + velCmPerFrameSection2;
+            [screenOne] = calculateHorizontalScreenLocation(fixation, objectOneCurrentHorizontalPosition);
+            
+            HorizontalOnePixelDistance = expInfo.pixPerCm * screenOne(2);
+            HorizontalOneLinePos = round(expInfo.center(2) + HorizontalOnePixelDistance);
+            
+            %Calculating the new screen position for horizontal line 2
+            %in a similar way to how the new positions are calculated
+            %above.
+            objectTwoCurrentHorizontalPosition(3) = objectTwoCurrentHorizontalPosition(3) + velCmPerFrameSection2;
+            [screenTwo] = calculateHorizontalScreenLocation(fixation, objectTwoCurrentHorizontalPosition);
+            
+            HorizontalTwoPixelDistance = expInfo.pixPerCm * screenTwo(2);
+            HorizontalTwoLinePos = round(expInfo.center(2) + HorizontalTwoPixelDistance);
+            
+            %Doing calculations for the second line position similarly
+            %to above.
+        end
     end
 end
 %KbStrokeWait(); %again to pause so that a measurement can be made.
