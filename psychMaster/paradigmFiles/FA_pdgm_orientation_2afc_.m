@@ -70,7 +70,7 @@ conditionInfo(1).freq              = 1; %frequency of the gabor in cycles per si
 conditionInfo(1).nReps             = 3; %% number of trials to present this condition. 
 conditionInfo(1).stimRadiusDeg     = 8;    %stimulus size in degree;
 conditionInfo(1).orientation       = 0; %Unused in this paradigm because it gets set by the randomization option (randomizeField) above
-conditionInfo(1).contrast          = 0.50;
+conditionInfo(1).contrast          = 10;
 conditionInfo(1).noiseSigma        = .15;
 
 
@@ -96,15 +96,16 @@ for iCond = 1:nCond,
 
 
 conditionInfo(2) = conditionInfo(1);
-conditionInfo(2).contrast = 0.10 ;
-conditionInfo(2).label = 'Contrast: 0.10';
+conditionInfo(2).contrast = 0.20 ;
+conditionInfo(2).label = 'Contrast: 0.20';
 
 conditionInfo(3) = conditionInfo(1);
-conditionInfo(3).contrast = 0.20 ;
-conditionInfo(3).label = 'Contrast: 0.20';
+conditionInfo(3).contrast = 0.30 ;
+conditionInfo(3).label = 'Contrast: 0.30';
 
-
-
+conditionInfo(3) = conditionInfo(1);
+conditionInfo(3).contrast = 0.40 ;
+conditionInfo(3).label = 'Contrast: 0.40';
 
 
 end
