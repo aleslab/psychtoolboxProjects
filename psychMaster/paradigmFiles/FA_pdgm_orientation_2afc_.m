@@ -92,7 +92,7 @@ for iCond = 1:nCond,
     %We can give each condition a human readable lable. 
     conditionInfo(iCond).label = ['Orientation Change: ' num2str(conditionInfo(iCond).targetDelta)];
 
-end
+
 
 
 conditionInfo(2) = conditionInfo(1);
