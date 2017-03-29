@@ -5,7 +5,7 @@ function [conditionInfo, expInfo] = SpeedDisc_fixed_duration(expInfo)
 expInfo = moveLineDefaultSettings(expInfo);
 %paradigmName is what will be prepended to data files
 expInfo.paradigmName = 'SpeedDisc_fixed_duration';
-
+expInfo.instructions = 'Which one \nmoved faster?\nPress any key\nto begin';
 %% conditions
 firstVelocities = [-40:5:-10];
 condStimTypes = repmat( {'looming'},1,7);
