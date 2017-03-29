@@ -43,7 +43,6 @@ function [trialData] = MoveLineTrial(expInfo, conditionInfo)
 trialData.validTrial = false;
 trialData.abortNow   = false;
 
-
 if isfield(expInfo,'writeMovie') && expInfo.writeMovie
     
     thisFilename = ['myMovie_', conditionInfo.label, '_', conditionInfo.movieString, '.mov'];
@@ -948,6 +947,7 @@ elseif strcmp(conditionInfo.stimType, 'looming');
     %line 1
     HorizontalOnePixelDistance = expInfo.pixPerCm * screenOne(2);
     HorizontalOneLinePos = round(expInfo.center(2) + HorizontalOnePixelDistance);
+    trialData.obj1StartPos = HorizontalOneLinePos;
     %finds the line position in a similar way to how it is found
     %previously
     
@@ -958,6 +958,7 @@ elseif strcmp(conditionInfo.stimType, 'looming');
     %and work out the position on the screen in pixels (below)
     HorizontalTwoPixelDistance = expInfo.pixPerCm * screenTwo(2);
     HorizontalTwoLinePos = round(expInfo.center(2) + HorizontalTwoPixelDistance);
+    trialData.obj2StartPos = HorizontalTwoLinePos;
     
     for iFrame = 1:nFramesPreStim %during the pre-stimulus duration have the lines appear in a fixed position
         % For the left eye
@@ -1124,6 +1125,8 @@ elseif strcmp(conditionInfo.stimType, 'looming');
             %to above.
         end
     end
+    trialData.obj1EndPos = HorizontalOneLinePos;
+    trialData.obj2EndPos = HorizontalTwoLinePos;
 end
 
 expInfo = drawFixation(expInfo, fixationInfo);
