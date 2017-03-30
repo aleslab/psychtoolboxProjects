@@ -31,8 +31,8 @@ conditionInfo(iCond).horizontalTwoStartPos = -1;
 conditionInfo(iCond).nReps = 10; %number of repeats
 conditionInfo(iCond).intervalBeep = true;
 conditionInfo(iCond).giveFeedback = false;
-conditionInfo(iCond).depthStart = 20; 
-conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];
+conditionInfo(iCond).depthStart = 0; 
+conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str((-80)-firstVelocities(iCond))];
 
 
 %defining the null condition
