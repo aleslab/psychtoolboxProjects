@@ -87,13 +87,19 @@ nFramesTotal = nFramesPreStim + nFramesSection1 + nFramesSection2;
 
 %this section should only be used with the monocular fast speeds and the
 %second set of speeds for the standardised value to be correct.
-if isfield(conditionInfo, 'fixedDistance') && conditionInfo.fixedDistance 
+if isfield(conditionInfo, 'fixedDistance') && conditionInfo.fixedDistance
     
     velPerFrameInterval = conditionInfo.velocityCmPerSecSection2*expInfo.ifi;
     
+    if isfield(conditionInfo, 'durationCatch') && conditionInfo.durationCatch
+    nFramesInterval = 35; %HARDCODED FOR USE ON LAB COMPUTER
+    trialData.nFramesInterval = nFramesInterval;
+    else
     standardvelPerFrame = -0.6667; %hardcoded, only works with monocular fast speeds!
     normalisedVelPerFrame = velPerFrameInterval/standardvelPerFrame;
     nFramesInterval = round((nFramesSection1 + nFramesSection2)/normalisedVelPerFrame);
+    trialData.nFramesInterval = nFramesInterval;
+    end
     
 elseif isfield(conditionInfo, 'L1velCmPerFrameSection1')
     
