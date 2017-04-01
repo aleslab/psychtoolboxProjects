@@ -25,12 +25,14 @@ thisFile = mfilename('fullpath');
 
  %Try to get the git commit hash 
  % Check if thisFile is tracked in a git repository
- 
- [repoCheckError,repoCheckResult] = system(['git status ' thisFile ' --porcelain'])
+ %Need to "cd" into the directory for some reason. Can't use git --exec-dir
+ %option.  This "cd" happens in the local bash shell spawned by the system
+ %command so should not change the directory matlab is in.
+ [repoCheckError,repoCheckResult] = system(['cd ' thisDir ';git status ' thisFile ' --porcelain']);
  
  %If we're in a git repository, try and load the hash
  if ~repoCheckError
-     [hashCheckError,hashCheckResult] = system(['git --exec-path=' thisDir ' rev-parse --verify HEAD --porcelain'])
+     [hashCheckError,hashCheckResult] = system(['cd ' thisDir ';git rev-parse --verify HEAD --porcelain']);
  end
  
  %If we're in a git repo grab the current commit hash.
