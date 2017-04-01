@@ -226,6 +226,11 @@ function chooseParadigmBtn_Callback(hObject, eventdata, handles)
 
 [handles.sessionInfo.paradigmFile, handles.sessionInfo.paradigmPath] = ...
     uigetfile('*.m','Choose the experimental paradigm file',pwd);
+
+if isequal(handles.sessionInfo.paradigmFile,0)
+    return;
+end
+
 lastParadigmFile = fullfile(handles.sessionInfo.paradigmPath,handles.sessionInfo.paradigmFile);
 
 [~, funcName ] = fileparts(handles.sessionInfo.paradigmFile);
