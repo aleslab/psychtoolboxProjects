@@ -39,7 +39,7 @@ conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(velocities(iCond
 
 %defining the null condition
 nullCondition = conditionInfo(iCond); %setting it to be the same as other conditions
-nullCondition.velocityCmPerSecSection1 = -40;  %then always setting the velocity to be the standard
+nullCondition.velocityCmPerSecSection1 = 0;  %then always setting the velocity to be the standard
 nullCondition.velocityCmPerSecSection2 = -40; %in both sections
 nullCondition.stimType = condStimTypes(iCond); %determining the stimulus type
 conditionInfo(iCond).nullCondition = nullCondition; %putting it as a field to be accessed within the condition info struct
@@ -49,7 +49,7 @@ end
 %condition (level) for catch trials
 conditionInfo(8) = conditionInfo(1);
 conditionInfo(8).durationCatch = true;
-conditionInfo(8).velocityCmPerSecSection2 = -25;
+conditionInfo(8).velocityCmPerSecSection2 = -40;
 conditionInfo(8).label = [ condStimTypes{iCond} '_catch'];
 
 
