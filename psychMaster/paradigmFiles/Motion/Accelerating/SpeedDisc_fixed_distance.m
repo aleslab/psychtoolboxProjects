@@ -47,10 +47,23 @@ conditionInfo(iCond).nullCondition = nullCondition; %putting it as a field to be
 end
 
 %condition (level) for catch trials
+
+%balanced catch - response to longer duration = 0% correct; response to longer
+%distance = 100% correct; response to speed = 50% correct
 conditionInfo(8) = conditionInfo(1);
-conditionInfo(8).durationCatch = true;
+conditionInfo(8).stimDurationSection2 = 0.875; %different so that duration is longer; 
+%attempt to catch use of distance as cue. 
+conditionInfo(8).fixedDistance = true;
 conditionInfo(8).velocityCmPerSecSection2 = -40;
-conditionInfo(8).label = [ condStimTypes{iCond} '_catch'];
+conditionInfo(8).label = [ condStimTypes{iCond} '_catch_fixed_speed_long_duration'];
+
+%slower speed with a short duration catch - responding to speed = 0%
+%correct; responding to short duration = 100% correct; responding to larger
+%distance = 0%
+conditionInfo(9) = conditionInfo(1);
+conditionInfo(9).durationCatch = true;
+conditionInfo(9).velocityCmPerSecSection2 = -25; %not sure if want -25 or -10 
+conditionInfo(9).label = [ condStimTypes{iCond} '_catch_slow_speed_short_duration'];
 
 
 
