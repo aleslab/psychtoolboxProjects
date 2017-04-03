@@ -82,24 +82,27 @@ nFramesPreStim = round(conditionInfo.preStimDuration/expInfo.ifi);
 nFramesSection1 = round(conditionInfo.stimDurationSection1 / expInfo.ifi);
 nFramesSection2 = round(conditionInfo.stimDurationSection2/ expInfo.ifi);
 nFramesTotal = nFramesPreStim + nFramesSection1 + nFramesSection2;
+trialData.nMovingFramesDispd = nFramesSection2;
 %number of frames displayed during JMA: added round because  it needs to be
 %an integer. the duration (in seconds) that is specified
 
 %this section should only be used with the monocular fast speeds and the
 %second set of speeds for the standardised value to be correct.
-if isfield(conditionInfo, 'fixedDistance') && conditionInfo.fixedDistance
-    
-    velPerFrameInterval = conditionInfo.velocityCmPerSecSection2*expInfo.ifi;
-    
-    if isfield(conditionInfo, 'durationCatch') && conditionInfo.durationCatch
+
+if isfield(conditionInfo, 'durationCatch') && conditionInfo.durationCatch
+    velCmPerFrameSection2 = conditionInfo.velocityCmPerSecSection2*expInfo.ifi;
     nFramesInterval = 35; %HARDCODED FOR USE ON LAB COMPUTER
-    trialData.nFramesInterval = nFramesInterval;
-    else
+    trialData.nMovingFramesDispd = nFramesInterval;
+    velCmPerFrameSection2 = conditionInfo.velocityCmPerSecSection2*expInfo.ifi;
+    
+elseif isfield(conditionInfo, 'fixedDistance') && conditionInfo.fixedDistance
+    
+    velCmPerFrameSection2 = conditionInfo.velocityCmPerSecSection2*expInfo.ifi;
+    
     standardvelPerFrame = -0.6667; %hardcoded, only works with monocular fast speeds!
-    normalisedVelPerFrame = velPerFrameInterval/standardvelPerFrame;
+    normalisedVelPerFrame = velCmPerFrameSection2/standardvelPerFrame;
     nFramesInterval = round((nFramesSection1 + nFramesSection2)/normalisedVelPerFrame);
-    trialData.nFramesInterval = nFramesInterval;
-    end
+    trialData.nMovingFramesDispd = nFramesInterval;
     
 elseif isfield(conditionInfo, 'L1velCmPerFrameSection1')
     
@@ -116,11 +119,11 @@ elseif isfield(conditionInfo, 'L1velCmPerFrameSection1')
     R2velCmPerFrameSection2 = conditionInfo.R2velocityCmPerSecSection2*expInfo.ifi;
     
 else
-        velCmPerFrameSection1  = conditionInfo.velocityCmPerSecSection1*expInfo.ifi;
+    velCmPerFrameSection1  = conditionInfo.velocityCmPerSecSection1*expInfo.ifi;
     velCmPerFrameSection2  = conditionInfo.velocityCmPerSecSection2*expInfo.ifi;
 end
 
-velPerFrameInterval = conditionInfo.velocityCmPerSecSection2*expInfo.ifi;
+velCmPerFrameSection2 = conditionInfo.velocityCmPerSecSection2*expInfo.ifi;
 
 
 trialData.flipTimes = NaN(nFramesTotal,1);
@@ -300,7 +303,7 @@ elseif strcmp(conditionInfo.stimType, 'lateralCd');
         LinePosL = round(expInfo.center(1) + pixelDistanceL); %the adjusted position
         %of the line on the screen in pixels -- relative to the centre of X for
         %the left eye
-
+        
     end
     
     for iFrame = 1:nFramesSection2, %for each frame until you reach the maximum number of frames
@@ -331,7 +334,7 @@ elseif strcmp(conditionInfo.stimType, 'lateralCd');
         LinePosL = round(expInfo.center(1) + pixelDistanceL); %the adjusted position
         %of the line on the screen in pixels -- relative to the centre of X for
         %the left eye
-       
+        
     end
     
     %% Combination stimulus -- two vertical lines for each eye
@@ -376,12 +379,12 @@ elseif strcmp(conditionInfo.stimType, 'combined');
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
         Screen('DrawLines', expInfo.curWindow, [LinePosLone, LinePosLone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
         Screen('DrawLines', expInfo.curWindow, [LinePosLtwo, LinePosLtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
- 
+        
         %For the right eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
         Screen('DrawLines', expInfo.curWindow, [LinePosRone, LinePosRone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
         Screen('DrawLines', expInfo.curWindow, [LinePosRtwo, LinePosRtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
-       
+        
         expInfo = drawFixation(expInfo, fixationInfo);
         vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
         
@@ -400,7 +403,7 @@ elseif strcmp(conditionInfo.stimType, 'combined');
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
         Screen('DrawLines', expInfo.curWindow, [LinePosLone, LinePosLone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
         Screen('DrawLines', expInfo.curWindow, [LinePosLtwo, LinePosLtwo ; 0, screenYpixels], expInfo.lw); %drawing the second line (right)
-       
+        
         %For the right eye
         Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
         Screen('DrawLines', expInfo.curWindow, [LinePosRone, LinePosRone ; 0, screenYpixels], expInfo.lw); %drawing the first line (left)
@@ -991,7 +994,7 @@ elseif strcmp(conditionInfo.stimType, 'looming');
     end
     if isfield(conditionInfo, 'fixedDistance') && conditionInfo.fixedDistance
         for iFrame = 1:nFramesInterval
-        % For the left eye
+            % For the left eye
             Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
             Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw); %draw line 1 = top line
             Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw); %draw line 2 = bottom line
@@ -1018,7 +1021,7 @@ elseif strcmp(conditionInfo.stimType, 'looming');
             %uses new calculateHorizontalScreenLocation function which
             %is very similar to calculateScreenLocation but in terms of
             %y and z rather than x and z.
-            objectOneCurrentHorizontalPosition(3) = objectOneCurrentHorizontalPosition(3) + velPerFrameInterval;
+            objectOneCurrentHorizontalPosition(3) = objectOneCurrentHorizontalPosition(3) + velCmPerFrameSection2;
             [screenOne] = calculateHorizontalScreenLocation(fixation, objectOneCurrentHorizontalPosition);
             
             HorizontalOnePixelDistance = expInfo.pixPerCm * screenOne(2);
@@ -1027,7 +1030,7 @@ elseif strcmp(conditionInfo.stimType, 'looming');
             %Calculating the new screen position for horizontal line 2
             %in a similar way to how the new positions are calculated
             %above.
-            objectTwoCurrentHorizontalPosition(3) = objectTwoCurrentHorizontalPosition(3) + velPerFrameInterval;
+            objectTwoCurrentHorizontalPosition(3) = objectTwoCurrentHorizontalPosition(3) + velCmPerFrameSection2;
             [screenTwo] = calculateHorizontalScreenLocation(fixation, objectTwoCurrentHorizontalPosition);
             
             HorizontalTwoPixelDistance = expInfo.pixPerCm * screenTwo(2);
@@ -1089,12 +1092,12 @@ elseif strcmp(conditionInfo.stimType, 'looming');
             Screen('SelectStereoDrawBuffer', expInfo.curWindow, 0);
             Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw); %draw line 1 = top line
             Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw); %draw line 2 = bottom line
-          
+            
             %For the right eye
             Screen('SelectStereoDrawBuffer', expInfo.curWindow, 1);
             Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalOneLinePos, HorizontalOneLinePos], expInfo.lw);
             Screen('DrawLines', expInfo.curWindow, [0, screenXpixels ; HorizontalTwoLinePos, HorizontalTwoLinePos], expInfo.lw);
-
+            
             expInfo = drawFixation(expInfo, fixationInfo);
             vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %taken from PTB-3 MovingLineDemo
             
