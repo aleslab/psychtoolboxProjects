@@ -91,7 +91,7 @@ trialData.nMovingFramesDispd = nFramesSection2;
 
 if isfield(conditionInfo, 'durationCatch') && conditionInfo.durationCatch
     velCmPerFrameSection2 = conditionInfo.velocityCmPerSecSection2*expInfo.ifi;
-    nFramesInterval = 35; %HARDCODED FOR USE ON LAB COMPUTER
+    nFramesInterval = 41; %HARDCODED FOR USE ON LAB COMPUTER
     trialData.nMovingFramesDispd = nFramesInterval;
     velCmPerFrameSection2 = conditionInfo.velocityCmPerSecSection2*expInfo.ifi;
     

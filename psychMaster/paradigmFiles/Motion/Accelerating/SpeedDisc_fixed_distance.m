@@ -8,9 +8,9 @@ expInfo.paradigmName = 'SpeedDisc_fixed_distance';
 expInfo.instructions = 'Which one \nmoved faster?\nPress any key\nto begin';
 %% conditions
 velocities = [-40:-5:-70];
-condStimTypes = repmat( {'looming'},1,8);
+condStimTypes = repmat( {'looming'},1,9);
 
-for iCond = 1: (length(condStimTypes)-1);
+for iCond = 1: (length(condStimTypes)-2);
 %This defines what function to call to draw the condition
 conditionInfo(iCond).trialFun=@MoveLineTrial;
 
