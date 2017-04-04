@@ -1154,3 +1154,4 @@ if isfield(expInfo,'writeMovie') && expInfo.writeMovie
     Screen('FinalizeMovie', movie);
 end
 
+%trialData

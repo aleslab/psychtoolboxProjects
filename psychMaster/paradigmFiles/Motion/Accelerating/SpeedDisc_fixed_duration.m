@@ -57,12 +57,13 @@ conditionInfo(8).velocityCmPerSecSection2 = -40;
 conditionInfo(8).label = [ condStimTypes{iCond} '_catch_fixed_speed_long_duration'];
 
 
-%Slower speed with a shorter null duration catch - if people are responding
-%to the speed = 0% correct; if people are responding to the longer distance
-%= 100% correct; responding to shorter duration = 0% correct 
+% %Slower speed with a fixed duration catch. response to speed = 0%
+% correct; response to longer distance = 100% correct, response to shorter
+% duration = 0% correct.
 conditionInfo(9) = conditionInfo(1);
-conditionInfo(9).velocityCmPerSecSection2 = -20;
-conditionInfo(9).label = [ condStimTypes{iCond} '_catch_slow_speed_short_null_duration'];
-conditionInfo(9).nullCondition.durationCatch = true;
+conditionInfo(9).fixedDistance = true;
+conditionInfo(9).velocityCmPerSecSection2 = -20;  
+conditionInfo(9).label = [ condStimTypes{iCond} '_catch_slow_speed_long_distance'];
+
 
 
