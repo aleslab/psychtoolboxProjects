@@ -458,12 +458,13 @@ if ~isempty( changedFieldList )
         end
     end
     
+    editedConditionInfo.label = ['*' editedConditionInfo.label '*']
     %Finaly update the conditionInfo
     handles.conditionInfo(selectedCondition) = editedConditionInfo;
     
     %and Mark the condition as changed
     condNameList=get(handles.condListbox,'String');
-    condNameList{selectedCondition} = ['*' condNameList{selectedCondition} '*'];
+    condNameList{selectedCondition} = editedConditionInfo.label;
     set(handles.condListbox,'String',condNameList);
     
     guidata(hObject,handles)
