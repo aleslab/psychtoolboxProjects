@@ -66,7 +66,12 @@ end
 % Update handles structure
 guidata(hObject, handles);
 
+%When the GUI is active we should enable the keyboard and the mouse
 ListenChar(0);
+if isfield(handles.expInfo, 'screenNum')
+    ShowCursor(handles.expInfo.screenNum);
+end
+
 if ispref('psychMaster','lastParadigmFile')
     lastParadigmFile = getpref('psychMaster','lastParadigmFile');
 else
@@ -203,7 +208,15 @@ function runExperimentBtn_Callback(hObject, eventdata, handles)
 handles.sessionInfo.returnToGui = false;
 handles.sessionInfo.userCancelled = false;
 guidata(hObject,handles);
+
+%Don't echo keypresses when really running experiment
 ListenChar(2);
+%If we're running full screen lets hide the mouse cursor from view.
+if handles.expInfo.useFullScreen == true
+    HideCursor(handles.expInfo.screenNum);
+end
+
+
 uiresume(handles.pmGuiParentFig);
 
 % --- Executes on button press in cancelBtn.
