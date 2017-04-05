@@ -18,6 +18,9 @@ Added ability to randomize arbitrary fields in the condition structure
 Added new way to specify 2afc experiment allowing the change of randomized fields
 Fixed crackle from audio feedback.
 Made it possible to play audio feedback at the same time as displaying written feedback
+Fixed bug that kept cursor hidden during testing on 2nd monitors.
+Fixed bug that broke feedback in stereo mode. 
+Added '*' to condition label to indicate changed by user in GUI
 
 0.3: 
 Added code to save git commit SHA when code is exported from git.
