@@ -22,7 +22,7 @@ function varargout = pmGui(varargin)
 
 % Edit the above text to modify the response to help pmGui
 
-% Last Modified by GUIDE v2.5 21-Feb-2016 19:40:06
+% Last Modified by GUIDE v2.5 14-Feb-2017 11:31:18
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -66,6 +66,12 @@ end
 % Update handles structure
 guidata(hObject, handles);
 
+%When the GUI is active we should enable the keyboard and the mouse
+ListenChar(0);
+if isfield(handles.expInfo, 'screenNum')
+    ShowCursor(handles.expInfo.screenNum);
+end
+
 if ispref('psychMaster','lastParadigmFile')
     lastParadigmFile = getpref('psychMaster','lastParadigmFile');
 else
@@ -95,15 +101,66 @@ if ispref('psychMaster','lastParticipantId')
 else
     lastParticipantId = [];
 end
+
+if ispref('psychMaster','lastSessionTag')
+    lastSessionTag = getpref('psychMaster','lastSessionTag');
+else
+    lastSessionTag = [];
+end
+
 set(handles.participantIdText,'String',lastParticipantId);
 handles.sessionInfo.participantID = lastParticipantId;
+
+set(handles.sessionTagText,'String',lastSessionTag);
+handles.sessionInfo.tag = lastSessionTag;
 
 infoString = [  'v' handles.sessionInfo.psychMasterVer ' git SHA: ' handles.sessionInfo.gitHash(1:7)];
 set(handles.versionInfoTextBox,'String',infoString);
 
+%Report the size calibration status.
+if ~isfield(handles.expInfo, 'sizeCalibInfo')
+   set(handles.sizeCalibLoadText,'String','Size Calibration Not Loaded');
+   set(handles.sizeCalibLoadText,'BackgroundColor',[1 .2 .2]);
+   screenNum = max(Screen('Screens'));
+   [w, h]=Screen('DisplaySize',screenNum);
+   monitorWidth = w/10; %Convert to cm from mm
+    
+   set(handles.monWidthText,'String',...
+       ['Guessing Monitor Width: ' num2str(monitorWidth) ' cm']);
+   set(handles.sizeCalibDateText,'String',['']);
+
+
+else
+    set(handles.sizeCalibLoadText,'String','Size Calibration Loaded');
+    set(handles.monWidthText,'String',...
+    ['Monitor Width: ' num2str(handles.expInfo.monitorWidth) ' CM']);
+ 
+dateString = datestr(handles.expInfo.sizeCalibInfo.date,'dd-mm-YYYY')
+   set(handles.sizeCalibDateText,'String',...
+       ['Measured On: ' dateString]);
+
+end
+
+%Report the luminance calibration status.
+if ~isfield(handles.expInfo, 'lumCalibInfo')
+    set(handles.lumCalibLoadText,'String','Luminance Calibration Not Loaded');
+    set(handles.lumCalibLoadText,'BackgroundColor',[1 .2 .2]);
+    set(handles.lumCalibDateText,'String',['']);
+    
+    
+else
+    set(handles.lumCalibLoadText,'String','Luminance Calibration Loaded');
+    
+    dateString = datestr(handles.expInfo.lumCalibInfo.date,'dd-mm-YYYY')
+    set(handles.lumCalibDateText,'String',...
+        ['Measured On: ' dateString]);
+    
+end
+
+
 % Update handles structure
 guidata(hObject, handles);
-movegui('center');
+movegui('northeast');
 %set(handles.runExperimentBtn, 'Value', 1); 
 uicontrol(handles.runExperimentBtn) 
 % UIWAIT makes pmGui wait for user response (see UIRESUME)
@@ -152,6 +209,14 @@ handles.sessionInfo.returnToGui = false;
 handles.sessionInfo.userCancelled = false;
 guidata(hObject,handles);
 
+%Don't echo keypresses when really running experiment
+ListenChar(2);
+%If we're running full screen lets hide the mouse cursor from view.
+if handles.expInfo.useFullScreen == true
+    HideCursor(handles.expInfo.screenNum);
+end
+
+
 uiresume(handles.pmGuiParentFig);
 
 % --- Executes on button press in cancelBtn.
@@ -174,6 +239,11 @@ function chooseParadigmBtn_Callback(hObject, eventdata, handles)
 
 [handles.sessionInfo.paradigmFile, handles.sessionInfo.paradigmPath] = ...
     uigetfile('*.m','Choose the experimental paradigm file',pwd);
+
+if isequal(handles.sessionInfo.paradigmFile,0)
+    return;
+end
+
 lastParadigmFile = fullfile(handles.sessionInfo.paradigmPath,handles.sessionInfo.paradigmFile);
 
 [~, funcName ] = fileparts(handles.sessionInfo.paradigmFile);
@@ -212,7 +282,7 @@ try
     set(handles.paradigmNameBox,'String',handles.expInfo.paradigmName);
     
     
-    handles.conditionInfo = validateConditions(handles.conditionInfo);
+    handles.conditionInfo = validateConditions(handles.expInfo,handles.conditionInfo);
     condNameList = {};
     for iCond = 1:length(handles.conditionInfo)
        
@@ -388,12 +458,13 @@ if ~isempty( changedFieldList )
         end
     end
     
+    editedConditionInfo.label = ['*' editedConditionInfo.label '*']
     %Finaly update the conditionInfo
     handles.conditionInfo(selectedCondition) = editedConditionInfo;
     
     %and Mark the condition as changed
     condNameList=get(handles.condListbox,'String');
-    condNameList{selectedCondition} = ['*' condNameList{selectedCondition} '*'];
+    condNameList{selectedCondition} = editedConditionInfo.label;
     set(handles.condListbox,'String',condNameList);
     
     guidata(hObject,handles)
@@ -415,6 +486,33 @@ handles.conditionInfo = handles.conditionInfo(selectedCondition);
 handles.conditionInfo(1).nReps = 1;
 handles.sessionInfo.returnToGui = true;
 handles.sessionInfo.userCancelled = false;
+clear(func2str(handles.conditionInfo.trialFun));
 guidata(hObject,handles)
 uiresume(handles.pmGuiParentFig);
 %pmGuiParentFig_CloseRequestFcn(handles.pmGuiParentFig, eventdata, handles);
+
+
+
+function sessionTagText_Callback(hObject, eventdata, handles)
+% hObject    handle to sessionTagText (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of sessionTagText as text
+%        str2double(get(hObject,'String')) returns contents of sessionTagText as a double
+
+handles.sessionInfo.tag = get(hObject,'String');
+setpref('psychMaster','lastSessionTag',handles.sessionInfo.tag);
+guidata(hObject,handles)
+
+% --- Executes during object creation, after setting all properties.
+function sessionTagText_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to sessionTagText (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

@@ -44,7 +44,7 @@ orientationSigma=conditionInfo.orientationSigma;
 %initAngularVelocity = 0;
 %F = [1 0;0 1;];
     
-orient = 360(rand);
+orient = 360*(rand);
 
 lineWidth = 4;
 lineLength = expInfo.ppd*.5;
@@ -127,7 +127,8 @@ for iFrame = 1:nFrames
             CenterRect([0 0 1024 1024], Screen('Rect', expInfo.curWindow)));
     end
     
-    if expInfo.enablePowermate
+    if expIn
+        fo.enablePowermate
         err=PsychHID('ReceiveReports',expInfo.powermateId,options);
         r=PsychHID('GiveMeReports',expInfo.powermateId);
         if ~isempty(r)

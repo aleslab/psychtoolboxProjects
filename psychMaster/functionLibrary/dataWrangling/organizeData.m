@@ -24,7 +24,7 @@ for iTrial = 1:length(experimentData),
     thisCond = experimentData(iTrial).condNumber;
     
     %If this is NOT a valid trial skip it and move on.
-    if ~experimentData(iTrial).validTrial
+    if ~experimentData(iTrial).validTrial || isempty(experimentData(iTrial).trialData)
         continue;
     end
     
@@ -35,7 +35,14 @@ for iTrial = 1:length(experimentData),
     thisTrialData = experimentData(iTrial).trialData;
     thisTrialData.condNumber = thisCond;
     thisTrialData.trialNumber = iTrial;
+    if isfield(sessionInfo,'trialToSessionIdx')
+        thisTrialData.sessionIdx = sessionInfo.trialToSessionIdx(iTrial);
+    end
+    
     sortedTrialData(thisCond).trialData(thisRep) = thisTrialData;
+    sortedTrialData(thisCond).condNumber = thisCond;
+    sortedTrialData(thisCond).label = sessionInfo.conditionInfo(thisCond).label;
+    sortedTrialData(thisCond).experimentData(thisRep) = experimentData(iTrial);
 
 end
 
