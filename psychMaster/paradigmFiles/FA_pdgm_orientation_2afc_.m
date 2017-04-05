@@ -78,8 +78,14 @@ conditionInfo(1).noiseSigma        = .15;
 %First we create a list of orientations
 %These are negative (-) because a negative orientation change is clockwise
 %That makes the task consistent with the instructions
-orientationDeltaList = linspace(-1,-10,10); 
-nCond = length(orientationDeltaList);
+
+
+orientationDeltaList = linspace(-0.25,-5,7);
+orientationDeltaList = repmat (orientationDeltaList, 1,2);
+contrastList = [repmat(0.05,1,7) repmat(0.20, 1,7)];
+
+nCond= length (orientationDeltaList);
+
 
 for iCond = 1:nCond,
     
@@ -89,26 +95,23 @@ for iCond = 1:nCond,
     %Now setup the delta for this condition
     conditionInfo(iCond).targetDelta = orientationDeltaList(iCond);
     
+    %now set tp chnge of contrast in for loop
+    conditionInfo(iCond).contrast = contrastList (iCond);
+    
     %We can give each condition a human readable lable. 
-    conditionInfo(iCond).label = ['Orientation Change: ' num2str(conditionInfo(iCond).targetDelta)];
-
-
-
-
-conditionInfo(2) = conditionInfo(1);
-conditionInfo(2).contrast = 0.20 ;
-conditionInfo(2).label = 'Contrast: 0.20';
-
-conditionInfo(3) = conditionInfo(1);
-conditionInfo(3).contrast = 0.30 ;
-conditionInfo(3).label = 'Contrast: 0.30';
-
-conditionInfo(3) = conditionInfo(1);
-conditionInfo(3).contrast = 0.40 ;
-conditionInfo(3).label = 'Contrast: 0.40';
+    conditionInfo(iCond).label = ['Ori: ' num2str(conditionInfo(iCond).targetDelta) ...
+        'Con' num2str(conditionInfo(iCond).contrast) ];
 
 
 end
+
+
+% conditionInfo(3) = conditionInfo(1);
+% conditionInfo(3).contrast = 0.40 ;
+% conditionInfo(3).label = 'Contrast: 0.40';
+
+
+
 
 
 
