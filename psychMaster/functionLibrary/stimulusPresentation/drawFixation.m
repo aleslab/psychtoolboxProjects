@@ -2,14 +2,46 @@ function [expInfo] = drawFixation(expInfo, fixationInfo)
 %function [expInfo] = drawFixation(expInfo, fixationInfo)
 %This function is used to draw fixation markers.
 % Since it is called throughout the experiment it can also be used to draw
-% things that should be on screen in the intertrial interval. Currently we
-% have an apeture to aid fixation in the stereo mode.
+% other things that should be on screen in the intertrial interval. For
+% example we have implemented a frame to aid fixation in the stereo mode.
 %
-% ADD INSTRUCTIONS FOR DIFFERENT FIXATION OPTIONS HERE
+% fixationInfo is a structure that can have multiple elements to draw
+% complicated fixation patterns.
 %
-% type: 'cross', 'square','noiseFrame'
-% color: 
-% lineWidthPix: 
+% 
+% type -  [''] Empty will not draw anything
+%         'cross' A standard fixation cross with the following fields:
+%             size         - [variable] The size (full width) in degrees of the cross
+%             lineWidthPix - [1] line width in pixels
+%             color        - [0] Color of the lines
+%
+%         'square' A square box. 
+%             size         - [variable] The size (full width) in degrees of
+%                            the square
+%             lineWidthPix - [1] line width in pixels
+%             color        - [0] Color of the lines
+% 
+% 
+%         'noiseFrame' A white noise texture around the edges of the screen
+%                      used to aid fixation lock in stereo modes. 
+%             size         - [variable] The size (full width) in degrees of
+%                            the square
+%
+% Examples:
+% 
+% Draw a black cross with lines 2 pixels wide:
+%
+% fixationInfo(1).type  = 'cross';
+% fixationInfo(1).size  = .5;
+% fixationInfo(1).lineWidthPix = 2;
+% fixationInfo(1).color = 0;
+%
+% Default fixation for when using a stereo mdoe is a 2-element fixation 
+% pattern cross with a noise frame at the edge of the screen:
+%
+% fixationInfo(1).type = 'cross';
+% fixationInfo(2).type = 'noiseFrame';
+% fixationInfo(2).size = 100;
 
 nElements = length(fixationInfo);
 
@@ -35,11 +67,11 @@ function [expInfo] = drawFixationMono(expInfo,fixationInfo)
 
 
 if  ~isfield(fixationInfo,'lineWidthPix') || isempty(fixationInfo.lineWidthPix)
-    fixationInfo.lineWidthPix = 1; %the line width of the fixation cross
+    fixationInfo.lineWidthPix = 1; %the line width of the fixation elements
 end
 
 if ~isfield(fixationInfo,'color') || isempty(fixationInfo.color)
-    fixationInfo.color = 0; %the color of the fixation cross.
+    fixationInfo.color = 0; %the color of the fixation elements.
 end
 
 %Switchyard to determine what to draw.
@@ -66,18 +98,31 @@ switch lower(fixationInfo.type)
     case 'square'
         %Consider changing this code to a framerect instead of lines for
         %simplicity.
-        if ~isfield(fixationInfo,'boxSize') || isempty(fixationInfo.boxSize)
-            fixationInfo.boxSize = 30/expInfo.ppd; %Default box size is 30 pixels for backwards compatability.
+        %Earlier version used "boxSize" to set the box size.
+        %new version unifies parameter names so "size" 
+        if ~isfield(fixationInfo,'size') || isempty(fixationInfo.size)
+            if isfield(fixationInfo,'boxSize') && ~isempty(fixationInfo.boxSize)
+                fixationInfo.size = fixationInfo.boxSize;
+            else
+                fixationInfo.size = 30/expInfo.ppd; %Default box size is 30 pixels for backwards compatability.
+            end
         end
         
-        boxSizePix = expInfo.ppd*fixationInfo.boxSize;
-        leftPointX = expInfo.center(1) - boxSizePix; %x centre is expInfo.center(1)
-        rightPointX = expInfo.center(1) + boxSizePix;
-        PointY1 = expInfo.center(2) + boxSizePix; %y centre is expInfo.center(2)
-        PointY2 = expInfo.center(2) - boxSizePix;
+        sizePix = expInfo.ppd*fixationInfo.size;
+        leftPointX = expInfo.center(1) - sizePix; %x centre is expInfo.center(1)
+        rightPointX = expInfo.center(1) + sizePix;
+        PointY1 = expInfo.center(2) + sizePix; %y centre is expInfo.center(2)
+        PointY2 = expInfo.center(2) - sizePix;
         
-        boxXcoords = [leftPointX leftPointX rightPointX rightPointX leftPointX rightPointX leftPointX rightPointX];
-        boxYcoords = [PointY1 PointY2 PointY1 PointY2 PointY1 PointY1 PointY2 PointY2];
+        boxXcoords = [leftPointX leftPointX ...
+            rightPointX rightPointX ...
+            leftPointX rightPointX ...
+            leftPointX rightPointX];
+        
+        boxYcoords = [PointY1 PointY2 ...
+            PointY1 PointY2 ...
+            PointY1 PointY1 ...
+            PointY2 PointY2];
         boxCoords = [boxXcoords; boxYcoords];
         
         Screen('DrawLines', expInfo.curWindow, boxCoords, fixationInfo.lineWidthPix, ...
@@ -91,8 +136,10 @@ switch lower(fixationInfo.type)
         [screenXpixels, screenYpixels] = Screen('WindowSize', expInfo.curWindow);
         
         if ~isfield(fixationInfo,'size') || isempty(fixationInfo.size)
-            fixationInfo.size = 100;
+            fixationInfo.size = 100/expInfo.ppd; %Default box size is 100 pixels for backwards compatability.
         end
+        
+        texWidthPix = expInfo.ppd*fixationInfo.size;
         
         if ~isfield(expInfo,'fixationTextures') || isempty(expInfo.fixationTextures)
             
@@ -101,10 +148,10 @@ switch lower(fixationInfo.type)
             rng(1); %setting the random seed of this file to 1 so that the normally
             %distributed random matrix generated by randn for the left, right, top
             %and bottom rectangle textures below will not change.
-            leftRectMat = randn([screenYpixels, fixationInfo.size]);
-            rightRectMat = randn([screenYpixels, fixationInfo.size]);
-            topHorzMat = randn([fixationInfo.size, screenXpixels]);
-            bottomHorzMat = randn([fixationInfo.size, screenXpixels]);
+            leftRectMat = randn([screenYpixels, texWidthPix]);
+            rightRectMat = randn([screenYpixels, texWidthPix]);
+            topHorzMat = randn([texWidthPix, screenXpixels]);
+            bottomHorzMat = randn([texWidthPix, screenXpixels]);
             
             
             leftRectTexture = Screen('MakeTexture', expInfo.curWindow, leftRectMat);
@@ -115,10 +162,10 @@ switch lower(fixationInfo.type)
             rng(priorSeed);            % restore the generator settings
         end
         
-        leftRectLocation = [0 0 fixationInfo.size screenYpixels];
-        rightRectLocation = [(screenXpixels-fixationInfo.size) 0 screenXpixels screenYpixels];
-        topRectLocation = [0 0 screenXpixels fixationInfo.size]; %this draws the top rectangle along the entire length of the top of the screen
-        bottomRectLocation = [0 (screenYpixels-fixationInfo.size) screenXpixels screenYpixels];
+        leftRectLocation = [0 0 texWidthPix screenYpixels];
+        rightRectLocation = [(screenXpixels-texWidthPix) 0 screenXpixels screenYpixels];
+        topRectLocation = [0 0 screenXpixels texWidthPix]; %this draws the top rectangle along the entire length of the top of the screen
+        bottomRectLocation = [0 (screenYpixels-texWidthPix) screenXpixels screenYpixels];
         allLocations = [leftRectLocation; rightRectLocation; topRectLocation; bottomRectLocation]';
         
         Screen('DrawTextures', expInfo.curWindow, expInfo.fixationTextures, [], [allLocations]);
