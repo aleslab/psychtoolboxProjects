@@ -21,7 +21,7 @@ function [ nCorrect nTrials ] = buildNafcMatrix( varargin )
 %     nCorrect = Number of trials participant was correct
 %     nTrials  = Total number of trials participant responded
 %
-% Examples:
+
 
 
 ptbCorgiData = overloadOpenPtbCorgiData(varargin{:});
