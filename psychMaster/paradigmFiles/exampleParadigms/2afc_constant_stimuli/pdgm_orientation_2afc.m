@@ -14,7 +14,8 @@ expInfo.randomizationType = 'random';
 %Define the viewing distance.
 expInfo.viewingDistance = 57;
 
-%Setup a simple fixation cross.
+%Setup a simple fixation cross. See help drawFixation for more info on how
+%to setup this field.
 expInfo.fixationInfo(1).type  = 'cross';
 expInfo.fixationInfo(1).size  = .5;
 expInfo.fixationInfo(1).lineWidthPix = 2;
@@ -27,6 +28,20 @@ expInfo.instructions = ['This is an orientation discrimination experiment\n' ...
     'Wait till the box appears before responding\n' ...
     'Press ''j'' for clockwise \n'...
     'Press ''f'' for anticlockwise\n']
+
+%Done with setting the expInfo fields
+
+%Next we define the different stimuli that will be used in this paradigm
+%This is done by specifying the conditionInfo structure.
+%Each of the conditionInfo structure is a separate condition. That is,
+%conditionInfo(1) specifies the paramaters for condition 1 and
+%conditoinInfo(2) specifies the paramaters for condition 2.
+%Most experiments (as in this one) use mostly the same parameters for each 
+%condition. This file demonstrates an easy way to construct the group of 
+%conditions by creating a 1st template condition. Then create the rest of
+%the conditions by copying the template (i.e. conditionInfo(2) =
+%conditionInfo(1)) and setting the parameter that changes between
+%conditions. For this experiment thats the field targetDelta.
 
 %This defines what function to call to draw the condition
 %Crucial: requires the @ sign prefix.  Because it needs it to be a
@@ -47,7 +62,7 @@ conditionInfo(1).randomizeField(1).param = [0 360];
 
 %One way to create a 2afc paradigm is to use  "targetFieldname" 
 %
-conditionInfo(1).targetFieldname = 'orientation'; %Field to 
+conditionInfo(1).targetFieldname = 'orientation'; %Field to use to define the 2afc target
 conditionInfo(1).targetDelta = -15; %This is an example to subtract 15 from 'orientation' Actual values get set in the loop below
 
 %Feedback options
@@ -77,7 +92,8 @@ conditionInfo(1).noiseSigma        = .15;
 %Now we'll build up the conditions
 %First we create a list of orientations
 %These are negative (-) because a negative orientation change is clockwise
-%That makes the task consistent with the instructions
+%That makes the task consistent with the instructions. If the 2nd stimulus
+%is clockwise (negative) from 1st press 'j'. 
 orientationDeltaList = linspace(-1,-10,10); 
 nCond = length(orientationDeltaList);
 

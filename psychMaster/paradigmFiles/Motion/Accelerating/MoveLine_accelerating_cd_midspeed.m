@@ -1,14 +1,14 @@
-function [conditionInfo, expInfo] = MoveLine_accelerating_depth_midspeed(expInfo)
+function [conditionInfo, expInfo] = MoveLine_accelerating_cd_midspeed(expInfo)
 
 %Paradigm file for the combined looming and cd stimulus. Two vertical lines
 %moving in each eye.
 expInfo = moveLineDefaultSettings(expInfo);
 %paradigmName is what will be prepended to data files
-expInfo.paradigmName = 'MoveLine_accelerating_depth_midspeed';
+expInfo.paradigmName = 'MoveLine_accelerating_cd_midspeed';
 
 %% conditions
 firstVelocities = [-40:5:-10];
-condStimTypes = repmat( {'combined'},1,7);
+condStimTypes = repmat( {'cd'},1,7);
 
 for iCond = 1: length(firstVelocities);
 %This defines what function to call to draw the condition
@@ -26,12 +26,11 @@ conditionInfo(iCond).responseDuration = 3;    %Post trial window for waiting for
 conditionInfo(iCond).velocityCmPerSecSection1 = firstVelocities(iCond); %cm/s
 conditionInfo(iCond).velocityCmPerSecSection2 = (-80)-(conditionInfo(iCond).velocityCmPerSecSection1); %cm/s 
 conditionInfo(iCond).isNullCorrect = false;
-conditionInfo(iCond).objectOneStartPos = -1; %when there are two lines in each eye, the start position of the first line
-conditionInfo(iCond).objectTwoStartPos = 1; %the start position of the second line in each eye
+conditionInfo(iCond).startPos = -1;
 conditionInfo(iCond).nReps = 10; %number of repeats
 conditionInfo(iCond).intervalBeep = true;
 conditionInfo(iCond).giveFeedback = false;
-conditionInfo(iCond).depthStart = 20; %5cm behind the plane of the screen
+conditionInfo(iCond).depthStart = 20; %behind the plane of the screen
 conditionInfo(iCond).label = [ condStimTypes{iCond} '_' num2str(firstVelocities(iCond))];
 
 
