@@ -1,4 +1,4 @@
-function [ output_args ] = ptbCorgiAnalyzeEachParticipant( analysisInfo )
+function [ analysisInfo] = ptbCorgiAnalyzeEachParticipant( analysisInfo )
 %ptbCorgiAnalyze Facilitate data analysis by repeating for each participant
 
 %
@@ -14,10 +14,11 @@ analysisInfo.ptbCorgiData = overloadOpenPtbCorgiData(analysisInfo.ptbCorgiData);
 nParticipants = analysisInfo.ptbCorgiData.nParticipants;
 
 
+
 for iPpt = 1:nParticipants,
     
     
-    analysisInfo.function(analysisInfo.funcOptions,...
+   resultanalysisInfo.function(analysisInfo.funcOptions,...
         analysisInfo.ptbCorgiData.participantData(iPpt));
     
     
