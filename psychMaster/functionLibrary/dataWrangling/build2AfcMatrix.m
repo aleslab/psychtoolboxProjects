@@ -17,16 +17,21 @@ function [ nCorrect nTrials ] = buildNafcMatrix( varargin )
 %      [nC nT] = buildNafcMatrix(sessionInfo,experimentData) 
 %
 %   Output:
-%   These are matrices sized nParticipants x nConditions
+%   These are matrices sized nParticipants x nConditions.
+%   NOTE:  Instead of throwing an error for missing values this function
+%   returns NaN to identify conditions/participants with missing values.
+%   use nanmean()/nanstd() or other logic to process
+%
 %     nCorrect = Number of trials participant was correct
 %     nTrials  = Total number of trials participant responded
 %
 
 
 
+%Parse inputs for Loading data
 ptbCorgiData = overloadOpenPtbCorgiData(varargin{:});
 
-%loop over participants
+%number of participants to loop over. 
 nParticipants = ptbCorgiData.nParticipants;
 
 
@@ -53,7 +58,7 @@ for iPpt = 1:nParticipants,
         thisData = thisSortedData(iCond).experimentData;
         
         %Not use of [] to turn elements of structure into vector
-        nCorrect(iPpt,iCond) = sum([thisData.isResponseCorrect]);
+        nCorrect(iPpt,iCond) = nansum([thisData.isResponseCorrect]);
         nTrials(iPpt,iCond)  = length([thisData.isResponseCorrect]);
         
     end
