@@ -9,6 +9,7 @@ function [ analysisInfo, ptbCorgiData ] = ptbCorgiAnalyzeEachParticipant( analys
 
 if isfield(analysisInfo,'results')
     warning('analysisInfo contains previous results.  Replacing these by the current analysis')
+    analysisInfo = rmfield(analysisInfo,'results');
 end
 
 %
@@ -17,8 +18,8 @@ end
 ptbCorgiData = overloadOpenPtbCorgiData(ptbCorgiData);
 nParticipants = ptbCorgiData.nParticipants;
 
-settings = rmfield(analysisInfo, 'ptbCorgiData');
-
+%settings = rmfield(analysisInfo, 'ptbCorgiData');
+settings = analysisInfo;
 %code to validate previous analysis here%
 
 for iPpt = 1:nParticipants,
