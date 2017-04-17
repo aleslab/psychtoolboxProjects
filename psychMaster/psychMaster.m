@@ -131,7 +131,7 @@ function [] = psychMaster(sessionInfo)
 
 %Initial setup
 
-psychMasterVer = '0.31.0';
+psychMasterVer = '0.32.0-dev';
 
 thisFile = mfilename('fullpath');
 [thisDir, ~, ~] = fileparts(thisFile);
@@ -171,9 +171,24 @@ if ~exist('sessionInfo','var') || isempty(sessionInfo)
     sessionInfo.tag           = '';
     [~,ptbVerStruct]=PsychtoolboxVersion;
     sessionInfo.ptbVersion = ptbVerStruct;
-    rng('default'); %Need to reset the rng before shuffling in case the legacy RNG has activated before we started psychMaster
+    
+    %Matlab older random number code is flawed.  It has been updated but
+    %lot's of code exists that still uses the "legacy random number
+    %generators" and syntax "discouraged" by mathworks.
+    %See: https://uk.mathworks.com/help/matlab/math/updating-your-random-number-generator-syntax.html
+    %Therefore, I'm turning on warnings that help users identify when they
+    %use the discouraged methods. 
+    warning('on','MATLAB:RandStream:ActivatingLegacyGenerators');
+    warning('on','MATLAB:RandStream:ReadingInactiveLegacyGeneratorState');
+    %Need to reset the rng before shuffling in case the legacy RNG has
+    %activated before we started psychMaster. Deactivate the legacy system
+    %and use the modern system.
+    rng('default'); 
     rng('shuffle');
+    %Technically not a "seed". 
     sessionInfo.randomSeed = rng;
+    
+    
     %Initialize this variable to false to catch when sessions exit early.
     sessionInfo.sessionCompleted = false;
 end
@@ -855,6 +870,7 @@ end;
 
 %Check that expected functions are in the path.
 %This is just a quick and dirty check of a couple of functions
+%This also checks to see if all subfolders are included in the path.
     function pathIsCorrect = checkPath()
         %Determine if the path is setup correctly by looking for a few key files
         %Add more files here as needed
@@ -864,11 +880,45 @@ end;
         pathIsCorrect = true;
         for iFunction = 1:nFunctions
             
+            %If we can't find the required functions somethings wrong.
             if ~exist(requiredFunctionList{iFunction},'file')
                 pathIsCorrect = false;
-                break;
+                return;
             end
         end
+        
+        %Let's make sure all sub directories are on the path.  This should
+        %detect any directory changes. Which have been happening frequently
+        %when changing git branches.
+        %Why not just add all sub directories to the path and let matlab
+        %auto prune redundancies? Well, that always brings things to the
+        %top of the path. Which _may_ not be wanted from the user.
+        thisFile = mfilename('fullpath');
+        [thisDir, ~, ~] = fileparts(thisFile);
+        
+        %For now just grab the directory including psychMaster and all subdirectories
+        %We do this in a slightly tricky way, generate a path which turns a
+        %a long string with directorys separated by pathsep(). So we use a
+        %regular experession to split the string based on the pathsep()
+        %character
+        allSubDirs = genpath(thisDir);
+        subDirCell = regexp(allSubDirs, pathsep, 'split');
+        pathCell = regexp(path, pathsep, 'split');
+        
+        for iSub = 1:length(subDirCell)
+            
+            thisFolder = subDirCell{iSub};
+            
+            %If thisFolder doesn't match any of the directories on the path
+            %we're not correct. 
+            if ~isempty(thisFolder) && ~any(strcmp(thisFolder, pathCell));
+                pathIsCorrect = false;
+                return;
+            end
+            
+        end
+        
+        
         
     end
 
@@ -882,10 +932,29 @@ end;
         %For now just grab this and all subdirectories
         newPath2Add = genpath(thisDir);
         
-        %Note: think about adding some code to check for path issues here
+        %Now let's find the directories that are missing and add only them
+        %to the path.
+        %Why not just add all sub directories to the path and let matlab
+        %auto prune redundancies? Well, that always brings the added
+        %directoreis top of the path. Which _may_ not be wanted from the
+        %user.
+        subDirCell = regexp(newPath2Add, pathsep, 'split');
+        pathCell = regexp(path, pathsep, 'split');
         
-        %Add them to the path.
-        addpath(newPath2Add);
+        for iSub = 1:length(subDirCell)
+            
+            thisFolder = subDirCell{iSub};
+            
+            %If thisFolder doesn't match any of the directories on the path
+            %add it to the path. 
+            if  ~any(strcmp(thisFolder, pathCell));
+                msg = sprintf('Adding to path: %s',thisFolder);
+                disp(msg);
+                addpath(thisFolder);
+                
+            end
+            
+        end
         
     end
 
