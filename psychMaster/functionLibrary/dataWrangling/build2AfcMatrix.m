@@ -36,8 +36,8 @@ nParticipants = ptbCorgiData.nParticipants;
 
 
 
-nCorrect     = NaN(nParticipants,ptbCorgiData.nConditions);
-nTrials = NaN(nParticipants,ptbCorgiData.nConditions);
+nCorrect = NaN(nParticipants,ptbCorgiData.nConditions);
+nTrials  = NaN(nParticipants,ptbCorgiData.nConditions);
 
 for iPpt = 1:nParticipants,
     

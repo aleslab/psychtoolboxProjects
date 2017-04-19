@@ -8,7 +8,7 @@ function [ analysisInfo, ptbCorgiData ] = ptbCorgiAnalyzeEachParticipant( analys
 % error/warning handling here
 
 if isfield(analysisInfo,'results')
-    warning('analysisInfo contains previous results.  Replacing these by the current analysis')
+    warning('analysisInfo contains previous results.  These may be changed by the current analysis')
     analysisInfo = rmfield(analysisInfo,'results');
 end
 
@@ -49,7 +49,8 @@ for iPpt = 1:nParticipants,
     else
         analysisInfo.function(analysisInfo.funcOptions,...
             ptbCorgiData.participantData(iPpt));
-        results.message = 'Function does not return results';
+        results.message = sprintf('Function %s does not return results',...
+            func2str(analysisInfo.function));
     end
     
     

@@ -39,11 +39,15 @@ for iTrial = 1:length(experimentData),
         thisTrialData.sessionIdx = sessionInfo.trialToSessionIdx(iTrial);
     end
     
+    mergedData = updateStruct(experimentData(iTrial),thisTrialData);
+    
     sortedTrialData(thisCond).trialData(thisRep) = thisTrialData;
     sortedTrialData(thisCond).condNumber = thisCond;
     sortedTrialData(thisCond).label = sessionInfo.conditionInfo(thisCond).label;
-    sortedTrialData(thisCond).experimentData(thisRep) = experimentData(iTrial);
+    
+    sortedTrialData(thisCond).experimentData(thisRep) = mergedData;
 
+    
 end
 
 
