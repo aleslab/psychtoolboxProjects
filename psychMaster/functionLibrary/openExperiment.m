@@ -117,6 +117,8 @@ expInfo.dontclear = 0; % 1 gives incremental drawing (does not clear buffer afte
 expInfo.modeInfo =Screen('Resolution', expInfo.screenNum);
 
 %If we're running full screen lets hide the mouse cursor from view.
+%This should just hide the cursor on the experiment monitor but under OS/X
+%10.9-10.10 appears to hide it on all screens. 
 if expInfo.useFullScreen == true
     HideCursor(expInfo.screenNum);
 end
