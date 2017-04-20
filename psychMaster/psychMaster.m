@@ -306,7 +306,7 @@ try
     %Need to do this here for different OS versions and to enable 
     %control from pmGui
     if expInfo.useFullScreen == true
-        HideCursor(handles.expInfo.screenNum);
+        HideCursor(expInfo.screenNum);
     end
 
     
@@ -337,7 +337,7 @@ try
         %Need to do this here for different OS versions and to enable
         %control from pmGui
         if expInfo.useFullScreen == true
-            HideCursor(handles.expInfo.screenNum);
+            HideCursor(expInfo.screenNum);
         end
         %This function handles everything for the experimental trials.
         mainExperimentLoop();
