@@ -287,7 +287,13 @@ try
     
     %Now lets begin the experiment and loop over the conditions to show.
     expInfo = openExperiment(expInfo);
-    
+    %If we're running full screen lets hide the mouse cursor from view.
+    %Need to do this here for different OS versions and to enable 
+    %control from pmGui
+    if expInfo.useFullScreen == true
+        HideCursor(handles.expInfo.screenNum);
+    end
+
     
     %Initialize experiment data, this makes sure the experiment data
     %scope spans all the subfunctions.
@@ -312,6 +318,12 @@ try
         %Initialize experiment data, this makes sure the experiment data
         %scope spans all the subfunctions.
         experimentData = struct();
+        %If we're running full screen lets hide the mouse cursor from view.
+        %Need to do this here for different OS versions and to enable
+        %control from pmGui
+        if expInfo.useFullScreen == true
+            HideCursor(handles.expInfo.screenNum);
+        end
         %This function handles everything for the experimental trials.
         mainExperimentLoop();
     end
@@ -633,12 +645,14 @@ end;
                         %Now
                         if trialData.firstPress(KbName(correctResponse))
                             experimentData(iTrial).isResponseCorrect = true;
+                            trialData.isResponseCorrect = true;
                             trialData.validTrial = true;
                             trialData.feedbackMsg = 'Correct';
                             correctBeep = MakeBeep(750, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
                             trialData.audioFeedbackSnd  = [correctBeep; correctBeep];
                         elseif trialData.firstPress(KbName(incorrectResponse))
                             experimentData(iTrial).isResponseCorrect = false;
+                            trialData.isResponseCorrect = false;
                             trialData.validTrial = true;
                             trialData.feedbackMsg = 'Incorrect';
                             incorrectBeep = MakeBeep(250, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);

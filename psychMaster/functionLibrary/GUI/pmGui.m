@@ -211,10 +211,6 @@ guidata(hObject,handles);
 
 %Don't echo keypresses when really running experiment
 ListenChar(2);
-%If we're running full screen lets hide the mouse cursor from view.
-if handles.expInfo.useFullScreen == true
-    HideCursor(handles.expInfo.screenNum);
-end
 
 
 uiresume(handles.pmGuiParentFig);
