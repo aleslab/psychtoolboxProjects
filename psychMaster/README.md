@@ -10,8 +10,18 @@ that makes it work a little more intuitively.
 Issue #7 Create an automatic format to create paradigms
 Add a check for if psychmaster changed from last run and warn user.  
 Add a convenience function for creating a group of conditions.  
+Add some hashing functions to detect changes. 
 
 Version History
+0.32.0
+Started project management framework for data analysis: 
+   added function ptbCorgiAnalyzeEachParticipant() that will execute arbitrary 
+   analayses on all participants in an experiment
+Added convience function build2AfcMatrix() that returns a simple matrix 
+Made automatic setting up of the matlab path more robust
+Enables warnings for matlab legacy random number generators. 
+
+
 0.31.0
 Switched to semantic version numbering
 Added ability to randomize arbitrary fields in the condition structure
