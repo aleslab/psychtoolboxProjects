@@ -1,16 +1,16 @@
 function [fh] = chooseCalibrationFile()
 
 
-if ispref('psychMaster','sizeCalibrationFile');
-    sizeFile = getpref('psychMaster','sizeCalibrationFile');
+if ispref('ptbCorgi','sizeCalibrationFile');
+    sizeFile = getpref('ptbCorgi','sizeCalibrationFile');
 else
     sizeFile = '';
 end
 
 sizeColor=fileColor(sizeFile);
  
-if ispref('psychMaster','lumCalibrationFile');
-    lumFile = getpref('psychMaster','lumCalibrationFile');
+if ispref('ptbCorgi','lumCalibrationFile');
+    lumFile = getpref('ptbCorgi','lumCalibrationFile');
 else
     lumFile = '';
 end
@@ -112,8 +112,8 @@ lumColor = fileColor(lumFile);
 
     function saveSettings(varargin)
         
-        setpref('psychMaster','sizeCalibrationFile',get(sizeStringHandle,'String'));
-        setpref('psychMaster','lumCalibrationFile',get(lumStringHandle,'String'));
+        setpref('ptbCorgi','sizeCalibrationFile',get(sizeStringHandle,'String'));
+        setpref('ptbCorgi','lumCalibrationFile',get(lumStringHandle,'String'));
         closeGui();
      
     end

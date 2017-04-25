@@ -85,10 +85,10 @@ saveBtnH= uicontrol(fh,'Style','pushbutton',...
         
         filename = ['pm_luminance_' modeString datestr(now,'yyyymmdd_HHMMSS') '.mat'];
         
-        if ispref('psychMaster','calibdir');
-            calibdir = getpref('psychMaster','calibdir');
-        elseif ispref('psychMaster','base');
-            calibdir = fullfile(getpref('psychMaster','base'),'calibrationData');
+        if ispref('ptbCorgi','calibdir');
+            calibdir = getpref('ptbCorgi','calibdir');
+        elseif ispref('ptbCorgi','base');
+            calibdir = fullfile(getpref('ptbCorgi','base'),'calibrationData');
         else
             calibdir = '';
         end
