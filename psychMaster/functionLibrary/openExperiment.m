@@ -68,6 +68,11 @@ if ~isfield(expInfo,'randomizationType')
     expInfo.randomizationType = 'random';
 end
 
+%Default randomizationOptions is empty
+if ~isfield(expInfo,'randomizationOptions')
+    expInfo.randomizationOptions = [];
+end
+
 %Default to testing in a small window
 if ~isfield(expInfo,'useFullScreen')
     if expInfo.screenNum >0
