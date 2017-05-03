@@ -10,6 +10,7 @@ expInfo.paradigmName = 'OrientationDiscriminationExample';
 
 %Randomly present each condition.
 expInfo.randomizationType = 'blocked';
+expInfo.randomizationOptions.blockConditionsByField = ['contrast'] ;
 
 %Define the viewing distance.
 expInfo.viewingDistance = 57;
