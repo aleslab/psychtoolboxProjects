@@ -6,8 +6,6 @@ try
     %Open a window
     expInfo = openExperiment();
     Screen('TextSize',expInfo.curWindow, 22);
-    currentComputer = Screen('Computer');
-
     
     rectSize = round(min(expInfo.screenRect(3:4))/4); %make a rect half of the window size
     calibSquare = [expInfo.center(1) - rectSize, expInfo.center(2) - rectSize, ...
@@ -49,10 +47,12 @@ try
 
     computerName = userResponse{2};
     
-    modeString = ['_' num2str(sizeCalibInfo.modeInfo.width) 'x' num2str(sizeCalibInfo.modeInfo.height) ...
+    modeString = [num2str(sizeCalibInfo.modeInfo.width) 'x' num2str(sizeCalibInfo.modeInfo.height) ...
         '_' num2str(sizeCalibInfo.modeInfo.hz) 'Hz_' num2str(sizeCalibInfo.modeInfo.pixelSize) 'bpp_'];
     
     filename = ['size_' computerName '_' modeString datestr(now,'yyyymmdd_HHMMSS') '.mat'];
+    
+    setpref('ptbCorgi','computerName',computerName);
     
     if ispref('psychMaster','calibdir');
         calibdir = getpref('psychMaster','calibdir');
