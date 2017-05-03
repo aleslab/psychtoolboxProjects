@@ -9,7 +9,7 @@ function [conditionInfo,expInfo] = FA_pdgm_orientation_2afc(expInfo)
 expInfo.paradigmName = 'OrientationDiscriminationExample';
 
 %Randomly present each condition.
-expInfo.randomizationType = 'random';
+expInfo.randomizationType = 'blocked';
 
 %Define the viewing distance.
 expInfo.viewingDistance = 57;
