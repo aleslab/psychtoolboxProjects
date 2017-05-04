@@ -408,7 +408,7 @@ end;
         %Determine trial randomization
         %Should rename conditionList to trialList to make it more clearly
         %explanatory and consistent with makeTrialList();
-        conditionList = makeTrialList(expInfo,conditionInfo);
+        [conditionList blockList] = makeTrialList(expInfo,conditionInfo);
         
         %Let's start the expeirment
         %we're going to use a while loop so we can easily add trials for
@@ -440,6 +440,7 @@ end;
             feedbackColor = [1];
             
             thisCond = conditionList(iTrial);
+            thisBlock = blockList(iTrial);
             
             %Handle randomizing condition fields
             %This changes the conditionInfo structure so is a bit of a
@@ -451,7 +452,7 @@ end;
             if strcmpi(expInfo.randomizationType,'blocked')
                 %In the block design lets put a message and
                 %pause when blocks change
-                if iTrial >1 && thisCond ~= conditionList(iTrial-1)
+                if iTrial >1 && thisBlock ~= blockList(iTrial-1)
                     
                     %In the future add code here to enable custom block
                     %messages
@@ -757,7 +758,15 @@ end;
                 %block.  %JMA: TEST THIS CAREFULLY. Not full vetted
                 if strcmpi(expInfo.randomizationType,'blocked')
                     thisCond = conditionList(iTrial);
-                    conditionList(iTrial+1:end+1) =[ thisCond conditionList(iTrial+1:end)];
+                    thisBlock = blockList(iTrial);
+                    
+                    %Find the end of this block
+                    blockEndIdx = max(find(blockList==thisBlock));
+                    
+                    %Add the condition to the end of the block
+                    conditionList(blockEndIdx+1:end+1) =[ thisCond conditionList(iTrial+1:end)];
+                    blockList(blockEndIdx+1:end+1)     =[ thisBlock blockList(iTrial+1:end)];
+                    
                 else %For other trial randomizations just add the current condition to the end.
                     conditionList(end+1) = conditionList(iTrial);
                 end
