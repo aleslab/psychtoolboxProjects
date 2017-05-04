@@ -445,7 +445,7 @@ end;
             thisCond = conditionList(iTrial);
             thisBlock = blockList(iTrial);
             
-            experimentData(iTrial).blockNumber = thisBLock;
+            experimentData(iTrial).blockNumber = thisBlock;
             
             %Handle randomizing condition fields
             %This changes the conditionInfo structure so is a bit of a
@@ -1000,8 +1000,6 @@ end;
         sessionInfo.expInfo = expInfo;
         sessionInfo.conditionInfo = initConditionInfo;
         sessionInfo.condInfoAfterExperimentFinished = conditionInfo;
-        sessionInfo.conditionList = conditionList;
-        sessionInfo.blockList     = blockList;
         %Now get our path, and find the files used
         P = mfilename('fullpath');
         [localDir] = fileparts(P);
