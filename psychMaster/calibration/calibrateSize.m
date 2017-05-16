@@ -34,17 +34,25 @@ try
     
     closeExperiment;
     
-    userResponse = inputdlg('What was the size of the square in centimeters? ');
+    computerName = ptbCorgiGetComputerName();
+    
+    userResponse = inputdlg({'What was the size of the square in centimeters? '; ...
+        'What is the name for this computer?'}, 'Calibration Data', 1,{'',computerName});
     
     sizeCalibInfo.measuredSizeCM = str2num(userResponse{1});
     sizeCalibInfo.pixPerCm = sizeCalibInfo.squarePixWidth/sizeCalibInfo.measuredSizeCM;
     
     sizeCalibInfo.monitorWidth =    sizeCalibInfo.monitorPixelWidth/sizeCalibInfo.pixPerCm;
     
-    modeString = ['_' num2str(sizeCalibInfo.modeInfo.width) 'x' num2str(sizeCalibInfo.modeInfo.height) ...
+
+    computerName = userResponse{2};
+    
+    modeString = [num2str(sizeCalibInfo.modeInfo.width) 'x' num2str(sizeCalibInfo.modeInfo.height) ...
         '_' num2str(sizeCalibInfo.modeInfo.hz) 'Hz_' num2str(sizeCalibInfo.modeInfo.pixelSize) 'bpp_'];
     
-    filename = ['pm_size_' modeString datestr(now,'yyyymmdd_HHMMSS') '.mat'];
+    filename = ['size_' computerName '_' modeString datestr(now,'yyyymmdd_HHMMSS') '.mat'];
+    
+    setpref('ptbCorgi','computerName',computerName);
     
     if ispref('psychMaster','calibdir');
         calibdir = getpref('psychMaster','calibdir');

@@ -131,7 +131,7 @@ function [] = psychMaster(sessionInfo)
 
 %Initial setup
 
-psychMasterVer = '0.31.0';
+psychMasterVer = '0.32.0-dev';
 
 thisFile = mfilename('fullpath');
 [thisDir, ~, ~] = fileparts(thisFile);
@@ -171,13 +171,29 @@ if ~exist('sessionInfo','var') || isempty(sessionInfo)
     sessionInfo.tag           = '';
     [~,ptbVerStruct]=PsychtoolboxVersion;
     sessionInfo.ptbVersion = ptbVerStruct;
-    rng('default'); %Need to reset the rng before shuffling in case the legacy RNG has activated before we started psychMaster
+    
+    %Matlab older random number code is flawed.  It has been updated but
+    %lot's of code exists that still uses the "legacy random number
+    %generators" and syntax "discouraged" by mathworks.
+    %See: https://uk.mathworks.com/help/matlab/math/updating-your-random-number-generator-syntax.html
+    %Therefore, I'm turning on warnings that help users identify when they
+    %use the discouraged methods. 
+    warning('on','MATLAB:RandStream:ActivatingLegacyGenerators');
+    warning('on','MATLAB:RandStream:ReadingInactiveLegacyGeneratorState');
+    %Need to reset the rng before shuffling in case the legacy RNG has
+    %activated before we started psychMaster. Deactivate the legacy system
+    %and use the modern system.
+    rng('default'); 
     rng('shuffle');
+    %Technically not a "seed". 
     sessionInfo.randomSeed = rng;
+    
+    
     %Initialize this variable to false to catch when sessions exit early.
     sessionInfo.sessionCompleted = false;
 end
 
+%Initialize variables here so we can access them in the subfunctions.
 
 expInfo     = struct();
 initConditionInfo = struct();
@@ -287,7 +303,13 @@ try
     
     %Now lets begin the experiment and loop over the conditions to show.
     expInfo = openExperiment(expInfo);
-    
+    %If we're running full screen lets hide the mouse cursor from view.
+    %Need to do this here for different OS versions and to enable 
+    %control from pmGui
+    if expInfo.useFullScreen == true
+        HideCursor(expInfo.screenNum);
+    end
+
     
     %Initialize experiment data, this makes sure the experiment data
     %scope spans all the subfunctions.
@@ -312,6 +334,12 @@ try
         %Initialize experiment data, this makes sure the experiment data
         %scope spans all the subfunctions.
         experimentData = struct();
+        %If we're running full screen lets hide the mouse cursor from view.
+        %Need to do this here for different OS versions and to enable
+        %control from pmGui
+        if expInfo.useFullScreen == true
+            HideCursor(expInfo.screenNum);
+        end
         %This function handles everything for the experimental trials.
         mainExperimentLoop();
     end
@@ -381,7 +409,7 @@ end;
         %Determine trial randomization
         %Should rename conditionList to trialList to make it more clearly
         %explanatory and consistent with makeTrialList();
-        conditionList = makeTrialList(expInfo,conditionInfo);
+        [conditionList, blockList] = makeTrialList(expInfo,conditionInfo);
         
         %Let's start the expeirment
         %we're going to use a while loop so we can easily add trials for
@@ -402,6 +430,8 @@ end;
         %Adding some info about the current trial to expInfo. This is so
         %trialFun functions can use it.
         expInfo.currentTrial.number = iTrial;
+        
+        
         expInfo = drawFixation(expInfo, expInfo.fixationInfo);
         Screen('Flip', expInfo.curWindow);
         
@@ -413,6 +443,9 @@ end;
             feedbackColor = [1];
             
             thisCond = conditionList(iTrial);
+            thisBlock = blockList(iTrial);
+            
+            experimentData(iTrial).blockNumber = thisBlock;
             
             %Handle randomizing condition fields
             %This changes the conditionInfo structure so is a bit of a
@@ -424,7 +457,7 @@ end;
             if strcmpi(expInfo.randomizationType,'blocked')
                 %In the block design lets put a message and
                 %pause when blocks change
-                if iTrial >1 && thisCond ~= conditionList(iTrial-1)
+                if iTrial >1 && thisBlock ~= blockList(iTrial-1)
                     
                     %In the future add code here to enable custom block
                     %messages
@@ -633,12 +666,14 @@ end;
                         %Now
                         if trialData.firstPress(KbName(correctResponse))
                             experimentData(iTrial).isResponseCorrect = true;
+                            trialData.isResponseCorrect = true;
                             trialData.validTrial = true;
                             trialData.feedbackMsg = 'Correct';
                             correctBeep = MakeBeep(750, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
                             trialData.audioFeedbackSnd  = [correctBeep; correctBeep];
                         elseif trialData.firstPress(KbName(incorrectResponse))
                             experimentData(iTrial).isResponseCorrect = false;
+                            trialData.isResponseCorrect = false;
                             trialData.validTrial = true;
                             trialData.feedbackMsg = 'Incorrect';
                             incorrectBeep = MakeBeep(250, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
@@ -728,7 +763,16 @@ end;
                 %block.  %JMA: TEST THIS CAREFULLY. Not full vetted
                 if strcmpi(expInfo.randomizationType,'blocked')
                     thisCond = conditionList(iTrial);
-                    conditionList(iTrial+1:end+1) =[ thisCond conditionList(iTrial+1:end)];
+                    thisBlock = blockList(iTrial);
+                    
+                    %Find the end of this block
+                    blockEndIdx = max(find(blockList==thisBlock));
+                    
+                    %Add the condition to just after the end of the block
+                    %(blockEndIdx+1)
+                    conditionList(blockEndIdx+1:end+1) =[ thisCond conditionList(blockEndIdx+1:end)];
+                    blockList(blockEndIdx+1:end+1)     =[ thisBlock blockList(blockEndIdx+1:end)];
+                    
                 else %For other trial randomizations just add the current condition to the end.
                     conditionList(end+1) = conditionList(iTrial);
                 end
@@ -850,11 +894,13 @@ end;
             
         end %End while loop for showing trials.
         
+        
     end
 
 
 %Check that expected functions are in the path.
 %This is just a quick and dirty check of a couple of functions
+%This also checks to see if all subfolders are included in the path.
     function pathIsCorrect = checkPath()
         %Determine if the path is setup correctly by looking for a few key files
         %Add more files here as needed
@@ -864,11 +910,45 @@ end;
         pathIsCorrect = true;
         for iFunction = 1:nFunctions
             
+            %If we can't find the required functions somethings wrong.
             if ~exist(requiredFunctionList{iFunction},'file')
                 pathIsCorrect = false;
-                break;
+                return;
             end
         end
+        
+        %Let's make sure all sub directories are on the path.  This should
+        %detect any directory changes. Which have been happening frequently
+        %when changing git branches.
+        %Why not just add all sub directories to the path and let matlab
+        %auto prune redundancies? Well, that always brings things to the
+        %top of the path. Which _may_ not be wanted from the user.
+        thisFile = mfilename('fullpath');
+        [thisDir, ~, ~] = fileparts(thisFile);
+        
+        %For now just grab the directory including psychMaster and all subdirectories
+        %We do this in a slightly tricky way, generate a path which turns a
+        %a long string with directorys separated by pathsep(). So we use a
+        %regular experession to split the string based on the pathsep()
+        %character
+        allSubDirs = genpath(thisDir);
+        subDirCell = regexp(allSubDirs, pathsep, 'split');
+        pathCell = regexp(path, pathsep, 'split');
+        
+        for iSub = 1:length(subDirCell)
+            
+            thisFolder = subDirCell{iSub};
+            
+            %If thisFolder doesn't match any of the directories on the path
+            %we're not correct. 
+            if ~isempty(thisFolder) && ~any(strcmp(thisFolder, pathCell));
+                pathIsCorrect = false;
+                return;
+            end
+            
+        end
+        
+        
         
     end
 
@@ -882,10 +962,29 @@ end;
         %For now just grab this and all subdirectories
         newPath2Add = genpath(thisDir);
         
-        %Note: think about adding some code to check for path issues here
+        %Now let's find the directories that are missing and add only them
+        %to the path.
+        %Why not just add all sub directories to the path and let matlab
+        %auto prune redundancies? Well, that always brings the added
+        %directoreis top of the path. Which _may_ not be wanted from the
+        %user.
+        subDirCell = regexp(newPath2Add, pathsep, 'split');
+        pathCell = regexp(path, pathsep, 'split');
         
-        %Add them to the path.
-        addpath(newPath2Add);
+        for iSub = 1:length(subDirCell)
+            
+            thisFolder = subDirCell{iSub};
+            
+            %If thisFolder doesn't match any of the directories on the path
+            %add it to the path. 
+            if  ~any(strcmp(thisFolder, pathCell));
+                msg = sprintf('Adding to path: %s',thisFolder);
+                disp(msg);
+                addpath(thisFolder);
+                
+            end
+            
+        end
         
     end
 
@@ -901,7 +1000,6 @@ end;
         sessionInfo.expInfo = expInfo;
         sessionInfo.conditionInfo = initConditionInfo;
         sessionInfo.condInfoAfterExperimentFinished = conditionInfo;
-        
         %Now get our path, and find the files used
         P = mfilename('fullpath');
         [localDir] = fileparts(P);
