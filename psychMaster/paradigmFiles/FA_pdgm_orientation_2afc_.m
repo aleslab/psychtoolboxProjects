@@ -6,7 +6,7 @@ function [conditionInfo,expInfo] = FA_pdgm_orientation_2afc(expInfo)
 %Define things that are set in expInfo for the whole experiment
 
 %Paradigm Name is a short name that identifies this paradigm
-expInfo.paradigmName = 'OrientationDiscriminationExample';
+expInfo.paradigmName = 'OrientationDiscrimination';
 
 %Randomly present each condition.
 expInfo.randomizationType = 'blocked';
