@@ -52,9 +52,9 @@ conditionInfo(1).targetFieldname = 'orientation'; %Field to
 conditionInfo(1).targetDelta = -15; %This is an example to subtract 15 from 'orientation' Actual values get set in the loop below
 
 %Feedback options
-conditionInfo(1).intervalBeep = true; %Should we play beeps that identify the two intervals?
-conditionInfo(1).giveAudioFeedback = true; %Should we play 
-conditionInfo(1).giveFeedback = true; %Should we give written feedback after each trial?
+conditionInfo(1).intervalBeep = false; %Should we play beeps that identify the two intervals?
+conditionInfo(1).giveAudioFeedback = false; %Should we play 
+conditionInfo(1).giveFeedback = false; %Should we give written feedback after each trial?
 
 % %Condition definitions
 %These fields are 
