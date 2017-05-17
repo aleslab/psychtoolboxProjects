@@ -1,2 +1,2 @@
 # psychtoolboxProjects
-collection of experiments implemented in pyschtoolbox
+Development repository for the ptbCorgi project
