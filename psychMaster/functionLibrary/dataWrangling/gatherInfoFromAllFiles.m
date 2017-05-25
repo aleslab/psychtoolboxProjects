@@ -46,13 +46,15 @@ for iFile = 1:length(fileList),
     
     %lazy handling of loading the info.
     try
-        load(thisFile,'sessionInfo');
+        loadedInfo = load(thisFile,'sessionInfo');
         
-        if ~exist('sessionInfo','var')
+        if ~isfield(loadedInfo,'sessionInfo')
             disp(['Not a valid ptbCorgi Session file: ' thisFile]);
             continue
         end
             
+        sessionInfo = loadedInfo.sessionInfo;
+        
         if isfield(sessionInfo,'isConcatenatedSessionFile') ...
                 && sessionInfo.isConcatenatedSessionFile == true
             disp(['Skipping previously concatenated file : ' thisFile]);
@@ -274,7 +276,7 @@ for iPpt = 1:length(dataInfo.byParadigm(iParadigm).participantList),
     
     dataInfo.byParadigm(iParadigm).byParticipant(iPpt).name = thisPptId;
     dataInfo.byParadigm(iParadigm).byParticipant(iPpt).fileIndices = fileIndices;
-    dataInfo.byParadigm(iParadigm).byParticipant(iPpt).fileNames = dataInfo.fileNames(fileIndices);
+    dataInfo.byParadigm(iParadigm).byParticipant(iPpt).fileNames = dataInfo.fullPathFileName(fileIndices);
     dataInfo.byParadigm(iParadigm).byParticipant(iPpt).sessionInfo = dataInfo.sessionInfo(fileIndices);
 end
 

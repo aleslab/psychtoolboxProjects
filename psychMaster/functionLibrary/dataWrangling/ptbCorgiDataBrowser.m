@@ -481,6 +481,12 @@ end
 participantErrors = loadedData(~validParticipantData);
 loadedData = loadedData(validParticipantData);
 
+if ~any(validParticipantData)
+    warning('None of the participants had valid data')
+    break
+end
+
+
 handles.output.paradigmName    = paradigmName;
 handles.output.participantList = {loadedData(:).participantID};
 handles.output.participantErrorList = {participantErrors(:).participantID};

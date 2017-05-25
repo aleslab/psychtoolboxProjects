@@ -193,6 +193,7 @@ if ~exist('sessionInfo','var') || isempty(sessionInfo)
     sessionInfo.sessionCompleted = false;
 end
 
+%Initialize variables here so we can access them in the subfunctions.
 
 expInfo     = struct();
 initConditionInfo = struct();
@@ -408,7 +409,7 @@ end;
         %Determine trial randomization
         %Should rename conditionList to trialList to make it more clearly
         %explanatory and consistent with makeTrialList();
-        conditionList = makeTrialList(expInfo,conditionInfo);
+        [conditionList, blockList] = makeTrialList(expInfo,conditionInfo);
         
         %Let's start the expeirment
         %we're going to use a while loop so we can easily add trials for
@@ -429,6 +430,8 @@ end;
         %Adding some info about the current trial to expInfo. This is so
         %trialFun functions can use it.
         expInfo.currentTrial.number = iTrial;
+        
+        
         expInfo = drawFixation(expInfo, expInfo.fixationInfo);
         Screen('Flip', expInfo.curWindow);
         
@@ -440,6 +443,9 @@ end;
             feedbackColor = [1];
             
             thisCond = conditionList(iTrial);
+            thisBlock = blockList(iTrial);
+            
+            experimentData(iTrial).blockNumber = thisBlock;
             
             %Handle randomizing condition fields
             %This changes the conditionInfo structure so is a bit of a
@@ -451,7 +457,7 @@ end;
             if strcmpi(expInfo.randomizationType,'blocked')
                 %In the block design lets put a message and
                 %pause when blocks change
-                if iTrial >1 && thisCond ~= conditionList(iTrial-1)
+                if iTrial >1 && thisBlock ~= blockList(iTrial-1)
                     
                     %In the future add code here to enable custom block
                     %messages
@@ -757,7 +763,16 @@ end;
                 %block.  %JMA: TEST THIS CAREFULLY. Not full vetted
                 if strcmpi(expInfo.randomizationType,'blocked')
                     thisCond = conditionList(iTrial);
-                    conditionList(iTrial+1:end+1) =[ thisCond conditionList(iTrial+1:end)];
+                    thisBlock = blockList(iTrial);
+                    
+                    %Find the end of this block
+                    blockEndIdx = max(find(blockList==thisBlock));
+                    
+                    %Add the condition to just after the end of the block
+                    %(blockEndIdx+1)
+                    conditionList(blockEndIdx+1:end+1) =[ thisCond conditionList(blockEndIdx+1:end)];
+                    blockList(blockEndIdx+1:end+1)     =[ thisBlock blockList(blockEndIdx+1:end)];
+                    
                 else %For other trial randomizations just add the current condition to the end.
                     conditionList(end+1) = conditionList(iTrial);
                 end
@@ -879,6 +894,7 @@ end;
             
         end %End while loop for showing trials.
         
+        
     end
 
 
@@ -984,7 +1000,6 @@ end;
         sessionInfo.expInfo = expInfo;
         sessionInfo.conditionInfo = initConditionInfo;
         sessionInfo.condInfoAfterExperimentFinished = conditionInfo;
-        
         %Now get our path, and find the files used
         P = mfilename('fullpath');
         [localDir] = fileparts(P);
