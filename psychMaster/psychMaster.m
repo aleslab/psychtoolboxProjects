@@ -773,8 +773,9 @@ end;
                     conditionList(blockEndIdx+1:end+1) =[ thisCond conditionList(blockEndIdx+1:end)];
                     blockList(blockEndIdx+1:end+1)     =[ thisBlock blockList(blockEndIdx+1:end)];
                     
-                else %For other trial randomizations just add the current condition to the end.
+                else %For other trial randomizations just add the current condition to the end, and extend blockList
                     conditionList(end+1) = conditionList(iTrial);
+                    blockList(end+1)     = 1;
                 end
                 validTrialList(iTrial) = false;
                 experimentData(iTrial).validTrial = false;
