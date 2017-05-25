@@ -198,9 +198,24 @@ end
 expInfo     = struct();
 initConditionInfo = struct();
 
+
+%Check if we should migrate old psychMaster settings to ptbCorgi
+if ~isempty(getpref('psychMaster')) && isempty(getpref('ptbCorgi'))
+    disp('Migrating old psychMaster preferences to ptbCorgi')
+    pmPref = getpref('psychMaster');
+    pmPrefList = fieldnames(pmPref);
+    
+    for iPref = 1:length(pmPrefList),
+        setpref('ptbCorgi',pmPrefList{iPref},pmPref.(pmPrefList{iPref}))
+    end
+    
+    
+end
+
 %Check for preferences.  Preferences enable  easy configuration changes for
 %different machines without having to hardcode things.
 %right now this just has some examples for setting per machine paths
+
 if ~isempty(getpref('ptbCorgi'))
     
     if ispref('ptbCorgi','base');
@@ -228,8 +243,8 @@ if ~isempty(getpref('ptbCorgi'))
     end
     
     if isempty(datadir),
-        setpref('ptbCorgi','datadir',fullfile(pwd,'Data'));
-        disp(['Setting ptbCorgi data directory preference to: ' fullfile(pwd,'Data')]);
+        setpref('ptbCorgi','datadir',fullfile(base,'Data'));
+        disp(['Setting ptbCorgi data directory preference to: ' fullfile(base,'Data')]);
     else
         disp(['Saving data to: ' datadir]);
     end
@@ -770,8 +785,8 @@ end;
                     
                     %Add the condition to just after the end of the block
                     %(blockEndIdx+1)
-                    conditionList(blockEndIdx+1:end+1) =[ thisCond conditionList(blockEndIdx+1:end)];
-                    blockList(blockEndIdx+1:end+1)     =[ thisBlock blockList(blockEndIdx+1:end)];
+                    conditionList(blockEndIdx+1:end+1) =[ thisCond conditionList(blockEndIdx+1:end)]
+                    blockList(blockEndIdx+1:end+1)     =[ thisBlock blockList(blockEndIdx+1:end)]
                     
                 else %For other trial randomizations just add the current condition to the end.
                     conditionList(end+1) = conditionList(iTrial);
