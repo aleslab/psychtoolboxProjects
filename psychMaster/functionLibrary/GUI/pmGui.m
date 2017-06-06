@@ -72,8 +72,8 @@ if isfield(handles.expInfo, 'screenNum')
     ShowCursor(handles.expInfo.screenNum);
 end
 
-if ispref('psychMaster','lastParadigmFile')
-    lastParadigmFile = getpref('psychMaster','lastParadigmFile');
+if ispref('ptbCorgi','lastParadigmFile')
+    lastParadigmFile = getpref('ptbCorgi','lastParadigmFile');
 else
     lastParadigmFile = [];
 end
@@ -96,14 +96,14 @@ else
     handles = guidata(hObject);
 end
 
-if ispref('psychMaster','lastParticipantId')
-    lastParticipantId = getpref('psychMaster','lastParticipantId');
+if ispref('ptbCorgi','lastParticipantId')
+    lastParticipantId = getpref('ptbCorgi','lastParticipantId');
 else
     lastParticipantId = [];
 end
 
-if ispref('psychMaster','lastSessionTag')
-    lastSessionTag = getpref('psychMaster','lastSessionTag');
+if ispref('ptbCorgi','lastSessionTag')
+    lastSessionTag = getpref('ptbCorgi','lastSessionTag');
 else
     lastSessionTag = [];
 end
@@ -114,7 +114,7 @@ handles.sessionInfo.participantID = lastParticipantId;
 set(handles.sessionTagText,'String',lastSessionTag);
 handles.sessionInfo.tag = lastSessionTag;
 
-infoString = [  'v' handles.sessionInfo.psychMasterVer ' git SHA: ' handles.sessionInfo.gitHash(1:7)];
+infoString = [  'v' handles.sessionInfo.ptbCorgiVer ' git SHA: ' handles.sessionInfo.gitHash(1:7)];
 set(handles.versionInfoTextBox,'String',infoString);
 
 %Report the size calibration status.
@@ -245,7 +245,7 @@ lastParadigmFile = fullfile(handles.sessionInfo.paradigmPath,handles.sessionInfo
 [~, funcName ] = fileparts(handles.sessionInfo.paradigmFile);
 handles.sessionInfo.paradigmFun = str2func(funcName);
 
-setpref('psychMaster','lastParadigmFile',lastParadigmFile);
+setpref('ptbCorgi','lastParadigmFile',lastParadigmFile);
 
 %If we've already loaded a condition delete it and load the new file. 
 if isfield(handles,'conditionInfo')
@@ -332,7 +332,7 @@ function participantIdText_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of participantIdText as a double
 
 handles.sessionInfo.participantID = get(hObject,'String');
-setpref('psychMaster','lastParticipantId',handles.sessionInfo.participantID);
+setpref('ptbCorgi','lastParticipantId',handles.sessionInfo.participantID);
 guidata(hObject,handles)
 
 % --- Executes during object creation, after setting all properties.
@@ -498,7 +498,7 @@ function sessionTagText_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of sessionTagText as a double
 
 handles.sessionInfo.tag = get(hObject,'String');
-setpref('psychMaster','lastSessionTag',handles.sessionInfo.tag);
+setpref('ptbCorgi','lastSessionTag',handles.sessionInfo.tag);
 guidata(hObject,handles)
 
 % --- Executes during object creation, after setting all properties.

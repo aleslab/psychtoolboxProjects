@@ -26,8 +26,8 @@ function varargout = ptbCorgiDataBrowser(varargin)
 %     participantData =  A structure with each element being data loaded from a participant 
 %                        (i.e. participantData(1) corresponds to data from participantList{1}).
 % 
-%          sessionInfo      = sessionInfo structure from psychMaster
-%          experimentData   = experimentData structure from psychMaster
+%          sessionInfo      = sessionInfo structure from ptbCorgi
+%          experimentData   = experimentData structure from ptbCorgi
 %          participantID    = id for this participant. 
 %          sortedTrialData  = Data sorted by condition number as returned from organizeData();
 
@@ -116,8 +116,8 @@ else
 
     if ispref('ptbCorgiDataBrowser','lastDataDir')
         handles.datadir = getpref('ptbCorgiDataBrowser','lastDataDir');
-    elseif ispref('psychMaster','datadir');
-        handles.datadir = getpref('psychMaster','datadir');
+    elseif ispref('ptbCorgi','datadir');
+        handles.datadir = getpref('ptbCorgi','datadir');
     else
         handles.datadir = [];
     end
@@ -483,7 +483,7 @@ loadedData = loadedData(validParticipantData);
 
 if ~any(validParticipantData)
     warning('None of the participants had valid data')
-    break
+    return;
 end
 
 
