@@ -1,6 +1,6 @@
-function [] = psychMaster(sessionInfo)
-%PSYCHMASTER  master script that invokes different experimental
-%   [] = psychMaster()
+function [] = ptbCorgi(sessionInfo)
+%ptbCorgi  Master script that controls running experiments
+%   [] = ptbCorgi()
 %
 %   This is the master script that runs a psychophysics session.
 %   when run it will spawn a GUI that asks for required information and
@@ -14,7 +14,7 @@ function [] = psychMaster(sessionInfo)
 %
 %   function [conditionInfo, expInfo] = exampleExperiment()
 %
-%   conditionInfo defines all the conditions that will be run by psychMaster.
+%   conditionInfo defines all the conditions that will be run by ptbCorgi.
 %   conditionInfo is a structure with an entry for each condtion that will be run
 %
 %   Mandatory fields: nReps, trialFun, iti
@@ -115,7 +115,7 @@ function [] = psychMaster(sessionInfo)
 %
 %
 %
-%   psychMaster will loop over the different conditions in the paradigm
+%   ptbCorgi will loop over the different conditions in the paradigm
 %   file and run the conditionInfo.trialFun function to render the
 %   stimulus.
 %
@@ -131,7 +131,7 @@ function [] = psychMaster(sessionInfo)
 
 %Initial setup
 
-psychMasterVer = '0.32.0-dev';
+ptbCorgiVer = '0.32.0-dev';
 
 thisFile = mfilename('fullpath');
 [thisDir, ~, ~] = fileparts(thisFile);
@@ -166,7 +166,7 @@ if ~exist('sessionInfo','var') || isempty(sessionInfo)
     %  sessionInfo.participantID = input('What is the participant ID:  ','s');
     %store the date. use: datestr(sessionInfo.sessionDate) to make human readable
     sessionInfo.sessionDate = now;
-    sessionInfo.psychMasterVer = psychMasterVer;
+    sessionInfo.ptbCorgiVer = ptbCorgiVer;
     sessionInfo.participantID = 'null';
     sessionInfo.tag           = '';
     [~,ptbVerStruct]=PsychtoolboxVersion;
@@ -181,7 +181,7 @@ if ~exist('sessionInfo','var') || isempty(sessionInfo)
     warning('on','MATLAB:RandStream:ActivatingLegacyGenerators');
     warning('on','MATLAB:RandStream:ReadingInactiveLegacyGeneratorState');
     %Need to reset the rng before shuffling in case the legacy RNG has
-    %activated before we started psychMaster. Deactivate the legacy system
+    %activated before we started ptbCorgi. Deactivate the legacy system
     %and use the modern system.
     rng('default'); 
     rng('shuffle');
@@ -198,49 +198,64 @@ end
 expInfo     = struct();
 initConditionInfo = struct();
 
+
+%Check if we should migrate old psychMaster settings to ptbCorgi
+if ~isempty(getpref('psychMaster')) && isempty(getpref('ptbCorgi'))
+    disp('Migrating old psychMaster preferences to ptbCorgi')
+    pmPref = getpref('psychMaster');
+    pmPrefList = fieldnames(pmPref);
+    
+    for iPref = 1:length(pmPrefList),
+        setpref('ptbCorgi',pmPrefList{iPref},pmPref.(pmPrefList{iPref}))
+    end
+    
+    
+end
+
 %Check for preferences.  Preferences enable  easy configuration changes for
 %different machines without having to hardcode things.
 %right now this just has some examples for setting per machine paths
-if ~isempty(getpref('psychMaster'))
+
+if ~isempty(getpref('ptbCorgi'))
     
-    if ispref('psychMaster','base');
-        base = getpref('psychMaster','base');
+    if ispref('ptbCorgi','base');
+        base = getpref('ptbCorgi','base');
     else
         base = [];
     end
     
     if isempty(base),   
-         pathToPM = which('psychMaster');
+         pathToPM = which('ptbCorgi');
          [base] = fileparts(pathToPM);
-         setpref('psychMaster','base',base);
-        disp(['Setting psychMaster directory preference to: ' pwd]);
+         setpref('ptbCorgi','base',base);
+        disp(['Setting ptbCorgi directory preference to: ' pwd]);
     else
-        disp(['Setting psychMaster home directory: ' base]);
+        disp(['Setting ptbCorgi home directory: ' base]);
     end
     disp('Use the folowing command to change the base directory:');
-    disp('setpref(''psychMaster'',''base'',/path/to/psychMaster); ');
+    disp('setpref(''ptbCorgi'',''base'',/path/to/ptbCorgi); ');
     
     
-    if ispref('psychMaster','datadir');
-        datadir = getpref('psychMaster','datadir');
+    if ispref('ptbCorgi','datadir');
+        datadir = getpref('ptbCorgi','datadir');
     else
         datadir = [];
     end
     
     if isempty(datadir),
-        setpref('psychMaster','datadir',fullfile(pwd,'Data'));
-        disp(['Setting psychMaster data directory preference to: ' fullfile(pwd,'Data')]);
+        setpref('ptbCorgi','datadir',fullfile(base,'Data'));
+        disp(['Setting ptbCorgi data directory preference to: ' fullfile(base,'Data')]);
     else
         disp(['Saving data to: ' datadir]);
     end
     disp('Use the folowing command to change the data directory:');
-    disp('setpref(''psychMaster'',''datadir'',/path/to/psychMaster/Data); ');
+    disp('setpref(''ptbCorgi'',''datadir'',/path/to/ptbCorgi/Data); ');
     
     
 else
     
     disp('Use the folowing command to define a place to save data:');
-    disp('setpref(''psychMaster'',''datadir'',/path/to/psychMaster/Data); ');
+    disp('setpref(''ptbCorgi'',''datadir'',/path/to/ptbCorgi/Data); ');
 end
 
 
@@ -248,8 +263,8 @@ end
 try
     
     %Load size calibration:
-    if ispref('psychMaster','sizeCalibrationFile');
-        sizeFile = getpref('psychMaster','sizeCalibrationFile');
+    if ispref('ptbCorgi','sizeCalibrationFile');
+        sizeFile = getpref('ptbCorgi','sizeCalibrationFile');
         if ~exist(sizeFile,'file')
             disp('<><><><><><> PSYCH MASTER <><><><><><><>')
             disp(['Cannot find calibration file: ' sizeFile])
@@ -267,8 +282,8 @@ try
     end
     
     %Load luminance calibration:
-    if ispref('psychMaster','lumCalibrationFile');
-        luminanceFile = getpref('psychMaster','lumCalibrationFile');
+    if ispref('ptbCorgi','lumCalibrationFile');
+        luminanceFile = getpref('ptbCorgi','lumCalibrationFile');
         if ~exist(luminanceFile,'file') %a calibration is set but doesn't exist.
             disp('<><><><><><> PSYCH MASTER <><><><><><><>')
             disp(['Cannot find calibration file: ' luminanceFile])
@@ -296,7 +311,7 @@ try
     
     %User canceled before opening experiment, just quit the function.
     if sessionInfo.userCancelled
-        cleanupPsychMaster();
+        cleanupPtbCorgi();
         return;
     end
     
@@ -326,7 +341,7 @@ try
 
         %User canceled after opening experiment, just close and quit the function.
         if sessionInfo.userCancelled
-            cleanupPsychMaster();
+            cleanupPtbCorgi();
             closeExperiment();
             return;
         end
@@ -353,7 +368,7 @@ try
     sessionInfo.sessionCompleted = true;
     saveResults();
     closeExperiment();  
-    cleanupPsychMaster();
+    cleanupPtbCorgi();
     
     
     
@@ -379,7 +394,7 @@ catch exception
     
     
     closeExperiment;
-    cleanupPsychMaster();
+    cleanupPtbCorgi();
     disp('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
     disp('!!!!!   Experiment Shutdown Due to Error          !!!!!!!!')
     rethrow(exception);
@@ -387,7 +402,7 @@ catch exception
 end;
 
 
-%This is the main guts of psychMaster. It handles all the experimental
+%This is the main guts of ptbCorgi. It handles all the experimental
 %control.
 %It is in it's own nested function in order to clean up the main
 %code and to enable easier GUI control of trials
@@ -770,11 +785,12 @@ end;
                     
                     %Add the condition to just after the end of the block
                     %(blockEndIdx+1)
-                    conditionList(blockEndIdx+1:end+1) =[ thisCond conditionList(blockEndIdx+1:end)];
-                    blockList(blockEndIdx+1:end+1)     =[ thisBlock blockList(blockEndIdx+1:end)];
+                    conditionList(blockEndIdx+1:end+1) =[ thisCond conditionList(blockEndIdx+1:end)]
+                    blockList(blockEndIdx+1:end+1)     =[ thisBlock blockList(blockEndIdx+1:end)]
                     
-                else %For other trial randomizations just add the current condition to the end.
+                else %For other trial randomizations just add the current condition to the end, and extend blockList
                     conditionList(end+1) = conditionList(iTrial);
+                    blockList(end+1)     = 1;
                 end
                 validTrialList(iTrial) = false;
                 experimentData(iTrial).validTrial = false;
@@ -926,7 +942,7 @@ end;
         thisFile = mfilename('fullpath');
         [thisDir, ~, ~] = fileparts(thisFile);
         
-        %For now just grab the directory including psychMaster and all subdirectories
+        %For now just grab the directory including ptbCorgi and all subdirectories
         %We do this in a slightly tricky way, generate a path which turns a
         %a long string with directorys separated by pathsep(). So we use a
         %regular experession to split the string based on the pathsep()
@@ -1027,8 +1043,8 @@ end;
             sessionInfo.participantID '_' sessionInfo.tag '_' ...
             datestr(now,'yyyymmdd_HHMMSS') '.mat'];
         
-        if ispref('psychMaster','datadir');
-            datadir = getpref('psychMaster','datadir');
+        if ispref('ptbCorgi','datadir');
+            datadir = getpref('ptbCorgi','datadir');
         else
             datadir = '';
         end
@@ -1052,7 +1068,7 @@ end;
     end
 
 
-    function cleanupPsychMaster()
+    function cleanupPtbCorgi()
         
         delete(diaryName);
     end

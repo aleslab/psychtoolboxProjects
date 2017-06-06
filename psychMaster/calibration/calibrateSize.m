@@ -1,6 +1,6 @@
 function sizeCalibInfo=calibrateSize()
 %CALIBRATESIZE  Use this to calibrate monitor pixel sizes.
-%   [] = psychMaster()
+%   ADD HELP HERE
 
 try
     %Open a window
@@ -54,10 +54,10 @@ try
     
     setpref('ptbCorgi','computerName',computerName);
     
-    if ispref('psychMaster','calibdir');
-        calibdir = getpref('psychMaster','calibdir');
-    elseif ispref('psychMaster','base');
-        calibdir = fullfile(getpref('psychMaster','base'),'calibrationData');
+    if ispref('ptbCorgi','calibdir');
+        calibdir = getpref('ptbCorgi','calibdir');
+    elseif ispref('ptbCorgi','base');
+        calibdir = fullfile(getpref('ptbCorgi','base'),'calibrationData');
     else
         calibdir = '';
     end
