@@ -483,7 +483,7 @@ loadedData = loadedData(validParticipantData);
 
 if ~any(validParticipantData)
     warning('None of the participants had valid data')
-    break
+    return;
 end
 
 
