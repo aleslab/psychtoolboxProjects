@@ -3,7 +3,8 @@ function [conditionInfo, expInfo] = psychParadigm_longRange(expInfo)
 
 %paradigmName is what will be prepended to data files
 expInfo.paradigmName = 'longRange';
-
+expInfo.randomizationType = 'random';
+expInfo.viewingDistance = 57;
 
 %Setup a simple fixation cross. See help drawFixation for more info on how
 %to setup this field.
