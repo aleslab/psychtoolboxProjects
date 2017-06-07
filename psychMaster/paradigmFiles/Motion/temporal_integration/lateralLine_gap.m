@@ -1,4 +1,4 @@
-function [conditionInfo, expInfo] = lateralLine_gap_zero(expInfo)
+function [conditionInfo, expInfo] = lateralLine_gap(expInfo)
 
 expInfo = lateralLineDefaultSettings(expInfo);
 expInfo.paradigmName = 'lateralLine_gap_zero';
