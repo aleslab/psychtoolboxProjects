@@ -5,7 +5,11 @@ function [] = psychMaster(sessionInfo)
 
 warning('psychMaster.m has been deprecated and renamed ptbCorgi.m.  Please run ptbCorgi instead')
 
-ptbCorgi(sessionInfo)
+if ~exist('sessionInfo','var') || isempty(sessionInfo)
+    ptbCorgi();
+else
+    ptbCorgi(sessionInfo);
+end
 
 end
 
