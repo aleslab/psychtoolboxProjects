@@ -2,8 +2,11 @@ function [conditionInfo, expInfo] = lateralLine_gap(expInfo)
 
 expInfo = lateralLineDefaultSettings(expInfo);
 expInfo.paradigmName = 'lateralLine_gap_zero';
+expInfo.viewingDistance = 92; %in cm I need to check this
+expInfo.instructions = 'Did the line speed up?';
+expInfo.pauseInfo = 'Paused\nPress any key to continue';
 
-section2velocity = [0.5 2]; %velocities to use in cm/s; picked randomly for now
+section2velocity = [0.5 2]; %velocities to use in deg/s; picked randomly for now
 
 for iCond = 1: length(section2velocity);
     conditionInfo(iCond).trialFun=@LateralLineTrial; %This defines what function to call to draw the condition
@@ -22,9 +25,8 @@ for iCond = 1: length(section2velocity);
     
     conditionInfo(iCond).velocityDegPerSecSection1 = 1; % velocity of section 1 in deg/s. Constant for this exp
     conditionInfo(iCond).velocityDegPerSecSection2 = section2velocity(iCond); %velocity of section 2 in deg/s
-    conditionInfo(iCond).gapVelocity = 0; %velocity for temporal gap
-    conditionInfo(iCond).startPos = -1; %the start position of the line on the screen in cm 
-    %number picked at random for now, will likely be changed later.
+    conditionInfo(iCond).gapVelocity = 0; %velocity in deg/s for temporal gap
+    conditionInfo(iCond).startPos = -1; %the start position of the line on the screen in degrees of visual angle.
     %Negative = left hand side of the screen.
 
 end
