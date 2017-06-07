@@ -16,7 +16,6 @@ expInfo.lw = 1; %width of line is one pixel
 %initial fixation information
 fixationInfo(1).type    = 'cross';
 fixationInfo(1).fixLineWidthPix = 1;
-fixationInfo(2).type = 'noiseFrame';
 expInfo = drawFixation(expInfo, fixationInfo);
 
 
@@ -75,8 +74,13 @@ for iFrame = 1:nFramesSection1
     currLinePos = currLinePos + velCmPerFrameSection1;
 end
 
-vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
-WaitSecs(conditionInfo.temporalGap);
+if conditionInfo.temporalGap > 0
+    
+    expInfo = drawFixation(expInfo, fixationInfo);
+    vbl=Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2);
+    WaitSecs(conditionInfo.temporalGap);
+    
+end
 
 for iFrame = 1:nFramesSection2
     
