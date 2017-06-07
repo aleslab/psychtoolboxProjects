@@ -56,14 +56,16 @@ end
             filename = fileList(iFile).name;
             
             
+            %Don't check current '.'  or parent '..'
             if strcmp(filename,'.')  || strcmp(filename,'..')
                 continue;
             end
             
+            
             if fileList(iFile).isdir
-                %Lets do a bit of recursion to check subdirectories.
-                
+                %Lets do a bit of recursion to check subdirectories.                
                 [isShadowedSubDir, fileLocations] = checkThisDir(filename);
+                
                 isShadowed = isShadowedSubDir | isShadowed;
                 shadowedFileList = [shadowedFileList; fileLocations ];
                 continue;
