@@ -26,14 +26,16 @@ conditionInfo(1).intervalBeep = 0;
 
 %% stimulus
 conditionInfo(1).stimSize = [0 0 100 100];
-conditionInfo(1).nFramesPerStim = 10;
+conditionInfo(1).nFramesPerStim = 12;
 conditionInfo(1).trialFun=@trial_longRange;
+conditionInfo(1).movingStep = 0;
 
 % same parameters in all conditions
 conditionInfo(2) = conditionInfo(1);
 conditionInfo(3) = conditionInfo(1);
 conditionInfo(4) = conditionInfo(1);
 conditionInfo(5) = conditionInfo(1);
+conditionInfo(6) = conditionInfo(1);
 
 %% experimental manipulation
 conditionInfo(1).label = 'long range';
@@ -43,7 +45,7 @@ conditionInfo(1).motion = 1;
 
 conditionInfo(2).label = 'short range';
 conditionInfo(2).sideStim = 'both';
-conditionInfo(2).xloc = 6; % = centerx/6
+conditionInfo(2).xloc = 15; % = centerx/8
 conditionInfo(2).motion = 1;
 
 conditionInfo(3).label = 'single left';
@@ -60,6 +62,12 @@ conditionInfo(5).label = 'long simult';
 conditionInfo(5).sideStim = 'both';
 conditionInfo(5).xloc = 2;
 conditionInfo(5).motion = 0;
+
+conditionInfo(6).label = 'sweep';
+conditionInfo(6).sideStim = 'both';
+conditionInfo(6).xloc = [15 2]; % where it starts and ends
+conditionInfo(6).motion = 1;
+conditionInfo(6).movingStep = 5;
 
 % expInfo.center does NOT exist (at the beginning) so the following won't work
 % conditionInfo(1).ycoord = expInfo.center(2)/2; 
