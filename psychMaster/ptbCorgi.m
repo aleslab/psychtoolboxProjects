@@ -19,7 +19,7 @@ function [] = ptbCorgi(sessionInfo)
 %
 %   Mandatory fields: nReps, trialFun, iti
 %   trialFun  = a function handle to the trial function
-%               [ ADD MORE DOCUMENTATION HERE ] 
+%               [ ADD MORE DOCUMENTATION HERE ]
 %   nReps     = number of reptitions to run this condition
 %               (each condition can have a different number).
 %   iti       = The intertrial interval in seconds. Currently implemented
@@ -40,8 +40,8 @@ function [] = ptbCorgi(sessionInfo)
 %                        will optionally provide feedback (if giveFeedback is set to TRUE).
 %                          2afc can be specified in two ways. First you can
 %                          provide a complete description of the null
-%                          stimulus. 
-% 
+%                          stimulus.
+%
 %                          nullCondition = a conditionInfo structure with a
 %                                          single condition that will be
 %                                          used as the comparison or you
@@ -55,7 +55,7 @@ function [] = ptbCorgi(sessionInfo)
 %                          targetDelta     = amount to change
 %                                           (targetFieldname) by (i.e. +1,
 %                                           -10)
-%                            
+%
 %           'directionreport' - For dealing with data from a direction
 %                       discrimination task where there are 8 different
 %                       options for response in a "circle".
@@ -77,7 +77,7 @@ function [] = ptbCorgi(sessionInfo)
 %                     condition on each trial. It is a structure with as
 %                     many entries as fields to randomize.  For each entry
 %                     the following values determine the randomization:
-%                        fieldname = a string indicating which field to randomize 
+%                        fieldname = a string indicating which field to randomize
 %                        type      = ['gaussian'] or 'uniform','custom'
 %                        param     = For gaussian it is the mean and
 %                                    standard deviation, For uniform it's
@@ -85,7 +85,7 @@ function [] = ptbCorgi(sessionInfo)
 %                                    'custom' it is a handle to the
 %                                    function to call to generate the
 %                                    random value.
-%                  
+%
 %
 %
 %
@@ -137,7 +137,7 @@ thisFile = mfilename('fullpath');
 [thisDir, ~, ~] = fileparts(thisFile);
 
 %Try using the "onCleanup" function to detect ctrl-C aborts
-%But this doesn't work easily.  
+%But this doesn't work easily.
 %finishup = onCleanup(@nonExpectedExit);
 
 %Check if path is correct, if not try and fix it.
@@ -160,8 +160,8 @@ diary(diaryName);
 
 %the sessionInfo structure is used to store information about the current session
 %that is being run
-%If it doesn't exist or is empty we are starting a new session. 
-%So we need to initialize sessionInfo. 
+%If it doesn't exist or is empty we are starting a new session.
+%So we need to initialize sessionInfo.
 if ~exist('sessionInfo','var') || isempty(sessionInfo)
     %  sessionInfo.participantID = input('What is the participant ID:  ','s');
     %store the date. use: datestr(sessionInfo.sessionDate) to make human readable
@@ -177,15 +177,15 @@ if ~exist('sessionInfo','var') || isempty(sessionInfo)
     %generators" and syntax "discouraged" by mathworks.
     %See: https://uk.mathworks.com/help/matlab/math/updating-your-random-number-generator-syntax.html
     %Therefore, I'm turning on warnings that help users identify when they
-    %use the discouraged methods. 
+    %use the discouraged methods.
     warning('on','MATLAB:RandStream:ActivatingLegacyGenerators');
     warning('on','MATLAB:RandStream:ReadingInactiveLegacyGeneratorState');
     %Need to reset the rng before shuffling in case the legacy RNG has
     %activated before we started ptbCorgi. Deactivate the legacy system
     %and use the modern system.
-    rng('default'); 
+    rng('default');
     rng('shuffle');
-    %Technically not a "seed". 
+    %Technically not a "seed".
     sessionInfo.randomSeed = rng;
     
     
@@ -224,10 +224,10 @@ if ~isempty(getpref('ptbCorgi'))
         base = [];
     end
     
-    if isempty(base),   
-         pathToPM = which('ptbCorgi');
-         [base] = fileparts(pathToPM);
-         setpref('ptbCorgi','base',base);
+    if isempty(base),
+        pathToPM = which('ptbCorgi');
+        [base] = fileparts(pathToPM);
+        setpref('ptbCorgi','base',base);
         disp(['Setting ptbCorgi directory preference to: ' pwd]);
     else
         disp(['Setting ptbCorgi home directory: ' base]);
@@ -319,12 +319,12 @@ try
     %Now lets begin the experiment and loop over the conditions to show.
     expInfo = openExperiment(expInfo);
     %If we're running full screen lets hide the mouse cursor from view.
-    %Need to do this here for different OS versions and to enable 
+    %Need to do this here for different OS versions and to enable
     %control from pmGui
     if expInfo.useFullScreen == true
         HideCursor(expInfo.screenNum);
     end
-
+    
     
     %Initialize experiment data, this makes sure the experiment data
     %scope spans all the subfunctions.
@@ -335,10 +335,10 @@ try
     %If returnToGui is TRUE we ran a test trial and want the gui to pop-up
     while sessionInfo.returnToGui
         
-    
+        
         [sessionInfo,expInfo,conditionInfo] = pmGui(sessionInfo,expInfo,sessionInfo.backupConditionInfo);
         drawnow; %<- required to actually close the gui.
-
+        
         %User canceled after opening experiment, just close and quit the function.
         if sessionInfo.userCancelled
             cleanupPtbCorgi();
@@ -367,7 +367,7 @@ try
     
     sessionInfo.sessionCompleted = true;
     saveResults();
-    closeExperiment();  
+    closeExperiment();
     cleanupPtbCorgi();
     
     
@@ -379,8 +379,8 @@ catch exception
     %So we will just call to release all queue's that exist.
     KbQueueRelease();
     
-   
-
+    
+    
     
     
     if exist('experimentData','var') && ~isempty(experimentData)
@@ -398,7 +398,7 @@ catch exception
     disp('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
     disp('!!!!!   Experiment Shutdown Due to Error          !!!!!!!!')
     rethrow(exception);
-    %psychrethrow(psychlasterror);  
+    %psychrethrow(psychlasterror);
 end;
 
 
@@ -465,9 +465,9 @@ end;
             %Handle randomizing condition fields
             %This changes the conditionInfo structure so is a bit of a
             %danger. Well it's a very big danger. But it's the easiest way
-            %to implement changing things on the fly.             
+            %to implement changing things on the fly.
             conditionInfo(thisCond) = randomizeConditionField(conditionInfo(thisCond));
-
+            
             
             if strcmpi(expInfo.randomizationType,'blocked')
                 %In the block design lets put a message and
@@ -517,6 +517,21 @@ end;
                         trialData.abortNow = false;
                         trialData.validTrial = false; %Default not valid unless proven otherwise
                         
+                        if isfield(conditionInfo, 'validKeyPresses') %so that you can control 
+                            %which keyboard inputs you want to allow people
+                            %to respond with in 'simpleResponse' type
+                            %experiments
+                            
+                            for iValidKey = 1:length(conditionInfo.validKeyPresses)
+                                validKeyNames(iValidKey) = KbName(conditionInfo.validKeyPresses(iValidKey)); 
+                            end
+                            
+                            pressedValidKeys = trialData.firstPress(validKeyNames); %working out if any of the valid keys have been pressed
+                            foundPressedValidKeys = find(pressedValidKeys); %working out which key it must have been based on array position
+                            validKeyPress = conditionInfo.validKeyPresses(foundPressedValidKeys); %working out which specific valid key has been pressed
+                            
+                        end
+                        
                         if trialData.firstPress(KbName('ESCAPE'))
                             %pressed escape lets abort experiment;
                             trialData.validTrial = false;
@@ -531,8 +546,18 @@ end;
                             Screen('Flip', expInfo.curWindow);
                             KbStrokeWait();
                             
-                        else
+                        elseif isfield(conditionInfo, 'validKeyPresses') & trialData.firstPress(KbName(validKeyPress))
                             trialData.validTrial = true;
+                            
+                        elseif ~isfield(conditionInfo, 'validKeyPresses') 
+                            
+                            trialData.validTrial = true;
+                            %if there's not a specification for which keys 
+                            %are valid in conditionInfo, all of them are
+                            %valid
+                        else
+                            trialData.validTrial = false;
+                            experimentData(iTrial).validTrial = false;
                         end
                         
                         
@@ -550,17 +575,17 @@ end;
                     %If targetFieldname is set use this to setup the
                     %condition values.
                     if ~isempty(conditionInfo(thisCond).targetFieldname);
-                            conditionInfo(thisCond).nullCondition = conditionInfo(thisCond);
-                            fieldname = conditionInfo(thisCond).targetFieldname;
-                            delta     = conditionInfo(thisCond).targetDelta;
-                            conditionInfo(thisCond).(fieldname) = conditionInfo(thisCond).(fieldname) +delta;
-                            
-                            experimentData(iTrial).targetFieldname = fieldname;
-                            experimentData(iTrial).targetValue = conditionInfo(thisCond).(fieldname);
-                            experimentData(iTrial).nullValue = conditionInfo(thisCond).nullCondition.(fieldname);
-                            experimentData(iTrial).targetDelta = delta;
+                        conditionInfo(thisCond).nullCondition = conditionInfo(thisCond);
+                        fieldname = conditionInfo(thisCond).targetFieldname;
+                        delta     = conditionInfo(thisCond).targetDelta;
+                        conditionInfo(thisCond).(fieldname) = conditionInfo(thisCond).(fieldname) +delta;
+                        
+                        experimentData(iTrial).targetFieldname = fieldname;
+                        experimentData(iTrial).targetValue = conditionInfo(thisCond).(fieldname);
+                        experimentData(iTrial).nullValue = conditionInfo(thisCond).nullCondition.(fieldname);
+                        experimentData(iTrial).targetDelta = delta;
                     end
-            
+                    
                     
                     if nullFirst
                         firstCond = conditionInfo(thisCond).nullCondition;
@@ -597,7 +622,7 @@ end;
                     [trialData.firstCond] = conditionInfo(thisCond).trialFun(expInfo,firstCond);
                     expInfo.currentTrial.trialData = trialData;
                     
-                    expInfo = drawFixation(expInfo, expInfo.fixationInfo);                    
+                    expInfo = drawFixation(expInfo, expInfo.fixationInfo);
                     Screen('Flip', expInfo.curWindow);
                     WaitSecs(conditionInfo(thisCond).iti);
                     
@@ -611,9 +636,9 @@ end;
                         
                         PsychPortAudio('Start', expInfo.audioInfo.pahandle, expInfo.audioInfo.nReps, expInfo.audioInfo.startCue);
                         
-                       % WaitSecs(expInfo.audioInfo.beepLength+1);
+                        % WaitSecs(expInfo.audioInfo.beepLength+1);
                         
-                       PsychPortAudio('Stop', expInfo.audioInfo.pahandle,1);
+                        PsychPortAudio('Stop', expInfo.audioInfo.pahandle,1);
                         
                     end
                     
@@ -804,7 +829,7 @@ end;
                         'center', 'center', 1);
                 else %if a stereo mode blank out everything but the noise frame.
                     
-                    %look for a noise frame element in the fixation 
+                    %look for a noise frame element in the fixation
                     frameIndex = find(strcmpi( {expInfo.fixationInfo.type},'noiseframe'),1,'first');
                     
                     if isempty(frameIndex)
@@ -956,7 +981,7 @@ end;
             thisFolder = subDirCell{iSub};
             
             %If thisFolder doesn't match any of the directories on the path
-            %we're not correct. 
+            %we're not correct.
             if ~isempty(thisFolder) && ~any(strcmp(thisFolder, pathCell));
                 pathIsCorrect = false;
                 return;
@@ -992,7 +1017,7 @@ end;
             thisFolder = subDirCell{iSub};
             
             %If thisFolder doesn't match any of the directories on the path
-            %add it to the path. 
+            %add it to the path.
             if  ~any(strcmp(thisFolder, pathCell));
                 msg = sprintf('Adding to path: %s',thisFolder);
                 disp(msg);
@@ -1028,7 +1053,7 @@ end;
             sessionInfo.mfileBackup(iFile).content = fileread(mfiles{iFile});
         end
         
-        diary OFF 
+        diary OFF
         %Now save the diary:
         sessionInfo.diary = fileread(diaryName);
         
