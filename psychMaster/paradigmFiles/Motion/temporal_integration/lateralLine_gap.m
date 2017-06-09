@@ -4,7 +4,6 @@ expInfo.paradigmName = 'lateralLine_gap';
 expInfo.viewingDistance = 92; %in cm; I need to check this
 expInfo.instructions = 'Did the line speed up or slow down?';
 expInfo.pauseInfo = 'Paused\nPress any key to continue';
-expInfo.validKeyPresses = ['f';'j']; %key presses that will be considered valid responses and not keyboard errors
 
 section2velocity = [0.5 2]; %velocities to use in deg/s; picked randomly for now
 
@@ -15,7 +14,8 @@ for iCond = 1: length(section2velocity);
     conditionInfo(iCond).label = ['temporal_Integration_' num2str(section2velocity(iCond))]; 
     %the labels for the levels when viewing in ptbCorgi gui
     conditionInfo(iCond).nReps = 10; %number of repeats of the level
-    
+    conditionInfo(iCond).validKeyPresses = ['f';'j']; 
+    %key presses that will be considered valid responses and not keyboard errors
     
     %timings
     conditionInfo(iCond).preStimDuration  = 0.25;  %Static time before stimulus change

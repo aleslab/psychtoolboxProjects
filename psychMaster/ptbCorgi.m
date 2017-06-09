@@ -517,18 +517,18 @@ end;
                         trialData.abortNow = false;
                         trialData.validTrial = false; %Default not valid unless proven otherwise
                         
-                        if isfield(expInfo, 'validKeyPresses') %so that you can control 
+                        if isfield(conditionInfo, 'validKeyPresses') %so that you can control 
                             %which keyboard inputs you want to allow people
                             %to respond with in 'simpleResponse' type
                             %experiments
                             
-                            for iValidKey = 1:length(expInfo.validKeyPresses)
-                                validKeyNames(iValidKey) = KbName(expInfo.validKeyPresses(iValidKey)); 
+                            for iValidKey = 1:length(conditionInfo.validKeyPresses)
+                                validKeyNames(iValidKey) = KbName(conditionInfo.validKeyPresses(iValidKey)); 
                             end
                             
                             pressedValidKeys = trialData.firstPress(validKeyNames); %working out if any of the valid keys have been pressed
                             foundPressedValidKeys = find(pressedValidKeys); %working out which key it must have been based on array position
-                            validKeyPress = expInfo.validKeyPresses(foundPressedValidKeys); %working out which specific valid key has been pressed
+                            validKeyPress = conditionInfo.validKeyPresses(foundPressedValidKeys); %working out which specific valid key has been pressed
                             
                         end
                         
@@ -546,10 +546,10 @@ end;
                             Screen('Flip', expInfo.curWindow);
                             KbStrokeWait();
                             
-                        elseif isfield(expInfo, 'validKeyPresses') & trialData.firstPress(KbName(validKeyPress))
+                        elseif isfield(conditionInfo, 'validKeyPresses') & trialData.firstPress(KbName(validKeyPress))
                             trialData.validTrial = true;
                             
-                        elseif ~isfield(expInfo, 'validKeyPresses') 
+                        elseif ~isfield(conditionInfo, 'validKeyPresses') 
                             
                             trialData.validTrial = true;
                             %if there's not a specification for which keys 
