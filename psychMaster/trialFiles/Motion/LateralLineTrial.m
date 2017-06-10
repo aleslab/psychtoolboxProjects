@@ -6,17 +6,18 @@ function [trialData] = LateralLineTrial(expInfo, conditionInfo)
 
 %% Setup
 
-[screenXpixels, screenYpixels] = Screen('WindowSize', expInfo.curWindow);
+%[screenXpixels, screenYpixels] = Screen('WindowSize', expInfo.curWindow);
+screenXpixels = expInfo.windowSizePixels(1);
+screenYpixels = expInfo.windowSizePixels(2);
 
-trialData.validTrial = false;
+trialData.validTrial = true; %Set this to true if you want the trial to be valid for 'generic'
 trialData.abortNow   = false;
 
-expInfo.lw = 1; %width of line is one pixel
+lw = 1; %width of line is one pixel
 
-%initial fixation information
-fixationInfo(1).type    = 'cross';
-fixationInfo(1).fixLineWidthPix = 1;
-expInfo = drawFixation(expInfo, fixationInfo);
+%Draw fixation. Take the parameters from the default fixation set in
+%expInfo. 
+drawFixation(expInfo, expInfo.fixationInfo);
 
 
 vbl=Screen('Flip', expInfo.curWindow);
@@ -58,8 +59,8 @@ currLinePos = pixelStartPos;
 
 %drawing the line at the current line position (in the x axis) from the
 %top to the bottom of the screen
-Screen('DrawLines', expInfo.curWindow, [currLinePos, currLinePos; 0, screenYpixels], expInfo.lw);
-expInfo = drawFixation(expInfo, fixationInfo);
+Screen('DrawLines', expInfo.curWindow, [currLinePos, currLinePos; 0, screenYpixels], lw);
+drawFixation(expInfo, expInfo.fixationInfo);
 LAT = Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %line appearance time
 trialData.flipTimes(frameIdx) = vbl;
 frameIdx = frameIdx+1;
@@ -103,10 +104,11 @@ while currentTime < section2endtime
     
     if drawLine == true
         
-        Screen('DrawLines', expInfo.curWindow, [currLinePos, currLinePos; 0, screenYpixels], expInfo.lw);
+        Screen('DrawLines', expInfo.curWindow, [currLinePos, currLinePos; 0, screenYpixels], lw);
         
     end
-    expInfo = drawFixation(expInfo, fixationInfo);
+    
+    drawFixation(expInfo, expInfo.fixationInfo);
     currentFlipTime = Screen('Flip', expInfo.curWindow,nextFlipTime);
     trialData.flipTimes(frameIdx) = currentFlipTime;
     frameIdx = frameIdx+1;
@@ -116,5 +118,18 @@ while currentTime < section2endtime
     previousFlipTime = currentFlipTime;   
 
 end
+
+%After the line moves we'll turn off the line and turn on a response
+%indicator
+%
+
+responseIndicator.type = 'square';
+responseIndicator.size = .25; 
+
+drawFixation(expInfo, expInfo.fixationInfo);
+drawFixation(expInfo, responseIndicator);
+
+currentFlipTime = Screen('Flip', expInfo.curWindow);
+
 
 end
