@@ -508,7 +508,7 @@ end;
                     %Here we'll add the response collection
                     %There is a bit of redunancy with the [-90,90,-90,90] code.  I
                     %don't like it but it will do for now.
-                    if strcmp(lower(conditionInfo(thisCond).type),'simpleresponse')
+                    if strcmpi(conditionInfo(thisCond).type,'simpleresponse')
                         
                         [responseData] = getResponse(expInfo,conditionInfo(thisCond).responseDuration);
                         
@@ -516,48 +516,63 @@ end;
                         trialData.pressed    = responseData.pressed;
                         trialData.abortNow = false;
                         trialData.validTrial = false; %Default not valid unless proven otherwise
+                        validKeyIndices = []; %For user set valid keys. 
                         
-                        if isfield(conditionInfo, 'validKeyPresses') %so that you can control 
-                            %which keyboard inputs you want to allow people
-                            %to respond with in 'simpleResponse' type
-                            %experiments
-                            
-                            for iValidKey = 1:length(conditionInfo.validKeyPresses)
-                                validKeyNames(iValidKey) = KbName(conditionInfo.validKeyPresses(iValidKey)); 
-                            end
-                            
-                            pressedValidKeys = trialData.firstPress(validKeyNames); %working out if any of the valid keys have been pressed
-                            foundPressedValidKeys = find(pressedValidKeys); %working out which key it must have been based on array position
-                            validKeyPress = conditionInfo.validKeyPresses(foundPressedValidKeys); %working out which specific valid key has been pressed
-                            
+                        
+                        
+                        %If user has set 'validKeyNames' and it is not empty
+                        %Could put this in the if/elseif below, but I think
+                        %putting it here makes the code more clear below 
+                        if isfield(conditionInfo(thisCond), 'validKeyNames') ...
+                                && ~isempty(conditionInfo(thisCond).validKeyNames)
+                            %KbName will return a list of key indices if it is
+                            %given a cell array of keynames
+                            validKeyIndices = KbName( conditionInfo(thisCond).validKeyNames );
+ 
                         end
                         
-                        if trialData.firstPress(KbName('ESCAPE'))
-                            %pressed escape lets abort experiment;
-                            trialData.validTrial = false;
-                            experimentData(iTrial).validTrial = false;
-                            trialData.abortNow = true;
-                            
+ 
+                        %Now let's do some response parsing
+                        
+                        %1st check if user defined valid keys and any of
+                        %them were pressed. 
+                        if ~isempty(validKeyIndices) ...
+                                && any( trialData.firstPress( validKeyIndices) )
+                            trialData.validTrial = true;
+
+                        %If the user hasn't defined valid keys or the particpant hasn't pressed let's decide what to do.     
+                        %'Space' comes next because it allows defining
+                        %'space' as a valid key and collected data from it'
+                        %If space hasn't been defined as a 'validKeyName'
+                        %above let's use it to pause.
                         elseif trialData.firstPress(KbName('space'))
                             trialData.validTrial = false;
                             experimentData(iTrial).validTrial = false;
                             DrawFormattedTextStereo(expInfo.curWindow, expInfo.pauseInfo, ...
                                 'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
                             Screen('Flip', expInfo.curWindow);
-                            KbStrokeWait();
-                            
-                        elseif isfield(conditionInfo, 'validKeyPresses') & trialData.firstPress(KbName(validKeyPress))
+                            KbStrokeWait();                                             
+
+                        %If there's no user defined valid keys, and we
+                        %haven't caught a 'space' above count any other
+                        %keypress as valid trial or 'space has been
+                        %pressed.
+                        elseif isempty(validKeyIndices) && any(trialData.firstPress) 
                             trialData.validTrial = true;
                             
-                        elseif ~isfield(conditionInfo, 'validKeyPresses') 
-                            
-                            trialData.validTrial = true;
-                            %if there's not a specification for which keys 
-                            %are valid in conditionInfo, all of them are
-                            %valid
+                        %Nothing caught above so it's not a valid trial.
+                        %Not strictly neccessary, but here for clarity. 
                         else
                             trialData.validTrial = false;
+                        end
+                        
+                        %No matter what is parsed above. If 'ESCAPE' is pressed
+                        %always abort
+                        if trialData.firstPress(KbName('ESCAPE')) 
+                            %pressed escape lets abort experiment;
+                            trialData.validTrial = false;
                             experimentData(iTrial).validTrial = false;
+                            trialData.abortNow = true;
                         end
                         
                         
