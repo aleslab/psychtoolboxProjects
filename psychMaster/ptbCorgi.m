@@ -469,7 +469,7 @@ end;
             conditionInfo(thisCond) = randomizeConditionField(conditionInfo(thisCond));
 
             
-            if strcmpi(expInfo.randomizationType,'blocked')
+            if strcmpi(expInfo.trialRandomization.type,'blocked')
                 %In the block design lets put a message and
                 %pause when blocks change
                 if iTrial >1 && thisBlock ~= blockList(iTrial-1)
@@ -776,7 +776,7 @@ end;
                 
                 %If the structure is blocked add a trial to the current
                 %block.  %JMA: TEST THIS CAREFULLY. Not full vetted
-                if strcmpi(expInfo.randomizationType,'blocked')
+                if strcmpi(expInfo.trialRandomization.type,'blocked')
                     thisCond = conditionList(iTrial);
                     thisBlock = blockList(iTrial);
                     

@@ -64,14 +64,23 @@ if ~isfield(expInfo,'viewingDistance')
 end
 
 %Default fully randomize everything
-if ~isfield(expInfo,'randomizationType')
-    expInfo.randomizationType = 'random';
+if ~isfield(expInfo, 'trialRandomization')
+
+    expInfo.trialRandomization.type = 'random';
+    
+    %If old type filed is set use that. 
+     if isfield(expInfo,'randomizationType')
+         expInfo.trialRandomization.type =  expInfo.randomizationType;
+     end
+%     
+%     %Default randomizationOptions is empty
+%     if ~isfield(expInfo,'randomizationOptions')
+%         expInfo.randomizationOptions = [];
+%     end
+    
+
 end
 
-%Default randomizationOptions is empty
-if ~isfield(expInfo,'randomizationOptions')
-    expInfo.randomizationOptions = [];
-end
 
 %Default to testing in a small window
 if ~isfield(expInfo,'useFullScreen')
