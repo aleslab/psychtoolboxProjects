@@ -23,13 +23,14 @@ conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;
 conditionInfo(1).intervalBeep = 0;
 conditionInfo(1).maxToAnswer = 2; % max time to answer
+conditionInfo(1).maxDim = 5; % max number of luminance change in a trial
 % conditionInfo(1).randomizeField = 'false';
 
 %% stimulus
 conditionInfo(1).stimSize = [0 0 100 100];
 conditionInfo(1).nFramesPerStim = 10; % at 60Hz refresh = 6 img/sec
-conditionInfo(1).trialDuration = 6; % 12 sec
-conditionInfo(1).totFlip = 6 * conditionInfo(1).trialDuration; %80 for 60Hz 12sec trial
+conditionInfo(1).stimDuration = 6; % 12 sec
+conditionInfo(1).totFlip = 6 * conditionInfo(1).stimDuration; %80 for 60Hz 12sec trial
 conditionInfo(1).trialFun=@trial_longRange;
 conditionInfo(1).movingStep = 0;
 conditionInfo(1).motion = 0; % by default, no motion 

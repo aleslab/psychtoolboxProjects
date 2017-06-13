@@ -1,4 +1,4 @@
-function [conditionInfo, expInfo] = psychParadigm_longRangeOccluder(expInfo)
+function [conditionInfo, expInfo] = psychParadigm_LROccluderV2(expInfo)
 % no need for a 'baseline' condition: it's the same as a trial with 0 test
 % + each time that the stim does appear in the central position.
 % for the unexpected condition a rectangle appears in the middle so there
@@ -28,7 +28,7 @@ conditionInfo(1).type = 'Generic';
 conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;
 conditionInfo(1).intervalBeep = 0;
-conditionInfo(1).trialFun=@trial_longRangeOccluder;
+conditionInfo(1).trialFun=@trial_LROccluderV2;
 conditionInfo(1).maxTest = 3; % max number of tests (stim appearing/not in the central position) in a trial
 % conditionInfo(1).randomizeField = 'false';
 

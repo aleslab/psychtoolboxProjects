@@ -17,7 +17,7 @@ black = BlackIndex(expInfo.curWindow);
 dimColour = 0.3;
 
 % parameters for the task
-trialData.dims = randi(6,1)-1; % number of dims for this trial
+trialData.dims = randi((conditionInfo.maxDim+1),1)-1; % number of dims for this trial
 trialData.flipDim = [11 12 13];
 % determine which flip with dim, 2 dims should not follow each other on the
 % same stimulus
@@ -53,15 +53,16 @@ end
 % end
 
 % check the nb of flip
-totFlip = 0;
+flipNb = 0;
 
+stimStartTime = trialData.trialStartTime; % this is wrong but need a starting value for the while loop
 
 % presentation stimulus
-while ~KbCheck && t<conditionInfo.trialDuration+trialData.trialStartTime-ifi/2 % && xcoord<xcoordEnd+1
+while ~KbCheck && t<conditionInfo.stimDuration+stimStartTime - ifi/2 % && xcoord<xcoordEnd+1
     if strcmp(conditionInfo.sideStim,'both') % 2 stim presented
         if conditionInfo.motion == 1 % in motion
             % check if the flip is dim
-            if ismember(totFlip,trialData.flipDim)
+            if ismember(flipNb,trialData.flipDim)
                 colStim = dimColour;
             else
                 colStim = black;
@@ -69,13 +70,13 @@ while ~KbCheck && t<conditionInfo.trialDuration+trialData.trialStartTime-ifi/2 %
             drawFixation(expInfo, expInfo.fixationInfo);
             Screen('FillOval', expInfo.curWindow, colStim,CenterRectOnPoint(rectCircle,expInfo.center(1)-xcoord,ycoord));
             t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi - ifi/2);
-            % trialData.trialStartTime - t
-            totFlip = totFlip+ 1;
-            if totFlip == 1
-                trialData.stimStartTime = t;
+            % t- trialData.trialStartTime
+            flipNb = flipNb+ 1;
+            if flipNb == 1
+                stimStartTime = t;
             end
             % check if the flip is dim
-            if ismember(totFlip,trialData.flipDim)
+            if ismember(flipNb,trialData.flipDim)
                 colStim = dimColour;
             else
                 colStim = black;
@@ -83,14 +84,14 @@ while ~KbCheck && t<conditionInfo.trialDuration+trialData.trialStartTime-ifi/2 %
             drawFixation(expInfo, expInfo.fixationInfo);
             Screen('FillOval', expInfo.curWindow, colStim,CenterRectOnPoint(rectCircle,expInfo.center(1)+xcoord,ycoord));
             t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi - ifi/2);
-            % trialData.trialStartTime - t
+            % t- trialData.trialStartTime
             if strcmp(conditionInfo.label,'sweep')
                 xcoord = xcoord + movingStep;
             end
-            totFlip = totFlip+ 1;
+            flipNb = flipNb+ 1;
         else % simultaneous condition
             % check if the flip is dim
-            if ismember(totFlip,trialData.flipDim)
+            if ismember(flipNb,trialData.flipDim)
                 colStim = Shuffle([dimColour,black]);
             else
                 colStim = [black black];
@@ -99,17 +100,17 @@ while ~KbCheck && t<conditionInfo.trialDuration+trialData.trialStartTime-ifi/2 %
             Screen('FillOval', expInfo.curWindow, colStim(1),CenterRectOnPoint(rectCircle,expInfo.center(1)-xcoord,ycoord));
             Screen('FillOval', expInfo.curWindow, colStim(2),CenterRectOnPoint(rectCircle,expInfo.center(1)+xcoord,ycoord));
             t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi - ifi/2);
-            totFlip = totFlip+ 1;
-            if totFlip == 1
-                trialData.stimStartTime = t;
+            flipNb = flipNb+ 1;
+            if flipNb == 1
+                stimStartTime = t;
             end
             drawFixation(expInfo, expInfo.fixationInfo);
             t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi - ifi/2);
-            totFlip = totFlip+ 1;
+            flipNb = flipNb+ 1;
         end
     else  % only one stim (left or right)
         % check if the flip is dim
-        if ismember(totFlip,trialData.flipDim)
+        if ismember(flipNb,trialData.flipDim)
             colStim = dimColour;
         else
             colStim = black;
@@ -117,17 +118,18 @@ while ~KbCheck && t<conditionInfo.trialDuration+trialData.trialStartTime-ifi/2 %
         drawFixation(expInfo, expInfo.fixationInfo);
         Screen('FillOval', expInfo.curWindow, colStim,CenterRectOnPoint(rectCircle,xcoordSingle,ycoord));
         t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi - ifi/2);
-        totFlip = totFlip+ 1;
-        if totFlip == 1
-            trialData.stimStartTime = t;
+        flipNb = flipNb+ 1;
+        if flipNb == 1
+            stimStartTime = t;
         end
         drawFixation(expInfo, expInfo.fixationInfo);
         t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi - ifi/2);
-        totFlip = totFlip+ 1;
+        flipNb = flipNb+ 1;
     end
 end
 
 trialData.stimEndTime = t;
+trialData.stimStartTime = stimStartTime;
 
 % abort
 [keyIsDown, secs, keyCode]=KbCheck(expInfo.deviceIndex);
@@ -141,18 +143,18 @@ end
 
 
 % Find the key values (not the same in PC and MAC) for the loop in the response
-for keyVal=0:5
+for keyVal=0:conditionInfo.maxDim
     vectKeyVal(keyVal+1) = KbName(num2str(keyVal));
 end
 
 
-trialData.totFlip = totFlip;
-if totFlip ~= conditionInfo.totFlip
+trialData.totFlip = flipNb;
+if flipNb ~= conditionInfo.totFlip
     trialData.validTrial = false;
 else
     % response screen
     Screen('DrawText', expInfo.curWindow, 'Nb of dims?', expInfo.center(1), expInfo.center(2), [0 0 0]);
-    Screen('DrawText', expInfo.curWindow, '(0-5)', expInfo.center(1), expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, ['(0-' num2str(conditionInfo.maxDim) ')'], expInfo.center(1), expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
     trialData.respScreenTime =Screen('Flip',expInfo.curWindow);
     while trialData.response==999 && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer -ifi/2)
         [keyDown, secs, keyCode] = KbCheck;
@@ -184,8 +186,10 @@ drawFixation(expInfo, expInfo.fixationInfo);
 t = Screen('Flip', expInfo.curWindow);
 trialData.trialEndTime = t;
 
-trialData.stimDuration = trialData.stimEndTime - trialData.stimStartTime ; 
-trialData.trialDuration = trialData.trialEndTime - trialData.trialStartTime ; 
+trialData.stimDurationReal = trialData.stimEndTime - trialData.stimStartTime ; 
+trialData.trialDurationReal = trialData.trialEndTime - trialData.trialStartTime ; 
+
+% trialData
 
 end
 

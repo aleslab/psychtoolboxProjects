@@ -1,4 +1,4 @@
-function [trialData] = trial_longRangeOccluder(expInfo, conditionInfo)
+function [trialData] = trial_LROccluderV2(expInfo, conditionInfo)
 
 drawFixation(expInfo, expInfo.fixationInfo);
 t = Screen('Flip', expInfo.curWindow);
@@ -21,7 +21,7 @@ xcoord = expInfo.center(1);
 % presented, not during the 1st and last second of the trial (where the EEG
 % recording will be cut)
 trialData.testFlipNb = randi(conditionInfo.maxTest+1,1)-1; % number of tests for this trial
-trialData.testFlipFrame = randsample(1+6:2:conditionInfo.totFlip-6, trialData.testFlipNb) - 1; % '-1' because 1st flip = 0
+trialData.testFlipFrame = randsample(8:2:conditionInfo.totFlip-7, trialData.testFlipNb) - 1; % '-1' because 1st flip = 0
 
 % 3 possible locations of the stimuli, the last two are for 'boucler la
 % boucle' in the motion condition (not simult)
@@ -52,15 +52,16 @@ while ~KbCheck && t<conditionInfo.stimDuration+stimStartTime-ifi/2
         flipNb = flipNb+ 1;
     else % motion - for explanation, see below
         for pos=1:4
-            Screen('FillRect',expInfo.curWindow,gray,CenterRectOnPoint(rectObs,xcoordStim(2),ycoord)); % has to draw it in case it was black the previous frame
+            Screen('FillRect',expInfo.curWindow,gray,CenterRectOnPoint(rectObs,xcoordStim(1),ycoord)); % has to draw it in case it was black the previous frame
+            Screen('FillRect',expInfo.curWindow,gray,CenterRectOnPoint(rectObs,xcoordStim(3),ycoord)); % has to draw it in case it was black the previous frame
             Screen('FillOval', expInfo.curWindow, black, CenterRectOnPoint(rectCircle,xcoordStim(pos+1),ycoord));
             Screen('FillOval', expInfo.curWindow, gray, CenterRectOnPoint(rectCircle,xcoordStim(pos),ycoord));
             if ismember(flipNb,trialData.testFlipFrame)
                 if strcmp(conditionInfo.label,'expected')
-                    Screen('FillRect',expInfo.curWindow,black,CenterRectOnPoint(rectObs,xcoordStim(2),ycoord));
+                    Screen('FillRect',expInfo.curWindow,black,CenterRectOnPoint(rectObs,xcoordStim(pos+1),ycoord));
                 end
                 if strcmp(conditionInfo.label,'unexpected')
-                    Screen('FillRect',expInfo.curWindow,gray,CenterRectOnPoint(rectCircle,xcoordStim(2),ycoord));
+                    Screen('FillRect',expInfo.curWindow,gray,CenterRectOnPoint(rectCircle,xcoordStim(pos+1),ycoord));
                 end
             end
             t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi - ifi/2, 1);
