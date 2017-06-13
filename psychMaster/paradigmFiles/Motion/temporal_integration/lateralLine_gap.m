@@ -1,7 +1,7 @@
 function [conditionInfo, expInfo] = lateralLine_gap(expInfo)
 
 expInfo.paradigmName = 'lateralLine_gap';
-expInfo.viewingDistance = 92; %in cm; I need to check this
+expInfo.viewingDistance = 92; %in cm; 92 rounded up, it's 91.7 from the screen to the outer edge of the chin rest
 expInfo.instructions = 'Did the line speed up or slow down?';
 expInfo.pauseInfo = 'Paused\nPress any key to continue';
 
@@ -11,7 +11,7 @@ expInfo.fixationInfo(1).lineWidthPix = 1;
 expInfo.fixationInfo(1).size  = .2;
 
 
-section2velocity = [0.5 2]; %velocities to use in deg/s; picked randomly for now
+section2velocity = [10 30]; %velocities to use in deg/s; picked randomly for now
 
 for iCond = 1: length(section2velocity);
     %general
@@ -26,16 +26,16 @@ for iCond = 1: length(section2velocity);
     %timings
     conditionInfo(iCond).preStimDuration  = 0.25;  %Static time before stimulus change
     conditionInfo(iCond).stimDurationSection1 = 0.50; %approximate stimulus duration in seconds
-    conditionInfo(iCond).stimDurationSection2 = 0.50; %variable in future but for now fixed
+    conditionInfo(iCond).stimDurationSection2 = 0.20; %variable in future but for now fixed
     conditionInfo(iCond).temporalGap = 0; %the approximate length of time 
     %in seconds that people will have between section 1 and section 2
     conditionInfo(iCond).responseDuration = 3;    %How long participants will have to respond
     
     %velocities
-    conditionInfo(iCond).velocityDegPerSecSection1 = 1; % velocity of section 1 in deg/s. Constant for this exp
+    conditionInfo(iCond).velocityDegPerSecSection1 = 20; % velocity of section 1 in deg/s. Constant for this exp
     conditionInfo(iCond).velocityDegPerSecSection2 = section2velocity(iCond); %velocity of section 2 in deg/s
     conditionInfo(iCond).gapVelocity = 0; %velocity in deg/s for temporal gap
-    conditionInfo(iCond).startPos = -1; %the start position of the line on the screen in degrees of visual angle.
+    conditionInfo(iCond).startPos = -8; %the start position of the line on the screen in degrees of visual angle.
     %Negative = left hand side of the screen.
 
 end
