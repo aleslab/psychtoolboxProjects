@@ -100,11 +100,10 @@ function [] = ptbCorgi(sessionInfo)
 %   instructions      = [''] A message to display before the start of
 %                      experiment
 %
-%   randomizationType = ['random'] a short string that sets how trials are
-%                      randomized it can take the following values:
-%              'random' - fully randomize all conditions
-%              'blocked' - repeatedly present a condition nReps time than
-%                          switch conditions. But present condition blocks in random order.
+%   trialRandomization = [] A structure containing a description of how to
+%                        randomize trials. See help MakeTrialList for a
+%                        full description. Defaults to random trial order.
+%                    
 %
 %   fixationInfo      = [] Is a structure containing the description of
 %                       what to draw for the fixation marker. Check the
