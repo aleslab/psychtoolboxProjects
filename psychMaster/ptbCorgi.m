@@ -469,7 +469,7 @@ end;
             conditionInfo(thisCond) = randomizeConditionField(conditionInfo(thisCond));
             
             
-            if strcmpi(expInfo.randomizationType,'blocked')
+            if strcmpi(expInfo.trialRandomization.type,'blocked')
                 %In the block design lets put a message and
                 %pause when blocks change
                 if iTrial >1 && thisBlock ~= blockList(iTrial-1)
@@ -816,7 +816,7 @@ end;
                 
                 %If the structure is blocked add a trial to the current
                 %block.  %JMA: TEST THIS CAREFULLY. Not full vetted
-                if strcmpi(expInfo.randomizationType,'blocked')
+                if strcmpi(expInfo.trialRandomization.type,'blocked')
                     thisCond = conditionList(iTrial);
                     thisBlock = blockList(iTrial);
                     
@@ -971,6 +971,23 @@ end;
                 pathIsCorrect = false;
                 return;
             end
+            
+            %If the required functions are "shadowed" something is fatally
+            %wrong and needs to be fixed by the user.
+            fileLocations = which(requiredFunctionList{iFunction},'-all');
+            if length(fileLocations) >1
+                   disp('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+                   disp('!!!!!   Shadowed  Functions Detected                            !!!')
+                   disp('!!!!!   The error message below will list the specific file     !!!')
+                   disp('!!!!!   Cut/paste following command to list all problem files.  !!!')
+                   disp('!!!!!   Then update your path to have only one copy             !!!') 
+                   disp('[shadowFilesExistFlag, fileList] = checkForShadowedFiles()')
+                   error('ptbCorgi:ptbCorgi:shadowedFiles', ...
+                       'Function %s is shadowed on the matlab path',...
+                       requiredFunctionList{iFunction});
+            end
+            
+            
         end
         
         %Let's make sure all sub directories are on the path.  This should
