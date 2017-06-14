@@ -11,7 +11,8 @@ expInfo.fixationInfo(1).lineWidthPix = 1;
 expInfo.fixationInfo(1).size  = .2;
 
 
-section2velocity = [10 30]; %velocities to use in deg/s; picked randomly for now
+section2velocity = [10 20 30]; %velocities to use in deg/s;
+%section2velocity = [10 12 14 16 18 19 20 21 22 24 26 28 30]; %velocities to use in deg/s;
 
 for iCond = 1: length(section2velocity);
     %general

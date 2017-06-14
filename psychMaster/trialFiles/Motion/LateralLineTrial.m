@@ -6,8 +6,6 @@ function [trialData] = LateralLineTrial(expInfo, conditionInfo)
 
 %% Setup
 
-%[screenXpixels, screenYpixels] = Screen('WindowSize', expInfo.curWindow);
-screenXpixels = expInfo.windowSizePixels(1);
 screenYpixels = expInfo.windowSizePixels(2);
 
 trialData.validTrial = true; %Set this to true if you want the trial to be valid for 'generic'
@@ -19,13 +17,9 @@ lw = 1; %width of line is one pixel
 %expInfo. 
 drawFixation(expInfo, expInfo.fixationInfo);
 
-
 vbl=Screen('Flip', expInfo.curWindow);
 
-%number of frames based on the duration of the section. might change this
-%later based on how i decide to deal with time/distance/speed in the
-%paradigm files. May make fixed distance in which case the duration of the
-%second may be variable.
+%number of frames based on the duration of the section
 nFramesPreStim = round(conditionInfo.preStimDuration/expInfo.ifi);
 nFramesSection1 = round(conditionInfo.stimDurationSection1 / expInfo.ifi);
 nFramesSection2 = round(conditionInfo.stimDurationSection2/ expInfo.ifi);
@@ -36,10 +30,6 @@ trialData.nFrames.PreStim = nFramesPreStim;
 trialData.nFrames.Section1 = nFramesSection1;
 trialData.nFrames.Section2 = nFramesSection2;
 trialData.nFrames.Total = nFramesTotal;
-
-%cm/frame velocity
-% velCmPerFrameSection1  = conditionInfo.velocityCmPerSecSection1*expInfo.ifi;
-% velCmPerFrameSection2  = conditionInfo.velocityCmPerSecSection2*expInfo.ifi;
 
 velSection1PixPerSec = conditionInfo.velocityDegPerSecSection1*expInfo.ppd;
 velSection2PixPerSec = conditionInfo.velocityDegPerSecSection2*expInfo.ppd;
@@ -62,6 +52,7 @@ currLinePos = pixelStartPos;
 Screen('DrawLines', expInfo.curWindow, [currLinePos, currLinePos; 0, screenYpixels], lw);
 drawFixation(expInfo, expInfo.fixationInfo);
 LAT = Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %line appearance time
+trialData.LinePos(frameIdx) = currLinePos;
 trialData.flipTimes(frameIdx) = vbl;
 frameIdx = frameIdx+1;
 
@@ -75,7 +66,8 @@ nextFlipTime = LAT+expInfo.ifi/2;
 currIfi = expInfo.ifi;
 previousFlipTime = LAT;
 velocityPixPerSec = 0;
-waitTime = 0;
+%trialData.currentTime(frameIdx) = currentTime;
+
 while currentTime < section2endtime
     
     if currentTime < preStimEndTime
@@ -110,10 +102,12 @@ while currentTime < section2endtime
     
     drawFixation(expInfo, expInfo.fixationInfo);
     currentFlipTime = Screen('Flip', expInfo.curWindow,nextFlipTime);
+    trialData.LinePos(frameIdx) = currLinePos;
     trialData.flipTimes(frameIdx) = currentFlipTime;
     frameIdx = frameIdx+1;
     nextFlipTime = currentFlipTime + expInfo.ifi/2;
     currentTime = currentFlipTime;
+    %trialData.currentTime(frameIdx) = currentTime;
     currIfi = currentFlipTime - previousFlipTime;
     previousFlipTime = currentFlipTime;   
 
