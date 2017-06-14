@@ -22,7 +22,7 @@ function varargout = pmGui(varargin)
 
 % Edit the above text to modify the response to help pmGui
 
-% Last Modified by GUIDE v2.5 14-Feb-2017 11:31:18
+% Last Modified by GUIDE v2.5 07-Jun-2017 12:24:31
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -233,8 +233,13 @@ function chooseParadigmBtn_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 
+dirToOpen = pwd;
+if isfield(handles.sessionInfo,'paradigmPath') && ~isempty(handles.sessionInfo.paradigmPath)
+    dirToOpen = handles.sessionInfo.paradigmPath;
+end
+
 [handles.sessionInfo.paradigmFile, handles.sessionInfo.paradigmPath] = ...
-    uigetfile('*.m','Choose the experimental paradigm file',pwd);
+    uigetfile('*.m','Choose the experimental paradigm file',dirToOpen);
 
 if isequal(handles.sessionInfo.paradigmFile,0)
     return;
@@ -280,6 +285,22 @@ try
     
     handles.conditionInfo = validateConditions(handles.expInfo,handles.conditionInfo);
     condNameList = {};
+    %% Lets create groups. 
+    if isfield(handles.expInfo,'conditionGroupingField')
+        [ groupingIndices condIdex2GroupIndex ] = ...
+            groupConditionsByField( handles.conditionInfo, handles.expInfo.conditionGroupingField );
+        %Default to showing the first group 
+        condIndices = groupingIndices{1};
+        
+        groupLabels = getGroupLabels(handles.conditionInfo, handles.expInfo.conditionGroupingField);
+        
+    else
+        groupingIndices = 1:length(handles.conditionInfo);
+        condIndices = groupingIndices;
+        groupLabels = {'No Groups Defined'}
+    end
+    
+       
     for iCond = 1:length(handles.conditionInfo)
        
         if ~isempty(handles.conditionInfo(iCond).label) %if there's a label use it
@@ -289,6 +310,8 @@ try
         end
         
     end
+    
+    
     
     %Now lets order the fieldnames for easy viewing.
     %Putting the Label on top.  This is a bit of a kludgy way to do it
@@ -300,19 +323,22 @@ try
     newPerm =[labelIdx;  notLabelIdx];
     orderedCond =  orderfields(orderedCond,newPerm );
     handles.conditionInfo = orderedCond;
+    handles.condNameList = condNameList;
+    handles.groupingIndices = groupingIndices;
     
-    set(handles.condListbox,'String',condNameList);
+    set(handles.condListbox,'String',condNameList(condIndices));
+    set(handles.condGroupListbox,'String',groupLabels);
     
     guidata(hObject,handles)
     
     
     
 catch ME
-    disp('<><><><><><> PSYCH MASTER <><><><><><><>')
+    disp('<><><><><><> PTBCORGI <><><><><><><>')
     disp('ERROR Loading Paradigm File, check your paradigm file')
     disp('The following report should help diagnose what is wrong:')
     disp(' ')
-    disp(getReport(ME, 'basic'))
+    disp(getReport(ME))
     
     handles.sessionInfo.paradigmFile = '';
     handles.expInfo.paradigmName = '';
@@ -407,7 +433,10 @@ function inspectConditionBtn_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-selectedCondition = get(handles.condListbox,'Value');
+%selectedCondition = get(handles.condListbox,'Value');
+%to implement grouping we need to abstract the condition index outside of
+%the listbox:
+selectedCondition = getConditionIndex(handles);
 
 diffFieldNameList = {};
 
@@ -466,6 +495,13 @@ if ~isempty( changedFieldList )
     guidata(hObject,handles)
 end
 
+function conditionIndex = getConditionIndex(handles)
+    
+    groupIndex     = get(handles.condGroupListbox,'Value');
+    condListIndex  = get(handles.condListbox,'Value');
+    conditionIndex = handles.groupingIndices{groupIndex}(condListIndex);
+    
+
 
 
 % --- Executes on button press in testCondBtn.
@@ -508,6 +544,34 @@ function sessionTagText_CreateFcn(hObject, eventdata, handles)
 % handles    empty - handles not created until after all CreateFcns called
 
 % Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in condGroupListbox.
+function condGroupListbox_Callback(hObject, eventdata, handles)
+% hObject    handle to condGroupListbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns condGroupListbox contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from condGroupListbox
+groupIndex = get(hObject,'Value');
+
+condIndices = handles.groupingIndices{groupIndex};
+
+set(handles.condListbox,'String',handles.condNameList(condIndices));
+set(handles.condListbox,'Value',1);
+
+% --- Executes during object creation, after setting all properties.
+function condGroupListbox_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to condGroupListbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
