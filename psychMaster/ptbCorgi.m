@@ -516,66 +516,79 @@ end;
                         trialData.pressed    = responseData.pressed;
                         trialData.abortNow = false;
                         trialData.validTrial = false; %Default not valid unless proven otherwise
-                        validKeyIndices = []; %For user set valid keys. 
+                        validKeyIndices = []; %For user set valid keys.
                         
                         
                         
                         %If user has set 'validKeyNames' and it is not empty
                         %Could put this in the if/elseif below, but I think
-                        %putting it here makes the code more clear below 
+                        %putting it here makes the code more clear below
                         if isfield(conditionInfo(thisCond), 'validKeyNames') ...
                                 && ~isempty(conditionInfo(thisCond).validKeyNames)
                             %KbName will return a list of key indices if it is
                             %given a cell array of keynames
-                            validKeyIndices = KbName( conditionInfo(thisCond).validKeyNames );
- 
+                            validKeyIndices = KbName(conditionInfo(thisCond).validKeyNames);
+                            
                         end
                         
- 
                         %Now let's do some response parsing
                         
                         %1st check if user defined valid keys and any of
-                        %them were pressed. 
+                        %them were pressed.
+                        numberOfKeysPressed = length(find(trialData.firstPress));
+                        
                         if ~isempty(validKeyIndices) ...
                                 && any( trialData.firstPress( validKeyIndices) )
                             trialData.validTrial = true;
-
-                        %If the user hasn't defined valid keys or the particpant hasn't pressed let's decide what to do.     
-                        %'Space' comes next because it allows defining
-                        %'space' as a valid key and collected data from it'
-                        %If space hasn't been defined as a 'validKeyName'
-                        %above let's use it to pause.
+                            experimentData(iTrial).validTrial = true;
+                            experimentData(iTrial).response = KbName(trialData.firstPress);
+                            
+                            %If the user hasn't defined valid keys or the particpant hasn't pressed let's decide what to do.
+                            %'Space' comes next because it allows defining
+                            %'space' as a valid key and collected data from it'
+                            %If space hasn't been defined as a 'validKeyName'
+                            %above let's use it to pause.
                         elseif trialData.firstPress(KbName('space'))
                             trialData.validTrial = false;
                             experimentData(iTrial).validTrial = false;
+                            experimentData(iTrial).response = [];
+                            
                             DrawFormattedTextStereo(expInfo.curWindow, expInfo.pauseInfo, ...
                                 'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
                             Screen('Flip', expInfo.curWindow);
-                            KbStrokeWait();                                             
-
-                        %If there's no user defined valid keys, and we
-                        %haven't caught a 'space' above count any other
-                        %keypress as valid trial or 'space has been
-                        %pressed.
-                        elseif isempty(validKeyIndices) && any(trialData.firstPress) 
-                            trialData.validTrial = true;
+                            KbStrokeWait();
                             
-                        %Nothing caught above so it's not a valid trial.
-                        %Not strictly neccessary, but here for clarity. 
+                            %If there's no user defined valid keys, and we
+                            %haven't caught a 'space' above count any other
+                            %keypress as valid trial or 'space has been
+                            %pressed.
+                        elseif isempty(validKeyIndices) && any(trialData.firstPress)
+                            trialData.validTrial = true;
+                            experimentData(iTrial).validTrial = true;
+                            experimentData(iTrial).response = KbName(trialData.firstPress);
+                            %Nothing caught above so it's not a valid trial.
+                            %Not strictly neccessary, but here for clarity.
                         else
                             trialData.validTrial = false;
+                            experimentData(iTrial).validTrial = false;
+                            experimentData(iTrial).response = [];
                         end
                         
                         %No matter what is parsed above. If 'ESCAPE' is pressed
                         %always abort
-                        if trialData.firstPress(KbName('ESCAPE')) 
+                        if trialData.firstPress(KbName('ESCAPE'))
                             %pressed escape lets abort experiment;
                             trialData.validTrial = false;
                             experimentData(iTrial).validTrial = false;
                             trialData.abortNow = true;
                         end
                         
-                        
+                        if numberOfKeysPressed > 1
+                            
+                            trialData.validTrial = false;
+                            experimentData(iTrial).validTrial = false;
+                            experimentData(iTrial).response = [];
+                        end
                         
                     end
                     
@@ -976,15 +989,15 @@ end;
             %wrong and needs to be fixed by the user.
             fileLocations = which(requiredFunctionList{iFunction},'-all');
             if length(fileLocations) >1
-                   disp('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-                   disp('!!!!!   Shadowed  Functions Detected                            !!!')
-                   disp('!!!!!   The error message below will list the specific file     !!!')
-                   disp('!!!!!   Cut/paste following command to list all problem files.  !!!')
-                   disp('!!!!!   Then update your path to have only one copy             !!!') 
-                   disp('[shadowFilesExistFlag, fileList] = checkForShadowedFiles()')
-                   error('ptbCorgi:ptbCorgi:shadowedFiles', ...
-                       'Function %s is shadowed on the matlab path',...
-                       requiredFunctionList{iFunction});
+                disp('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+                disp('!!!!!   Shadowed  Functions Detected                            !!!')
+                disp('!!!!!   The error message below will list the specific file     !!!')
+                disp('!!!!!   Cut/paste following command to list all problem files.  !!!')
+                disp('!!!!!   Then update your path to have only one copy             !!!')
+                disp('[shadowFilesExistFlag, fileList] = checkForShadowedFiles()')
+                error('ptbCorgi:ptbCorgi:shadowedFiles', ...
+                    'Function %s is shadowed on the matlab path',...
+                    requiredFunctionList{iFunction});
             end
             
             
