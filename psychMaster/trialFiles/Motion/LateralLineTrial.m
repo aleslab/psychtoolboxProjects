@@ -117,7 +117,7 @@ end
 %
 
 responseIndicator.type = 'square';
-responseIndicator.size = .25; 
+responseIndicator.size = .4; 
 
 drawFixation(expInfo, expInfo.fixationInfo);
 drawFixation(expInfo, responseIndicator);
