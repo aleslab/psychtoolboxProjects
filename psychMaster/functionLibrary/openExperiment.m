@@ -127,7 +127,9 @@ Screen('Preference', 'VisualDebugLevel',2);
 expInfo.bckgnd = 0.5;
 %This uses the new "psychImaging" pipeline.
 [expInfo.curWindow, expInfo.screenRect] = PsychImaging('OpenWindow', expInfo.screenNum, expInfo.bckgnd,windowRect,[],[], expInfo.stereoMode);
+%Gather information about the system
 expInfo.modeInfo =Screen('Resolution', expInfo.screenNum);
+expInfo.windowInfo = Screen('GetWindowInfo', expInfo.curWindow);
 
 %If we're running full screen lets hide the mouse cursor from view.
 %This should just hide the cursor on the experiment monitor but under OS/X
@@ -139,7 +141,7 @@ end
 %Verify size calibration video mode:
 if isfield(expInfo,'sizeCalibInfo')
     %First check if the calibration was done for the current system.
-    [ isCorrectSystem, msg ] = checkIfCalibrationIsForThisSystem( expInfo, calibInfo );
+    [ isCorrectSystem, msg ] = checkIfCalibrationIsForThisSystem( expInfo, expInfo.sizeCalibInfo );
     
     if ~isCorrectSystem
          disp('---> Size calibration was for a different system:');
@@ -279,7 +281,7 @@ end
 Screen('TextSize', expInfo.curWindow, 60);
 Screen('BlendFunction', expInfo.curWindow,  GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-expInfo.windowInfo = Screen('GetWindowInfo', expInfo.curWindow);
+
 
 %Setup some defaults for keyboard interactions. Can be overridden by your
 %experiment.

@@ -3,7 +3,7 @@ function [ status, message ] = checkIfCalibrationIsForThisSystem( expInfo, calib
 %  [ status, msg ] = checkIfCalibrationIsForThisSystem( expInfo, calibInfo )
 % Detailed explanation goes here
 
-
+message = '';
 
 %Check a bunch of things to make sure the loaded calibrations were done on
 %the correct system
@@ -43,8 +43,10 @@ if ~isfield(calibInfo.expInfo, 'windowInfo')
 end
 
 %Check graphics card model information
-if ~strcmp( expInfo.windowInfo.GPUCoreId, calibInfo.expInfo.windowInfo.GPUCorId) ...
-        || ~strcmp( expInfo.windowInfo.GPUMinorType, calibInfo.expInfo.windowInfo.GPUMinorType) ...
+%NOTE: Fix this logic to work one minortype is not a string.
+if ~strcmp( expInfo.windowInfo.GPUCoreId, calibInfo.expInfo.windowInfo.GPUCoreId) 
+%     ...
+%         || ~strcmp( expInfo.windowInfo.GPUMinorType, calibInfo.expInfo.windowInfo.GPUMinorType) ...
     status = false;
     message = 'Current graphics card model does not match calibration';
 end
