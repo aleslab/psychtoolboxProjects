@@ -17,7 +17,7 @@ expInfo.instructions = 'count the number of dims';
 
 %% General conditions
 conditionInfo(1).iti = 0.5; 
-conditionInfo(1).nReps = 2; %30 should make it around 60min 
+conditionInfo(1).nReps = 2; %30 repeats should make it around 60min 
 conditionInfo(1).type = 'Generic';
 conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;
@@ -27,7 +27,7 @@ conditionInfo(1).maxDim = 5; % max number of luminance change in a trial
 % conditionInfo(1).randomizeField = 'false';
 
 %% stimulus
-conditionInfo(1).stimSize = [0 0 100 100];
+conditionInfo(1).stimSize = [0 0 0.8 4]; % in deg
 conditionInfo(1).nFramesPerStim = 10; % at 60Hz refresh = 6 img/sec
 conditionInfo(1).stimDuration = 6; % 12 sec
 conditionInfo(1).totFlip = 6 * conditionInfo(1).stimDuration; %80 for 60Hz 12sec trial
@@ -44,7 +44,7 @@ end
 
 % first 4 are long range
 for cc=1:4
-    conditionInfo(cc).xloc = 2; % division where the stim will be presented horizontally = centerx/2
+    conditionInfo(cc).xloc = 4; % in deg
 end
 conditionInfo(1).label = 'long range';
 conditionInfo(1).sideStim = 'both';
@@ -58,7 +58,7 @@ conditionInfo(4).sideStim = 'both';
 
 % 5:8 are long range
 for cc=5:8
-    conditionInfo(cc).xloc = 12; % = centerx/8
+    conditionInfo(cc).xloc = 0.5; % = centerx/8
 end
 conditionInfo(5).label = 'short range';
 conditionInfo(5).sideStim = 'both';
@@ -73,14 +73,12 @@ conditionInfo(8).sideStim = 'both';
 % last condition: sweep
 conditionInfo(9).label = 'sweep';
 conditionInfo(9).sideStim = 'both';
-conditionInfo(9).xloc = [15 2]; % where it starts and ends
+conditionInfo(9).xloc = [0.5 4]; % where it starts and ends
 conditionInfo(9).motion = 1;
 conditionInfo(9).movingStep = 5;
 
-% expInfo.center does NOT exist (at the beginning) so the following won't work
-% conditionInfo(1).ycoord = expInfo.center(2)/2; 
-% conditionInfo(1).xcoord = 2*expInfo.center(1)/3; % distance define from centre
-% conditionInfo(2).xcoord = expInfo.center(1)/4; % will be above (- in the trial function)
+% expInfo.center does NOT exist (at the beginning) so cannot use
+% expInfo.center here nor expInfo.ppd
 
 end
 

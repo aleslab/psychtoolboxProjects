@@ -1,6 +1,6 @@
 function [trialData] = trial_longRange(expInfo, conditionInfo)
-% pb short simultaneous: too close!!
 % give feedback for correct/incorrect answer?
+% what would be best for VEP, white or black flashes??
 
 % if a key is pressed during a trial, it stops the trial and becomes
 % invalid
@@ -33,11 +33,11 @@ else % if no motion then it has to be when the stim is on (only odd numbers) + a
 end
 
 % stim presentation parameters
-rectCircle = conditionInfo.stimSize;
+rectCircle = conditionInfo.stimSize*expInfo.ppd;
 nbFrames = conditionInfo.nFramesPerStim;
 ifi = expInfo.ifi;
 ycoord = expInfo.center(2)/2;
-xcoord = expInfo.center(1)/conditionInfo.xloc(1);
+xcoord = conditionInfo.xloc(1)*expInfo.ppd; % to be substracted or added 
 movingStep = conditionInfo.movingStep;
 if strcmp(conditionInfo.sideStim,'left')
     xcoordSingle = expInfo.center(1)-xcoord;
@@ -68,7 +68,7 @@ while ~KbCheck && t<conditionInfo.stimDuration+stimStartTime - ifi/2 % && xcoord
                 colStim = black;
             end
             drawFixation(expInfo, expInfo.fixationInfo);
-            Screen('FillOval', expInfo.curWindow, colStim,CenterRectOnPoint(rectCircle,expInfo.center(1)-xcoord,ycoord));
+            Screen('FillRect', expInfo.curWindow, colStim,CenterRectOnPoint(rectCircle,expInfo.center(1)-xcoord,ycoord));
             t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi - ifi/2);
             % t- trialData.trialStartTime
             flipNb = flipNb+ 1;
@@ -82,7 +82,7 @@ while ~KbCheck && t<conditionInfo.stimDuration+stimStartTime - ifi/2 % && xcoord
                 colStim = black;
             end
             drawFixation(expInfo, expInfo.fixationInfo);
-            Screen('FillOval', expInfo.curWindow, colStim,CenterRectOnPoint(rectCircle,expInfo.center(1)+xcoord,ycoord));
+            Screen('FillRect', expInfo.curWindow, colStim,CenterRectOnPoint(rectCircle,expInfo.center(1)+xcoord,ycoord));
             t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi - ifi/2);
             % t- trialData.trialStartTime
             if strcmp(conditionInfo.label,'sweep')
@@ -97,8 +97,8 @@ while ~KbCheck && t<conditionInfo.stimDuration+stimStartTime - ifi/2 % && xcoord
                 colStim = [black black];
             end
             drawFixation(expInfo, expInfo.fixationInfo);
-            Screen('FillOval', expInfo.curWindow, colStim(1),CenterRectOnPoint(rectCircle,expInfo.center(1)-xcoord,ycoord));
-            Screen('FillOval', expInfo.curWindow, colStim(2),CenterRectOnPoint(rectCircle,expInfo.center(1)+xcoord,ycoord));
+            Screen('FillRect', expInfo.curWindow, colStim(1),CenterRectOnPoint(rectCircle,expInfo.center(1)-xcoord,ycoord));
+            Screen('FillRect', expInfo.curWindow, colStim(2),CenterRectOnPoint(rectCircle,expInfo.center(1)+xcoord,ycoord));
             t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi - ifi/2);
             flipNb = flipNb+ 1;
             if flipNb == 1
@@ -116,7 +116,7 @@ while ~KbCheck && t<conditionInfo.stimDuration+stimStartTime - ifi/2 % && xcoord
             colStim = black;
         end
         drawFixation(expInfo, expInfo.fixationInfo);
-        Screen('FillOval', expInfo.curWindow, colStim,CenterRectOnPoint(rectCircle,xcoordSingle,ycoord));
+        Screen('FillRect', expInfo.curWindow, colStim,CenterRectOnPoint(rectCircle,xcoordSingle,ycoord));
         t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi - ifi/2);
         flipNb = flipNb+ 1;
         if flipNb == 1
@@ -156,6 +156,7 @@ else
     Screen('DrawText', expInfo.curWindow, 'Nb of dims?', expInfo.center(1), expInfo.center(2), [0 0 0]);
     Screen('DrawText', expInfo.curWindow, ['(0-' num2str(conditionInfo.maxDim) ')'], expInfo.center(1), expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
     trialData.respScreenTime =Screen('Flip',expInfo.curWindow);
+    % check for key press
     while trialData.response==999 && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer -ifi/2)
         [keyDown, secs, keyCode] = KbCheck;
         if keyDown
