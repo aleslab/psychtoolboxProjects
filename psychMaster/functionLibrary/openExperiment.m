@@ -138,6 +138,15 @@ end
 
 %Verify size calibration video mode:
 if isfield(expInfo,'sizeCalibInfo')
+    %First check if the calibration was done for the current system.
+    [ isCorrectSystem, msg ] = checkIfCalibrationIsForThisSystem( expInfo, calibInfo );
+    
+    if ~isCorrectSystem
+         disp('---> Size calibration was for a different system:');
+         disp(msg);
+         error('Cannot contiue due to size calibration mismatch with system');
+    end
+    %
     if ~isequal(expInfo.sizeCalibInfo.modeInfo,expInfo.modeInfo)
         disp('---> Size calibration was for a different video mode')
         disp('Current Mode: ')
@@ -146,6 +155,8 @@ if isfield(expInfo,'sizeCalibInfo')
         expInfo.sizeCalibInfo.modeInfo
         error('Cannot continue due to size calibration mismatch to current video mode')
     end
+    
+    
 end
 
 if isfield(expInfo,'gammaTable')

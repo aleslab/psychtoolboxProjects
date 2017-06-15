@@ -1,6 +1,7 @@
-function [ status, msg ] = checkIfCalibrationIsForThisSystem( expInfo, calibInfo )
+function [ status, message ] = checkIfCalibrationIsForThisSystem( expInfo, calibInfo )
 %checkIfCalibrationIsForThisSystem Checks if the calibration info matches the current system  
-%   Detailed explanation goes here
+%  [ status, msg ] = checkIfCalibrationIsForThisSystem( expInfo, calibInfo )
+% Detailed explanation goes here
 
 
 
@@ -37,7 +38,7 @@ end
 %Check if we have the window info structure for comparing graphics card
 %information.
 if ~isfield(calibInfo.expInfo, 'windowInfo')
-    warning('Calibration info missing graphics card information, likely due to calibration prior to 0.31.0'
+    warning('Calibration info missing graphics card information, likely due to calibration prior to 0.31.0');
     return
 end
 
