@@ -7,13 +7,13 @@ expInfo.randomizationType = 'blocked';
 expInfo.viewingDistance = 92; %in cm; 92 rounded up, it's 91.7 from the screen to the outer edge of the chin rest
 
 %on screen text
-expInfo.instructions = 'Did the line speed up or slow down?';
+expInfo.instructions = 'Did the line \nspeed up or slow down?';
 expInfo.pauseInfo = 'Paused\nPress any key to continue';
 
 %Define the fixation marker for the experiment.
 expInfo.fixationInfo(1).type    = 'cross';
 expInfo.fixationInfo(1).lineWidthPix = 1;
-expInfo.fixationInfo(1).size  = .2;
+expInfo.fixationInfo(1).size  = .3;
 expInfo.conditionGroupingField = 'temporalGap';
 
 section2velocity = [10 20 30 40]; %velocities to use in deg/s;
