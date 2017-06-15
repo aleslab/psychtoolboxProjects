@@ -31,16 +31,17 @@ trialData.nFrames.Section1 = nFramesSection1;
 trialData.nFrames.Section2 = nFramesSection2;
 trialData.nFrames.Total = nFramesTotal;
 
-velSection1PixPerSec = conditionInfo.velocityDegPerSecSection1*expInfo.ppd;
-velSection2PixPerSec = conditionInfo.velocityDegPerSecSection2*expInfo.ppd;
-gapVelocityPixPerSec = conditionInfo.gapVelocity*expInfo.ppd;
+velSection1PixPerSec = conditionInfo.velocityDegPerSecSection1*expInfo.pixPerDeg;
+velSection2PixPerSec = conditionInfo.velocityDegPerSecSection2*expInfo.pixPerDeg;
+gapVelocityPixPerSec = conditionInfo.gapVelocity*expInfo.pixPerDeg;
 
 trialData.flipTimes = NaN(nFramesTotal,1);
+trialData.LinePos = NaN(nFramesTotal,1);
 frameIdx = 1;
 
 %% Creating the line and the structure of the stimulus presentation
 
-pixelStartPos = (expInfo.center(1) + round(expInfo.ppd * conditionInfo.startPos));
+pixelStartPos = (expInfo.center(1) + round(expInfo.pixPerDeg * conditionInfo.startPos));
 %finding the pixel start position relative to the centre of the screen
 %(left of screen centre is - and right is +) converting from the cm value
 %given in the paradigm file
@@ -66,7 +67,6 @@ nextFlipTime = LAT+expInfo.ifi/2;
 currIfi = expInfo.ifi;
 previousFlipTime = LAT;
 velocityPixPerSec = 0;
-%trialData.currentTime(frameIdx) = currentTime;
 
 while currentTime < section2endtime
     
@@ -107,7 +107,6 @@ while currentTime < section2endtime
     frameIdx = frameIdx+1;
     nextFlipTime = currentFlipTime + expInfo.ifi/2;
     currentTime = currentFlipTime;
-    %trialData.currentTime(frameIdx) = currentTime;
     currIfi = currentFlipTime - previousFlipTime;
     previousFlipTime = currentFlipTime;   
 
