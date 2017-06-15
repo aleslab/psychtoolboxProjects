@@ -190,7 +190,7 @@ expInfo.pixPerCm = pixelWidth/expInfo.monitorWidth;
 % pixPerDegree actually depends on monitor geometry and where eyes are
 % fixated and where the stimulus is drawn. But for convience we're just
 % going to assume linear. This get's us close enough for normal monitors
-% and sort of splits the difference between the fixation and the edge of
+% and averages the derivative between the fixation and the edge of
 % the monitor. But if accurate visual angles at large eccentricities are
 % important you'll need use pixPerDegAtEdge.
 %
@@ -200,15 +200,17 @@ expInfo.pixPerCm = pixelWidth/expInfo.monitorWidth;
 % pixels/degree = (pixels/(halfMonitorWidth Cm) X  (halfMonitorWidth Cm/degrees)
 expInfo.pixPerDeg = (pixelWidth/2)  *   (1/atand( (expInfo.monitorWidth/2) / expInfo.viewingDistance  ));
 
+delta = .01; %Calculate the derivative for a .1 mm change;
+
 % pixels/degree = (pixels/(1 cm) * ((1 cm)/deg
-expInfo.pixPerDegAtCenter = (expInfo.pixPerCm) / (atand( 1 / expInfo.viewingDistance ));
+expInfo.pixPerDegAtCenter = (expInfo.pixPerCm) / (atand(  delta/ expInfo.viewingDistance )./delta);
 
 % Here we will calculate cm/deg by taking the difference in degrees for a
 % a 1 cm change in location at the monitor edge assuming fronto-parallel
 % monitor with participant seated at center of monitor:
-deg1 = atand( ((expInfo.monitorWidth/2)-1) / expInfo.viewingDistance );
+deg1 = atand( ((expInfo.monitorWidth/2)-delta) / expInfo.viewingDistance );
 deg2 = atand( (expInfo.monitorWidth/2) / expInfo.viewingDistance );
-degPerCm = deg2-deg1;
+degPerCm = (deg2-deg1)/delta;
 expInfo.pixPerDegAtEdge = (expInfo.pixPerCm) / (degPerCm);
 
 %Old calculation. A little dense so unpacked above for clarity
