@@ -1,15 +1,15 @@
 function [conditionInfo, expInfo] = psychParadigm_LROccluderV3(expInfo)
 % no need for a 'baseline' condition: it's the same as a trial with 0 test
 % + each time that the stim does appear in the central position.
-% for the unexpected condition a rectangle appears in the middle so there
+% for the expected condition a rectangle appears in the middle so there
 % is something happening exactly at the expected time (but is not the
-% stimulus). That doesn't look great. Might be preferable to present the
-% rectangle at another point in time or change the paradigm.
-% Also why is the test restricted to the central position? In fact it would
-% be better if the extrem is not presented!
+% stimulus). Instead, present occluder at the beginning of a sequence 
+% (1st of the 12 possible locations of the stim)
+
 
 %paradigmName is what will be prepended to data files
 expInfo.paradigmName = 'longRangeOccluder';
+expInfo.occluder = 1; % present occluders or not
 
 
 %Setup a simple fixation cross. See help drawFixation for more info on how
@@ -29,13 +29,13 @@ conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;
 conditionInfo(1).intervalBeep = 0;
 conditionInfo(1).trialFun=@trial_LROccluderV3;
-conditionInfo(1).maxTest = 3; % max number of tests (stim appearing/not in the central position) in a trial
+conditionInfo(1).maxTest = 5; % max number of tests (stim appearing/not in the central position) in a trial
 % conditionInfo(1).randomizeField = 'false';
 
 %% stimulus
-conditionInfo(1).rectObs = [0 0 90 100];
-conditionInfo(1).stimSize = [0 0 80 80];
-conditionInfo(1).nFramesPerStim = 10; % at 60Hz refresh = 6 img/sec
+conditionInfo(1).rectObs = [0 0 2.5 2.5];
+conditionInfo(1).stimSize = [0 0 2 2];
+conditionInfo(1).nFramesPerStim = 15; % at 75Hz refresh = 5 img/sec
 conditionInfo(1).stimDuration = 6; % 12 sec
 conditionInfo(1).totFlip = 6 * conditionInfo(1).stimDuration; %80 for 60Hz 12sec trial
 
