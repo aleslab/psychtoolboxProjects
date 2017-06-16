@@ -1,27 +1,47 @@
-function [trialList blockList] = makeTrialList(expInfo,conditionInfo)
+function [trialList, blockList] = makeTrialList(expInfo,conditionInfo)
 %makeTrialList Creates a list for the trials.
 % [trialList blockList] = makeTrialList(expInfo,conditionInfo)
 %This code creates the trial list for the experiment
-%It currently implements the following options set in expInfo:
+%It currently implements the following options set in the
+%expInfo.trialRandomization structure:
 %
-%   randomizationType = ['random'] a short string that sets how trials are
-%                      randomized it can take the following values:
-%              'random' - fully randomize all conditions
-%              'blocked' - repeatedly present a condition nReps time than
-%                          switch conditions. Presents condition blocks
-%                          in random order (e.g. 2 2 3 3 1 1). Defaults to
-%                          blocking each individual condition. However you
-%                          can block groups of conditions by using a field
-%                          that groups conditions together in a block
-%  randomizationOptions.blockByConditionField = [''] String containing the
-%  name of the condition field to use for blocking. This will group
-%  conditions together by the field
-%  randomizationOptions.nBlockReps = [1] Number of times to repeat blocks.
+%   type = ['random'] a short string that sets how trials are
+%          randomized it can take the following values:
+%          'random'  - fully randomize order of all conditions
+%          'blocked' - Block single/groups of conditions together. Can
+%                      block either a group of conditions together, or
+%                      single conditions.
+%          'custom'  - Predfined custom trial sequence.
+%
+%  'Blocked' Type Extra fields:
+%  blockByField = [expInfo.conditionGroupingField] A string containing the
+%  name of the condition field to use for blocking. If the paradigm sets a
+%  condition grouping this defaults to using that grouping.  Otherwise it
+%  blocks individual conditions together (e.g. 1 1 1 3 3 3 3 2 2 2).
+%
+%  nBlockReps = [1] Number of times to repeat blocks.
 %  Currently blocks are repeated as a group.
-%  E.g.: Block rep 1: 2 1 3, Block rep 2: 3 2 1
+%  E.g.: Block rep 1: 221133, Block rep 2: 332211
 %
+%  'Custom' Type extra fields:
+%  trialList  = [No Default]  A list of condition numbers to present in
+%                sequence (e.g. [1 2 3 3 2 1]);
 %
-%   randomizationOptions =  a structure that is used to set various options
+%  blockList  = [ones(size(trialList))]  A list indentifying which (if any)
+%               block the trial belongs to. Should be monotonicly increasing.
+%
+%  Example:
+%  Say we have an experiment with 5 total conditions organized in 2 groups:
+%  1,2,3 are 10% contrast, 4,5 are 50% contrast, and each condition is set
+%  to repeat 2 times (nReps=2)  The following code would present block
+%  using contrast:
+%
+%  expInfo.trialRandomization.type = 'blocked'
+%  expInfo.trialRandomization.blockByField = 'contrast'
+%  expInfo.trialRandomization.nBlockReps   = 2;
+%
+%  Result in a trial order, for example:
+%  [4 5 5 4 (block end) 1 2 1 3 3 2 (block end) 5 5 4 4 (block end) 3 3 2 1 1 2]
 %
 % Outputs:
 % trialsList = List of trial numbers
@@ -35,7 +55,24 @@ function [trialList blockList] = makeTrialList(expInfo,conditionInfo)
 
 nConditions = length(conditionInfo);
 
-switch lower(expInfo.randomizationType)
+if isfield(expInfo, 'randomizationType')
+    expInfo.trialRandomization.type = expInfo.randomizationType;
+    
+end
+
+%
+if isfield(expInfo, 'randomizationOptions')        
+    %Old style
+     if isfield(expInfo.randomizationOptions,'blockConditionsByField')
+         expInfo.trialRandomization.blockByField = expInfo.randomizationOptions.blockConditionsByField;
+     end
+     
+     expInfo.trialRandomization = updateStruct(expInfo.trialRandomization, expInfo.randomizationOptions);                
+end
+
+randomization = expInfo.trialRandomization;
+
+switch lower(randomization.type)
     
     case 'random'
         
@@ -58,24 +95,45 @@ switch lower(expInfo.randomizationType)
         [~,idx]=sort(rand(size(trialList)));
         trialList = trialList(idx);
         blockList = ones(size(trialList));
+    case 'custom' %Custom allows user specification.
+        
+        if ~isfield(randomization,'trialList')
+            error('ptbCorgi:makeTrialList:missingField','Custom trial randomization requires trialList field to be set');            
+        end
+        
+        trialList = randomization.trialList;
+        blockList = ones(size(trialList)); %Default to one block. 
+        if isfield(randomization,'blockList') && ~isempty(randomization.blockList)
+            blockList = randomization.blockList;
+        end
+        
     case 'blocked'
         
+        
+        %If user didn't set a specific randomization grouping field. But
+        %set the conditionGrouping field.  Default to using the
+        %conditionGroupingField.
+        if ~isfield(randomization,'blockByField') ...
+                && isfield(expInfo,'conditionGroupingField')
+            randomization.blockByField = expInfo.conditionGroupingField;
+        end
+        
         %Check If we're going to block by a field in the conditionInfo
-        if isfield(expInfo,'randomizationOptions') ...
-                && isfield(expInfo.randomizationOptions,'blockConditionsByField') ...
-                && ~isempty(expInfo.randomizationOptions.blockConditionsByField)
+        if isfield(randomization,'blockByField') ...
+                && ~isempty(randomization.blockByField)
             
-            groupingFieldname = expInfo.randomizationOptions.blockConditionsByField;
-            [ groupingIndices ] = groupConditionsByField( conditionInfo, groupingFieldname );
-            
-            if ~isfield(expInfo.randomizationOptions,'nBlockReps') ...
-                || isempty(expInfo.randomizationOptions.nBlockReps)
-                expInfo.randomizationOptions.nBlockReps = 1;
-            end
-            
+            groupingFieldname = randomization.blockByField;
+            [ groupingIndices ] = groupConditionsByField( conditionInfo, groupingFieldname );            
+        
+        
         else %Otherwise make 1 group containing all conditions.
             groupingIndices{1} = 1:nConditions;
-            expInfo.randomizationOptions.nBlockReps = 1;
+        end
+        
+        %If block reps is not set default to 1. 
+        if ~isfield(randomization,'nBlockReps') ...
+                || isempty(randomization.nBlockReps)
+            randomization.nBlockReps = 1;
         end
         
         %lets enumerate the total number of trials we need. This type of
@@ -85,10 +143,9 @@ switch lower(expInfo.randomizationType)
         trialList = [];
         blockList = [];
         
-        
         %repeat everything for each block repeat
         blockIdx = 1;
-        for iBlockRep = 1:expInfo.randomizationOptions.nBlockReps,
+        for iBlockRep = 1:randomization.nBlockReps,
             %
             %Now lets do a quick of the groups. This is an old way to accomplish a
             %permutation
@@ -128,11 +185,8 @@ switch lower(expInfo.randomizationType)
                 blockList = [blockList blockIdx*ones(size(thisBlockTrialList))];
                 blockIdx = blockIdx+1;
             end
-        end
-        
-    case 'custom'
-        disp('CUSTOM TRIAL ORDER NOT YET IMPLEMENTED JUST SHOWING FIRST TRIAL')
-        trialList = 1;
+        end    
+    
 end
 
 

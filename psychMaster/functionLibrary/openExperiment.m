@@ -64,14 +64,23 @@ if ~isfield(expInfo,'viewingDistance')
 end
 
 %Default fully randomize everything
-if ~isfield(expInfo,'randomizationType')
-    expInfo.randomizationType = 'random';
+if ~isfield(expInfo, 'trialRandomization')
+
+    expInfo.trialRandomization.type = 'random';
+    
+    %If old type filed is set use that. 
+     if isfield(expInfo,'randomizationType')
+         expInfo.trialRandomization.type =  expInfo.randomizationType;
+     end
+%     
+%     %Default randomizationOptions is empty
+%     if ~isfield(expInfo,'randomizationOptions')
+%         expInfo.randomizationOptions = [];
+%     end
+    
+
 end
 
-%Default randomizationOptions is empty
-if ~isfield(expInfo,'randomizationOptions')
-    expInfo.randomizationOptions = [];
-end
 
 %Default to testing in a small window
 if ~isfield(expInfo,'useFullScreen')
@@ -118,8 +127,9 @@ Screen('Preference', 'VisualDebugLevel',2);
 expInfo.bckgnd = 0.5;
 %This uses the new "psychImaging" pipeline.
 [expInfo.curWindow, expInfo.screenRect] = PsychImaging('OpenWindow', expInfo.screenNum, expInfo.bckgnd,windowRect,[],[], expInfo.stereoMode);
-expInfo.dontclear = 0; % 1 gives incremental drawing (does not clear buffer after flip)
+%Gather information about the system
 expInfo.modeInfo =Screen('Resolution', expInfo.screenNum);
+expInfo.windowInfo = Screen('GetWindowInfo', expInfo.curWindow);
 
 %If we're running full screen lets hide the mouse cursor from view.
 %This should just hide the cursor on the experiment monitor but under OS/X
@@ -130,6 +140,15 @@ end
 
 %Verify size calibration video mode:
 if isfield(expInfo,'sizeCalibInfo')
+    %First check if the calibration was done for the current system.
+    [ isCorrectSystem, msg ] = checkIfCalibrationIsForThisSystem( expInfo, expInfo.sizeCalibInfo );
+    
+    if ~isCorrectSystem
+         disp('---> Size calibration was for a different system:');
+         disp(msg);
+         error('Cannot contiue due to size calibration mismatch with system');
+    end
+    %
     if ~isequal(expInfo.sizeCalibInfo.modeInfo,expInfo.modeInfo)
         disp('---> Size calibration was for a different video mode')
         disp('Current Mode: ')
@@ -138,6 +157,8 @@ if isfield(expInfo,'sizeCalibInfo')
         expInfo.sizeCalibInfo.modeInfo
         error('Cannot continue due to size calibration mismatch to current video mode')
     end
+    
+    
 end
 
 if isfield(expInfo,'gammaTable')
@@ -171,12 +192,45 @@ expInfo.center = [expInfo.screenRect(3) expInfo.screenRect(4)]/2;   	% coordinat
 
 [pixelWidth, pixelHeight]=Screen('WindowSize', expInfo.screenNum);
 
-% determine pixels per degree
-% (pix/screen) * ... (screen/rad) * ... rad/deg
-expInfo.ppd = pi * pixelWidth / atan(expInfo.monitorWidth/expInfo.viewingDistance/2) / 360;    % pixels per degree
+
 %determine pixels per centimeter
 % screenWidth (pixels) / screenWidth (cm)
 expInfo.pixPerCm = pixelWidth/expInfo.monitorWidth;
+
+% determine pixels per degree pix/screen X (screen/deg )
+% Note: We are using a convienient assumption that pixPerDegree is linear.
+% But it is not actually linear, because screens are flat. So the actual
+% pixPerDegree actually depends on monitor geometry and where eyes are
+% fixated and where the stimulus is drawn. But for convience we're just
+% going to assume linear. This get's us close enough for normal monitors
+% and averages the derivative between the fixation and the edge of
+% the monitor. But if accurate visual angles at large eccentricities are
+% important you'll need use pixPerDegAtEdge.
+%
+% calculate pixPerDeg by assuming fixation is in the center. And averaging
+% the the number of pixels per degree from the fixation to the edge:
+% 
+% pixels/degree = (pixels/(halfMonitorWidth Cm) X  (halfMonitorWidth Cm/degrees)
+expInfo.pixPerDeg = (pixelWidth/2)  *   (1/atand( (expInfo.monitorWidth/2) / expInfo.viewingDistance  ));
+
+delta = .01; %Calculate the derivative for a .1 mm change;
+
+% pixels/degree = (pixels/(1 cm) * ((1 cm)/deg
+expInfo.pixPerDegAtCenter = (expInfo.pixPerCm) / (atand(  delta/ expInfo.viewingDistance )./delta);
+
+% Here we will calculate cm/deg by taking the difference in degrees for a
+% a 1 cm change in location at the monitor edge assuming fronto-parallel
+% monitor with participant seated at center of monitor:
+deg1 = atand( ((expInfo.monitorWidth/2)-delta) / expInfo.viewingDistance );
+deg2 = atand( (expInfo.monitorWidth/2) / expInfo.viewingDistance );
+degPerCm = (deg2-deg1)/delta;
+expInfo.pixPerDegAtEdge = (expInfo.pixPerCm) / (degPerCm);
+
+%Old calculation. A little dense so unpacked above for clarity
+% (pix/screen) X (screen/rad) X rad/deg
+%expInfo.pixPerDeg = pi * pixelWidth / atan(expInfo.monitorWidth/expInfo.viewingDistance/2) / 360;    % pixels per degree
+%ppd is deprecated. Included for backwards compatibility.
+expInfo.ppd = pi * pixelWidth / atan(expInfo.monitorWidth/expInfo.viewingDistance/2) / 360;    % pixels per degree
 
 [pixelWidthWin, pixelHeightWin] = Screen('WindowSize', expInfo.curWindow);
 
@@ -227,7 +281,7 @@ end
 Screen('TextSize', expInfo.curWindow, 60);
 Screen('BlendFunction', expInfo.curWindow,  GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-expInfo.windowInfo = Screen('GetWindowInfo', expInfo.curWindow);
+
 
 %Setup some defaults for keyboard interactions. Can be overridden by your
 %experiment.

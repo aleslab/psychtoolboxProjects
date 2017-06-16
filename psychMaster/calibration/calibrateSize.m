@@ -4,7 +4,8 @@ function sizeCalibInfo=calibrateSize()
 
 try
     %Open a window
-    expInfo = openExperiment();
+    expInfo.useFullScreen = true;
+    expInfo = openExperiment(expInfo);
     Screen('TextSize',expInfo.curWindow, 22);
     
     rectSize = round(min(expInfo.screenRect(3:4))/4); %make a rect half of the window size
@@ -50,7 +51,7 @@ try
     modeString = [num2str(sizeCalibInfo.modeInfo.width) 'x' num2str(sizeCalibInfo.modeInfo.height) ...
         '_' num2str(sizeCalibInfo.modeInfo.hz) 'Hz_' num2str(sizeCalibInfo.modeInfo.pixelSize) 'bpp_'];
     
-    filename = ['size_' computerName '_' modeString datestr(now,'yyyymmdd_HHMMSS') '.mat'];
+    filename = ['size_' computerName '_' modeString datestr(now,'yyyymmdd_HHMM') '.mat'];
     
     setpref('ptbCorgi','computerName',computerName);
     
