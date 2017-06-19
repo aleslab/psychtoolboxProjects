@@ -5,9 +5,11 @@ t = Screen('Flip', expInfo.curWindow,[],1);
 trialData.validTrial = true;
 trialData.abortNow = false;
 trialData.trialStartTime = t;
+trialData.response = 999;
 
 black = BlackIndex(expInfo.curWindow);
 gray = GrayIndex(expInfo.curWindow);
+dimColour = gray/2;
 
 % parameters
 rectCircle = conditionInfo.stimSize*expInfo.ppd;
@@ -54,6 +56,15 @@ while ismember(1,diff(trialData.testFlipFrame)==1) % do it again until there is 
 end
 trialData.testFlipSeq = floor((trialData.testFlipFrame-1)/totLoc); % find which sequence contains a test, important for presenting the obstruder at the beginning of the sequence in the expected condition
 
+% parameters for the task (dims)
+% 1. number of dims for this trial
+trialData.dims = randi((conditionInfo.maxDim+1),1)-1; 
+% 2. determine which flip with dim, should not be when it is a test (stim not presented)
+trialData.flipDim = randsample(setdiff(2:conditionInfo.totFlip-1,trialData.testFlipFrame),trialData.dims); % Attention 1st flip = 0
+% if condition simult then should be only when stim is on
+if strcmp(conditionInfo.label,'simult')
+    trialData.flipDim = randsample(setdiff(2:2:conditionInfo.totFlip-1,trialData.testFlipFrame),trialData.dims); % Attention 1st flip = 0
+end
 
 % draw the occluders that are always present
 % % the following draws a grill which is not that good
@@ -80,6 +91,10 @@ while ~KbCheck && t<conditionInfo.stimDuration+stimStartTime-ifi/2
         for pos=1:totLoc % draw an oval in all locations
             Screen('FillOval', expInfo.curWindow, black, CenterRectOnPoint(rectCircle,xcoordStim(pos),ycoordStim(pos)));
         end
+        if ismember(flipNb,trialData.flipDim)
+            pickLocation = randi(totLoc,1); % location of the dim stim
+            Screen('FillOval', expInfo.curWindow, dimColour, CenterRectOnPoint(rectCircle,xcoordStim(pickLocation),ycoordStim(pickLocation)));
+        end
         t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi - ifi/2, 1);
         flipNb = flipNb+ 1;
         if flipNb == 1
@@ -91,13 +106,23 @@ while ~KbCheck && t<conditionInfo.stimDuration+stimStartTime-ifi/2
         t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi - ifi/2, 1);
         flipNb = flipNb+ 1;
     else % motion - for explanation, see below
+        % to stop the drawing of all the positions before checking time, added a
+        % check on the totalflip in the drawing loop.
         for pos=1:totLoc
+            if flipNb == conditionInfo.totFlip
+                break;
+            end
+            if ismember(flipNb,trialData.flipDim)
+                colStim = dimColour;
+            else
+                colStim = black;
+            end
             if ismember(seq, trialData.testFlipSeq) && strcmp(conditionInfo.label,'expected') % put back in grey for the next sequence
                 for ss = 1:length(seqObsOld)
                     Screen('FillRect',expInfo.curWindow,gray,CenterRectOnPoint(rectObs,xcoordStim((seqObsOld(ss)-totLoc*(seq-1))),ycoordStim((seqObsOld(ss)-totLoc*(seq-1)))));
                 end
             end
-            Screen('FillOval', expInfo.curWindow, black, CenterRectOnPoint(rectCircle,xcoordStim(pos+1),ycoordStim(pos+1)));
+            Screen('FillOval', expInfo.curWindow, colStim, CenterRectOnPoint(rectCircle,xcoordStim(pos+1),ycoordStim(pos+1)));
             Screen('FillOval', expInfo.curWindow, gray, CenterRectOnPoint(rectCircle,xcoordStim(pos),ycoordStim(pos)));
             if ismember(seq, trialData.testFlipSeq) && strcmp(conditionInfo.label,'expected')
                 seqObs = trialData.testFlipFrame(find(trialData.testFlipFrame>totLoc*seq & trialData.testFlipFrame < totLoc*(seq+1)))+1;
@@ -139,9 +164,66 @@ end
 
 
 trialData.totFlip = flipNb;
+
 % if flipNb ~= conditionInfo.totFlip
 %     trialData.validTrial = false;
 % end
+
+% abort
+[keyIsDown, secs, keyCode]=KbCheck(expInfo.deviceIndex);
+if keyIsDown
+    trialData.validTrial = false;
+    if keyCode(KbName('escape'))
+        trialData.abortNow   = true;
+    end
+end
+
+
+% Find the key values (not the same in PC and MAC) for the loop in the response
+for keyVal=0:conditionInfo.maxDim
+    vectKeyVal(keyVal+1) = KbName(num2str(keyVal));
+end
+
+
+% Flip to "clear" the screen before presenting response screen
+drawFixation(expInfo, expInfo.fixationInfo);
+Screen('Flip', expInfo.curWindow);
+
+% trialData.totFlip = flipNb;
+% if flipNb ~= conditionInfo.totFlip
+%     trialData.validTrial = false;
+% else
+    % response screen
+	Screen('DrawText', expInfo.curWindow, 'Nb of dims?', expInfo.center(1), expInfo.center(2), [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, ['(0-' num2str(conditionInfo.maxDim) ')'], expInfo.center(1), expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
+    trialData.respScreenTime =Screen('Flip',expInfo.curWindow);
+    % check for key press
+    while trialData.response==999 && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer -ifi/2)
+        [keyDown, secs, keyCode] = KbCheck;
+        if keyDown
+            if find(keyCode)>=min(vectKeyVal) && find(keyCode)<=max(vectKeyVal)
+                trialData.response = str2num(KbName(keyCode));
+                trialData.rt = secs - trialData.respScreenTime;
+                if trialData.response == trialData.dims
+                    trialData.correct = 1;
+                else
+                    trialData.correct = 0;
+                end
+            else
+                if keyCode(KbName('ESCAPE'))
+                    trialData.abortNow   = true;
+                end
+                trialData.validTrial = false;break;
+            end
+        end
+    end
+    FlushEvents('keyDown');
+% end
+
+if trialData.response==999 % no response
+    trialData.validTrial = false;
+end
+
 
 drawFixation(expInfo, expInfo.fixationInfo);
 t = Screen('Flip', expInfo.curWindow);

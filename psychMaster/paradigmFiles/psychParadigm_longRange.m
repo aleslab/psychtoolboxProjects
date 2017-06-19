@@ -30,7 +30,7 @@ conditionInfo(1).maxDim = 5; % max number of luminance change in a trial
 conditionInfo(1).stimSize = [0 0 0.8 4]; % in deg
 conditionInfo(1).nFramesPerStim = 15; % at 75Hz refresh = 5 img/sec (and 2.5Hz per side)
 conditionInfo(1).stimDuration = 6; % 12 sec
-conditionInfo(1).totFlip = 6 * conditionInfo(1).stimDuration; %80 for 60Hz 12sec trial
+conditionInfo(1).totFlip = (75/conditionInfo(1).nFramesPerStim) * conditionInfo(1).stimDuration; %80 for 60Hz 12sec trial
 conditionInfo(1).trialFun=@trial_longRange;
 conditionInfo(1).movingStep = 0;
 conditionInfo(1).motion = 0; % by default, no motion 

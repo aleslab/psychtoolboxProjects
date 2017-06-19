@@ -28,16 +28,18 @@ conditionInfo(1).type = 'Generic';
 conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;
 conditionInfo(1).intervalBeep = 0;
+conditionInfo(1).maxToAnswer = 2; % max time to answer
 conditionInfo(1).trialFun=@trial_LROccluderV3;
-conditionInfo(1).maxTest = 5; % max number of tests (stim appearing/not in the central position) in a trial
+conditionInfo(1).maxTest = 3; % max number of tests (stim appearing/not in the central position) in a trial
+conditionInfo(1).maxDim = 5; % max number of luminance change in a trial
 % conditionInfo(1).randomizeField = 'false';
 
 %% stimulus
-conditionInfo(1).rectObs = [0 0 2.5 2.5];
+conditionInfo(1).rectObs = [0 0 2 2];
 conditionInfo(1).stimSize = [0 0 2 2];
 conditionInfo(1).nFramesPerStim = 15; % at 75Hz refresh = 5 img/sec
 conditionInfo(1).stimDuration = 6; % 12 sec
-conditionInfo(1).totFlip = 6 * conditionInfo(1).stimDuration; %80 for 60Hz 12sec trial
+conditionInfo(1).totFlip = (75/conditionInfo(1).nFramesPerStim) * conditionInfo(1).stimDuration; %80 for 60Hz 12sec trial
 
 conditionInfo(2) = conditionInfo(1);
 conditionInfo(3) = conditionInfo(1);
