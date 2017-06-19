@@ -16,10 +16,10 @@ expInfo.fixationInfo(1).size  = .3;
 %blocking based on the temporal gaps
 expInfo.randomizationType = 'blocked';
 expInfo.conditionGroupingField = 'temporalGap';
-temporalGap = [0 0.1 0.5 1];
+temporalGap = [0 0.5 1];
 
 %velocities
-section2velocity = [10 18 20 22 30]; %velocities to use in deg/s;
+section2velocity = [10 15 18 20 22 25 30]; %velocities to use in deg/s;
 
 iCond = 1; %defining here initially to prevent overwriting
 
