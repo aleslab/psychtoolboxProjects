@@ -19,7 +19,8 @@ expInfo.conditionGroupingField = 'temporalGap';
 temporalGap = [0 0.5 1];
 
 %velocities
-section2velocity = [10 15 18 20 22 25 30]; %velocities to use in deg/s;
+section2velocity = [0.5 0.75 0.9 1 1.1 1.25 1.5];
+%section2velocity = [10 15 18 20 22 25 30]; %velocities to use in deg/s;
 
 iCond = 1; %defining here initially to prevent overwriting
 
@@ -50,10 +51,10 @@ for iGap = 1:length(temporalGap);
         %in seconds that people will have between section 1 and section 2
         
         %velocities
-        conditionInfo(iCond).velocityDegPerSecSection1 = 20; % velocity of section 1 in deg/s. Constant for this exp
+        conditionInfo(iCond).velocityDegPerSecSection1 = 1;%20 % velocity of section 1 in deg/s. Constant for this exp
         conditionInfo(iCond).velocityDegPerSecSection2 = section2velocity(iSpeed); %velocity of section 2 in deg/s
         conditionInfo(iCond).gapVelocity = 0; %velocity in deg/s for temporal gap
-        conditionInfo(iCond).startPos = -8; %the start position of the line on the screen in degrees of visual angle.
+        conditionInfo(iCond).startPos = -0.4; %-8 %the start position of the line on the screen in degrees of visual angle.
         %Negative = left hand side of the screen.
   
         iCond = iCond+1; %so you don't overwrite the conditions you create with each gap
