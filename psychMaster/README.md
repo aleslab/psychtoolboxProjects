@@ -19,9 +19,13 @@ Started project management framework for data analysis:
    added function ptbCorgiAnalyzeEachParticipant() that will execute arbitrary 
    analayses on all participants in an experiment
 Added convience function build2AfcMatrix() that returns a simple matrix 
+Added new buildMatrixFromField to extract any fieldname from datasets and return a matrix
 Made automatic setting up of the matlab path more robust
 Enables warnings for matlab legacy random number generators. 
 Added new randomization blocking options
+ptbCorgiDataBrowser now recursively loads files in subdirectories as well.
+ptbCorgiDataBrowser can now generate code for loading data that can be copy/pasted into scripts
+Updated overloadOpenPtbCorgiData to handle cell arrays of filenames.
 
 0.31.0
 Switched to semantic version numbering
