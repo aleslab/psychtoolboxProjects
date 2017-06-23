@@ -1,25 +1,34 @@
-function [ outputMatrix ] = buildMatrixFromField( ptbCorgiData,fieldname )
+function [ outputMatrix ] = buildMatrixFromField(fieldname, varargin )
 %buildMatrixFromField Extracts ptbCorgi data and organizes it as a matrix
-%function [ outputMatrix ] = buildMatrixFromField( ptbCorgiData,fieldname )
+%function [ outputMatrix ] = buildMatrixFromField( fieldname, [see below] )
 %   
 %  Input:
-%  ptbCorgiData can 
-%   1) ptbCorgiData structure as returned by ptbCorgiDataBrowser or similar
-%      [outputMatrix] = buildMatrixFromField(ptbCorgiData,'validTrial') 
-%
-%   2) A session filename (either single or a concatenated session):
-%      [outputMatrix] = buildMatrixFromField('myExp_ppt_20170101.mat','validTrial') 
-%
 %  fieldname: a string identify the field to be extracted. E.g.:
 %             fieldname = 'validTrial';
 %             fieldname = 'isResponseCorrect';
+
+%  There are 3 ways to specify the input data:
+%   1) ptbCorgiData structure as returned by ptbCorgiDataBrowser or similar
+%      [outputMatrix] = buildMatrixFromField('validTrial',ptbCorgiData) 
+%
+%   2) A session filename (either single or a concatenated session):
+%      [outputMatrix] = buildMatrixFromField('validTrial','myExp_ppt_20170101.mat') 
+%
+%   3) Using the contents of a session file:
+%      [nC nT] = buildNafcMatrix('validTrial',sessionInfo,experimentData) 
+%
+
 %
 %  Output:
-%  outputMatrix is a nParticipant x nCondition x nTrial x fieldname size
+%  The output data matrix is sized:
+%  nParticipant x nCondition x nTrial x size of data
+%
+%  If any of the data is missing it is filled with NaN. Therefore when
+%  using the matrix be sure to check for NaN values. 
 
 
 %Load data if we need to.
-ptbCorgiData = overloadOpenPtbCorgiData(ptbCorgiData);
+ptbCorgiData = overloadOpenPtbCorgiData(varargin{:});
 %number of participants to loop over. 
 nParticipants = ptbCorgiData.nParticipants;
 
@@ -55,8 +64,16 @@ for iPpt = 1:nParticipants,
         
         thisExperimentData = thisSortedData(iCond).experimentData;
            
+        if ~isfield(thisExperimentData,fieldname)
+            warning('ptbCorgi:buildmatrix:missingField',...
+                'Skipping Condition %s because it does not contain %s', ...
+                ptbCorgiData.conditionInfo(iCond).label, fieldname)
+            continue;
+        end
+            
         %Now go through each trial
         for iTrial = 1:length(thisExperimentData),
+            
             
             thisField = thisExperimentData(iTrial).(fieldname);
             %Turn thisField into a column vector to simplify concatenating
