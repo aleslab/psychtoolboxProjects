@@ -1,6 +1,6 @@
-function [conditionInfo, expInfo] = lateralLine_gap(expInfo)
+function [conditionInfo, expInfo] = lateralLine_gap_slow(expInfo)
 
-expInfo.paradigmName = 'lateralLine_gap';
+expInfo.paradigmName = 'lateralLine_gap_slow';
 
 expInfo.viewingDistance = 92; %in cm; 92 rounded up, it's 91.7 from the screen to the outer edge of the chin rest
 
@@ -14,13 +14,12 @@ expInfo.fixationInfo(1).lineWidthPix = 1;
 expInfo.fixationInfo(1).size  = .3;
 
 %blocking based on the temporal gaps
-expInfo.randomizationType = 'blocked';
+expInfo.randomizationType = 'random';
 expInfo.conditionGroupingField = 'temporalGap';
 temporalGap = [0 0.5 1];
 
 %velocities
-section2velocity = [0.5 0.75 0.9 1 1.1 1.25 1.5];
-%section2velocity = [10 15 18 20 22 25 30]; %velocities to use in deg/s;
+section2velocity = [1 1.5 1.8 2 2.2 2.5 3]; %velocities to use in deg/s;
 
 iCond = 1; %defining here initially to prevent overwriting
 
@@ -37,7 +36,7 @@ for iGap = 1:length(temporalGap);
         conditionInfo(iCond).type = 'simpleResponse'; %type of task based on ptbCorgi definition
         conditionInfo(iCond).label = ['second_speed_' num2str(section2velocity(iSpeed))];
         %the labels for the levels when viewing in ptbCorgi gui
-        conditionInfo(iCond).nReps = 10; %number of repeats of the level
+        conditionInfo(iCond).nReps = 5; %number of repeats of the level
         conditionInfo(iCond).validKeyNames = {'f','j'};
         %key presses that will be considered valid responses and not keyboard errors
         
@@ -51,10 +50,10 @@ for iGap = 1:length(temporalGap);
         %in seconds that people will have between section 1 and section 2
         
         %velocities
-        conditionInfo(iCond).velocityDegPerSecSection1 = 1;%20 % velocity of section 1 in deg/s. Constant for this exp
+        conditionInfo(iCond).velocityDegPerSecSection1 = 2; %xvelocity of section 1 in deg/s. Constant for this exp
         conditionInfo(iCond).velocityDegPerSecSection2 = section2velocity(iSpeed); %velocity of section 2 in deg/s
         conditionInfo(iCond).gapVelocity = 0; %velocity in deg/s for temporal gap
-        conditionInfo(iCond).startPos = -0.4; %-8 %the start position of the line on the screen in degrees of visual angle.
+        conditionInfo(iCond).startPos = -0.8; %the start position of the line on the screen in degrees of visual angle.
         %Negative = left hand side of the screen.
   
         iCond = iCond+1; %so you don't overwrite the conditions you create with each gap
