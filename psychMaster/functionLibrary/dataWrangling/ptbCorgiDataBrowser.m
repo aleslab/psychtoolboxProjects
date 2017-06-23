@@ -160,7 +160,7 @@ function loadDataInfo(hObject)
 %Load the data from the data directory.
 handles = guidata(hObject);
 
-if isempty(handles.datadir)
+if isempty(handles.datadir) || isequal(handles.datadir,0)
     return
 end
 
@@ -352,7 +352,12 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-dirName = uigetdir();
+lastDir = [];
+if ispref('ptbCorgiDataBrowser','lastDataDir')
+    lastDir = getpref('ptbCorgiDataBrowser','lastDataDir');
+end
+
+dirName = uigetdir(lastDir);
 handles.datadir = dirName;
 setpref('ptbCorgiDataBrowser','lastDataDir',dirName)
 % Update handles structure

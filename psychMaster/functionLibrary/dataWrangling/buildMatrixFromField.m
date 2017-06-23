@@ -6,25 +6,30 @@ function [ outputMatrix ] = buildMatrixFromField(fieldname, varargin )
 %  fieldname: a string identify the field to be extracted. E.g.:
 %             fieldname = 'validTrial';
 %             fieldname = 'isResponseCorrect';
-
-%  There are 3 ways to specify the input data:
+%
+%  There are 4 ways to specify the input data:
 %   1) ptbCorgiData structure as returned by ptbCorgiDataBrowser or similar
 %      [outputMatrix] = buildMatrixFromField('validTrial',ptbCorgiData) 
 %
 %   2) A session filename (either single or a concatenated session):
 %      [outputMatrix] = buildMatrixFromField('validTrial','myExp_ppt_20170101.mat') 
 %
-%   3) Using the contents of a session file:
+%   3) A cell array of session files:
+%      fileList = {'/path/to/data1.mat' ...
+%                    '/path/to/data2.mat' };
+%      [outputMatrix] = buildMatrixFromField('validTrial',fileList);
+%
+%   4) Using the contents of a session file:
 %      [nC nT] = buildNafcMatrix('validTrial',sessionInfo,experimentData) 
 %
-
 %
 %  Output:
 %  The output data matrix is sized:
-%  nParticipant x nCondition x nTrial x size of data
+%  nParticipant x nCondition x nTrial x size of extracted data
 %
 %  If any of the data is missing it is filled with NaN. Therefore when
-%  using the matrix be sure to check for NaN values. 
+%  using the matrix be sure to check for NaN values. Matlab contains
+%  several functions for this for example nanmean, nansum, nanstd
 
 
 %Load data if we need to.

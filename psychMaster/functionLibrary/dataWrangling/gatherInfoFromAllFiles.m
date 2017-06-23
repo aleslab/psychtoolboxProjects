@@ -39,7 +39,7 @@ function [ dataInfo ] = gatherInfoFromAllFiles( toLoad )
 %               sessionGrouping: {1x4 cell}
 
 if isstr(toLoad)
-    fileList = rdir(fullfile(directory,'*.mat'));
+    fileList = rdir(fullfile(toLoad,'*.mat'));
 elseif iscellstr(toLoad)
     %Deal is always a tricky one, here I'm just creating the structure
     %similar to what dir returns.  Just because we use the "isDir" field
