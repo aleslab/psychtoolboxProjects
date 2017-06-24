@@ -6,32 +6,45 @@ function [ ptbCorgiData ] = overloadOpenPtbCorgiData( varargin )
 %  single place and implements multiple ways to load data. It will sort and
 %  organize data to make project level management simpler. 
 %
-%  There are 4 ways to specify the input data:
+%  There are multiple ways to specify the input data:
+%
 %   1) ptbCorgiData structure as returned by ptbCorgiDataBrowser or
-%   similar. This is here to allow people to preload data and not do
-%   anything with it. 
+%   similar. This may seem silly, but it allows people to preload data in
+%   scripts and call multiple functions without repeated loading data. That
+%   enables this one function to be used in many functions to handle data
+%   loading. 
+%
 %      [ptbCorgiData] = overloadOpenPtbCorgiData(ptbCorgiData) 
 %
 %   2) A single session filename (either single or a concatenated session):
-%      [ptbCorgiData] = overloadOpenPtbCorgiData('myExp_ppt_20170101.mat') 
+%      [ptbCorgiData] = overloadOpenPtbCorgiData('myExp_ppt_20170101.mat'); 
 %
 %   3) A cell array of session files:
-%   fileList = {'/path/to/data1.mat' ...
+%      fileList = {'/path/to/data1.mat' ...
 %                    '/path/to/data2.mat' };
 %     [ptbCorgiData] = overloadOpenPtbCorgiData(fileList);
 %
 %   4) Using the contents of a session file:
-%     [ptbCorgiData] = overloadOpenPtbCorgiData(sessionInfo,experimentData)
+%    [ptbCorgiData] = overloadOpenPtbCorgiData(sessionInfo,experimentData);
+%
+%   5) An empty input launches the databrowser GUI:
+%      [ptbCorgiData] = overloadOpenPtbCorgiData();
 %
 %  Output is a ptbCorgiData structure see HELP TO BE WRITTEN for
 %  description
 %
 
+%TODO: Decide if errors should throw errors or return empty arrays. 
 
 thisSortedData =[];
+
 try
     
-    if nargin == 1
+    %Here's a nasty if/else block for dealing with different input arguments. 
+    if nargin == 0 || isempty(varargin{1}) 
+        ptbCorgiData = uiGetPtbCorgiData();
+        return;
+    elseif nargin == 1
         
         %If input is a string try loading it
         if isstr(varargin{1})
@@ -47,13 +60,16 @@ try
         elseif isstruct(varargin{1})
             ptbCorgiData = varargin{1};
             return;
+        else
+            error('ptbCorgi:overloadOpen:incorrectInput','Input is not in a recognized format')
         end
         
     elseif nargin == 2
         sessionInfo = varargin{1};
         experimentData = varargin{2};
         thisSortedData = organizeData(sessionInfo,experimentData);
-        
+    else
+        error('ptbCorgi:overloadOpen:incorrectInput','Input is not in a recognized format')
     end
     
     %Now lets build a ptbCorgiData structure:
@@ -73,12 +89,12 @@ try
     end
     
     %If we've reached this point we haven't created ptbCorgiData. Throw error
-    error('Error loading data')
+    error('Unkown error loading data')
     
-catch ME
+catch ME %This is a silly try/catch block because it doesn't do anything
     rethrow(ME)
-    error('Error loading data')
 end
+
 end
 
 function ptbCorgiData = loadFileList( toLoad)
@@ -133,8 +149,6 @@ if ~any(validParticipantData)
 end
 
 
-
-%%%COPY PASTE%%
 ptbCorgiData.paradigmName         = [dataInfo.paradigmList{:}];
 ptbCorgiData.participantList      = {loadedData(:).participantID};
 ptbCorgiData.participantErrorList = {participantErrors(:).participantID};
