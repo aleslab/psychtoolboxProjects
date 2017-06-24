@@ -27,9 +27,13 @@ function [ outputMatrix ] = buildMatrixFromField(fieldname, varargin )
 %  The output data matrix is sized:
 %  nParticipant x nCondition x nTrial x size of extracted data
 %
+%  For numeric data:
 %  If any of the data is missing it is filled with NaN. Therefore when
 %  using the matrix be sure to check for NaN values. Matlab contains
 %  several functions for this for example nanmean, nansum, nanstd
+%
+%  For string data:
+%  If any of the data is missing it is padded by spaces.
 
 
 %Load data if we need to.
@@ -48,7 +52,7 @@ end
 %trials from the first participant, and first condition.
 nTrialsInit = length(ptbCorgiData.participantData(1).sortedTrialData(1).experimentData);
 outputMatrix = NaN(nParticipants,ptbCorgiData.nConditions,nTrialsInit,1);
-
+allClassNames = {};
 
 for iPpt = 1:nParticipants,
     
@@ -83,6 +87,8 @@ for iPpt = 1:nParticipants,
             thisField = thisExperimentData(iTrial).(fieldname);
             %Turn thisField into a column vector to simplify concatenating
             %possibly different sized matrices together.
+            thisFieldClassName = class(thisField);
+            
             thisField = thisField(:);
             %If our matrix isn't large enough extend it for this data
             if size(outputMatrix,4) < length(thisField);
@@ -103,9 +109,28 @@ for iPpt = 1:nParticipants,
             
             %Finaly put the data into the output matrix.
             outputMatrix(iPpt,iCond,iTrial,1:length(thisField)) = thisField;
+            allClassNames{end+1} = thisFieldClassName;
         end
         
     end
+end
+
+allClassNames = unique(allClassNames);
+
+%if multiple datatypes are encountered result may be correct. But should
+%warn users because it could get funny
+if length(allClassNames)>1
+    warning('ptbCorgi:buildmatrix:diffClass',...
+        'Extracted data had multiple types, take care final data may be unexpected. Loaded types: %s',...
+        allClassNames);
+end
+
+%if we loaded a string or char convert it to a more useful space padded
+%char matrix instead of numeric nan padded
+if strcmp(allClassNames,'char')
+    nanIdx = isnan(outputMatrix(:));
+    outputMatrix(nanIdx) = 32;
+    outputMatrix = char(outputMatrix);
 end
 
 end
