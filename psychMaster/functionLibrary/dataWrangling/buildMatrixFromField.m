@@ -20,12 +20,15 @@ function [ outputMatrix ] = buildMatrixFromField(fieldname, varargin )
 %      [outputMatrix] = buildMatrixFromField('validTrial',fileList);
 %
 %   4) Using the contents of a session file:
-%      [nC nT] = buildNafcMatrix('validTrial',sessionInfo,experimentData) 
+%      [nC nT] = buildMatrixFromField('validTrial',sessionInfo,experimentData) 
 %
 %
 %  Output:
-%  The output data matrix is sized:
-%  nParticipant x nCondition x nTrial x size of extracted data
+%  The output data is a matrix ithat is sized:
+%  
+%  Extracted data size x nTrial x nCondition x nParticipant
+%
+%  If the data to extract is a matrix it is returned as a vector
 %
 %  For numeric data:
 %  If any of the data is missing it is filled with NaN. Therefore when
@@ -51,7 +54,7 @@ end
 %So as a quick and dirty init for now just initialize with the number of
 %trials from the first participant, and first condition.
 nTrialsInit = length(ptbCorgiData.participantData(1).sortedTrialData(1).experimentData);
-outputMatrix = NaN(nParticipants,ptbCorgiData.nConditions,nTrialsInit,1);
+outputMatrix = NaN(1,nTrialsInit,ptbCorgiData.nConditions,nParticipants);
 allClassNames = {};
 
 for iPpt = 1:nParticipants,
@@ -91,7 +94,7 @@ for iPpt = 1:nParticipants,
             
             thisField = thisField(:);
             %If our matrix isn't large enough extend it for this data
-            if size(outputMatrix,4) < length(thisField);
+            if size(outputMatrix,1) < length(thisField);
                 
                 %If it's not the first time through the loop print a
                 %warning if the matrix changes size.
@@ -101,14 +104,14 @@ for iPpt = 1:nParticipants,
                         ptbCorgiData.participantList{iPpt},iCond,iTrial);
                 end
                 
-                sizeNeededToExtend = length(thisField) - size(outputMatrix,4);
-                outputMatrix(:,:,:,end+1:length(thisField)) = ...
-                    NaN(nParticipants,ptbCorgiData.nConditions,size(outputMatrix,3),sizeNeededToExtend);
+                sizeNeededToExtend = length(thisField) - size(outputMatrix,1);
+                outputMatrix(end+1:length(thisField),:,:,:) = ...
+                    NaN(sizeNeededToExtend,size(outputMatrix,2),ptbCorgiData.nConditions,nParticipants);
             end
         
             
             %Finaly put the data into the output matrix.
-            outputMatrix(iPpt,iCond,iTrial,1:length(thisField)) = thisField;
+            outputMatrix(1:length(thisField),iTrial,iCond,iPpt) = thisField;
             allClassNames{end+1} = thisFieldClassName;
         end
         
