@@ -1,6 +1,6 @@
-function [ outputMatrix ] = buildMatrixFromField(fieldname, varargin )
+function [ outputMatrix, dimensionLabels ] = buildMatrixFromField(fieldname, varargin )
 %buildMatrixFromField Extracts ptbCorgi data and organizes it as a matrix
-%function [ outputMatrix ] = buildMatrixFromField( fieldname, [see below] )
+%function [ outputMatrix, dimensionLabels ] = buildMatrixFromField( fieldname, [see below] )
 %   
 %  Input:
 %  fieldname: a string identify the field to be extracted. E.g.:
@@ -24,7 +24,7 @@ function [ outputMatrix ] = buildMatrixFromField(fieldname, varargin )
 %
 %
 %  Output:
-%  The output data is a matrix ithat is sized:
+%  outputMatrix is a matrix ithat is sized:
 %  
 %  Extracted data size x nTrial x nCondition x nParticipant
 %
@@ -37,6 +37,10 @@ function [ outputMatrix ] = buildMatrixFromField(fieldname, varargin )
 %
 %  For string data:
 %  If any of the data is missing it is padded by spaces.
+%
+%  dimensionLabels is a cell array containing labels for outputMatrix
+%  dimensions. Mostly usefull for the condition labels and participantIds.
+%  Dimensions 1 and 2 currently are just vectors as long as the data. 
 
 
 %Load data if we need to.
@@ -71,6 +75,8 @@ for iPpt = 1:nParticipants,
         thisSortedData = ptbCorgiData.participantData(iPpt).sortedTrialData;
     end
     
+    dimensionLabels{4}{iPpt} = ptbCorgiData.participantList{iPpt};
+    
     %Now go through each condition.
     for iCond = 1:ptbCorgiData.nConditions
         
@@ -82,6 +88,7 @@ for iPpt = 1:nParticipants,
                 ptbCorgiData.conditionInfo(iCond).label, fieldname)
             continue;
         end
+            dimensionLabels{3}{iCond} = ptbCorgiData.conditionInfo(iCond).label;
             
         %Now go through each trial
         for iTrial = 1:length(thisExperimentData),
@@ -117,6 +124,9 @@ for iPpt = 1:nParticipants,
         
     end
 end
+
+dimensionLabels{1} = 1:size(outputMatrix,1);
+dimensionLabels{2} = 1:size(outputMatrix,2);
 
 allClassNames = unique(allClassNames);
 
