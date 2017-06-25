@@ -13,8 +13,13 @@ function [ fileList ] = rdir( dirname, subdirLimit )
 %                    This value is locale-dependent.
 
 %Set a default sub directory recursion limit
-if nargin ==1 || isempty(subdirLimit)
+if nargin <=1 || isempty(subdirLimit)
     subdirLimit = 20; 
+end
+
+%If no directory input default to running in current directory.
+if nargin<1 || isempty(dirname)
+    dirname = pwd;
 end
    
 %Because the code is structured to pre-decrement the level we need to add 1
@@ -36,8 +41,8 @@ elseif isdir( fullfile(pathstr) )
     dirname = pathstr;
     fileList = getFileList(dirname,subdirLimit,filterspec);
 else
-    %error('Error finding directory %s',dirname);
-    dirname = pwd;
+    %error('Error finding directory %s',dirname);    
+    fileList = getFileList( dirname,subdirLimit,filterspec);
 end
 
 %fileList = getFileList(dirname,subdirLimit,filterspec);
@@ -51,8 +56,7 @@ end
         fileList = [];
 
         %If we've reached the level limit return.
-        if level < 0 
-            
+        if level < 0             
             warning('ptbCorgi:rdir:recursionLimit','Reached subdirectory recursion limit, skipping %s',dirname);
             return;
         end
@@ -61,8 +65,12 @@ end
         allFileList = dir( dirname );
                 
         thisFileList = dir( fullfile(dirname,filterspec));
+                        
+        validIdx = ~((strcmp({thisFileList(:).name},'.') |  strcmp({thisFileList(:).name},'..')));
         
-        %Make the file list full pathnames. 
+        thisFileList = thisFileList(validIdx);
+        
+        %Make the file list full pathnames.
         %These are two dense lines.  dir just returns the filename of the
         %found files. We want to include the full path so we know what
         %subirectories these files are in. So we're going to prepend the
@@ -77,10 +85,6 @@ end
             [thisFileList.name] = deal(fullFileNames{:});
         end
         
-        
-        validIdx = ~((strcmp({thisFileList(:).name},'.') |  strcmp({thisFileList(:).name},'..')));
-        
-        thisFileList = thisFileList(validIdx);
         
         for iFile = 1 : length(allFileList)
             thisRecurseList = [];
