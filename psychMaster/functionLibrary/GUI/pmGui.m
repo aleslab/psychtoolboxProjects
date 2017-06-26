@@ -239,7 +239,7 @@ if isfield(handles.sessionInfo,'paradigmPath') && ~isempty(handles.sessionInfo.p
 end
 
 [handles.sessionInfo.paradigmFile, handles.sessionInfo.paradigmPath] = ...
-    uigetfile( {'*.m;*.mat','Paradigm Function (*.m) or Session File (*.mat)';}, ...
+    uigetfile( {'*.m;*.mat','Paradigm Function (*.m) or Session File (*.mat)';}, ...        
     'Choose the experimental paradigm file', dirToOpen );
 
 if isequal(handles.sessionInfo.paradigmFile,0)
@@ -282,8 +282,9 @@ try
             ptbCorgiLoadParadigm(handles.sessionInfo.paradigmFile,handles.origExpInfo);
     end
     
-    
-    
+    set(handles.paradigmFileNameBox,'String',handles.sessionInfo.paradigmFile);
+    set(handles.paradigmNameBox,'String',handles.expInfo.paradigmName);
+        
     condNameList = {};
     %% Lets create groups. 
     if isfield(handles.expInfo,'conditionGroupingField')
@@ -310,8 +311,6 @@ try
         end
         
     end
-    
-    
     
     %Now lets order the fieldnames for easy viewing.
     %Putting the Label on top.  This is a bit of a kludgy way to do it
@@ -347,8 +346,6 @@ catch ME
     
     set(handles.condListbox,'String',{});
 end
-
-
 
 
 function participantIdText_Callback(hObject, eventdata, handles)
