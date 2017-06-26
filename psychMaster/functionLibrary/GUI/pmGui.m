@@ -233,8 +233,14 @@ function chooseParadigmBtn_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 
+dirToOpen = pwd;
+if isfield(handles.sessionInfo,'paradigmPath') && ~isempty(handles.sessionInfo.paradigmPath)
+    dirToOpen = handles.sessionInfo.paradigmPath;
+end
+
 [handles.sessionInfo.paradigmFile, handles.sessionInfo.paradigmPath] = ...
-    uigetfile('*.m','Choose the experimental paradigm file',pwd);
+    uigetfile( {'*.m;*.mat','Paradigm Function (*.m) or Session File (*.mat)';}, ...        
+    'Choose the experimental paradigm file', dirToOpen );
 
 if isequal(handles.sessionInfo.paradigmFile,0)
     return;
@@ -271,14 +277,13 @@ try
     
     %Read in the paradigm file if condition info isn't already loaded. 
     if ~isfield(handles,'conditionInfo')
-        [handles.conditionInfo, handles.expInfo] = handles.sessionInfo.paradigmFun(handles.origExpInfo);
+        %[handles.conditionInfo, handles.expInfo] = handles.sessionInfo.paradigmFun(handles.origExpInfo);
+        [handles.conditionInfo, handles.expInfo] =...
+            ptbCorgiLoadParadigm(handles.sessionInfo.paradigmFile,handles.origExpInfo);
     end
     
-    set(handles.paradigmFileNameBox,'String',handles.sessionInfo.paradigmFile);
-    set(handles.paradigmNameBox,'String',handles.expInfo.paradigmName);
     
     
-    handles.conditionInfo = validateConditions(handles.expInfo,handles.conditionInfo);
     condNameList = {};
     for iCond = 1:length(handles.conditionInfo)
        
@@ -301,6 +306,8 @@ try
     orderedCond =  orderfields(orderedCond,newPerm );
     handles.conditionInfo = orderedCond;
     
+    set(handles.paradigmFileNameBox,'String',handles.sessionInfo.paradigmFile);
+    set(handles.paradigmNameBox,'String',handles.expInfo.paradigmName);
     set(handles.condListbox,'String',condNameList);
     
     guidata(hObject,handles)
@@ -321,6 +328,8 @@ catch ME
     
     set(handles.condListbox,'String',{});
 end
+
+
 
 
 function participantIdText_Callback(hObject, eventdata, handles)

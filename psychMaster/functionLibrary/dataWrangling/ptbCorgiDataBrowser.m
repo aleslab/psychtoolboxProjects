@@ -54,7 +54,7 @@ function varargout = ptbCorgiDataBrowser(varargin)
 
 % Edit the above text to modify the response to help ptbCorgiDataBrowser
 
-% Last Modified by GUIDE v2.5 24-Jun-2017 09:01:38
+% Last Modified by GUIDE v2.5 26-Jun-2017 08:32:37
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
