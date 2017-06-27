@@ -254,6 +254,7 @@ if ~isfield(expInfo,'enableAudio')
     expInfo.enableAudio = true;
 end
 
+%TODO: clean up this code. 
 if expInfo.enableAudio
     InitializePsychSound
     
@@ -290,7 +291,6 @@ Screen('BlendFunction', expInfo.curWindow,  GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
 %read the help and the help for ListenChar
 expInfo.useKbQueue = false;
 KbName('UnifyKeyNames');
-expInfo.deviceIndex = [];
 ListenChar(2);
 
 
