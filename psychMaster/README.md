@@ -35,6 +35,7 @@ Add more information to calibration routines to avoid filename ambiguities
 Calibration files now show a computer name.
 Simple response trial type has upgraded keypress handling (e.g. escape aborts)
 expInfo structure documented (mostly)
+Updated keyboard initialization to get keypresses from all devices
 
 
 0.31.0
