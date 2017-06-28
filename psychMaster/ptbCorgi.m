@@ -366,7 +366,7 @@ try
     
     
     if expInfo.useKbQueue
-        KbQueueRelease(expInfo.deviceIndex);
+        KbQueueRelease();
     end
     
     
