@@ -33,6 +33,8 @@ function expInfo = openExperiment( expInfo)
 clear PsychHID;
 clear KbCheck;
 
+%Close psychPortAudio handles if left open by crash
+PsychPortAudio('Close');
 %
 % This is a line that is easily skipped/missed but is important
 % Various default setup options, including color as float 0-1;
@@ -164,13 +166,17 @@ end
 Screen('Preference', 'VisualDebugLevel',2);
 Screen('Preference', 'Verbosity',3);
 
+
 if ~isfield(expInfo,'useBitsSharp')
-    expInfo.useBitsSharp = true;
+    expInfo.useBitsSharp = false;
+end
+
+if ~isfield(expInfo,'enableTriggers')
+    expInfo.enableTriggers = false;
 end
 
 %Now setup bitssharp if requested
 if  expInfo.useBitsSharp
-    
     %Setup taken from BitsPlusPlusIdentityClutTest
      % Setup imaging pipeline:
     PsychImaging('PrepareConfiguration');
@@ -192,6 +198,11 @@ if  expInfo.useBitsSharp
     % method here. After opening the onscreen window, we can set and change
     % encoding gamma via PsychColorCorrection() function...
     PsychImaging('AddTask', 'FinalFormatting', 'DisplayColorCorrection', 'SimpleGamma');
+    
+    %Setup trigger values
+    if expInfo.enableTriggers
+        expInfo.triggerInfo = ptbCorgiTriggerDefault(expInfo);
+    end
     
 end
 

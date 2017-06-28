@@ -12,10 +12,10 @@
 
 e.useBitsSharp = true;
 
-luminanceFile = getpref('ptbCorgi','lumCalibrationFile');
-lumInfo = load(luminanceFile);
-e.gammaTable = lumInfo.gammaTable;
-e.lumCalibInfo = lumInfo;
+% luminanceFile = getpref('ptbCorgi','lumCalibrationFile');
+% lumInfo = load(luminanceFile);
+% e.gammaTable = lumInfo.gammaTable;
+% e.lumCalibInfo = lumInfo;
     
 e = openExperiment(e);
 window = e.curWindow;
@@ -64,7 +64,7 @@ BitsPlusPlus('DIOCommand', window, 1, 2047, dat, 0);
 % Display patch for 3 seconds
 % Note that the blanked Data Packet line will be visible in this example;
 % this is deliberate to show when the Data Packet is being processed.
-disp(['showing ',num2str(3*frameRate),' frames with white patch with a trigger at the beginning of each frame'])
+%disp(['showing ',num2str(3*frameRate),' frames with white patch with a trigger at the beginning of each frame'])
 startTime = GetSecs();
 while prevFlipTime < startTime + 5;
     Screen('FillRect',window, 1, [0 0 200 200]);
@@ -73,6 +73,18 @@ while prevFlipTime < startTime + 5;
 %     Screen('Flip', window);
 
 end
+
+ListenChar(0)
+
+for iBit = 1:10,
+    thisDat = 2^iBit;
+dat = [repmat(thisDat,highTime,1);repmat(bin2dec('00000000000'),lowTime,1)]';
+BitsPlusPlus('DIOCommand', window, 1, 2047, dat, 0); 
+prevFlipTime=Screen('Flip', window);
+dat(1)
+WaitSecs(1);
+end
+
 
 % Revert to grey uniform screen for 3 seconds
 % disp(['showing ',num2str(3*frameRate),' grey frames'])

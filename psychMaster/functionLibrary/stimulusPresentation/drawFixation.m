@@ -1,12 +1,13 @@
 function [expInfo] = drawFixation(expInfo, fixationInfo)
-%function [expInfo] = drawFixation(expInfo, fixationInfo)
+%function [expInfo] = drawFixation(expInfo, [fixationInfo])
 %This function is used to draw fixation markers.
 % Since it is called throughout the experiment it can also be used to draw
 % other things that should be on screen in the intertrial interval. For
 % example we have implemented a frame to aid fixation in the stereo mode.
 %
 % fixationInfo is a structure that can have multiple elements to draw
-% complicated fixation patterns.
+% complicated fixation patterns. If it is not set defaults to using
+% expInfo.fixationInfo
 %
 % 
 % type -  [''] Empty will not draw anything
@@ -42,6 +43,10 @@ function [expInfo] = drawFixation(expInfo, fixationInfo)
 % fixationInfo(1).type = 'cross';
 % fixationInfo(2).type = 'noiseFrame';
 % fixationInfo(2).size = 100;
+
+if nargin ==1
+    fixationInfo = expInfo.fixationInfo;
+end
 
 nElements = length(fixationInfo);
 

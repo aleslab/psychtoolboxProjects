@@ -435,6 +435,9 @@ end;
         %we're going to use a while loop so we can easily add trials for
         %invalid trials.
         
+        ptbCorgiSendTrigger(expInfo,'startRecording')
+        
+        
         %If returnToGui is set that means it's a test trial so set we don't need to show the instructions
         %Only show the instructions if we've run a complete experiment.
         if ~sessionInfo.returnToGui
@@ -456,7 +459,8 @@ end;
         Screen('Flip', expInfo.curWindow);
         
         while iTrial <=length(conditionList)
-            
+     
+    
             validTrialList(iTrial)= true;  %initialize this index variable to keep track of bad/aborted trials
             experimentData(iTrial).validTrial = true;
             feedbackMsg = [];
@@ -466,6 +470,8 @@ end;
             thisBlock = blockList(iTrial);
             
             experimentData(iTrial).blockNumber = thisBlock;
+
+            ptbCorgiSendTrigger(expInfo,'conditionNumber',thisCond)
             
             %Handle randomizing condition fields
             %This changes the conditionInfo structure so is a bit of a
