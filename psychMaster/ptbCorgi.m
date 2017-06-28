@@ -606,10 +606,12 @@ end;
                             if strcmp(experimentData(iTrial).response, conditionInfo(thisCond).correctKey) 
                                 
                                 trialData.audioFeedbackSnd  = [correctBeep; correctBeep];
+                                experimentData(iTrial).feedbackGiven = 'correct';
                                 
                             else
                                 
                                 trialData.audioFeedbackSnd  = [incorrectBeep; incorrectBeep];
+                                experimentData(iTrial).feedbackGiven = 'incorrect';
                                 
                             end
                         

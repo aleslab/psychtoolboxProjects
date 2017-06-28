@@ -60,10 +60,10 @@ for iGap = 1:length(temporalGap);
         iCond = iCond+1; %so you don't overwrite the conditions you create with each gap
     end
     
-    conditionInfo(1).correctKey = 'f';
-    conditionInfo(2).correctKey = 'j';
-    conditionInfo(3).correctKey = 'f';
-    conditionInfo(4).correctKey = 'j';
+    conditionInfo(1).correctKey = 'f'; %first condition is temporal gap 0, 10-5
+    conditionInfo(2).correctKey = 'j';%temporal gap 0 10-15
+    conditionInfo(3).correctKey = 'f';%temporal gap 1 10-5
+    conditionInfo(4).correctKey = 'j';% temporal gap 1 10-15
     
 end
 
