@@ -490,12 +490,7 @@ end;
                 end
             end
             
-            %the beeps that are used for correct or incorrect responses if
-            %audio feedback is turned on
-            correctBeep = MakeBeep(750, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
-            
-            incorrectBeep = MakeBeep(250, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
-                            
+               
             %decide how to display trial depending on what type of trial it is.
             switch lower(conditionInfo(thisCond).type)
                 %generic trials just fire the trial function. Everything is
@@ -546,7 +541,13 @@ end;
                         %them were pressed.
                         numberOfKeysPressed = length(find(trialData.firstPress));
                         
-                        if ~isempty(validKeyIndices) ...
+                        if numberOfKeysPressed > 1 %If more than one key is pressed trial is not valid 
+                            
+                            trialData.validTrial = false;
+                            experimentData(iTrial).validTrial = false;
+                            experimentData(iTrial).response = KbName(trialData.firstPress);
+                        
+                        elseif ~isempty(validKeyIndices) ...
                                 && any( trialData.firstPress( validKeyIndices) )
                             trialData.validTrial = true;
                             experimentData(iTrial).validTrial = true;
@@ -592,26 +593,38 @@ end;
                             trialData.abortNow = true;
                         end
                         
-                        if numberOfKeysPressed > 1
-                            
-                            trialData.validTrial = false;
-                            experimentData(iTrial).validTrial = false;
-                            experimentData(iTrial).response = [];
-                        end
+
                        
-                        %if audio feedback is being used with simple
-                        %response
-                        if experimentData(iTrial).validTrial && conditionInfo(thisCond).giveAudioFeedback
+                        %if user set a correct key let's decide what to do
+                        if ~isempty(conditionInfo(thisCond).correctKey)
                             
-                            if strcmp(experimentData(iTrial).response, conditionInfo(thisCond).correctKey) 
+                            %If any of the correct keys were pressed
+                            if any(strcmp(experimentData(iTrial).response, conditionInfo(thisCond).correctKey))
                                 
-                                trialData.audioFeedbackSnd  = [correctBeep; correctBeep];
-                                experimentData(iTrial).feedbackGiven = 'correct';
+                                %Having two lines for isResponseCorrect is STUPID: JMA
+                                %FIX ASAP.                                
+                                experimentData(iTrial).isResponseCorrect = true;
+                                trialData.isResponseCorrect = true;                                
+                                %feedbackMsg doesn't need an if because it
+                                %is always set in trialData. 
+                                trialData.feedbackMsg = 'Correct';%Consider making this setable by conditionInfo
+                                %Enclosed audio feedback in an if check because
+                                %expInfo.audioInfo does not exist if audio
+                                %is not enabled. 
+                                if conditionInfo(thisCond).giveAudioFeedback                                     
+                                    trialData.audioFeedbackSnd  = expInfo.audioInfo.correctSnd;                                 
+                                end                                
                                 
-                            else
+                            else %No correct keys were pressed
                                 
-                                trialData.audioFeedbackSnd  = [incorrectBeep; incorrectBeep];
-                                experimentData(iTrial).feedbackGiven = 'incorrect';
+                                %Having two lines for isResponseCorrect is STUPID: JMA
+                                %FIX ASAP. 
+                                experimentData(iTrial).isResponseCorrect = false;
+                                trialData.isResponseCorrect = false;                                
+                                trialData.feedbackMsg = 'Incorrect'; %Consider making this setable by conditionInfo
+                                if conditionInfo(thisCond).giveAudioFeedback
+                                    trialData.audioFeedbackSnd  = expInfo.audioInfo.incorrectSnd;                                    
+                                end
                                 
                             end
                         
@@ -621,7 +634,8 @@ end;
                     
                     
                 case '2afc'
-                    
+                    %TODO: Add correctKey specification ala simpleResponse
+                    %above. 
                     %Which trial first?
                     
                     nullFirst = rand()>.5;
@@ -761,15 +775,20 @@ end;
                         if trialData.firstPress(KbName(correctResponse))
                             experimentData(iTrial).isResponseCorrect = true;
                             trialData.isResponseCorrect = true;
-                            trialData.validTrial = true;
+                            trialData.validTrial = true;                            
                             trialData.feedbackMsg = 'Correct';
-                            trialData.audioFeedbackSnd  = [correctBeep; correctBeep];
+                            if conditionInfo(thisCond).giveAudioFeedback
+                               trialData.audioFeedbackSnd  = expInfo.audioInfo.correctSnd;
+                            end
+                            
                         elseif trialData.firstPress(KbName(incorrectResponse))
                             experimentData(iTrial).isResponseCorrect = false;
                             trialData.isResponseCorrect = false;
                             trialData.validTrial = true;
                             trialData.feedbackMsg = 'Incorrect';
-                            trialData.audioFeedbackSnd  = [incorrectBeep; incorrectBeep];
+                            if conditionInfo(thisCond).giveAudioFeedback
+                                trialData.audioFeedbackSnd  = expInfo.audioInfo.incorrectSnd;
+                            end
                         end
                     end
                     
@@ -920,7 +939,7 @@ end;
             elseif conditionInfo(thisCond).giveFeedback ...
                     || conditionInfo(thisCond).giveAudioFeedback
                 
-                
+                experimentData(iTrial).feedbackGiven = trialData.feedbackMsg;   
                 
                 %Draw up the fixation.
                 expInfo = drawFixation(expInfo, expInfo.fixationInfo);

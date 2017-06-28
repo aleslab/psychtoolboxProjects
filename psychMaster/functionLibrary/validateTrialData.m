@@ -27,8 +27,10 @@ nField = size(fieldList,1);
     for iField = 1:nField,
         
         if ~isfield(trialData,fieldList{iField,1})
-            disp(['Trial structure is missing field: "' fieldList{iField,1} '"'...
-                ' setting to default value: "' num2str(fieldList{iField,2}) '"']);
+            %Disable display of warning message because it's not very
+            %useful to end users usually.
+%             disp(['Trial structure is missing field: "' fieldList{iField,1} '"'...
+%                 ' setting to default value: "' num2str(fieldList{iField,2}) '"']);
            trialData.(fieldList{iField,1}) = fieldList{iField,2};
            
            trialData.validateChangedFields = true;
