@@ -58,6 +58,46 @@ if ~isfield(expInfo,'stereoMode')
     expInfo.stereoMode = 0;
 end
 
+%Check if a specific resolution has been requested
+if ~isfield(expInfo,'requestedResolution') || isempty(expInfo.requestedResolution)
+
+    %If the user hasn't requested a resolution let's see if the resolution
+    %preference has been set. 
+    
+    if ispref('ptbCorgi','screenResolution')
+        requestedResolution = getpref('ptbCorgi','resolution');
+    else    
+    %If nothing is set just use the current resolution. 
+    requestedResolution = Screen('resolution',expInfo.screenNum);
+    end
+    
+else     %Now check what is requested.
+
+    resFieldList = {'width','height','pixelSize','hz'};
+    resFieldExist = isfield( expInfo.requestedResolution,resFieldList);
+    
+    for iField = 1:length(resFieldList)
+        
+        %If the field doesn't exist set it to empty.
+        if ~resFieldExist(iField)
+            expInfo.requestedResolution.(resFieldList{iField}) = [];
+        end
+    end
+                   
+    requestedResolution = NearestResolution(expInfo.screenNum,...
+        expInfo.requestedResolution.width,expInfo.requestedResolution.height,...
+        expInfo.requestedResolution.hz,expInfo.requestedResolution.pixelSize);
+    
+end
+
+currentRes =Screen('resolution',expInfo.screenNum);
+
+%If the current resolution is different from what we want change the
+%resolution.
+if ~isequaln(currentRes,requestedResolution)
+    oldres =SetResolution(expInfo.screenNum,requestedResolution);
+end
+
 
 %Default viewing distance
 if ~isfield(expInfo,'viewingDistance')
