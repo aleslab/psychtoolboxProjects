@@ -164,8 +164,12 @@ end
 Screen('Preference', 'VisualDebugLevel',2);
 Screen('Preference', 'Verbosity',3);
 
+if ~isfield(expInfo,'useBitsSharp')
+    expInfo.useBitsSharp = true;
+end
+
 %Now setup bitssharp if requested
-if expInfo.useBitsSharp
+if  expInfo.useBitsSharp
     
     %Setup taken from BitsPlusPlusIdentityClutTest
      % Setup imaging pipeline:
@@ -253,7 +257,7 @@ if isfield(expInfo,'gammaTable')
     if expInfo.useBitsSharp
         %If we are using the bits sharp in mono++ mode
         % Set encoding gamma: It is 1/gamma to compensate for decoding gamma...
-        PsychColorCorrection('SetEncodingGamma', expInfo.curWindow, 1/expInfo.lumCalibInfo.gammaFit);        
+        PsychColorCorrection('SetEncodingGamma', expInfo.curWindow, 1/expInfo.lumCalibInfo.gammaParams);        
     else
         BackupCluts;
         [oldClut sucess]=Screen('LoadNormalizedGammaTable',expInfo.curWindow,expInfo.gammaTable);
