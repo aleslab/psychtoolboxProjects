@@ -490,8 +490,12 @@ end;
                 end
             end
             
+            %the beeps that are used for correct or incorrect responses if
+            %audio feedback is turned on
+            correctBeep = MakeBeep(750, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
             
-            
+            incorrectBeep = MakeBeep(250, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
+                            
             %decide how to display trial depending on what type of trial it is.
             switch lower(conditionInfo(thisCond).type)
                 %generic trials just fire the trial function. Everything is
@@ -594,7 +598,22 @@ end;
                             experimentData(iTrial).validTrial = false;
                             experimentData(iTrial).response = [];
                         end
+                       
+                        %if audio feedback is being used with simple
+                        %response
+                        if experimentData(iTrial).validTrial && conditionInfo(thisCond).giveAudioFeedback
+                            
+                            if strcmp(experimentData(iTrial).response, conditionInfo(thisCond).correctKey) 
+                                
+                                trialData.audioFeedbackSnd  = [correctBeep; correctBeep];
+                                
+                            else
+                                
+                                trialData.audioFeedbackSnd  = [incorrectBeep; incorrectBeep];
+                                
+                            end
                         
+                        end
                     end
                     
                     
@@ -742,14 +761,12 @@ end;
                             trialData.isResponseCorrect = true;
                             trialData.validTrial = true;
                             trialData.feedbackMsg = 'Correct';
-                            correctBeep = MakeBeep(750, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
                             trialData.audioFeedbackSnd  = [correctBeep; correctBeep];
                         elseif trialData.firstPress(KbName(incorrectResponse))
                             experimentData(iTrial).isResponseCorrect = false;
                             trialData.isResponseCorrect = false;
                             trialData.validTrial = true;
                             trialData.feedbackMsg = 'Incorrect';
-                            incorrectBeep = MakeBeep(250, expInfo.audioInfo.beepLength, expInfo.audioInfo.samplingFreq);
                             trialData.audioFeedbackSnd  = [incorrectBeep; incorrectBeep];
                         end
                     end

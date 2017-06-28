@@ -38,6 +38,7 @@ for iGap = 1:length(temporalGap);
         %the labels for the levels when viewing in ptbCorgi gui
         conditionInfo(iCond).nReps = 15; %number of repeats of the level
         conditionInfo(iCond).validKeyNames = {'f','j'};
+        conditionInfo(iCond).giveAudioFeedback = true;
         %key presses that will be considered valid responses and not keyboard errors
         
         %timings
