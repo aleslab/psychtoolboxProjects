@@ -13,8 +13,8 @@ if expInfo.useKbQueue
     %keysOfInterest=zeros(1,256);
     %keysOfInterest(KbName({'f' 'j' 'ESCAPE'}))=1;
     keysOfInterest=ones(1,256);
-    KbQueueCreate(expInfo.deviceIndex, keysOfInterest);
-    KbQueueStart(expInfo.deviceIndex);    
+    KbQueueCreate(expInfo.inputDeviceNumber, keysOfInterest);
+    KbQueueStart(expInfo.inputDeviceNumber);    
     %Flush any events that happend before the end of the trial
     KbQueueFlush();
     
@@ -25,9 +25,9 @@ curTime = GetSecs;
 while curTime<startTime+responseDuration
         
     if expInfo.useKbQueue
-        [ responseData.pressed, responseData.firstPress]=KbQueueCheck(expInfo.deviceIndex);
+        [ responseData.pressed, responseData.firstPress]=KbQueueCheck(expInfo.inputDeviceNumber);
     else
-        [ responseData.pressed, secs, keyCode]=KbCheck(expInfo.deviceIndex);
+        [ responseData.pressed, secs, keyCode]=KbCheck(expInfo.inputDeviceNumber);
         responseData.firstPress = secs*keyCode;
     end
         

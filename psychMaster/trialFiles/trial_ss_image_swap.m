@@ -15,20 +15,6 @@ trialData.validTrial = false;
 trialData.abortNow   = false;
 flipTimes = nan(nTotalCycles,1);
 
-%Now lets setup response gathering
-%KBqueue's are the better way to get responses, quick and accurate but they can be
-%fragile on different systems
-if expInfo.useKbQueue
-    
-    keysOfInterest=zeros(1,256);
-    keysOfInterest(KbName({'f' 'j' 'ESCAPE'}))=1;
-    KbQueueCreate(expInfo.deviceIndex, keysOfInterest);
-    KbQueueStart(expInfo.deviceIndex);
-    
-    KbQueueFlush();
-    
-end
-
 
 %Make all the needed textures
 
