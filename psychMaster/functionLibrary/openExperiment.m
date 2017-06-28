@@ -31,6 +31,7 @@ function expInfo = openExperiment( expInfo)
 %THerefore, I think the nuclear clear all should be elsewhere and carefully
 %considered/tested.
 clear PsychHID;
+clear KbCheck;
 
 %
 % This is a line that is easily skipped/missed but is important
@@ -121,7 +122,7 @@ else
 end
 
 Screen('Preference', 'VisualDebugLevel',2);
-
+Screen('Preference', 'Verbosity',3);
 
 % Set the background to the background value.
 expInfo.bckgnd = 0.5;
@@ -254,6 +255,7 @@ if ~isfield(expInfo,'enableAudio')
     expInfo.enableAudio = true;
 end
 
+%TODO: clean up this code. 
 if expInfo.enableAudio
     InitializePsychSound
     
@@ -283,15 +285,34 @@ Screen('BlendFunction', expInfo.curWindow,  GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
 
 
 
-%Setup some defaults for keyboard interactions. Can be overridden by your
-%experiment.
-%Turn off KbQueue's because they can be fragile on untested systems.
+%Setup some defaults for keyboard interactions. 
+%Turn off KbQueue's because they can be fragile on untested systems. And
+%the code hasn't fully implemented them. 
 %If you need high performance responses turn them on. But be careful and
 %read the help and the help for ListenChar
 expInfo.useKbQueue = false;
 KbName('UnifyKeyNames');
-expInfo.deviceIndex = [];
-ListenChar(2);
+%-3 Merges all connected keypads and keyboards for KbCheck()
+%Negative numbers mean use default keyboard for kbQueueXXX()
+expInfo.inputDeviceNumber = -3;
+expInfo.deviceIndex = expInfo.inputDeviceNumber; %For old fieldname that wasn't clear
+
+%If we're in full screen mode we'll disable keypress mirroring to the
+%matlab window.
+if expInfo.useFullScreen
+    
+    if expInfo.useKbQueue
+        %If using KbQueues need to disable GetChar and use flag -1 to
+        %supress inp
+        ListenChar(0);
+        ListenChar(-1);
+        expInfo.inputDeviceNumber = -3; %Negative numbers mean use default for kbQueue
+    else
+        ListenChar(2); %disable echoing keypress to matlab window
+        expInfo.inputDeviceNumber = -3; 
+    end
+else
+    
 
 
 %If using the powermate find it's handle. 

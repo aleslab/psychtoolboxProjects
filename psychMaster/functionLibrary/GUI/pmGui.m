@@ -239,7 +239,8 @@ if isfield(handles.sessionInfo,'paradigmPath') && ~isempty(handles.sessionInfo.p
 end
 
 [handles.sessionInfo.paradigmFile, handles.sessionInfo.paradigmPath] = ...
-    uigetfile('*.m','Choose the experimental paradigm file',dirToOpen);
+    uigetfile( {'*.m;*.mat','Paradigm Function (*.m) or Session File (*.mat)';}, ...        
+    'Choose the experimental paradigm file', dirToOpen );
 
 if isequal(handles.sessionInfo.paradigmFile,0)
     return;
@@ -276,14 +277,14 @@ try
     
     %Read in the paradigm file if condition info isn't already loaded. 
     if ~isfield(handles,'conditionInfo')
-        [handles.conditionInfo, handles.expInfo] = handles.sessionInfo.paradigmFun(handles.origExpInfo);
+        %[handles.conditionInfo, handles.expInfo] = handles.sessionInfo.paradigmFun(handles.origExpInfo);
+        [handles.conditionInfo, handles.expInfo] =...
+            ptbCorgiLoadParadigm(handles.sessionInfo.paradigmFile,handles.origExpInfo);
     end
     
     set(handles.paradigmFileNameBox,'String',handles.sessionInfo.paradigmFile);
     set(handles.paradigmNameBox,'String',handles.expInfo.paradigmName);
-    
-    
-    handles.conditionInfo = validateConditions(handles.expInfo,handles.conditionInfo);
+        
     condNameList = {};
     %% Lets create groups. 
     if isfield(handles.expInfo,'conditionGroupingField')
@@ -310,8 +311,6 @@ try
         end
         
     end
-    
-    
     
     %Now lets order the fieldnames for easy viewing.
     %Putting the Label on top.  This is a bit of a kludgy way to do it

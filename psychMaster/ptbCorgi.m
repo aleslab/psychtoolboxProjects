@@ -141,7 +141,7 @@ thisFile = mfilename('fullpath');
 
 %Check if path is correct, if not try and fix it.
 if ~checkPath()
-    disp('<><><><><><> PSYCH MASTER <><><><><><><>')
+    disp('<><><><><><> PTBCORGI <><><><><><><>')
     setupPath();
     if ~checkPath()
         disp('PATH NOT CORRECT!  Attempts to fix failed!  ABORTING!')
@@ -265,17 +265,17 @@ try
     if ispref('ptbCorgi','sizeCalibrationFile');
         sizeFile = getpref('ptbCorgi','sizeCalibrationFile');
         if ~exist(sizeFile,'file')
-            disp('<><><><><><> PSYCH MASTER <><><><><><><>')
+            disp('<><><><><><> PTBCORGI <><><><><><><>')
             disp(['Cannot find calibration file: ' sizeFile])
         else
             sizeCalibInfo = load(sizeFile); %loads the variable sizeCalibInfo
             expInfo.monitorWidth = sizeCalibInfo.monitorWidth;
             expInfo.sizeCalibInfo = sizeCalibInfo;
-            disp('<><><><><><> PSYCH MASTER <><><><><><><>')
+            disp('<><><><><><> PTBCORGI <><><><><><><>')
             disp(['Loading Size Calibration from: ' sizeFile])
         end
     else
-        disp('<><><><><><> PSYCH MASTER <><><><><><><>')
+        disp('<><><><><><> PTBCORGI <><><><><><><>')
         disp('NO SIZE CALIBRATION HAS BEEN SETUP. Guessing monitor size')
         
     end
@@ -284,24 +284,29 @@ try
     if ispref('ptbCorgi','lumCalibrationFile');
         luminanceFile = getpref('ptbCorgi','lumCalibrationFile');
         if ~exist(luminanceFile,'file') %a calibration is set but doesn't exist.
-            disp('<><><><><><> PSYCH MASTER <><><><><><><>')
+            disp('<><><><><><> PTBCORGI <><><><><><><>')
             disp(['Cannot find calibration file: ' luminanceFile])
             
         else %we found the file, now load it.
             lumInfo = load(luminanceFile);
-            disp('<><><><><><> PSYCH MASTER <><><><><><><>')
+            disp('<><><><><><> PTBCORGI <><><><><><><>')
             disp(['Loading Size Calibration from: ' luminanceFile])
             expInfo.gammaTable = lumInfo.gammaTable;
             expInfo.lumCalibInfo = lumInfo;
         end
     else
-        disp('<><><><><><> PSYCH MASTER <><><><><><><>')
+        disp('<><><><><><> PTBCORGI <><><><><><><>')
         disp('NO LUMINANCE CALIBRATION HAS BEEN SETUP. Using Identiy LUT')
         
     end
     
     
     sessionInfo.gitHash = ptbCorgiGitHash();
+    
+    %Note: Any field added to expInfo before pmGui() is called will be used
+    %when opening a paradigm from a session file.  If you don't want these
+    %fields used look in ptbCorgiLoadParadigm() and add the field to the
+    %fieldsToRemove{} list.
     
     %loop to enable firing single conditions for testing, could also be
     %extended to multiple blocks in the future.
@@ -314,6 +319,7 @@ try
         return;
     end
     
+    sessionInfo.expInfoFromParadigmFile = expInfo;
     
     %Now lets begin the experiment and loop over the conditions to show.
     expInfo = openExperiment(expInfo);
@@ -360,7 +366,7 @@ try
     
     
     if expInfo.useKbQueue
-        KbQueueRelease(expInfo.deviceIndex);
+        KbQueueRelease();
     end
     
     
