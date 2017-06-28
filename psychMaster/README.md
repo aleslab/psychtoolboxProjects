@@ -15,6 +15,7 @@ Add some hashing functions to detect changes.
 
 Version History
 0.32.0
+Renamed to ptbCorgi
 Started project management framework for data analysis: 
    added function ptbCorgiAnalyzeEachParticipant() that will execute arbitrary 
    analayses on all participants in an experiment

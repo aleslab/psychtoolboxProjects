@@ -65,11 +65,12 @@ if isfield(expInfo, 'randomizationType')
 end
 
 %
-if isfield(expInfo, 'randomizationOptions')        
+if isfield(expInfo, 'randomizationOptions')  && ~isempty(expInfo.randomizationOptions)      
     %Old style
      if isfield(expInfo.randomizationOptions,'blockConditionsByField')
          expInfo.trialRandomization.blockByField = expInfo.randomizationOptions.blockConditionsByField;
      end
+     
      
      expInfo.trialRandomization = updateStruct(expInfo.trialRandomization, expInfo.randomizationOptions);                
 end
