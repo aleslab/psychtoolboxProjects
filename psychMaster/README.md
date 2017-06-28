@@ -34,8 +34,9 @@ Added Condition groups to ptbCorgi gui.
 Add more information to calibration routines to avoid filename ambiguities
 Calibration files now show a computer name.
 Simple response trial type has upgraded keypress handling (e.g. escape aborts)
+Simple response upgraded to allow defintion of the "correct" key press for each condition. 
 expInfo structure documented (mostly)
-Updated keyboard initialization to get keypresses from all devices
+Updated keyboard initialization to get keypresses from all devices when using KbCheck()
 
 
 0.31.0
