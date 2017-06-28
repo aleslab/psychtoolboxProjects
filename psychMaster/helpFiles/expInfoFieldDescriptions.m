@@ -67,8 +67,13 @@ function [ output_args ] = expInfoFieldDescriptions( input_args )
 %expInfo.enableAudio - [boolean] If true initializes PsychPortAudio
 %expInfo.audioInfo   - [struct] Contains info for audio DOCUMENTATION NEEDED
 %
-%expInfo.useKbQueue - [boolean] !Experimental! because kbqueue's cannot be mixed
-%                       this flag is used to switch keypress to KbQueue
+%expInfo.inputDeviceNumber - [scalar] Device number see
+%                             GetKeyboardIndices(), KbCheck(),
+%                             KbEventGet(), KbQueueCheck() for more details
+%                             on how device numbers are used. 
+%expInfo.useKbQueue - [boolean] !Not Complete! because kbqueue's cannot be mixed
+%                       this flag is used to choose between KbQueue and
+%                       KbCheck
 %
 %expInfo.currentTrial - [struct] Contains info about current trial. Useful
 %                       for aborted sessions. 
