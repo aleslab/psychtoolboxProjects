@@ -1,27 +1,43 @@
-# psychMaster
+# ptbCorgi
 a wrapper that takes care of all the common psychtoolbox tasks.
 This enables new paradigms to be easily implemented and tracked.
 
 
 todo:
-Add more information to calibration routines to avoid filename ambiguities
+
 Cleanup the condition inspector. Make it draw in the same place. Or something
 that makes it work a little more intuitively. 
 Issue #7 Create an automatic format to create paradigms
-Add a check for if psychmaster changed from last run and warn user.  
+Add a check for if ptbCorgi changed from last run and warn user.  
 Add a convenience function for creating a group of conditions.  
 Add some hashing functions to detect changes. 
-Change randomization structure to be more user friendly
+
 
 Version History
 0.32.0
+Renamed to ptbCorgi
 Started project management framework for data analysis: 
    added function ptbCorgiAnalyzeEachParticipant() that will execute arbitrary 
    analayses on all participants in an experiment
 Added convience function build2AfcMatrix() that returns a simple matrix 
+Added new buildMatrixFromField to extract any fieldname from datasets and return a matrix
 Made automatic setting up of the matlab path more robust
 Enables warnings for matlab legacy random number generators. 
+Change randomization structure to be more user friendly. Now specified 
+   using single trialRandomization structure. Old structure format still 
+   works but new way is tidier, see help makeTrialList for details
 Added new randomization blocking options
+ptbCorgiDataBrowser now recursively loads files in subdirectories as well.
+ptbCorgiDataBrowser can now generate code for loading data that can be copy/pasted into scripts
+Updated overloadOpenPtbCorgiData to handle cell arrays of filenames.
+Added Condition groups to ptbCorgi gui.
+Add more information to calibration routines to avoid filename ambiguities
+Calibration files now show a computer name.
+Simple response trial type has upgraded keypress handling (e.g. escape aborts)
+Simple response upgraded to allow defintion of the "correct" key press for each condition. 
+expInfo structure documented (mostly)
+Updated keyboard initialization to get keypresses from all devices when using KbCheck()
+
 
 0.31.0
 Switched to semantic version numbering
