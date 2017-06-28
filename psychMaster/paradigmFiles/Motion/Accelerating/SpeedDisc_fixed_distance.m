@@ -51,8 +51,7 @@ end
 %balanced catch - response to longer duration = 0% correct; response to longer
 %distance = 100% correct; response to speed = 50% correct
 conditionInfo(8) = conditionInfo(1);
-conditionInfo(8).stimDurationSection2 = 0.750; %different so that duration is longer; 
-%attempt to catch use of distance as cue. 
+conditionInfo(8).stimDurationSection2 = 0.750;%not actually 0.750 - 1.070 due to way it is coded.
 conditionInfo(8).fixedDistance = true;
 conditionInfo(8).velocityCmPerSecSection2 = -40;
 conditionInfo(8).label = [ condStimTypes{iCond} '_catch_fixed_speed_long_duration'];

@@ -312,7 +312,16 @@ if expInfo.enableAudio
     audioInfo.pahandle = [];%PsychPortAudio('Open', [], 1, 1, audioInfo.samplingFreq, audioInfo.nOutputChannels);
     audioInfo.postFeedbackPause = 0.25;
     thisBeep = MakeBeep(500, audioInfo.beepLength, audioInfo.samplingFreq);
-    audioInfo.intervalBeep = [thisBeep; thisBeep];
+    audioInfo.intervalBeep = repmat(thisBeep,audioInfo.nOutputChannels,1);
+    %the beeps that are used for correct or incorrect responses if
+    %audio feedback is turned on
+    thisBeep = MakeBeep(750, audioInfo.beepLength, audioInfo.samplingFreq);    
+    audioInfo.correctSnd = repmat(thisBeep,audioInfo.nOutputChannels,1);
+    thisBeep = MakeBeep(250, audioInfo.beepLength, audioInfo.samplingFreq);
+    audioInfo.incorrectSnd = repmat(thisBeep,audioInfo.nOutputChannels,1);
+    
+             
+    
     audioInfo.pahandle = PsychPortAudio('Open', [], [], 0, [], 2);
     expInfo.audioInfo = audioInfo;
     

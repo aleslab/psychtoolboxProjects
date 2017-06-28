@@ -1,6 +1,7 @@
 function [ outputMatrix, dimensionLabels ] = buildMatrixFromField(fieldname, varargin )
 %buildMatrixFromField Extracts ptbCorgi data and organizes it as a matrix
 %function [ outputMatrix, dimensionLabels ] = buildMatrixFromField( fieldname, [see below] )
+
 %   
 %  Input:
 %  fieldname: a string identify the field to be extracted. E.g.:
@@ -88,7 +89,9 @@ for iPpt = 1:nParticipants,
                 ptbCorgiData.conditionInfo(iCond).label, fieldname)
             continue;
         end
+
             dimensionLabels{3}{iCond} = ptbCorgiData.conditionInfo(iCond).label;
+
             
         %Now go through each trial
         for iTrial = 1:length(thisExperimentData),
