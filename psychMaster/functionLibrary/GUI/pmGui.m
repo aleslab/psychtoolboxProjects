@@ -296,8 +296,8 @@ try
         groupLabels = getGroupLabels(handles.conditionInfo, handles.expInfo.conditionGroupingField);
         
     else
-        groupingIndices = 1:length(handles.conditionInfo);
-        condIndices = groupingIndices;
+        groupingIndices{1} = 1:length(handles.conditionInfo);
+        condIndices = groupingIndices{1};
         groupLabels = {'No Groups Defined'}
     end
     
