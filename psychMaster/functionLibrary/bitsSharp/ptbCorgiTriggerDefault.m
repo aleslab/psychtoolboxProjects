@@ -12,7 +12,7 @@ end
 %Define bit values for messages
 triggerInfo.startRecording = 2^8;
 triggerInfo.startTrial     = 1;
-triggerInfo.ssvepClock     = 2^9;
+triggerInfo.toggleBit      = 2^9;
 triggerInfo.messageBits    = 2^7-1; %Bits to enable for use as arbitrary messages
 
 %Allow user specified values to overwrite defaults.
