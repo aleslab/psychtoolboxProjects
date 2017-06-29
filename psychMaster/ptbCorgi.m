@@ -435,7 +435,8 @@ end;
         %we're going to use a while loop so we can easily add trials for
         %invalid trials.
         
-        ptbCorgiSendTrigger(expInfo,'startRecording')
+        ptbCorgiSendTrigger(expInfo,'clear',true);%First clear DIO status.
+        ptbCorgiSendTrigger(expInfo,'startRecording',true);%Now trigger recording start
         
         
         %If returnToGui is set that means it's a test trial so set we don't need to show the instructions
@@ -471,7 +472,9 @@ end;
             
             experimentData(iTrial).blockNumber = thisBlock;
 
-            ptbCorgiSendTrigger(expInfo,'conditionNumber',thisCond)
+            %Send a trigger now indicating the condition number for
+            %upcoming trial.
+            dioLog(iTrial).condTriggerTime= ptbCorgiSendTrigger(expInfo,'conditionNumber',true,thisCond);%
             
             %Handle randomizing condition fields
             %This changes the conditionInfo structure so is a bit of a

@@ -9,20 +9,20 @@
 % [window, screenRect] = PsychImaging('OpenWindow', whichScreen, 0.5, [], 32, 2);
 % frameRate=Screen('NominalFrameRate', window);
 % PsychColorCorrection('SetEncodingGamma', window, 1/2.1);     
-
-e.useBitsSharp = true;
-
+clear e;
 % luminanceFile = getpref('ptbCorgi','lumCalibrationFile');
 % lumInfo = load(luminanceFile);
 % e.gammaTable = lumInfo.gammaTable;
 % e.lumCalibInfo = lumInfo;
-    
+
+e.useBitsSharp = true;
+e.enableTriggers = true;
 e = openExperiment(e);
 window = e.curWindow;
 % highTime = 24.0; % time to be high in the beginning of the frame (in 100 us steps = 0.1 ms steps)
 % lowTime = 24.8-highTime; % followed by x msec low (enough to fill the rest of the frame high + low = 24.8 ms)
 
-highTime = 90; % time to be high in the beginning of the frame (in 100 us steps = 0.1 ms steps)
+highTime = 20; % time to be high in the beginning of the frame (in 100 us steps = 0.1 ms steps)
 lowTime = 248-highTime; % followed by x msec low (enough to fill the rest of the frame high + low = 24.8 ms)
 
 % Prepare data packets for trigering on the digital outputs (the bits are
@@ -55,9 +55,9 @@ lowTime = 248-highTime; % followed by x msec low (enough to fill the rest of the
 %BitsPlusPlus('DIOCommand', window, (3*frameRate), 2047, dat, 0);
 %BitsPlusPlus('DIOCommand', window, 1, 2047, dat, 0);
 
-
+mask = 2047;
 prevFlipTime=Screen('Flip', window);
-BitsPlusPlus('DIOCommand', window, 1, 2047, dat, 0);
+BitsPlusPlus('DIOCommand', window, 1, mask, dat, 0);
 
 % Show a white patch at the same time as the trigger.
 % Show it on the top left of the screen as this is updated first.
@@ -69,22 +69,22 @@ startTime = GetSecs();
 while prevFlipTime < startTime + 5;
     Screen('FillRect',window, 1, [0 0 200 200]);
     prevFlipTime = Screen('Flip', window,prevFlipTime+1);
-%     BitsPlusPlus('DIOCommand', window, 1, 2047, dat0, 0);
+%     BitsPlusPlus('DIOCommand', window, 1, mask, dat0, 0);
 %     Screen('Flip', window);
 
 end
 
 ListenChar(0)
 
-for iBit = 1:10,
-    thisDat = 2^iBit;
-dat = [repmat(thisDat,highTime,1);repmat(bin2dec('00000000000'),lowTime,1)]';
-BitsPlusPlus('DIOCommand', window, 1, 2047, dat, 0); 
-prevFlipTime=Screen('Flip', window);
-dat(1)
-WaitSecs(1);
-end
-
+% for iBit = 1:10,
+%     thisDat = 2^iBit;
+% dat = [repmat(thisDat,highTime,1);repmat(bin2dec('00000000000'),lowTime,1)]';
+% BitsPlusPlus('DIOCommand', window, 1, mask, dat, 0); 
+% prevFlipTime=Screen('Flip', window);
+% dat(1)
+% WaitSecs(1);
+% end
+% 
 
 % Revert to grey uniform screen for 3 seconds
 % disp(['showing ',num2str(3*frameRate),' grey frames'])

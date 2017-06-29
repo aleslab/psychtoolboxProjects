@@ -20,10 +20,10 @@ highTime = 20; % time to be high in the beginning of the frame
 lowTime = 248-highTime; % followed by x msec low (enough to fill the rest of the frame high + low = 24.8 ms)
 
 maskNone = 2^11-1; %Use all bits. 
-maskToggle = bitand( maskNone,expInfo.triggerInfo.toggleBit);
+maskToggle = bitand( maskNone,bitcmp(expInfo.triggerInfo.toggleBit,'uint16'));
 
 mask = maskToggle; %Default mask the toggle, that way other triggers don't set it. 
-switch lower(varargin{1})
+switch lower(command)
     
     case {'clear','alllow','init','initialize'}
         
@@ -36,20 +36,29 @@ switch lower(varargin{1})
         triggerValue = expInfo.triggerInfo.startRecording;        
         disp(['sending startRecording trigger value: ' num2str(triggerValue)]);
         
-    case 'conditionnumber'        
-        triggerValue = varargin{3};
+    case 'conditionnumber' %Currently just sends the raw bits, but may change in future      
+        triggerValue = varargin{1};
         disp(['sending conditionNumber trigger value: ' num2str(triggerValue)]);
+
+    case 'raw'         
+        triggerValue = varargin{1};
+        disp(['sending raw trigger value: ' num2str(triggerValue)]);
         
     case 'togglebit'        
-        toggleBitState = ~toggleBitState
-        triggerValue = expInfo.triggerInfo.toggleBit*(toggleBitState)
-        mask = bitcmp(maskToggle); %Mask everything but the toggle bit.
-         
+        if isempty(toggleBitState)
+            toggleBitState = 0;
+            warning('togglebit state undefined setting to 1');
+        end
+        toggleBitState = ~toggleBitState;
+        triggerValue = expInfo.triggerInfo.toggleBit*(toggleBitState);
+        mask = bitcmp(maskToggle,'uint16'); %Mask everything but the toggle bit.
+        highTime=248;
+        lowTime = 0;
 
 end
 
 
-pulseDef = [repmat(triggerValue,highTime,1);repmat(bin2dec('00000000000'),lowTime,1)]';
+pulseDef = [repmat(triggerValue,highTime,1);repmat(0,lowTime,1)]';
 BitsPlusPlus('DIOCommand', expInfo.curWindow, 1, mask, pulseDef, 0);
 
 
