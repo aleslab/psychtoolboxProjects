@@ -165,6 +165,7 @@ if ~exist('sessionInfo','var') || isempty(sessionInfo)
     %  sessionInfo.participantID = input('What is the participant ID:  ','s');
     %store the date. use: datestr(sessionInfo.sessionDate) to make human readable
     sessionInfo.sessionDate = now;
+    sessionInfo.sessionDateHuman = datestr(sessionInfo.sessionDate,'YYYY-MM-DD hh:mm PM');
     sessionInfo.ptbCorgiVer = ptbCorgiVer;
     sessionInfo.participantID = 'null';
     sessionInfo.tag           = '';
@@ -319,7 +320,7 @@ try
         return;
     end
     
-    sessionInfo.expInfoFromParadigmFile = expInfo;
+    sessionInfo.expInfoBeforeOpenExperiment = expInfo;
     
     %Now lets begin the experiment and loop over the conditions to show.
     expInfo = openExperiment(expInfo);
