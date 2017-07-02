@@ -1,10 +1,24 @@
 function [ conditionInfo, expInfo ] = ptbCorgiLoadParadigm( paradigmFile, expInfo )
 %ptbCorgiLoadParadigm Load ptbCorgi paradigm definition
-%   Detailed explanation goes here
+%   [ conditionInfo, expInfo ] = ptbCorgiLoadParadigm( [see help text] )
+%
+%Implements loading paradigm files from multiple formats:
+%
+%Examples:
+%1) Paradigm Function:
+%If the paradigm is defined using a function you can pass in either a
+%handle to the function or the name of the m file that defines the
+%function:
+%[ conditionInfo, expInfo ] = ptbCorgiLoadParadigm(@ParadigmFunction)
+%[ conditionInfo, expInfo ] = ptbCorgiLoadParadigm('ParadigmFunction.m')
+%
+%2) Session File:
+%If the paradigm if 
+%[ conditionInfo, expInfo ] = ptbCorgiLoadParadigm('sessionFile.mat')
 
 
 
-%If wwe pass in a character array it can either be an m file or a mat file
+%If we pass in a character array it can either be an m file or a mat file
 if ischar(paradigmFile)
     
     if ~exist(paradigmFile,'file')
@@ -75,8 +89,8 @@ elseif strcmpi(fileExt,'.mat')
         
         %If we have this field the session files have the expInfo as set by
         %the paradigm file before openExperiment adds its defaults.
-        if isfield(loadedFile.sessionInfo,'expInfoFromParadigmFile')        
-            pdgmExpInfo = loadedFile.sessionInfo.expInfoFromParadigmFile;             
+        if isfield(loadedFile.sessionInfo,'expInfoBeforeOpenExperiment')        
+            pdgmExpInfo = loadedFile.sessionInfo.expInfoBeforeOpenExperiment;             
         else %
             pdgmExpInfo = loadedFile.sessionInfo.expInfo;
             warning('ptbCorgi:loadParadigm:oldSession',...

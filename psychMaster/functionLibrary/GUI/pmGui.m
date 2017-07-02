@@ -22,7 +22,7 @@ function varargout = pmGui(varargin)
 
 % Edit the above text to modify the response to help pmGui
 
-% Last Modified by GUIDE v2.5 07-Jun-2017 12:24:31
+% Last Modified by GUIDE v2.5 30-Jun-2017 08:44:57
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -56,8 +56,7 @@ function pmGui_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 if length(varargin)>0
     handles.sessionInfo = varargin{1};
-    handles.expInfo = varargin{2};
-    handles.origExpInfo = varargin{2};
+    handles.expInfo = varargin{2};    
     if length(varargin) ==3
         handles.conditionInfo = varargin{3};
     end
@@ -157,6 +156,13 @@ else
     
 end
 
+% %If an experiment window is active remove the saving button
+% if isfield(handles.expInfo,'curWindow')
+% set(handles.saveParadigmBtn,'visible','off')
+% end
+if isfield(handles.sessionInfo,'paradigmEditedByUser') && handles.sessionInfo.paradigmEditedByUser
+    set(handles.saveParadigmBtn,'enable','on')
+end
 
 % Update handles structure
 guidata(hObject, handles);
@@ -279,7 +285,7 @@ try
     if ~isfield(handles,'conditionInfo')
         %[handles.conditionInfo, handles.expInfo] = handles.sessionInfo.paradigmFun(handles.origExpInfo);
         [handles.conditionInfo, handles.expInfo] =...
-            ptbCorgiLoadParadigm(handles.sessionInfo.paradigmFile,handles.origExpInfo);
+            ptbCorgiLoadParadigm(handles.sessionInfo.paradigmFile,handles.expInfo);
     end
     
     set(handles.paradigmFileNameBox,'String',handles.sessionInfo.paradigmFile);
@@ -310,6 +316,9 @@ try
             condNameList{iCond} = func2str(handles.conditionInfo(iCond).trialFun);
         end
         
+        %Lets add condition number to label:
+        condNameList{iCond} = [num2str(iCond,'%.2d') ': '  condNameList{iCond}];
+        
     end
     
     %Now lets order the fieldnames for easy viewing.
@@ -327,6 +336,9 @@ try
     
     set(handles.condListbox,'String',condNameList(condIndices));
     set(handles.condGroupListbox,'String',groupLabels);
+    set(handles.condGroupListbox,'Value',1)
+    set(handles.condListbox,'Value',1);
+    set(handles.saveParadigmBtn,'enable','off'); %Since we just loaded the file disable save as. 
     
     guidata(hObject,handles)
     
@@ -485,15 +497,21 @@ if ~isempty( changedFieldList )
     editedConditionInfo.label = ['*' editedConditionInfo.label '*']
     %Finaly update the conditionInfo
     handles.conditionInfo(selectedCondition) = editedConditionInfo;
+    handles.sessionInfo.paradigmEditedByUser=true;    
+    set(handles.saveParadigmBtn,'enable','on');
     
     %and Mark the condition as changed
     condNameList=get(handles.condListbox,'String');
     condNameList{selectedCondition} = editedConditionInfo.label;
     set(handles.condListbox,'String',condNameList);
     
+    set(handles.saveParadigmBtn,'enable','on');
     guidata(hObject,handles)
 end
 
+%Because of the condition groups the selected condition is not the real
+%index into the conditionInfo structure. This function gets the
+%conditionInfo index of the selected condition.
 function conditionIndex = getConditionIndex(handles)
     
     groupIndex     = get(handles.condGroupListbox,'Value');
@@ -574,4 +592,80 @@ function condGroupListbox_CreateFcn(hObject, eventdata, handles)
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in saveParadigmBtn.
+function saveParadigmBtn_Callback(hObject, eventdata, handles)
+% hObject    handle to saveParadigmBtn (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+dirToOpen = pwd;
+if isfield(handles.sessionInfo,'paradigmPath') && ~isempty(handles.sessionInfo.paradigmPath)
+    dirToOpen = handles.sessionInfo.paradigmPath;
+end
+
+[saveName, savePath] = ...
+    uiputfile('*.mat','Save experimental paradigm',dirToOpen);
+
+fullSaveFile = fullfile(savePath,saveName);
+if isequal(handles.sessionInfo.paradigmFile,0)
+    return;
+end
+
+addedInfo.tag = 'Saved by ptbCorgi GUI';
+
+if isfield(handles.sessionInfo,'expInfoBeforeOpenExperiment')
+    expInfoToSave = handles.sessionInfo.expInfoBeforeOpenExperiment;
+else
+    expInfoToSave= handles.expInfo;
+end
+
+ptbCorgiSaveParadigmAsMat(expInfoToSave,handles.conditionInfo,fullSaveFile,addedInfo);
+
+
+% --- Executes on button press in editExpInfoBtn.
+function editExpInfoBtn_Callback(hObject, eventdata, handles)
+% hObject    handle to editExpInfoBtn (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+%If we've executed openExperiment() let's not use the full expInfo 
+if isfield(handles.sessionInfo,'expInfoBeforeOpenExperiment')
+    expInfoBeforeEdit = handles.sessionInfo.expInfoBeforeOpenExperiment;
+else
+    expInfoBeforeEdit = handles.expInfo;
+end
+
+[hPropsPane, editedExpInfo] =propertiesGUI( expInfoBeforeEdit,[]);
+
+%Check if any fields were changed.  Do a bit of cleaning.
+%The editor can provide strings instead of numbers.  In most cases we want
+%a number. Therefore if the string is a valid number lets replace it. 
+%Also, check to see if the "label" field was changed.  If it was update the
+%GUI
+changedFieldList = findStructDifferences(expInfoBeforeEdit, editedExpInfo);
+
+if ~isempty( changedFieldList )
+    for iChanged = 1:length(changedFieldList)
+        
+        thisValue = editedExpInfo.(changedFieldList{iChanged});
+        if isstr(thisValue)
+            [thisValue2Num,OK]=str2num(thisValue);
+            if OK
+                editedExpInfo.(changedFieldList(iChanged)) = thisValue2Num;
+            end
+        end
+        
+    end
+    
+    %Finaly update the conditionInfo
+    handles.expInfo.editedByUser=true; 
+    handles.expInfo = updateStruct(handles.expInfo, editedExpInfo);
+    handles.sessionInfo.paradigmEditedByUser=true;
+    if ~isfield(handles.expInfo,'curWindow')
+        set(handles.saveParadigmBtn,'enable','on');
+    end
+    guidata(hObject,handles)
 end
