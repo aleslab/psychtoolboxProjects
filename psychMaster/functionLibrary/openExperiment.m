@@ -53,6 +53,15 @@ if ~isfield(expInfo,'screenNum')
     expInfo.screenNum = max(Screen('Screens'));
 end
 
+%If a window shielding level is set use it
+%This setting is used to make the window semi transparent to facilitate
+%development of stimuli.
+if isfield(expInfo,'windowShieldingLevel')
+    Screen('Preference', 'WindowShieldingLevel', expInfo.windowShieldingLevel);
+else    
+    Screen('Preference', 'WindowShieldingLevel', 2000);
+end
+
 %Default is mono mode
 if ~isfield(expInfo,'stereoMode')
     expInfo.stereoMode = 0;

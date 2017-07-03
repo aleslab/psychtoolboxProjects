@@ -130,8 +130,6 @@ function [] = ptbCorgi(sessionInfo)
 
 %Initial setup
 
-ptbCorgiVer = '0.32.0-dev';
-
 thisFile = mfilename('fullpath');
 [thisDir, ~, ~] = fileparts(thisFile);
 
@@ -166,7 +164,7 @@ if ~exist('sessionInfo','var') || isempty(sessionInfo)
     %store the date. use: datestr(sessionInfo.sessionDate) to make human readable
     sessionInfo.sessionDate = now;
     sessionInfo.sessionDateHuman = datestr(sessionInfo.sessionDate,'YYYY-MM-DD hh:mm PM');
-    sessionInfo.ptbCorgiVer = ptbCorgiVer;
+    sessionInfo.ptbCorgiVer = ptbCorgiVersion();
     sessionInfo.participantID = 'null';
     sessionInfo.tag           = '';
     [~,ptbVerStruct]=PsychtoolboxVersion;
@@ -262,45 +260,7 @@ end
 
 try
     
-    %Load size calibration:
-    if ispref('ptbCorgi','sizeCalibrationFile');
-        sizeFile = getpref('ptbCorgi','sizeCalibrationFile');
-        if ~exist(sizeFile,'file')
-            disp('<><><><><><> PTBCORGI <><><><><><><>')
-            disp(['Cannot find calibration file: ' sizeFile])
-        else
-            sizeCalibInfo = load(sizeFile); %loads the variable sizeCalibInfo
-            expInfo.monitorWidth = sizeCalibInfo.monitorWidth;
-            expInfo.sizeCalibInfo = sizeCalibInfo;
-            disp('<><><><><><> PTBCORGI <><><><><><><>')
-            disp(['Loading Size Calibration from: ' sizeFile])
-        end
-    else
-        disp('<><><><><><> PTBCORGI <><><><><><><>')
-        disp('NO SIZE CALIBRATION HAS BEEN SETUP. Guessing monitor size')
-        
-    end
-    
-    %Load luminance calibration:
-    if ispref('ptbCorgi','lumCalibrationFile');
-        luminanceFile = getpref('ptbCorgi','lumCalibrationFile');
-        if ~exist(luminanceFile,'file') %a calibration is set but doesn't exist.
-            disp('<><><><><><> PTBCORGI <><><><><><><>')
-            disp(['Cannot find calibration file: ' luminanceFile])
-            
-        else %we found the file, now load it.
-            lumInfo = load(luminanceFile);
-            disp('<><><><><><> PTBCORGI <><><><><><><>')
-            disp(['Loading Size Calibration from: ' luminanceFile])
-            expInfo.gammaTable = lumInfo.gammaTable;
-            expInfo.lumCalibInfo = lumInfo;
-        end
-    else
-        disp('<><><><><><> PTBCORGI <><><><><><><>')
-        disp('NO LUMINANCE CALIBRATION HAS BEEN SETUP. Using Identiy LUT')
-        
-    end
-    
+  
     
     sessionInfo.gitHash = ptbCorgiGitHash();
     
@@ -308,6 +268,7 @@ try
     %when opening a paradigm from a session file.  If you don't want these
     %fields used look in ptbCorgiLoadParadigm() and add the field to the
     %fieldsToRemove{} list.
+    expInfo = struct();
     
     %loop to enable firing single conditions for testing, could also be
     %extended to multiple blocks in the future.
