@@ -747,7 +747,7 @@ elseif handles.expInfo.useFullScreen
 else
     set(handles.useTranslucentRadioBtn,'value',1);
     set(handles.useOpaqueRadioBtn,'value',0);
-    handles.expInfo.windowShieldingLevel = 1750;
+    handles.expInfo.windowShieldingLevel = 1850;
 end       
 
 
@@ -781,7 +781,7 @@ function windowAlphaBtnGrp_SelectionChangedFcn(hObject, eventdata, handles)
 if get(handles.useOpaqueRadioBtn,'value')==1,
     handles.expInfo.windowShieldingLevel=2000;
 else
-    handles.expInfo.windowShieldingLevel=1750;
+    handles.expInfo.windowShieldingLevel=1850;
 end
 
 guidata(hObject,handles);

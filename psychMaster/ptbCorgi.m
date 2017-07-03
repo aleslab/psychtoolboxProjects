@@ -949,6 +949,13 @@ end
             %If we're running a test condition return to the gui without
             %saving. This enables us to quickly debug code.
             if sessionInfo.returnToGui
+                
+                %Check if we crashed Screen and if so re-open the
+                %window. 
+                if isempty(Screen('Windows')) 
+                    expInfo = openExperiment(sessionInfo.expInfoBeforeOpenExperiment);
+                end
+                
                 message = getReport(exception); %Get formated report
                 fprintf(2,message); %Display the error. Trick way to make it red. 
                 return;
