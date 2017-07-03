@@ -11,12 +11,17 @@ ptbCorgiSendTrigger(expInfo,'raw',1,2^3+2^5); %Send a trigger now
 prevFlip = t;
 while prevFlip < t+trialDuration
     
+    ptbCorgiSendTrigger(expInfo,'raw',0,55); %Schedule a toggle trigger for next flip
     ptbCorgiSendTrigger(expInfo,'togglebit',0); %Schedule a toggle trigger for next flip
+ 
+   
     Screen('fillrect',expInfo.curWindow,0,stimulusRect)
     prevFlip=Screen('flip',expInfo.curWindow,prevFlip+period/2+expInfo.ifi/2);
 
     
     Screen('fillrect',expInfo.curWindow,1,stimulusRect)
+    ptbCorgiSendTrigger(expInfo,'raw',0,413); %Schedule a toggle trigger for next flip
+ 
     ptbCorgiSendTrigger(expInfo,'togglebit',0)
     prevFlip=Screen('flip',expInfo.curWindow,prevFlip+period/2+expInfo.ifi/2);
 

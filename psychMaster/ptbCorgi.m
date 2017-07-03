@@ -474,7 +474,7 @@ end;
 
             %Send a trigger now indicating the condition number for
             %upcoming trial.
-            dioLog(iTrial).condTriggerTime= ptbCorgiSendTrigger(expInfo,'conditionNumber',true,thisCond);%
+            ptbCorgiSendTrigger(expInfo,'conditionNumber',true,thisCond);%
             
             %Handle randomizing condition fields
             %This changes the conditionInfo structure so is a bit of a
