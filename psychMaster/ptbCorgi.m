@@ -258,7 +258,7 @@ end
 
 
 
-try
+
     
   
     
@@ -296,7 +296,7 @@ try
     %Initialize experiment data, this makes sure the experiment data
     %scope spans all the subfunctions.
     experimentData = struct();
-    %This function handles everything for the experimental trials.
+    %This function handles everything for the experimental trials.    
     mainExperimentLoop();
     
     %If returnToGui is TRUE we ran a test trial and want the gui to pop-up
@@ -338,35 +338,7 @@ try
     cleanupPtbCorgi();
     
     
-    
-catch exception
-    
-    %JMA: Fix this to gracefully release KbQueue's on error
-    %Need to do the following but we may not have expInfo in the event of an error.
-    %So we will just call to release all queue's that exist.
-    KbQueueRelease();
-    
-    
-    
-    
-    
-    if exist('experimentData','var') && ~isempty(experimentData)
-        disp('Attempting to save data')
-        sessionInfo.exception = exception;
-        sessionInfo.report = getReport(exception);
-        sessionInfo.psychlasterror = psychlasterror;
-        sessionInfo.sessionCompleted = false;
-        saveResults();
-    end
-    
-    
-    closeExperiment;
-    cleanupPtbCorgi();
-    disp('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    disp('!!!!!   Experiment Shutdown Due to Error          !!!!!!!!')
-    rethrow(exception);
-    %psychrethrow(psychlasterror);
-end;
+
 
 
 %This is the main guts of ptbCorgi. It handles all the experimental
@@ -375,6 +347,7 @@ end;
 %code and to enable easier GUI control of trials
     function mainExperimentLoop()
         
+        try
         conditionInfo = validateConditions(expInfo,conditionInfo);
         
         %Contains the information in conditionInfo before trials start that
@@ -968,6 +941,40 @@ end;
             
         end %End while loop for showing trials.
         
+     
+            
+        catch exception
+            
+            
+            %If we're running a test condition return to the gui without
+            %saving. This enables us to quickly debug code.
+            if sessionInfo.returnToGui
+                message = getReport(exception); %Get formated report
+                fprintf(2,message); %Display the error. Trick way to make it red. 
+                return;
+            end
+            %JMA: Fix this to gracefully release KbQueue's on error
+            %Need to do the following but we may not have expInfo in the event of an error.
+            %So we will just call to release all queue's that exist.
+            KbQueueRelease();
+            
+            if exist('experimentData','var') && ~isempty(experimentData)
+                disp('Attempting to save data')
+                sessionInfo.exception = exception;
+                sessionInfo.report = getReport(exception);
+                sessionInfo.psychlasterror = psychlasterror;
+                sessionInfo.sessionCompleted = false;
+                saveResults();
+            end
+            
+            
+            closeExperiment;
+            cleanupPtbCorgi();
+            disp('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+            disp('!!!!!   Experiment Shutdown Due to Error          !!!!!!!!')
+            rethrow(exception);
+            %psychrethrow(psychlasterror);
+        end
         
     end
 
