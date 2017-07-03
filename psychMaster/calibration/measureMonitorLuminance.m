@@ -1,4 +1,4 @@
-function [luminanceCalibInfo] = measureMonitorLuminance(inverseGamma)
+function [luminanceCalibInfo] = measureMonitorLuminance(luminanceCalibInfo)
 % Shows how to make measurements using the ColorCAL II CDC interface.
 % This script calls several other separate functions which are included
 % below.
@@ -34,8 +34,9 @@ samples = 1;
 % Obtains the XYZ colour correction matrix specific to the ColorCAL II
 % being used, via the CDC port. This is a separate function (see further
 % below in this script).
-cMatrix = ColorCal2Serial('ReadColorMatrix');
-%cMatrix = ColorCal2('ReadColorMatrix');
+%cMatrix = ColorCal2Serial('ReadColorMatrix');
+  clear ColorCal2;
+cMatrix = ColorCal2('ReadColorMatrix');
 
 myCorrectionMatrix = cMatrix(1:3,:);
 
@@ -45,31 +46,39 @@ myCorrectionMatrix = cMatrix(1:3,:);
 
 try
 %Open a window
+expInfo.useBitsSharp = true;
 
-expInfo = openExperiment();
-%[oldClut, dacBits, lutSize] = Screen('ReadNormalizedGammaTable', expInfo.screenNum);
-BackupCluts;
-%If given a gamma table use it.
 if nargin>0
-    fullTable = repmat(inverseGamma,1,3);
-    [oldClut sucess]=Screen('LoadNormalizedGammaTable',expInfo.curWindow,fullTable);
-else
-    oldClut = LoadIdentityClut(expInfo.curWindow);
+    expInfo.lumCalibInfo = luminanceCalibInfo;
+    expInfo.gammaTable   = luminanceCalibInfo.gammaTable;
 end
+
+expInfo = openExperiment(expInfo);
+%[oldClut, dacBits, lutSize] = Screen('ReadNormalizedGammaTable', expInfo.screenNum);
+% BackupCluts;
+% 
+% %If given a gamma table use it.
+% if nargin>0
+%     fullTable = repmat(inverseGamma,1,3);
+%     [oldClut sucess]=Screen('LoadNormalizedGammaTable',expInfo.curWindow,fullTable);
+% else
+%     oldClut = LoadIdentityClut(expInfo.curWindow);
+% end
 
 Screen('TextSize',expInfo.curWindow, 14);
 
 Screen('Flip', expInfo.curWindow);
 
-nValues = 64;
+nValues = 8;
 displayValues = linspace(0,1,nValues)'*[1 1 1]; %linear algebra here to replicate the matrix
 averageMeasurement = zeros(nValues,3);
 
 for iValue = 1:nValues
     % Cycle through each sample.
     
+    iValue
     Screen('FillRect',expInfo.curWindow,displayValues(iValue,:));
-    DrawFormattedText(expInfo.curWindow, num2str(iValue),0,0,[255, 0, 0, 255]);
+    DrawFormattedText(expInfo.curOverlay, num2str(iValue),0,0,[1]);
 
     Screen('Flip',expInfo.curWindow);
     % Pause for approximately .25 second to allow sufficient time for the
@@ -85,9 +94,9 @@ for iValue = 1:nValues
                
         % Ask the ColorCAL II to take a measurement. It will return 3 values.
         % This is a separate function (see further below in this script).
-        s = ColorCal2Serial('MeasureXYZ');
-   %clear ColorCal2;
-    %  s = ColorCal2('MeasureXYZ');
+        %s = ColorCal2Serial('MeasureXYZ')
+     clear ColorCal2;
+      s = ColorCal2('MeasureXYZ');
 
         correctedValues = myCorrectionMatrix * [s.x s.y s.z]';
         % The returned values need to be multiplied by the ColorCAL II's
@@ -116,9 +125,9 @@ end
     luminanceCalibInfo.expInfo = expInfo;
     luminanceCalibInfo.allCIExyY = allCIExyY;
     luminanceCalibInfo.meanCIExyY = averageMeasurement; 
-    luminanceCalibInfo.oldClut = oldClut;
-    luminanceCalibInfo.clutSize = size(oldClut,1);
-    
+%     luminanceCalibInfo.oldClut = oldClut;
+%     luminanceCalibInfo.clutSize = size(oldClut,1);
+%     
 % %     %type = 1 is Fit a simple power function
 % %     [gammaFit,gammaInputFit,fitComment,gammaParams]=FitDeviceGamma(CIExyY,displayValues(:,1),1,luminanceCalibInfo.clutSize);
 % %     
