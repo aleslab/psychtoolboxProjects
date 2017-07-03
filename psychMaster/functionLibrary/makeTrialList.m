@@ -30,14 +30,18 @@ function [trialList, blockList] = makeTrialList(expInfo,conditionInfo)
 %  blockList  = [ones(size(trialList))]  A list indentifying which (if any)
 %               block the trial belongs to. Should be monotonicly increasing.
 %
-%  Example:
+%  Examples:
+%  The default is just to present trials in random order, which corresponds
+%  to:
+%  expInfo.trialRandomization.type = 'random';
+%
 %  Say we have an experiment with 5 total conditions organized in 2 groups:
 %  1,2,3 are 10% contrast, 4,5 are 50% contrast, and each condition is set
 %  to repeat 2 times (nReps=2)  The following code would present block
 %  using contrast:
 %
-%  expInfo.trialRandomization.type = 'blocked'
-%  expInfo.trialRandomization.blockByField = 'contrast'
+%  expInfo.trialRandomization.type = 'blocked';
+%  expInfo.trialRandomization.blockByField = 'contrast';
 %  expInfo.trialRandomization.nBlockReps   = 2;
 %
 %  Result in a trial order, for example:
@@ -49,8 +53,8 @@ function [trialList, blockList] = makeTrialList(expInfo,conditionInfo)
 %              random we define all trials as block 1.
 
 %  This code is currently fairly kludgy.  Just looping and building lists
-%  of trials.  Which is starting to make it grow a bit cumbersome. At some point think about implementing more elegant
-%  permutation code. -JMA
+%  of trials.  Which is starting to make it grow a bit cumbersome. At some
+%  point think about implementing more elegant permutation code. -JMA
 %
 
 nConditions = length(conditionInfo);
@@ -61,11 +65,12 @@ if isfield(expInfo, 'randomizationType')
 end
 
 %
-if isfield(expInfo, 'randomizationOptions')        
+if isfield(expInfo, 'randomizationOptions')  && ~isempty(expInfo.randomizationOptions)      
     %Old style
      if isfield(expInfo.randomizationOptions,'blockConditionsByField')
          expInfo.trialRandomization.blockByField = expInfo.randomizationOptions.blockConditionsByField;
      end
+     
      
      expInfo.trialRandomization = updateStruct(expInfo.trialRandomization, expInfo.randomizationOptions);                
 end

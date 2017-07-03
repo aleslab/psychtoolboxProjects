@@ -1,9 +1,34 @@
-function [ dataInfo ] = gatherInfoFromAllFiles( directory )
+function [ dataInfo ] = gatherInfoFromAllFiles( toLoad )
 %gatherInfoFromAllFiles Gathers information about  ptbCorgi datafiles 
 %
-%[dataInfo] = gatherInfoFromAllFiles( directory )
-% %d = 
+%[dataInfo] = gatherInfoFromAllFiles( toLoad )
 % 
+% This function parses and organize sessions from a load of data files.
+% It's used to organize files and group things together.
+%
+% Input:
+%
+% There are 2 ways to specify what files to load:
+%     1) toLoad can be a directory. In which case all data files in the
+%        directory and subdirectories are loaded in.
+%    
+%        Example:
+%        [dataInfo] = gatherInfoFromAllFiles( '/path/to/data' )
+%
+%     2) toLoad can be a cell array of filenames. In which case all the
+%     data files are loaded.
+%
+%        Example:
+%        fileList = {'/path/to/data1.mat' ...
+%                    '/path/to/data2.mat' };
+%        [dataInfo] = gatherInfoFromAllFiles( fileList )
+%
+% Output:
+%
+% This function returns a structure with many fields that provide
+% information for organizing data:
+% ***REMIND US TO describe these they are somewhat explanatory, but might not
+% make sense to people***
 %        participantSessionList: {1x4 cell}
 %     byParticipantParadigmName: {1x4 cell}
 %                     fileNames: {1x49 cell}
@@ -13,7 +38,18 @@ function [ dataInfo ] = gatherInfoFromAllFiles( directory )
 %               participantList: {1x4 cell}
 %               sessionGrouping: {1x4 cell}
 
-fileList = dir(fullfile(directory,'*.mat'));
+if isstr(toLoad)
+    fileList = rdir(fullfile(toLoad,'*.mat'));
+elseif iscellstr(toLoad)
+    %Deal is always a tricky one, here I'm just creating the structure
+    %similar to what dir returns.  Just because we use the "isDir" field
+    %below.  It's quicker for me to do this now, but it can be hard for
+    %people to read the line. 
+    [fileList(1:length(toLoad)).name] = deal(toLoad{:});
+    [fileList.isdir] = deal(false);
+else
+    error('ptbCorgi:gatherInfo:inputError', 'error using function, input must either be a string or cell array of strings');    
+end
 
 %This is the list of fields to read in from each session file.
 fieldsToGather = { ...
@@ -36,11 +72,11 @@ for iFile = 1:length(fileList),
         continue;
     end
     
-    thisFile = fullfile(directory,fileList(iFile).name);
-    
+    thisFile = fileList(iFile).name;
+    [thisPath thisName thisExt] = fileparts(thisFile);
     %skip unix world hidden files
-    if strncmp(thisFile,'.',1)
-        display(['skipping folder: ' thisFile])
+    if strncmp(thisName,'.',1)
+        display(['skipping file: ' thisFile])
         continue;
     end
     
@@ -80,14 +116,14 @@ for iFile = 1:length(fileList),
             allSessionInfo(idx).paradigmName = func2str( sessionInfo.paradigmFun );
         end
         
-        [thisPath thisName thisExt] = fileparts(thisFile);
+       
         allSessionInfo(idx).dataFileFullPath = thisFile;
         
         allSessionInfo(idx).dataFileName = [thisName thisExt];
         allSessionInfo(idx).dataFilePath = thisPath;
         idx = idx+1;
         atLeastOneFileLoaded = true;
-    catch
+    catch ME
         continue
     end
     

@@ -22,7 +22,7 @@ function varargout = pmGui(varargin)
 
 % Edit the above text to modify the response to help pmGui
 
-% Last Modified by GUIDE v2.5 14-Feb-2017 11:31:18
+% Last Modified by GUIDE v2.5 03-Jul-2017 09:10:57
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -56,8 +56,7 @@ function pmGui_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 if length(varargin)>0
     handles.sessionInfo = varargin{1};
-    handles.expInfo = varargin{2};
-    handles.origExpInfo = varargin{2};
+    handles.expInfo = varargin{2};    
     if length(varargin) ==3
         handles.conditionInfo = varargin{3};
     end
@@ -68,9 +67,11 @@ guidata(hObject, handles);
 
 %When the GUI is active we should enable the keyboard and the mouse
 ListenChar(0);
+
 if isfield(handles.expInfo, 'screenNum')
     ShowCursor(handles.expInfo.screenNum);
 end
+
 
 if ispref('ptbCorgi','lastParadigmFile')
     lastParadigmFile = getpref('ptbCorgi','lastParadigmFile');
@@ -117,16 +118,42 @@ handles.sessionInfo.tag = lastSessionTag;
 infoString = [  'v' handles.sessionInfo.ptbCorgiVer ' git SHA: ' handles.sessionInfo.gitHash(1:7)];
 set(handles.versionInfoTextBox,'String',infoString);
 
+
+handles.expInfo = ptbCorgiLoadCalibrationInfo(handles.expInfo);
+updateCalibrationInfoPanel(handles);
+
+% %If an experiment window is active remove the saving button
+% if isfield(handles.expInfo,'curWindow')
+% set(handles.saveParadigmBtn,'visible','off')
+% end
+if isfield(handles.sessionInfo,'paradigmEditedByUser') && handles.sessionInfo.paradigmEditedByUser
+    set(handles.saveParadigmBtn,'enable','on')
+end
+
+%If we have a handle to curWindow we are runnning an active session
+if isfield(handles.expInfo,'curWindow')
+    disableGuiElementsWhenWindowActive(handles);
+end
+
+
+% Update handles structure
+guidata(hObject, handles);
+movegui('northeast');
+%set(handles.runExperimentBtn, 'Value', 1); 
+uicontrol(handles.runExperimentBtn) 
+% UIWAIT makes pmGui wait for user response (see UIRESUME)
+uiwait(handles.pmGuiParentFig);
+
+function []=updateCalibrationInfoPanel(handles)
+
 %Report the size calibration status.
+%TODO Unify montior size guessing!
 if ~isfield(handles.expInfo, 'sizeCalibInfo')
    set(handles.sizeCalibLoadText,'String','Size Calibration Not Loaded');
    set(handles.sizeCalibLoadText,'BackgroundColor',[1 .2 .2]);
-   screenNum = max(Screen('Screens'));
-   [w, h]=Screen('DisplaySize',screenNum);
-   monitorWidth = w/10; %Convert to cm from mm
     
    set(handles.monWidthText,'String',...
-       ['Guessing Monitor Width: ' num2str(monitorWidth) ' cm']);
+       ['Guessing Monitor Width: ' num2str(handles.expInfo.monitorWidth) ' cm']);
    set(handles.sizeCalibDateText,'String',['']);
 
 
@@ -156,16 +183,6 @@ else
         ['Measured On: ' dateString]);
     
 end
-
-
-% Update handles structure
-guidata(hObject, handles);
-movegui('northeast');
-%set(handles.runExperimentBtn, 'Value', 1); 
-uicontrol(handles.runExperimentBtn) 
-% UIWAIT makes pmGui wait for user response (see UIRESUME)
-uiwait(handles.pmGuiParentFig);
-
 
 % --- Outputs from this function are returned to the command line.
 function varargout = pmGui_OutputFcn(hObject, eventdata, handles) 
@@ -233,8 +250,14 @@ function chooseParadigmBtn_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 
+dirToOpen = pwd;
+if isfield(handles.sessionInfo,'paradigmPath') && ~isempty(handles.sessionInfo.paradigmPath)
+    dirToOpen = handles.sessionInfo.paradigmPath;
+end
+
 [handles.sessionInfo.paradigmFile, handles.sessionInfo.paradigmPath] = ...
-    uigetfile('*.m','Choose the experimental paradigm file',pwd);
+    uigetfile( {'*.m;*.mat','Paradigm Function (*.m) or Session File (*.mat)';}, ...        
+    'Choose the experimental paradigm file', dirToOpen );
 
 if isequal(handles.sessionInfo.paradigmFile,0)
     return;
@@ -271,15 +294,31 @@ try
     
     %Read in the paradigm file if condition info isn't already loaded. 
     if ~isfield(handles,'conditionInfo')
-        [handles.conditionInfo, handles.expInfo] = handles.sessionInfo.paradigmFun(handles.origExpInfo);
+        %[handles.conditionInfo, handles.expInfo] = handles.sessionInfo.paradigmFun(handles.origExpInfo);
+        [handles.conditionInfo, handles.expInfo] =...
+            ptbCorgiLoadParadigm(handles.sessionInfo.paradigmFile,handles.expInfo);
     end
     
     set(handles.paradigmFileNameBox,'String',handles.sessionInfo.paradigmFile);
     set(handles.paradigmNameBox,'String',handles.expInfo.paradigmName);
-    
-    
-    handles.conditionInfo = validateConditions(handles.expInfo,handles.conditionInfo);
+        
     condNameList = {};
+    %% Lets create groups. 
+    if isfield(handles.expInfo,'conditionGroupingField')
+        [ groupingIndices condIdex2GroupIndex ] = ...
+            groupConditionsByField( handles.conditionInfo, handles.expInfo.conditionGroupingField );
+        %Default to showing the first group 
+        condIndices = groupingIndices{1};
+        
+        groupLabels = getGroupLabels(handles.conditionInfo, handles.expInfo.conditionGroupingField);
+        
+    else
+        groupingIndices{1} = 1:length(handles.conditionInfo);
+        condIndices = groupingIndices{1};
+        groupLabels = {'No Groups Defined'}
+    end
+    
+       
     for iCond = 1:length(handles.conditionInfo)
        
         if ~isempty(handles.conditionInfo(iCond).label) %if there's a label use it
@@ -287,6 +326,9 @@ try
         else %otherwise create a generic label
             condNameList{iCond} = func2str(handles.conditionInfo(iCond).trialFun);
         end
+        
+        %Lets add condition number to label:
+        condNameList{iCond} = [num2str(iCond,'%.2d') ': '  condNameList{iCond}];
         
     end
     
@@ -300,24 +342,44 @@ try
     newPerm =[labelIdx;  notLabelIdx];
     orderedCond =  orderfields(orderedCond,newPerm );
     handles.conditionInfo = orderedCond;
+    handles.condNameList = condNameList;
+    handles.groupingIndices = groupingIndices;
     
-    set(handles.condListbox,'String',condNameList);
+    [~,~,ext] = fileparts(handles.sessionInfo.paradigmFile);
+   
+    if strcmpi(ext,'.m')
+        set(handles.editParadigmFileMenu,'enable','on')
+    else
+        set(handles.editParadigmFileMenu,'enable','off')
+    end
     
+    set(handles.editSelectedTrialFileMenu,'enable','on');
+    set(handles.condListbox,'String',condNameList(condIndices));
+    set(handles.condGroupListbox,'String',groupLabels);
+    set(handles.condGroupListbox,'Value',1)
+    set(handles.condListbox,'Value',1);
+    set(handles.saveParadigmBtn,'enable','off'); %Since we just loaded the file disable save as. 
+    handles = setupWindowSettings(handles); %Gui data is a very confusing passing handles back and forth makes more sense
     guidata(hObject,handles)
+
+    
     
     
     
 catch ME
-    disp('<><><><><><> PSYCH MASTER <><><><><><><>')
+    disp('<><><><><><> PTBCORGI <><><><><><><>')
     disp('ERROR Loading Paradigm File, check your paradigm file')
     disp('The following report should help diagnose what is wrong:')
     disp(' ')
-    disp(getReport(ME, 'basic'))
+    disp(getReport(ME))
     
     handles.sessionInfo.paradigmFile = '';
     handles.expInfo.paradigmName = '';
     set(handles.paradigmFileNameBox,'String',handles.sessionInfo.paradigmFile);
     set(handles.paradigmNameBox,'String',handles.expInfo.paradigmName);
+    
+    set(handles.editSelectedTrialFileMenu,'enable','off');
+    set(handles.editParadigmFileMenu,'enable','off');
     
     set(handles.condListbox,'String',{});
 end
@@ -407,7 +469,10 @@ function inspectConditionBtn_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-selectedCondition = get(handles.condListbox,'Value');
+%selectedCondition = get(handles.condListbox,'Value');
+%to implement grouping we need to abstract the condition index outside of
+%the listbox:
+selectedCondition = getConditionIndex(handles);
 
 diffFieldNameList = {};
 
@@ -436,6 +501,8 @@ end
 changedFieldList = findStructDifferences(handles.conditionInfo(selectedCondition), editedConditionInfo);
 
 if ~isempty( changedFieldList )
+    handles.sessionInfo.paradigmEditedByUser=true;
+    
     for iChanged = 1:length(changedFieldList)
         
         thisValue = editedConditionInfo.(changedFieldList{iChanged});
@@ -451,20 +518,32 @@ if ~isempty( changedFieldList )
             condNameList=get(handles.condListbox,'String');
             condNameList{selectedCondition} = thisValue;
             set(handles.condListbox,'String',condNameList);
-        end
+        end  
     end
     
     editedConditionInfo.label = ['*' editedConditionInfo.label '*']
     %Finaly update the conditionInfo
-    handles.conditionInfo(selectedCondition) = editedConditionInfo;
+    handles.conditionInfo(selectedCondition) = editedConditionInfo; 
+    set(handles.saveParadigmBtn,'enable','on');
     
     %and Mark the condition as changed
     condNameList=get(handles.condListbox,'String');
     condNameList{selectedCondition} = editedConditionInfo.label;
     set(handles.condListbox,'String',condNameList);
     
+    set(handles.saveParadigmBtn,'enable','on');
     guidata(hObject,handles)
 end
+
+%Because of the condition groups the selected condition is not the real
+%index into the conditionInfo structure. This function gets the
+%conditionInfo index of the selected condition.
+function conditionIndex = getConditionIndex(handles)
+    
+    groupIndex     = get(handles.condGroupListbox,'Value');
+    condListIndex  = get(handles.condListbox,'Value');
+    conditionIndex = handles.groupingIndices{groupIndex}(condListIndex);
+    
 
 
 
@@ -512,3 +591,291 @@ function sessionTagText_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on selection change in condGroupListbox.
+function condGroupListbox_Callback(hObject, eventdata, handles)
+% hObject    handle to condGroupListbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns condGroupListbox contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from condGroupListbox
+groupIndex = get(hObject,'Value');
+
+condIndices = handles.groupingIndices{groupIndex};
+
+set(handles.condListbox,'String',handles.condNameList(condIndices));
+set(handles.condListbox,'Value',1);
+
+% --- Executes during object creation, after setting all properties.
+function condGroupListbox_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to condGroupListbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in saveParadigmBtn.
+function saveParadigmBtn_Callback(hObject, eventdata, handles)
+% hObject    handle to saveParadigmBtn (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+dirToOpen = pwd;
+if isfield(handles.sessionInfo,'paradigmPath') && ~isempty(handles.sessionInfo.paradigmPath)
+    dirToOpen = handles.sessionInfo.paradigmPath;
+end
+
+[saveName, savePath] = ...
+    uiputfile('*.mat','Save experimental paradigm',dirToOpen);
+
+fullSaveFile = fullfile(savePath,saveName);
+if isequal(handles.sessionInfo.paradigmFile,0)
+    return;
+end
+
+addedInfo.tag = 'Saved by ptbCorgi GUI';
+
+if isfield(handles.sessionInfo,'expInfoBeforeOpenExperiment')
+    expInfoToSave = handles.sessionInfo.expInfoBeforeOpenExperiment;
+else
+    expInfoToSave= handles.expInfo;
+end
+
+ptbCorgiSaveParadigmAsMat(expInfoToSave,handles.conditionInfo,fullSaveFile,addedInfo);
+
+
+% --- Executes on button press in editExpInfoBtn.
+function editExpInfoBtn_Callback(hObject, eventdata, handles)
+% hObject    handle to editExpInfoBtn (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+%If we've executed openExperiment() let's not use the full expInfo 
+if isfield(handles.sessionInfo,'expInfoBeforeOpenExperiment')
+    expInfoBeforeEdit = handles.sessionInfo.expInfoBeforeOpenExperiment;
+else
+    expInfoBeforeEdit = handles.expInfo;
+end
+
+[hPropsPane, editedExpInfo] =propertiesGUI( expInfoBeforeEdit,[]);
+
+%Check if any fields were changed.  Do a bit of cleaning.
+%The editor can provide strings instead of numbers.  In most cases we want
+%a number. Therefore if the string is a valid number lets replace it. 
+%Also, check to see if the "label" field was changed.  If it was update the
+%GUI
+changedFieldList = findStructDifferences(expInfoBeforeEdit, editedExpInfo);
+
+if ~isempty( changedFieldList )
+    for iChanged = 1:length(changedFieldList)
+        
+        thisValue = editedExpInfo.(changedFieldList{iChanged});
+        if isstr(thisValue)
+            [thisValue2Num,OK]=str2num(thisValue);
+            if OK
+                editedExpInfo.(changedFieldList(iChanged)) = thisValue2Num;
+            end
+        end
+        
+    end
+    
+    %Finaly update the conditionInfo
+    handles.expInfo.editedByUser=true; 
+    handles.expInfo = updateStruct(handles.expInfo, editedExpInfo);
+    handles.sessionInfo.paradigmEditedByUser=true;
+    if ~isfield(handles.expInfo,'curWindow')
+        set(handles.saveParadigmBtn,'enable','on');
+    end
+    guidata(hObject,handles)
+end
+
+%Initialize window settings 
+function handles = setupWindowSettings(handles)
+
+if isfield(handles.expInfo,'screenNum')
+    if handles.expInfo.screenNum >0
+        set(handles.useSecondaryMonitorRadioBtn,'value',1);
+    else
+        set(handles.usePrimaryMonitorRadioBtn,'value',1);
+    end
+else
+    handles.expInfo.screenNum = max(Screen('Screens'));
+    if handles.expInfo.screenNum>0
+        set(handles.useSecondaryMonitorRadioBtn,'value',1);
+    else
+        set(handles.usePrimaryMonitorRadioBtn,'value',1);
+    end
+end
+
+if isfield(handles.expInfo,'useFullScreen')
+    if handles.expInfo.useFullScreen
+        set(handles.useFullScreenRadioBtn,'value',1);
+    else
+        set(handles.useWindowRadioBtn,'value',1);
+    end
+else
+    if handles.expInfo.screenNum >0
+        set(handles.useFullScreenRadioBtn,'value',1);
+        handles.expInfo.useFullScreen = true;
+    else
+        set(handles.useWindowRadioBtn,'value',1);
+        handles.expInfo.useFullScreen = false;
+    end
+end
+
+if handles.expInfo.useFullScreen
+    
+    set(handles.useOpaqueRadioBtn,'value',1);
+    handles.expInfo.windowShieldingLevel = 2000;
+else
+    set(handles.useTranslucentRadioBtn,'value',1);
+    handles.expInfo.windowShieldingLevel = 1750;
+end       
+
+
+
+
+function expInfo = setExpInfoFromWindowPanel(expInfo)
+
+
+if get(handles.useOpaqueRadioBtn,'value')==1,
+    Screen('Preference', 'WindowShieldingLevel', 2000);
+    expInfo.translucentWindow = false;
+else
+    Screen('Preference', 'WindowShieldingLevel', 1750);
+    expInfo.translucentWindow = true;
+end
+
+if get(handles.usePrimaryMonitorRadioBtn,'value')==1;
+    handles.expInfo.screenNum = min(Screen('Screens'));
+else
+    handles.expInfo.screenNum = max(Screen('Screens'));
+end
+
+if get(handles.useFullScreenRadioBtn,'value')==1;
+    handles.useFullScreen = true;
+else
+    handles.useFullScreen = false;
+end
+
+
+function expInfo = refreshWindowSettings(handles)
+
+
+if isfield(handles.expInfo,'screenNum')
+    if handles.expInfo.screenNum >0
+        set(handles.useSecondaryMonitorRadioBtn,'value',1);
+    else
+        set(handles.usePrimaryMonitorRadioBtn,'value',1);
+    end
+else
+    handles.expInfo.screenNum = max(Screen('Screens'));
+    if handles.expInfo.screenNum>0
+        set(handles.useSecondaryMonitorRadioBtn,'value',1);
+    else
+        set(handles.usePrimaryMonitorRadioBtn,'value',1);
+    end
+end
+
+if isfield(handles.expInfo,'useFullScreen')
+    if handles.expInfo.useFullScreen
+        set(handles.useFullScreenRadioBtn,'value',1);
+    else
+        set(handles.useWindowRadioBtn,'value',1);
+    end
+else
+    if handles.expInfo.screenNum >0
+        set(handles.useFullScreenRadioBtn,'value',1);
+        handles.useFullScreen = true;
+    else
+        set(handles.useWindowRadioBtn,'value',1);
+        handles.useFullScreen = false;
+    end
+end
+
+if get(handles.useOpaqueRadioBtn,'value')==1,
+    Screen('Preference', 'WindowShieldingLevel', 2000);
+else
+    Screen('Preference', 'WindowShieldingLevel', 1750);
+end
+
+
+
+
+% --- Executes when selected object is changed in monitorSelectionBtnGrp.
+function monitorSelectionBtnGrp_SelectionChangedFcn(hObject, eventdata, handles)
+% hObject    handle to the selected object in monitorSelectionBtnGrp 
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes when selected object is changed in windowSizeBtnGrp.
+function windowSizeBtnGrp_SelectionChangedFcn(hObject, eventdata, handles)
+% hObject    handle to the selected object in windowSizeBtnGrp 
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+if get(handles.useFullScreenRadioBtn,'value')==1,
+    handles.expInfo.useFullScreen = true;
+else
+    handles.expInfo.useFullScreen=false;
+end
+guidata(hObject,handles);
+
+% --- Executes when selected object is changed in windowAlphaBtnGrp.
+function windowAlphaBtnGrp_SelectionChangedFcn(hObject, eventdata, handles)
+% hObject    handle to the selected object in windowAlphaBtnGrp 
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+if get(handles.useOpaqueRadioBtn,'value')==1,
+    handles.expInfo.windowShieldingLevel=2000;
+else
+    handles.expInfo.windowShieldingLevel=1750;
+end
+
+guidata(hObject,handles);
+
+%These are the gui elements to disable after activating a paradigm
+function disableGuiElementsWhenWindowActive(handles)
+
+set(handles.chooseParadigmBtn,'enable','off')
+set(handles.useSecondaryMonitorRadioBtn,'enable','off');    
+set(handles.usePrimaryMonitorRadioBtn,'enable','off');
+set(handles.useOpaqueRadioBtn,'enable','off');
+set(handles.useTranslucentRadioBtn,'enable','off');
+set(handles.useWindowRadioBtn,'enable','off');
+set(handles.useFullScreenRadioBtn,'enable','off');
+
+
+% --------------------------------------------------------------------
+function Untitled_1_Callback(hObject, eventdata, handles)
+% hObject    handle to Untitled_1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function editParadigmFileMenu_Callback(hObject, eventdata, handles)
+% hObject    handle to editParadigmFileMenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+edit(handles.sessionInfo.paradigmFile)
+
+% --------------------------------------------------------------------
+function editSelectedTrialFileMenu_Callback(hObject, eventdata, handles)
+% hObject    handle to editSelectedTrialFileMenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+conditionIdx = getConditionIndex(handles);
+
+edit( func2str(handles.conditionInfo(conditionIdx).trialFun));

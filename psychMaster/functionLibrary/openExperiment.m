@@ -31,6 +31,7 @@ function expInfo = openExperiment( expInfo)
 %THerefore, I think the nuclear clear all should be elsewhere and carefully
 %considered/tested.
 clear PsychHID;
+clear KbCheck;
 
 %
 % This is a line that is easily skipped/missed but is important
@@ -52,9 +53,58 @@ if ~isfield(expInfo,'screenNum')
     expInfo.screenNum = max(Screen('Screens'));
 end
 
+%If a window shielding level is set use it
+%This setting is used to make the window semi transparent to facilitate
+%development of stimuli.
+if isfield(expInfo,'windowShieldingLevel')
+    Screen('Preference', 'WindowShieldingLevel', expInfo.windowShieldingLevel);
+else    
+    Screen('Preference', 'WindowShieldingLevel', 2000);
+end
+
 %Default is mono mode
 if ~isfield(expInfo,'stereoMode')
     expInfo.stereoMode = 0;
+end
+
+%Check if a specific resolution has been requested
+if ~isfield(expInfo,'requestedResolution') || isempty(expInfo.requestedResolution)
+
+    %If the user hasn't requested a resolution let's see if the resolution
+    %preference has been set. 
+    
+    if ispref('ptbCorgi','screenResolution')
+        requestedResolution = getpref('ptbCorgi','resolution');
+    else    
+    %If nothing is set just use the current resolution. 
+    requestedResolution = Screen('resolution',expInfo.screenNum);
+    end
+    
+else     %Now check what is requested.
+
+    resFieldList = {'width','height','pixelSize','hz'};
+    resFieldExist = isfield( expInfo.requestedResolution,resFieldList);
+    
+    for iField = 1:length(resFieldList)
+        
+        %If the field doesn't exist set it to empty.
+        if ~resFieldExist(iField)
+            expInfo.requestedResolution.(resFieldList{iField}) = [];
+        end
+    end
+                   
+    requestedResolution = NearestResolution(expInfo.screenNum,...
+        expInfo.requestedResolution.width,expInfo.requestedResolution.height,...
+        expInfo.requestedResolution.hz,expInfo.requestedResolution.pixelSize);
+    
+end
+
+currentRes =Screen('resolution',expInfo.screenNum);
+
+%If the current resolution is different from what we want change the
+%resolution.
+if ~isequaln(currentRes,requestedResolution)
+    oldres =SetResolution(expInfo.screenNum,requestedResolution);
 end
 
 
@@ -121,7 +171,7 @@ else
 end
 
 Screen('Preference', 'VisualDebugLevel',2);
-
+Screen('Preference', 'Verbosity',3);
 
 % Set the background to the background value.
 expInfo.bckgnd = 0.5;
@@ -254,6 +304,7 @@ if ~isfield(expInfo,'enableAudio')
     expInfo.enableAudio = true;
 end
 
+%TODO: clean up this code. 
 if expInfo.enableAudio
     InitializePsychSound
     
@@ -270,7 +321,16 @@ if expInfo.enableAudio
     audioInfo.pahandle = [];%PsychPortAudio('Open', [], 1, 1, audioInfo.samplingFreq, audioInfo.nOutputChannels);
     audioInfo.postFeedbackPause = 0.25;
     thisBeep = MakeBeep(500, audioInfo.beepLength, audioInfo.samplingFreq);
-    audioInfo.intervalBeep = [thisBeep; thisBeep];
+    audioInfo.intervalBeep = repmat(thisBeep,audioInfo.nOutputChannels,1);
+    %the beeps that are used for correct or incorrect responses if
+    %audio feedback is turned on
+    thisBeep = MakeBeep(750, audioInfo.beepLength, audioInfo.samplingFreq);    
+    audioInfo.correctSnd = repmat(thisBeep,audioInfo.nOutputChannels,1);
+    thisBeep = MakeBeep(250, audioInfo.beepLength, audioInfo.samplingFreq);
+    audioInfo.incorrectSnd = repmat(thisBeep,audioInfo.nOutputChannels,1);
+    
+             
+    
     audioInfo.pahandle = PsychPortAudio('Open', [], [], 0, [], 2);
     expInfo.audioInfo = audioInfo;
     
@@ -283,15 +343,34 @@ Screen('BlendFunction', expInfo.curWindow,  GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
 
 
 
-%Setup some defaults for keyboard interactions. Can be overridden by your
-%experiment.
-%Turn off KbQueue's because they can be fragile on untested systems.
+%Setup some defaults for keyboard interactions. 
+%Turn off KbQueue's because they can be fragile on untested systems. And
+%the code hasn't fully implemented them. 
 %If you need high performance responses turn them on. But be careful and
 %read the help and the help for ListenChar
 expInfo.useKbQueue = false;
 KbName('UnifyKeyNames');
-expInfo.deviceIndex = [];
-ListenChar(2);
+%-3 Merges all connected keypads and keyboards for KbCheck()
+%Negative numbers mean use default keyboard for kbQueueXXX()
+expInfo.inputDeviceNumber = -3;
+expInfo.deviceIndex = expInfo.inputDeviceNumber; %For old fieldname that wasn't clear
+
+%If we're in full screen mode we'll disable keypress mirroring to the
+%matlab window.
+if expInfo.useFullScreen
+    
+    if expInfo.useKbQueue
+        %If using KbQueues need to disable GetChar and use flag -1 to
+        %supress inp
+        ListenChar(0);
+        ListenChar(-1);
+        expInfo.inputDeviceNumber = -3; %Negative numbers mean use default for kbQueue
+    else
+        ListenChar(2); %disable echoing keypress to matlab window
+        expInfo.inputDeviceNumber = -3; 
+    end
+else
+    
 
 
 %If using the powermate find it's handle. 
