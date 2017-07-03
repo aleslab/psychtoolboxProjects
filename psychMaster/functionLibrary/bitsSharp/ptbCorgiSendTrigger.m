@@ -56,7 +56,7 @@ switch lower(command)
         
     case 'conditionnumber' %Currently just sends the raw bits, but may change in future      
         triggerValue = varargin{1}+expInfo.triggerInfo.conditionNumberRange(1)-1; %Subtract one so the trigger range is inclusive
-        if triggerValue > expInfo.triggerInfo.conditionNumberRange(1)
+        if triggerValue > expInfo.triggerInfo.conditionNumberRange(2)
             warning('ptbCorgi:sendTrigger:condNumMaxExceeded','Sending condition number trigger value over range, still sending but check yourself');
         end
         

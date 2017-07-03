@@ -18,7 +18,6 @@ dimColour = 0.3;
 
 % parameters for the task
 trialData.dims = randi((conditionInfo.maxDim+1),1)-1; % number of dims for this trial
-trialData.flipDim = [11 12 13];
 % determine which flip with dim, 2 dims should not follow each other on the
 % same stimulus
 if conditionInfo.motion 
@@ -35,7 +34,7 @@ end
 % stim presentation parameters
 rectCircle = conditionInfo.stimSize*expInfo.ppd;
 nbFrames = conditionInfo.nFramesPerStim;
-ifi = expInfo.ifi;
+ifi = expInfo.ifi;ptbCorgiSendTrigger(expInfo,'clear',1);
 ycoord = expInfo.center(2)/2;
 xcoord = conditionInfo.xloc(1)*expInfo.ppd; % to be substracted or added 
 movingStep = conditionInfo.movingStep;
@@ -53,12 +52,13 @@ end
 % end
 
 % check the nb of flip
-flipNb = 0;
+flipNb = 0;% trialData.flipDim = [11 12 13];
+
 
 stimStartTime = trialData.trialStartTime; % this is wrong but need a starting value for the while loop
 
 % presentation stimulus
-while ~KbCheck && t<conditionInfo.stimDuration+stimStartTime - ifi/2 % && xcoord<xcoordEnd+1
+while ~KbCheck && t<conditionInfo.stimDuration+stimStartTime - ifi % && xcoord<xcoordEnd+1
     if strcmp(conditionInfo.sideStim,'both') % 2 stim presented
         if conditionInfo.motion == 1 % in motion
             % check if the flip is dim
@@ -69,8 +69,9 @@ while ~KbCheck && t<conditionInfo.stimDuration+stimStartTime - ifi/2 % && xcoord
             end
             drawFixation(expInfo, expInfo.fixationInfo);
             Screen('FillRect', expInfo.curWindow, colStim,CenterRectOnPoint(rectCircle,expInfo.center(1)-xcoord,ycoord));
-            t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi - ifi/2);
-            % t- trialData.trialStartTime
+            ptbCorgiSendTrigger(expInfo,'togglebit',0);
+            t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi ); %- ifi/2
+%             t-stimStartTime
             flipNb = flipNb+ 1;
             if flipNb == 1
                 stimStartTime = t;
@@ -83,8 +84,9 @@ while ~KbCheck && t<conditionInfo.stimDuration+stimStartTime - ifi/2 % && xcoord
             end
             drawFixation(expInfo, expInfo.fixationInfo);
             Screen('FillRect', expInfo.curWindow, colStim,CenterRectOnPoint(rectCircle,expInfo.center(1)+xcoord,ycoord));
-            t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi - ifi/2);
-            % t- trialData.trialStartTime
+            ptbCorgiSendTrigger(expInfo,'togglebit',0);
+            t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi );
+%             t-stimStartTime
             if strcmp(conditionInfo.label,'sweep')
                 xcoord = xcoord + movingStep;
             end
@@ -99,13 +101,15 @@ while ~KbCheck && t<conditionInfo.stimDuration+stimStartTime - ifi/2 % && xcoord
             drawFixation(expInfo, expInfo.fixationInfo);
             Screen('FillRect', expInfo.curWindow, colStim(1),CenterRectOnPoint(rectCircle,expInfo.center(1)-xcoord,ycoord));
             Screen('FillRect', expInfo.curWindow, colStim(2),CenterRectOnPoint(rectCircle,expInfo.center(1)+xcoord,ycoord));
-            t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi - ifi/2);
+            ptbCorgiSendTrigger(expInfo,'togglebit',0);
+            t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi );
             flipNb = flipNb+ 1;
             if flipNb == 1
                 stimStartTime = t;
             end
             drawFixation(expInfo, expInfo.fixationInfo);
-            t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi - ifi/2);
+            ptbCorgiSendTrigger(expInfo,'togglebit',0);
+            t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi );
             flipNb = flipNb+ 1;
         end
     else  % only one stim (left or right)
@@ -117,17 +121,21 @@ while ~KbCheck && t<conditionInfo.stimDuration+stimStartTime - ifi/2 % && xcoord
         end
         drawFixation(expInfo, expInfo.fixationInfo);
         Screen('FillRect', expInfo.curWindow, colStim,CenterRectOnPoint(rectCircle,xcoordSingle,ycoord));
-        t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi - ifi/2);
+        ptbCorgiSendTrigger(expInfo,'togglebit',0);
+        t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi );
         flipNb = flipNb+ 1;
         if flipNb == 1
             stimStartTime = t;
         end
         drawFixation(expInfo, expInfo.fixationInfo);
-        t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi - ifi/2);
+        ptbCorgiSendTrigger(expInfo,'togglebit',0);
+        t = Screen('Flip', expInfo.curWindow, t + nbFrames * ifi );
         flipNb = flipNb+ 1;
     end
 end
+ptbCorgiSendTrigger(expInfo,'clear',1);
 
+flipNb
 trialData.stimEndTime = t;
 trialData.stimStartTime = stimStartTime;
 
@@ -146,7 +154,6 @@ end
 for keyVal=0:conditionInfo.maxDim
     vectKeyVal(keyVal+1) = KbName(num2str(keyVal));
 end
-
 
 trialData.totFlip = flipNb;
 if flipNb ~= conditionInfo.totFlip

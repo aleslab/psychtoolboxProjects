@@ -5,6 +5,9 @@ function [conditionInfo, expInfo] = psychParadigm_longRange(expInfo)
 expInfo.paradigmName = 'longRange';
 expInfo.randomizationType = 'random';
 expInfo.viewingDistance = 57;
+refreshRate = 85;
+expInfo.useBitsSharp = true;
+expInfo.enableTriggers = true;
 
 %Setup a simple fixation cross. See help drawFixation for more info on how
 %to setup this field.
@@ -28,9 +31,9 @@ conditionInfo(1).maxDim = 5; % max number of luminance change in a trial
 
 %% stimulus
 conditionInfo(1).stimSize = [0 0 0.8 4]; % in deg
-conditionInfo(1).nFramesPerStim = 15; % at 75Hz refresh = 5 img/sec (and 2.5Hz per side)
+conditionInfo(1).nFramesPerStim = refreshRate/5; % at 85Hz refresh = 5 img/sec (and 2.5Hz per side)
 conditionInfo(1).stimDuration = 6; % 12 sec
-conditionInfo(1).totFlip = (75/conditionInfo(1).nFramesPerStim) * conditionInfo(1).stimDuration; %80 for 60Hz 12sec trial
+conditionInfo(1).totFlip = (refreshRate/conditionInfo(1).nFramesPerStim) * conditionInfo(1).stimDuration; %80 for 60Hz 12sec trial
 conditionInfo(1).trialFun=@trial_longRange;
 conditionInfo(1).movingStep = 0;
 conditionInfo(1).motion = 0; % by default, no motion 
@@ -76,7 +79,6 @@ conditionInfo(9).sideStim = 'both';
 conditionInfo(9).xloc = [0.5 4]; % where it starts and ends
 conditionInfo(9).motion = 1;
 conditionInfo(9).movingStep = 5;
-
 % expInfo.center does NOT exist (at the beginning) so cannot use
 % expInfo.center here nor expInfo.ppd
 
