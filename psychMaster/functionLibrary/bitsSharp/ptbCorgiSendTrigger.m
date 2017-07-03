@@ -88,7 +88,10 @@ BitsPlusPlus('DIOCommand', expInfo.curWindow, 1, mask, pulseDef, 0,0, yPos);
 %DIO state and one to clear it. 
 if sendNow
 timeSent    = Screen('Flip', expInfo.curWindow);
+pulseDef = [repmat(0,highTime,1);zeros(lowTime,1)]';
+BitsPlusPlus('DIOCommand', expInfo.curWindow, 1, mask, pulseDef, 0,0, yPos);
 timeCleared = Screen('Flip', expInfo.curWindow);
+trigDur=(timeCleared -timeSent)*1000
 end
 
 
