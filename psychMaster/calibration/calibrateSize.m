@@ -1,9 +1,13 @@
-function sizeCalibInfo=calibrateSize()
+function sizeCalibInfo=calibrateSize(varargin)
 %CALIBRATESIZE  Use this to calibrate monitor pixel sizes.
 %   ADD HELP HERE
 
 try
     %Open a window
+    if narargin>0
+        expInfo = varargin{1};
+    end
+    
     expInfo.useFullScreen = true;
     expInfo = openExperiment(expInfo);
     Screen('TextSize',expInfo.curWindow, 22);

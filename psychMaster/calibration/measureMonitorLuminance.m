@@ -1,4 +1,4 @@
-function [luminanceCalibInfo] = measureMonitorLuminance(inverseGamma)
+function [luminanceCalibInfo] = measureMonitorLuminance(varargin)
 % Shows how to make measurements using the ColorCAL II CDC interface.
 % This script calls several other separate functions which are included
 % below.
@@ -12,7 +12,10 @@ function [luminanceCalibInfo] = measureMonitorLuminance(inverseGamma)
 % Sets how many samples to take.
 samples = 1;
 
-
+if nargin>=1
+    expInfo = varargin;
+end
+    
 
 % % First, the ColorCAL II should have its zero level calibrated. This can
 % % simply be done by placing one's hand over the ColorCAL II sensor to block
@@ -44,18 +47,9 @@ myCorrectionMatrix = cMatrix(1:3,:);
 %      correctedValues = cMatrix(1:3,:) * [s.x s.y s.z]';
 
 try
-%Open a window
 
-expInfo = openExperiment();
-%[oldClut, dacBits, lutSize] = Screen('ReadNormalizedGammaTable', expInfo.screenNum);
-BackupCluts;
-%If given a gamma table use it.
-if nargin>0
-    fullTable = repmat(inverseGamma,1,3);
-    [oldClut sucess]=Screen('LoadNormalizedGammaTable',expInfo.curWindow,fullTable);
-else
-    oldClut = LoadIdentityClut(expInfo.curWindow);
-end
+    %Open a window
+expInfo = openExperiment(expInfo);
 
 Screen('TextSize',expInfo.curWindow, 14);
 

@@ -1,14 +1,33 @@
-function [] = calibrateLuminance()
+function [] = calibrateDisplay(varargin)
 
-luminanceCalibInfo=[];
+lumCalibInfo      =[];
 sizeCalibInfo     =[];
 
-
+if nargin>=1
+    modeToCalibrate = varargin{1};
+else
+    screenNum = max(Screen('screens'));
+    modeToCalibrate = Screen('resolution',screenNum)
+    modeToCalibrate.screenNum = screenNum;
+end
+modeString = [num2str(modeToCalibrate.width) 'x' num2str(modeToCalibrate.height) ...
+            '_' num2str(modeToCalibrate.hz) 'Hz_' num2str(modeToCalibrate.pixelSize) 'bpp'];
+ 
+        
+expInfo.screenNum = modeToCalibrate.screenNum;
+expInfo.requestedResolution = modeToCalibrate;
+        
 computerName = ptbCorgiGetComputerName();
 
 fh = figure('Visible','on','Units','normalized','Position',[.1 .1 .7 .6]);
 
-ah = axes('Visible','on','Units','normalized','Position',[.1 .2 .7 .7]);
+ah = axes('Visible','on','Units','normalized','Position',[.1 .2 .6 .7]);
+
+%Mode title
+uicontrol(fh,'Style','text',...
+    'String',['Calibrating Video Mode: ' modeString],...
+    'Units','normalized','Position',[.15 .92 .5 .05],...
+    'fontsize',20);
 
 yStartPos = .91;
 
@@ -26,7 +45,7 @@ uicontrol(fh,'Style','pushbutton',...
     'Units','normalized','Position',[.81 yStartPos-.09 .15 .05],...
     'callback',@changeComputerName);
 
-yStartPos = yStartPos-.25;
+yStartPos = yStartPos-.19;
 
 btnDelta = .075;
 %Measure Size Button
@@ -35,22 +54,33 @@ uicontrol(fh,'Style','pushbutton',...
     'Units','normalized','Position',[.81 yStartPos .15 .075],...
     'callback',@measureSize);
 
+yStartPos = yStartPos-.1;
+%Set number of measurements
+uicontrol(fh,'Style','text',...
+    'String','Number of luminance levels:',...
+    'Units','normalized','Position',[.81 yStartPos .15 .05]);
+
+lumNumberBoxH = uicontrol(fh,'Style','edit',...
+    'String','64',...
+    'Units','normalized','Position',[.81 yStartPos-.03 .15 .05]);
+
+yStartPos = yStartPos-.15;
 %Meaure Luminance Button
 uicontrol(fh,'Style','pushbutton',...
     'String','Measure Luminance',...
-    'Units','normalized','Position',[.81 yStartPos-btnDelta .15 .075],...
+    'Units','normalized','Position',[.81 yStartPos .15 .075],...
     'callback',@measureCB);
 
 %Fit Luminance Button
 uicontrol(fh,'Style','pushbutton',...
     'String','Fit Data',...
-    'Units','normalized','Position',[.81 yStartPos-2*btnDelta .15 .075],...
+    'Units','normalized','Position',[.81 yStartPos-1*btnDelta .15 .075],...
     'callback',@fitCB)
 
 %Test Luminance Calibration Button
 uicontrol(fh,'Style','pushbutton',...
     'String','Test Calibration',...
-    'Units','normalized','Position',[.81 yStartPos-3*btnDelta .15 .075],...
+    'Units','normalized','Position',[.81 yStartPos-2*btnDelta .15 .075],...
     'callback',@testCB);
 
 
@@ -68,16 +98,25 @@ saveBtnH= uicontrol(fh,'Style','pushbutton',...
 
     function measureSize(varargin)
         %Measure monitor values
-        sizeCalibInfo = calibrateSize();
+        sizeCalibInfo = calibrateSize(expInfo);
         
         
     end
 
     function measureCB(varargin)
-        %Measure monitor values
-        luminanceCalibInfo = measureMonitorLuminance();
-        nValues = size(luminanceCalibInfo.allCIExyY,1);
-        plot(ah,linspace(0,1,nValues),luminanceCalibInfo.meanCIExyY(:,3),'o');
+        
+        %If we've already run a luminance measurment delete it before giong
+        %on. 
+        if isfield(expInfo,'gammaTable')
+            expInfo = rmfield(expInfo,'gammaTable');
+        end
+        if isfield(expInfo,'lumCalibInfo')
+            expInfo = rmfield(expInfo,'lumCalibInfo');
+        end
+        %Measure monitor values                
+        lumCalibInfo = measureMonitorLuminance(expInfo);
+        nValues = size(lumCalibInfo.allCIExyY,1);
+        plot(ah,linspace(0,1,nValues),lumCalibInfo.meanCIExyY(:,3),'o');
         hold on;
         ylabel('cd/m^2')
         
@@ -85,23 +124,26 @@ saveBtnH= uicontrol(fh,'Style','pushbutton',...
 
     function fitCB(varargin)
         
-         nValues = size(luminanceCalibInfo.allCIExyY,1);
+         nValues = size(lumCalibInfo.allCIExyY,1);
          displayValues=linspace(0,1,nValues)';
         %Fit measured data to generate a full gamma table.
         %type = 1 is Fit a simple power function
         [gammaFit,gammaInputFit,fitComment,gammaParams]=FitDeviceGamma(...
-            luminanceCalibInfo.meanCIExyY(:,3),displayValues,1,luminanceCalibInfo.clutSize);
-        fitX=linspace(0,1,luminanceCalibInfo.clutSize);
+            lumCalibInfo.meanCIExyY(:,3),displayValues,1,lumCalibInfo.clutSize);
+        fitX=linspace(0,1,lumCalibInfo.clutSize);
         %Invert the gamma fit to linearize the output.
-        inverseGamma = InvertGammaTable(linspace(0,1,luminanceCalibInfo.clutSize)',gammaFit,luminanceCalibInfo.clutSize);
-        plot(ah,fitX,gammaFit*luminanceCalibInfo.meanCIExyY(end,3));
+        inverseGamma = InvertGammaTable(linspace(0,1,lumCalibInfo.clutSize)',gammaFit,lumCalibInfo.clutSize);
+        plot(ah,fitX,gammaFit*lumCalibInfo.meanCIExyY(end,3));
         
-        luminanceCalibInfo.gammaFit     = gammaFit;
-        luminanceCalibInfo.gammaInputFit= gammaInputFit;
-        luminanceCalibInfo.fitComment   = fitComment;
-        luminanceCalibInfo.gammaParams  = gammaParams;
-        luminanceCalibInfo.inverseGamma = inverseGamma;
-        luminanceCalibInfo.gammaTable = repmat(inverseGamma,1,3);
+        lumCalibInfo.gammaFit     = gammaFit;
+        lumCalibInfo.gammaInputFit= gammaInputFit;
+        lumCalibInfo.fitComment   = fitComment;
+        lumCalibInfo.gammaParams  = gammaParams;
+        lumCalibInfo.inverseGamma = inverseGamma;
+        lumCalibInfo.gammaTable = repmat(inverseGamma,1,3);
+        
+        expInfo.gammaTable = lumCalibInfo.gammaTable;
+        expInfo.lumCalibInfo = lumCalibInfo;
         
         set(saveBtnH,'enable','on')
         
@@ -109,7 +151,9 @@ saveBtnH= uicontrol(fh,'Style','pushbutton',...
 
     function testCB(varargin)
         
-        luminanceTest = measureMonitorLuminance(luminanceCalibInfo.inverseGamma);
+ 
+        luminanceTest = measureMonitorLuminance(expInfo);
+        
         nValues = size(luminanceTest.allCIExyY,1);
         plot(ah,linspace(0,1,nValues),luminanceTest.meanCIExyY(:,3),'x');
 
@@ -123,10 +167,10 @@ saveBtnH= uicontrol(fh,'Style','pushbutton',...
     function saveCB(varargin)
         %Save the data
         %
-        modeString = [num2str(luminanceCalibInfo.modeInfo.width) 'x' num2str(luminanceCalibInfo.modeInfo.height) ...
-            '_' num2str(luminanceCalibInfo.modeInfo.hz) 'Hz_' num2str(luminanceCalibInfo.modeInfo.pixelSize) 'bpp_'];
-        
-        filename = ['luminance_' computerName '_' modeString datestr(now,'yyyymmdd_HHMMSS') '.mat'];
+%         modeString = [num2str(lumCalibInfo.modeInfo.width) 'x' num2str(lumCalibInfo.modeInfo.height) ...
+%             '_' num2str(lumCalibInfo.modeInfo.hz) 'Hz_' num2str(lumCalibInfo.modeInfo.pixelSize) 'bpp_'];
+%         
+        filename = [computerName '_' modeString datestr(now,'yyyymmdd_HHMMSS') '.mat'];
         
         if ispref('ptbCorgi','calibdir');
             calibdir = getpref('ptbCorgi','calibdir');
@@ -137,14 +181,26 @@ saveBtnH= uicontrol(fh,'Style','pushbutton',...
         end
         
         setpref('ptbCorgi','computerName',computerName);
-        luminanceCalibInfo.computerName =  computerName;
+        
         saveFilename = fullfile(calibdir,filename);
         
         if ~exist(calibdir,'dir')
             mkdir(calibdir)
         end
         
-        save(saveFilename,'-struct','luminanceCalibInfo')
+        sizeVarName = '';
+        lumVarName = '';
+        if ~isempty(lumCalibInfo)
+            lumCalibInfo.computerName =  computerName;
+            lumVarName = 'lumCalibInfo';
+        end
+        
+        if ~isempty(sizeCalibInfo)
+            sizeCalibInfo.computerName =  computerName;
+            sizeVarName = 'sizeCalibInfo';
+        end
+        
+        save(saveFilename,lumVarName,sizeVarName)
     end
 
 end
