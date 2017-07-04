@@ -148,7 +148,7 @@ selResIdx = find(strcmp(availRes,resPref)); %Selected Default resolution
 selResString = availRes{selResIdx};
 curResIdx = find(strcmp(num2str([curRes.width curRes.height],'%dx%d'),availRes));
 resLabels=availRes;
-resLabels{curResIdx} = [resLabels{curResIdx} ' *active*'];
+resLabels{curResIdx} = [resLabels{curResIdx} ' *Current Active*'];
 
 %resLabels{selResIdx} = [resLabels{selResIdx} ' *ptbCorgi*'];
 
@@ -295,22 +295,26 @@ uicontrol(fh,'Style','text','HorizontalAlignment','left',...
 
     function setPtbCorgiModePref(varargin)
       
+
+        res = getVideoModeStruct();
+        setpref('ptbCorgi','resolution',res);
+        
+    end
+
+    %Build video mode structure from selection.
+    function res = getVideoModeStruct()
         [scan] = sscanf(selResString,'%dx%d');
         res.width = scan(1);
         res.height = scan(2);
         
-        bitDepthSelIdx = get(bitDepthPopupH,'value');        
+        bitDepthSelIdx = get(bitDepthPopupH,'value');
         res.pixelSize = str2double(bitDepthList(bitDepthSelIdx));
         
         frameRateSelIdx = get(frameRatePopupH,'value');
         res.hz = str2double(frameRateList(frameRateSelIdx));
         res.screenNum = selScreenNum;
-
-        setpref('ptbCorgi','resolution',res);
-        
     end
 
-        
     function allRes= getAllResolutionStr()
 
         resList = Screen('resolutions',selScreenNum);
@@ -367,6 +371,8 @@ uicontrol(fh,'Style','text','HorizontalAlignment','left',...
    
     function calibrateMode(hObject,callbackdata)
         
+        res = getVideoModeStruct()
+        calibrateDisplay(res);
     end
 
 
