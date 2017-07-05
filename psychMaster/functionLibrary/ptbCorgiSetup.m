@@ -47,42 +47,42 @@ end
 
 uicontrol(fh,'Style','text',...
     'String','Base Directory:','HorizontalAlignment','left',...
-    'Units','normalized','Position',[.4 .91 .15 .05]);
+    'Units','normalized','Position',[.35 .91 .15 .05]);
 
 baseDirHandle = uicontrol(fh,'Style','edit',...
     'String',baseDir,'HorizontalAlignment','left',...
-    'Units','normalized','Position',[.4 .88 .4 .05]);
+    'Units','normalized','Position',[.35 .88 .4 .05]);
 
 uicontrol(fh,'Style','pushbutton',...
     'String','Choose ptbCorgi base directory','HorizontalAlignment','left',...
-    'Units','normalized','Position',[.4 .825 .25 .05],...
+    'Units','normalized','Position',[.35 .825 .25 .05],...
     'callback',@chooseBaseDir);
 
 uicontrol(fh,'Style','text',...
     'String','Data Directory:','HorizontalAlignment','left',...
-    'Units','normalized','Position',[.4 .77 .15 .05]);
+    'Units','normalized','Position',[.35 .77 .15 .05]);
 
 dataDirHandle = uicontrol(fh,'Style','edit',...
     'String',dataDir,'HorizontalAlignment','left',...
-    'Units','normalized','Position',[.4 .74 .4 .05]);
+    'Units','normalized','Position',[.35 .74 .4 .05]);
 
 uicontrol(fh,'Style','pushbutton',...
     'String','Choose Data Directory','HorizontalAlignment','left',...
-    'Units','normalized','Position',[.4 .685 .25 .05],...
+    'Units','normalized','Position',[.35 .685 .25 .05],...
     'callback',@chooseDataDir);
 
 yPos = .63;
 uicontrol(fh,'Style','text',...
     'String','Calibration Directory:','HorizontalAlignment','left',...
-    'Units','normalized','Position',[.4 yPos .15 .05]);
+    'Units','normalized','Position',[.35 yPos .15 .05]);
 
 calibDirHandle = uicontrol(fh,'Style','edit',...
     'String',calibDir,'HorizontalAlignment','left',...
-    'Units','normalized','Position',[.4 yPos-.03 .4 .05]);
+    'Units','normalized','Position',[.35 yPos-.03 .4 .05]);
 
 uicontrol(fh,'Style','pushbutton',...
     'String','Choose Calibration Directory','HorizontalAlignment','left',...
-    'Units','normalized','Position',[.4 yPos-.08 .25 .05],...
+    'Units','normalized','Position',[.35 yPos-.08 .25 .05],...
     'callback',@chooseCalibDir);
 
 
@@ -155,13 +155,20 @@ resLabels{curResIdx} = [resLabels{curResIdx} ' *Current Active*'];
 
 frameRateList = getUniqueFrameRateStr();
 frameRateLabels = frameRateList;
+selFrameRateIdx = find(strcmp(frameRateList,num2str(hzPref)));
 
 bitDepthList  = getUniqueBitDepthStr();
 bitDepthLabels = bitDepthList;
 
+
 %Init Resolution Controls. 
 yPos = .88;
 popWidth = .2;
+
+uicontrol(fh,'Style','text',...
+    'String','Video Mode Settings','HorizontalAlignment','center',...
+    'Units','normalized','Position',[0 .91 .3 .05]);
+
 screenPopupH = uicontrol(fh,'Style','popupmenu',...
     'String',screenLabelList,'Value',selScreenIdx,...
     'Units','normalized','Position',[.1 yPos popWidth .05],...
@@ -181,8 +188,9 @@ uicontrol(fh,'Style','text','String','Resolution',...
 
 
 frameRatePopupH = uicontrol(fh,'Style','popupmenu',...
-    'String',frameRateList,...
-    'Units','normalized','Position',[.1 yPos-.08 popWidth .05]);
+    'String',frameRateList,'Value',selFrameRateIdx,...
+    'Units','normalized','Position',[.1 yPos-.08 popWidth .05],...
+    'callback',@changeFrameRate);
 
 uicontrol(fh,'Style','text','String','Refresh',...
     'Units','normalized','Position',[0 yPos-.08 0.1 .05])
@@ -195,30 +203,26 @@ bitDepthPopupH = uicontrol(fh,'Style','popupmenu',...
 uicontrol(fh,'Style','text','String','Bit Depth',...
     'Units','normalized','Position',[0 yPos-.12 0.1 .05])
 
-
-uicontrol(fh,'Style','pushbutton',...
-    'String','Set Selected Mode as default',...
-    'Units','normalized','Position',[0 yPos-.17 0.3 .05],...
-    'callback',@setPtbCorgiModePref);
-
-
 uicontrol(fh,'Style','pushbutton',...
     'String','Calibrate Selected Mode',...
-    'Units','normalized','Position',[0 yPos-.22 0.3 .05],...
+    'Units','normalized','Position',[0 yPos-.18 0.3 .05],...
     'callback',@calibrateMode);
 
-uicontrol(fh,'Style','text','String','Bit Depth',...
-    'Units','normalized','Position',[0 yPos-.12 0.1 .05])
 
 calibFileListH = uicontrol(fh,'Style','listbox',...
-    'String','',...
-    'Units','normalized','Position',[0.01 yPos-.45 0.29 .15],...
+    'String',{'None'},...
+    'Units','normalized','Position',[0.01 yPos-.42 0.29 .15],...
     'callback',@setPtbCorgiModePref);
 
 uicontrol(fh,'Style','text','HorizontalAlignment','left',...
 'String', 'Calibration Files for Selected Mode',...
-    'Units','normalized','Position',[0 yPos-.28 0.3 .05])
+    'Units','normalized','Position',[0 yPos-.25 0.3 .035])
 
+
+uicontrol(fh,'Style','pushbutton',...
+    'String','Save Mode Selections as default',...
+    'Units','normalized','Position',[0 yPos-.5 0.3 .05],...
+    'callback',@setPtbCorgiModePref);
 
 
 
@@ -296,13 +300,13 @@ uicontrol(fh,'Style','text','HorizontalAlignment','left',...
     function setPtbCorgiModePref(varargin)
       
 
-        res = getVideoModeStruct();
+        res = getSelVideoModeStruct();
         setpref('ptbCorgi','resolution',res);
         
     end
 
     %Build video mode structure from selection.
-    function res = getVideoModeStruct()
+    function res = getSelVideoModeStruct()
         [scan] = sscanf(selResString,'%dx%d');
         res.width = scan(1);
         res.height = scan(2);
@@ -342,7 +346,13 @@ uicontrol(fh,'Style','text','HorizontalAlignment','left',...
     function uniqueBitDepth = getUniqueBitDepthStr()
         
         matchingResIdx = strcmp(availRes{selResIdx},allRes);
-        uniqueBitDepth=flipud(unique([resList(matchingResIdx).pixelSize]','sorted','rows'));
+        
+        selHz = str2num(frameRateList{selFrameRateIdx});
+        
+        matchingFrameRateIdx = [ resList(:).hz]==selHz;
+        matchingIdx = matchingResIdx(:) & matchingFrameRateIdx(:);
+
+        uniqueBitDepth=flipud(unique([resList(matchingIdx).pixelSize]','sorted','rows'));
         uniqueBitDepth=strtrim(cellstr(num2str(uniqueBitDepth)));
     end
 
@@ -352,7 +362,28 @@ uicontrol(fh,'Style','text','HorizontalAlignment','left',...
         selScreenIdx = get(screenPopupH,'value');
         selScreenNum = screenList(selScreenIdx);
         
+        
+        %Setup the resolution popup
+        curRes= Screen('resolution',selScreenNum);
+        allRes  = getAllResolutionStr();
+        availRes= getUniqueResolutionsStr();
+        
+        curResIdx = find(strcmp(num2str([curRes.width curRes.height],'%dx%d'),availRes));
+        selResIdx = curResIdx;%find(strcmp(availRes,resPref)); %Selected Default resolution
+        selResString = availRes{selResIdx};
+        resLabels=availRes;
+        resLabels{curResIdx} = [resLabels{curResIdx} ' *Current Active*'];
+        
+        %resLabels{selResIdx} = [resLabels{selResIdx} ' *ptbCorgi*'];
+        set(resPopupH,'labels',resLabels,'value',selResIdx)
+
+        changeResolution();
+        
+        
+        
+        
     end
+
 
     function changeResolution(varargin)
         
@@ -361,19 +392,51 @@ uicontrol(fh,'Style','text','HorizontalAlignment','left',...
         
         frameRateList = getUniqueFrameRateStr();
         frameRateLabels = frameRateList;
+        
+        set(frameRatePopupH,'string',frameRateLabels);
+        changeFrameRate();
+        
+    end
 
+    function changeFrameRate(hObject,callbackdata)
+        
+        selFrameRateIdx = get(frameRatePopupH,'value');
+        
         bitDepthList  = getUniqueBitDepthStr();
         bitDepthLabels = bitDepthList;
         
-        set(frameRatePopupH,'string',frameRateLabels);
-        set(bitDepthPopupH,'string',bitDepthLabels);
+        set(bitDepthPopupH,'string',bitDepthLabels);        
+        selBitDepthIdx = get(bitDepthPopupH,'value');
+        
+        updateCalibFileList();
     end
    
     function calibrateMode(hObject,callbackdata)
         
-        res = getVideoModeStruct()
+        res = getSelVideoModeStruct();
         calibrateDisplay(res);
     end
+
+    function updateCalibFileList(hObject,callbackdata)
+        
+        modeString = generateModeString(getSelVideoModeStruct());
+        
+        calibModeIdx=strcmp(availCalibModes,modeString);
+        availCalibFile = calibFilesForMode{calibModeIdx}};
+        
+        
+        set(calibFileListH,'string',availCalibFiles)
+        
+    end
+
+    function modeString=generateModeString(res)
+                
+        modeString = [num2str(res.width) 'x' num2str(res.height) ...
+            '_' num2str(res.hz) 'Hz_' num2str(res.pixelSize) 'bpp'];
+
+        
+    end
+
 
 
 end

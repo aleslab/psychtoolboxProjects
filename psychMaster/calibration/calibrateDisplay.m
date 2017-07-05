@@ -200,7 +200,10 @@ saveBtnH= uicontrol(fh,'Style','pushbutton',...
             sizeVarName = 'sizeCalibInfo';
         end
         
-        save(saveFilename,lumVarName,sizeVarName)
+        fileInfo.type = 'Calibration'
+        fileInfo.createdTime = datestr(now,'YYYY-mm-dd hh:MM PM');
+        fileInfo.ptbCorgiVer = ptbCorgiVersion();
+        save(saveFilename,lumVarName,sizeVarName,'modeString','fileInfo')
     end
 
 end
