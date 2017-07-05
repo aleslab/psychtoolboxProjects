@@ -224,7 +224,7 @@ uicontrol(fh,'Style','pushbutton',...
     'callback',@setPtbCorgiModePref);
 
 
-
+updateCalibFileList();
 
 
     function chooseBaseDir(varargin)

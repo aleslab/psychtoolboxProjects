@@ -41,7 +41,8 @@ end
 %Now loop over the unique modes and setup the file list
 for iMode = 1:length(ia)
     calibList(iMode).modeString = c{iMode};
-    calibList(iMode).filenames  = {foundFileList(ic).name};
+    theseFiles = (ic==iMode);
+    calibList(iMode).filenames  = {foundFileList(theseFiles).name};
 end
 
 

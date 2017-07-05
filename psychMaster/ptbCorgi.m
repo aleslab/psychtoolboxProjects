@@ -958,16 +958,26 @@ end
             %If we're running a test condition return to the gui without
             %saving. This enables us to quickly debug code.
             if sessionInfo.returnToGui
-                
+               
+                %If using full screen mode on primary monitor make sure to
+                %close the ptb window.
+                if expInfo.screenNum==0 && expInfo.useFullScreen
+                    closeExperiment;
+                    expInfo = openExperiment(sessionInfo.expInfoBeforeOpenExperiment);
+                    sessionInfo.returnToGui = false;
+                    rethrow(exception);
+                end
+
                 %Check if we crashed Screen and if so re-open the
-                %window. 
+                %window.
                 if isempty(Screen('Windows')) 
                     expInfo = openExperiment(sessionInfo.expInfoBeforeOpenExperiment);
                 end
                 
                 message = getReport(exception); %Get formated report
-                fprintf(2,message); %Display the error. Trick way to make it red. 
+                fprintf(2,message); %Display the error. Trick way to make it red.
                 return;
+                                
             end
             %JMA: Fix this to gracefully release KbQueue's on error
             %Need to do the following but we may not have expInfo in the event of an error.

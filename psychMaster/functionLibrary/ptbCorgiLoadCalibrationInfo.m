@@ -16,7 +16,7 @@ if ispref('ptbCorgi','calibrationFile')
         calibInfo = load(calibFile); %loads the variables
         
         foundCalibData = false; %Check 
-        if isfield(calibinfo,'sizeCalibInfo')
+        if isfield(calibInfo,'sizeCalibInfo')
             expInfo.monitorWidth = calibInfo.sizeCalibInfo.monitorWidth;
             expInfo.sizeCalibInfo = calibInfo.sizeCalibInfo;
             disp('<><><><><><> PTBCORGI <><><><><><><>')
@@ -27,8 +27,8 @@ if ispref('ptbCorgi','calibrationFile')
         if isfield(calibInfo,'lumCalibInfo')
             disp('<><><><><><> PTBCORGI <><><><><><><>')
             disp(['Loading Size Calibration from: ' calibFile])
-            expInfo.gammaTable = calibInfo.lumInfo.gammaTable;
-            expInfo.lumCalibInfo = calibInfo.lumInfo;
+            expInfo.gammaTable = calibInfo.lumCalibInfo.gammaTable;
+            expInfo.lumCalibInfo = calibInfo.lumCalibInfo;
             foundCalibData = true;
         end
         
@@ -83,4 +83,14 @@ else
     
 
 end
+
+
+if ~isfield(expInfo,'monitorWidth')
+    disp('<><><><><><> PTBCORGI <><><><><><><>')
+    disp('NO SIZE CALIBRATION HAS BEEN SETUP. Guessing monitor size')
+    screenNum = max(Screen('Screens'));
+    [w, h]=Screen('DisplaySize',screenNum);
+    expInfo.monitorWidth = w/10; %Convert to cm from mm
+end
+
 

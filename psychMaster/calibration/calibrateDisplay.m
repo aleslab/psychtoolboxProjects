@@ -123,7 +123,8 @@ saveBtnH= uicontrol(fh,'Style','pushbutton',...
             expInfo = rmfield(expInfo,'lumCalibInfo');
         end
         %Measure monitor values                
-        lumCalibInfo = measureMonitorLuminance(expInfo);
+        nValuesToMeasure = str2double( get(lumNumberBoxH,'string'))
+        lumCalibInfo = measureMonitorLuminance(expInfo,nValuesToMeasure);
         nValues = size(lumCalibInfo.allCIExyY,1);
         plot(ah,linspace(0,1,nValues),lumCalibInfo.meanCIExyY(:,3),'o');
         hold on;

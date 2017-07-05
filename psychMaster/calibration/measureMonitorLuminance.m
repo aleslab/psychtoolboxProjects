@@ -13,7 +13,7 @@ function [luminanceCalibInfo] = measureMonitorLuminance(varargin)
 samples = 1;
 
 if nargin>=1
-    expInfo = varargin;
+    expInfo = varargin{1};
 end
     
 
@@ -37,8 +37,28 @@ end
 % Obtains the XYZ colour correction matrix specific to the ColorCAL II
 % being used, via the CDC port. This is a separate function (see further
 % below in this script).
-cMatrix = ColorCal2Serial('ReadColorMatrix');
+
+
+%Try to open ColorCal2 as USB;
+try
+    clear ColorCal2;
+    deviceInfo=ColorCal2('DeviceInfo');
+    deviceFunction = @ColorCal2;
+catch
+    
+    try
+        deviceInfo=ColorCal2Serial('DeviceInfo');
+    deviceFunction = @ColorCal2Serial;
+    catch
+        error('Cannot Connect to ColorCal using USB or Serial');
+    end
+end
+
+    
+%cMatrix = ColorCal2Serial('ReadColorMatrix');
 %cMatrix = ColorCal2('ReadColorMatrix');
+cMatrix = deviceFunction('ReadColorMatrix');
+
 
 myCorrectionMatrix = cMatrix(1:3,:);
 
@@ -55,7 +75,14 @@ Screen('TextSize',expInfo.curWindow, 14);
 
 Screen('Flip', expInfo.curWindow);
 
-nValues = 64;
+if nargin>=2
+    nValues = varargin{2};
+else
+    nValues = 32;
+end
+
+
+
 displayValues = linspace(0,1,nValues)'*[1 1 1]; %linear algebra here to replicate the matrix
 averageMeasurement = zeros(nValues,3);
 
@@ -79,7 +106,11 @@ for iValue = 1:nValues
                
         % Ask the ColorCAL II to take a measurement. It will return 3 values.
         % This is a separate function (see further below in this script).
-        s = ColorCal2Serial('MeasureXYZ');
+        %s = ColorCal2Serial('MeasureXYZ');
+        PsychHID('CloseUSBDevice')
+        clear ColorCal2;
+        s = deviceFunction('MeasureXYZ');
+        
    %clear ColorCal2;
     %  s = ColorCal2('MeasureXYZ');
 
@@ -106,12 +137,13 @@ end
     %used for rendering.  Need to keep track of this. 
     luminanceCalibInfo.modeInfo = Screen('Resolution', expInfo.screenNum); %This gets the screen mode
     [width, height]=Screen('WindowSize', expInfo.screenNum); %This gets the actual pixels the mode is using
+    [gammatable, dacbits, reallutsize]= Screen('ReadNormalizedGammaTable', expInfo.screenNum);
     luminanceCalibInfo.monitorPixelWidth= width;
     luminanceCalibInfo.expInfo = expInfo;
     luminanceCalibInfo.allCIExyY = allCIExyY;
     luminanceCalibInfo.meanCIExyY = averageMeasurement; 
-    luminanceCalibInfo.oldClut = oldClut;
-    luminanceCalibInfo.clutSize = size(oldClut,1);
+    luminanceCalibInfo.oldGammatable = gammatable;
+    luminanceCalibInfo.clutSize = reallutsize;
     
 % %     %type = 1 is Fit a simple power function
 % %     [gammaFit,gammaInputFit,fitComment,gammaParams]=FitDeviceGamma(CIExyY,displayValues(:,1),1,luminanceCalibInfo.clutSize);
