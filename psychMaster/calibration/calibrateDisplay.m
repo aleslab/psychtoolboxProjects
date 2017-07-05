@@ -84,6 +84,12 @@ uicontrol(fh,'Style','pushbutton',...
     'Units','normalized','Position',[.81 yStartPos-2*btnDelta .15 .075],...
     'callback',@testCB);
 
+%Load Luminance Calibration Button
+uicontrol(fh,'Style','pushbutton',...
+    'String','Load Calibration',...
+    'Units','normalized','Position',[.81 yStartPos-4*btnDelta .15 .075],...
+    'callback',@loadCB);
+
 
 
 saveBtnH= uicontrol(fh,'Style','pushbutton',...
@@ -123,6 +129,15 @@ saveBtnH= uicontrol(fh,'Style','pushbutton',...
         hold on;
         ylabel('cd/m^2')
         
+    end
+
+    function loadCB(varargin)
+        filename=uigetfile();
+        luminanceCalibInfo = load(filename);
+        nValues = size(luminanceCalibInfo.allCIExyY,1);
+        plot(ah,linspace(0,1,nValues),luminanceCalibInfo.meanCIExyY(:,3),'o');
+        hold on;
+        ylabel('cd/m^2')
     end
 
     function fitCB(varargin)

@@ -1,0 +1,9 @@
+function [trialData] = trial_LROccluderV3(expInfo, conditionInfo)
+
+drawFixation(expInfo, expInfo.fixationInfo);
+t = Screen('Flip', expInfo.curWindow,[],1);
+
+ptbCorgiSendTrigger(
+
+end
+
