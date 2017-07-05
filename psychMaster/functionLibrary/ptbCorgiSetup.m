@@ -416,7 +416,7 @@ uicontrol(fh,'Style','pushbutton',...
     function calibrateMode(hObject,callbackdata)
         
         res = getSelVideoModeStruct();
-        res.useBitsSharp = checkUseBitsSharp();
+        res.useBitsSharp = useBitsSharp;
         calibrateDisplay(res);
     end
 
