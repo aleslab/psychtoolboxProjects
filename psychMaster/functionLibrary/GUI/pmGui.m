@@ -56,7 +56,8 @@ function pmGui_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 if length(varargin)>0
     handles.sessionInfo = varargin{1};
-    handles.expInfo = varargin{2};    
+    handles.expInfo = varargin{2}; 
+    handles.expInfoArgument = handles.expInfo;
     if length(varargin) ==3
         handles.conditionInfo = varargin{3};
     end
@@ -132,6 +133,7 @@ end
 
 %If we have a handle to curWindow we are runnning an active session
 if isfield(handles.expInfo,'curWindow')
+    setupWindowSettings(handles);
     disableGuiElementsWhenWindowActive(handles);
 end
 
@@ -275,6 +277,7 @@ if isfield(handles,'conditionInfo')
     handles = rmfield(handles,'conditionInfo');
 end
 
+handles.expInfo = handles.expInfoArgument;
 guidata(hObject,handles);
 loadParadigmFile(hObject);
 
@@ -315,7 +318,7 @@ try
     else
         groupingIndices{1} = 1:length(handles.conditionInfo);
         condIndices = groupingIndices{1};
-        groupLabels = {'No Groups Defined'}
+        groupLabels = {'No Groups Defined'};
     end
     
        
@@ -553,7 +556,7 @@ function testCondBtn_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-selectedCondition = get(handles.condListbox,'Value')
+selectedCondition = get(handles.condListbox,'Value');
 %Backup the preloaded conditions before selecting the test condition. 
 handles.sessionInfo.backupConditionInfo = handles.conditionInfo;
 
@@ -730,82 +733,22 @@ else
     end
 end
 
-if handles.expInfo.useFullScreen
+if isfield(handles.expInfo,'windowShieldingLevel') ...
+   if handles.expInfo.windowShieldingLevel >= 2000;
+    set(handles.useOpaqueRadioBtn,'value',1);
+   else
+       set(handles.useTranslucentRadioBtn,'value',1);
+   end
+elseif handles.expInfo.useFullScreen
     
     set(handles.useOpaqueRadioBtn,'value',1);
+    set(handles.useTranslucentRadioBtn,'value',0);
     handles.expInfo.windowShieldingLevel = 2000;
 else
     set(handles.useTranslucentRadioBtn,'value',1);
-    handles.expInfo.windowShieldingLevel = 1750;
+    set(handles.useOpaqueRadioBtn,'value',0);
+    handles.expInfo.windowShieldingLevel = 1850;
 end       
-
-
-
-
-function expInfo = setExpInfoFromWindowPanel(expInfo)
-
-
-if get(handles.useOpaqueRadioBtn,'value')==1,
-    Screen('Preference', 'WindowShieldingLevel', 2000);
-    expInfo.translucentWindow = false;
-else
-    Screen('Preference', 'WindowShieldingLevel', 1750);
-    expInfo.translucentWindow = true;
-end
-
-if get(handles.usePrimaryMonitorRadioBtn,'value')==1;
-    handles.expInfo.screenNum = min(Screen('Screens'));
-else
-    handles.expInfo.screenNum = max(Screen('Screens'));
-end
-
-if get(handles.useFullScreenRadioBtn,'value')==1;
-    handles.useFullScreen = true;
-else
-    handles.useFullScreen = false;
-end
-
-
-function expInfo = refreshWindowSettings(handles)
-
-
-if isfield(handles.expInfo,'screenNum')
-    if handles.expInfo.screenNum >0
-        set(handles.useSecondaryMonitorRadioBtn,'value',1);
-    else
-        set(handles.usePrimaryMonitorRadioBtn,'value',1);
-    end
-else
-    handles.expInfo.screenNum = max(Screen('Screens'));
-    if handles.expInfo.screenNum>0
-        set(handles.useSecondaryMonitorRadioBtn,'value',1);
-    else
-        set(handles.usePrimaryMonitorRadioBtn,'value',1);
-    end
-end
-
-if isfield(handles.expInfo,'useFullScreen')
-    if handles.expInfo.useFullScreen
-        set(handles.useFullScreenRadioBtn,'value',1);
-    else
-        set(handles.useWindowRadioBtn,'value',1);
-    end
-else
-    if handles.expInfo.screenNum >0
-        set(handles.useFullScreenRadioBtn,'value',1);
-        handles.useFullScreen = true;
-    else
-        set(handles.useWindowRadioBtn,'value',1);
-        handles.useFullScreen = false;
-    end
-end
-
-if get(handles.useOpaqueRadioBtn,'value')==1,
-    Screen('Preference', 'WindowShieldingLevel', 2000);
-else
-    Screen('Preference', 'WindowShieldingLevel', 1750);
-end
-
 
 
 
@@ -838,7 +781,7 @@ function windowAlphaBtnGrp_SelectionChangedFcn(hObject, eventdata, handles)
 if get(handles.useOpaqueRadioBtn,'value')==1,
     handles.expInfo.windowShieldingLevel=2000;
 else
-    handles.expInfo.windowShieldingLevel=1750;
+    handles.expInfo.windowShieldingLevel=1850;
 end
 
 guidata(hObject,handles);

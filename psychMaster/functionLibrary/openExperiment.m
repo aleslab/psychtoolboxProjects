@@ -78,8 +78,8 @@ if ~isfield(expInfo,'requestedResolution') || isempty(expInfo.requestedResolutio
     if ispref('ptbCorgi','screenResolution')
         requestedResolution = getpref('ptbCorgi','resolution');
     else    
-    %If nothing is set just use the current resolution. 
-    requestedResolution = Screen('resolution',expInfo.screenNum);
+        %If nothing is set just use the current resolution.
+        requestedResolution = Screen('resolution',expInfo.screenNum);
     end
     
 else     %Now check what is requested.

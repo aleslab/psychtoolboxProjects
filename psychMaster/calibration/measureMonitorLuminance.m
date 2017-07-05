@@ -1,4 +1,4 @@
-function [luminanceCalibInfo] = measureMonitorLuminance(luminanceCalibInfo)
+function [luminanceCalibInfo] = measureMonitorLuminance(varargin)
 % Shows how to make measurements using the ColorCAL II CDC interface.
 % This script calls several other separate functions which are included
 % below.
@@ -12,7 +12,10 @@ function [luminanceCalibInfo] = measureMonitorLuminance(luminanceCalibInfo)
 % Sets how many samples to take.
 samples = 1;
 
-
+if nargin>=1
+    expInfo = varargin{1};
+end
+    
 
 % % First, the ColorCAL II should have its zero level calibrated. This can
 % % simply be done by placing one's hand over the ColorCAL II sensor to block
@@ -34,9 +37,28 @@ samples = 1;
 % Obtains the XYZ colour correction matrix specific to the ColorCAL II
 % being used, via the CDC port. This is a separate function (see further
 % below in this script).
+
+
+%Try to open ColorCal2 as USB;
+try
+    clear ColorCal2;
+    deviceInfo=ColorCal2('DeviceInfo');
+    deviceFunction = @ColorCal2;
+catch
+    
+    try
+        deviceInfo=ColorCal2Serial('DeviceInfo');
+    deviceFunction = @ColorCal2Serial;
+    catch
+        error('Cannot Connect to ColorCal using USB or Serial');
+    end
+end
+
+    
 %cMatrix = ColorCal2Serial('ReadColorMatrix');
-  clear ColorCal2;
-cMatrix = ColorCal2('ReadColorMatrix');
+%cMatrix = ColorCal2('ReadColorMatrix');
+cMatrix = deviceFunction('ReadColorMatrix');
+
 
 myCorrectionMatrix = cMatrix(1:3,:);
 
@@ -45,40 +67,30 @@ myCorrectionMatrix = cMatrix(1:3,:);
 %      correctedValues = cMatrix(1:3,:) * [s.x s.y s.z]';
 
 try
-%Open a window
-expInfo.useBitsSharp = true;
 
-if nargin>0
-    expInfo.lumCalibInfo = luminanceCalibInfo;
-    expInfo.gammaTable   = luminanceCalibInfo.gammaTable;
-end
-
+    %Open a window
 expInfo = openExperiment(expInfo);
-%[oldClut, dacBits, lutSize] = Screen('ReadNormalizedGammaTable', expInfo.screenNum);
-% BackupCluts;
-% 
-% %If given a gamma table use it.
-% if nargin>0
-%     fullTable = repmat(inverseGamma,1,3);
-%     [oldClut sucess]=Screen('LoadNormalizedGammaTable',expInfo.curWindow,fullTable);
-% else
-%     oldClut = LoadIdentityClut(expInfo.curWindow);
-% end
 
 Screen('TextSize',expInfo.curWindow, 14);
 
 Screen('Flip', expInfo.curWindow);
 
-nValues = 8;
+if nargin>=2
+    nValues = varargin{2};
+else
+    nValues = 32;
+end
+
+
+
 displayValues = linspace(0,1,nValues)'*[1 1 1]; %linear algebra here to replicate the matrix
 averageMeasurement = zeros(nValues,3);
 
 for iValue = 1:nValues
     % Cycle through each sample.
     
-    iValue
     Screen('FillRect',expInfo.curWindow,displayValues(iValue,:));
-    DrawFormattedText(expInfo.curOverlay, num2str(iValue),0,0,[1]);
+    DrawFormattedText(expInfo.curWindow, num2str(iValue),0,0,[255, 0, 0, 255]);
 
     Screen('Flip',expInfo.curWindow);
     % Pause for approximately .25 second to allow sufficient time for the
@@ -94,9 +106,13 @@ for iValue = 1:nValues
                
         % Ask the ColorCAL II to take a measurement. It will return 3 values.
         % This is a separate function (see further below in this script).
-        %s = ColorCal2Serial('MeasureXYZ')
-     clear ColorCal2;
-      s = ColorCal2('MeasureXYZ');
+        %s = ColorCal2Serial('MeasureXYZ');
+        PsychHID('CloseUSBDevice')
+        clear ColorCal2;
+        s = deviceFunction('MeasureXYZ');
+        
+   %clear ColorCal2;
+    %  s = ColorCal2('MeasureXYZ');
 
         correctedValues = myCorrectionMatrix * [s.x s.y s.z]';
         % The returned values need to be multiplied by the ColorCAL II's
@@ -121,13 +137,14 @@ end
     %used for rendering.  Need to keep track of this. 
     luminanceCalibInfo.modeInfo = Screen('Resolution', expInfo.screenNum); %This gets the screen mode
     [width, height]=Screen('WindowSize', expInfo.screenNum); %This gets the actual pixels the mode is using
+    [gammatable, dacbits, reallutsize]= Screen('ReadNormalizedGammaTable', expInfo.screenNum);
     luminanceCalibInfo.monitorPixelWidth= width;
     luminanceCalibInfo.expInfo = expInfo;
     luminanceCalibInfo.allCIExyY = allCIExyY;
     luminanceCalibInfo.meanCIExyY = averageMeasurement; 
-%     luminanceCalibInfo.oldClut = oldClut;
-%     luminanceCalibInfo.clutSize = size(oldClut,1);
-%     
+    luminanceCalibInfo.oldGammatable = gammatable;
+    luminanceCalibInfo.clutSize = reallutsize;
+    
 % %     %type = 1 is Fit a simple power function
 % %     [gammaFit,gammaInputFit,fitComment,gammaParams]=FitDeviceGamma(CIExyY,displayValues(:,1),1,luminanceCalibInfo.clutSize);
 % %     
