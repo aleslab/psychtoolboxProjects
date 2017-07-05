@@ -37,6 +37,10 @@ Simple response trial type has upgraded keypress handling (e.g. escape aborts)
 Simple response upgraded to allow defintion of the "correct" key press for each condition. 
 expInfo structure documented (mostly)
 Updated keyboard initialization to get keypresses from all devices when using KbCheck()
+Structured code to enable easy testing/debugging of trial files. 
+Added new ptbCorgiSetup() that unifies setup and calibration
+Added support for BitsSharp mono++ mode and triggering. 
+
 
 
 0.31.0
