@@ -418,6 +418,8 @@ updateCalibFileList();
         res = getSelVideoModeStruct();
         res.useBitsSharp = useBitsSharp;
         calibrateDisplay(res);
+        calibList = ptbCorgiGetCalibFileList(calibDir);
+        updateCalibFileList();
     end
 
     function updateCalibFileList(hObject,callbackdata)
