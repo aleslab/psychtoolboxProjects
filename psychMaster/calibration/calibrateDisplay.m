@@ -9,6 +9,7 @@ else
     screenNum = max(Screen('screens'));
     modeToCalibrate = Screen('resolution',screenNum)
     modeToCalibrate.screenNum = screenNum;
+    modeToCalibrate.useBitsSharp = false;
 end
 modeString = [num2str(modeToCalibrate.width) 'x' num2str(modeToCalibrate.height) ...
             '_' num2str(modeToCalibrate.hz) 'Hz_' num2str(modeToCalibrate.pixelSize) 'bpp'];
@@ -100,6 +101,8 @@ saveBtnH= uicontrol(fh,'Style','pushbutton',...
         %Measure monitor values
         sizeCalibInfo = calibrateSize(expInfo);
         
+        set(saveBtnH,'enable','on')
+        figure(fh);
         
     end
 
@@ -170,7 +173,7 @@ saveBtnH= uicontrol(fh,'Style','pushbutton',...
 %         modeString = [num2str(lumCalibInfo.modeInfo.width) 'x' num2str(lumCalibInfo.modeInfo.height) ...
 %             '_' num2str(lumCalibInfo.modeInfo.hz) 'Hz_' num2str(lumCalibInfo.modeInfo.pixelSize) 'bpp_'];
 %         
-        filename = [computerName '_' modeString datestr(now,'yyyymmdd_HHMMSS') '.mat'];
+        filename = [computerName '_' modeString '_' datestr(now,'yyyymmdd_HHMMSS') '.mat'];
         
         if ispref('ptbCorgi','calibdir');
             calibdir = getpref('ptbCorgi','calibdir');

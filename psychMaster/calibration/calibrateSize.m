@@ -4,7 +4,7 @@ function sizeCalibInfo=calibrateSize(varargin)
 
 try
     %Open a window
-    if narargin>0
+    if nargin>0
         expInfo = varargin{1};
     end
     
@@ -50,30 +50,30 @@ try
     sizeCalibInfo.monitorWidth =    sizeCalibInfo.monitorPixelWidth/sizeCalibInfo.pixPerCm;
     
 
-    computerName = userResponse{2};
-    
-    modeString = [num2str(sizeCalibInfo.modeInfo.width) 'x' num2str(sizeCalibInfo.modeInfo.height) ...
-        '_' num2str(sizeCalibInfo.modeInfo.hz) 'Hz_' num2str(sizeCalibInfo.modeInfo.pixelSize) 'bpp_'];
-    
-    filename = ['size_' computerName '_' modeString datestr(now,'yyyymmdd_HHMM') '.mat'];
-    
-    setpref('ptbCorgi','computerName',computerName);
-    
-    if ispref('ptbCorgi','calibdir');
-        calibdir = getpref('ptbCorgi','calibdir');
-    elseif ispref('ptbCorgi','base');
-        calibdir = fullfile(getpref('ptbCorgi','base'),'calibrationData');
-    else
-        calibdir = '';
-    end
-    
-    saveFilename = fullfile(calibdir,filename);
-    
-    if ~exist(calibdir,'dir')
-        mkdir(calibdir)
-    end
-    
-    save(saveFilename,'-struct','sizeCalibInfo')
+%     computerName = userResponse{2};
+%     
+%     modeString = [num2str(sizeCalibInfo.modeInfo.width) 'x' num2str(sizeCalibInfo.modeInfo.height) ...
+%         '_' num2str(sizeCalibInfo.modeInfo.hz) 'Hz_' num2str(sizeCalibInfo.modeInfo.pixelSize) 'bpp_'];
+%     
+%     filename = ['size_' computerName '_' modeString datestr(now,'yyyymmdd_HHMM') '.mat'];
+%     
+%     setpref('ptbCorgi','computerName',computerName);
+%     
+%     if ispref('ptbCorgi','calibdir');
+%         calibdir = getpref('ptbCorgi','calibdir');
+%     elseif ispref('ptbCorgi','base');
+%         calibdir = fullfile(getpref('ptbCorgi','base'),'calibrationData');
+%     else
+%         calibdir = '';
+%     end
+%     
+%     saveFilename = fullfile(calibdir,filename);
+%     
+%     if ~exist(calibdir,'dir')
+%         mkdir(calibdir)
+%     end
+%     
+%     save(saveFilename,'-struct','sizeCalibInfo')
          
     
 catch

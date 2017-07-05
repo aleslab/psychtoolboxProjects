@@ -105,26 +105,26 @@ if ispref('ptbCorgi','useBitsSharp');
 end
 
 
-yPos = .2;
+yPos = .4;
 devicePopupH = uicontrol(fh,'Style','popupmenu',...
     'String',deviceList,'Value',deviceIdx,...
-    'Units','normalized','Position',[.1 yPos 0.3 .05],...
+    'Units','normalized','Position',[.1 yPos 0.2 .05],...
     'callback',@selectDevice);
 
 uicontrol(fh,'Style','text','String','Output Device',...
     'Units','normalized','Position',[0 yPos 0.1 .05])
 
-uicontrol(fh,'Style','pushbutton',...
-    'String','Validate Bits Sharp',...
-    'Units','normalized','Position',[0 .2 0.3 .05],...
-    'visible',validateBitsVisible,'callback',@validateBitsSharp);
+% uicontrol(fh,'Style','pushbutton',...
+%     'String','Validate Bits Sharp',...
+%     'Units','normalized','Position',[0 .2 0.3 .05],...
+%     'visible',validateBitsVisible,'callback',@validateBitsSharp);
 
 
 %---------------------
 %Resolution
 
 [screenPref resPref hzPref bitDepthPref] = getPtbCorgiMonPref();
-
+calibList = ptbCorgiGetCalibFileList(calibDir);
 
 %Setup the screen selection popup.
 screenHandleList = Screen('screens');
@@ -211,8 +211,7 @@ uicontrol(fh,'Style','pushbutton',...
 
 calibFileListH = uicontrol(fh,'Style','listbox',...
     'String',{'None'},...
-    'Units','normalized','Position',[0.01 yPos-.42 0.29 .15],...
-    'callback',@setPtbCorgiModePref);
+    'Units','normalized','Position',[0.01 yPos-.42 0.29 .15]);
 
 uicontrol(fh,'Style','text','HorizontalAlignment','left',...
 'String', 'Calibration Files for Selected Mode',...
@@ -221,7 +220,7 @@ uicontrol(fh,'Style','text','HorizontalAlignment','left',...
 
 uicontrol(fh,'Style','pushbutton',...
     'String','Save Mode Selections as default',...
-    'Units','normalized','Position',[0 yPos-.5 0.3 .05],...
+    'Units','normalized','Position',[0 .2 0.3 .05],...
     'callback',@setPtbCorgiModePref);
 
 
@@ -260,11 +259,20 @@ uicontrol(fh,'Style','pushbutton',...
         
         set(calibDirHandle,'String',dirname);
         setpref('ptbCorgi','calibdir',dirname);
-        
+        calibDir = dirname;
+        calibList = ptbCorgiGetCalibFileList(calibDir);
+        updateCalibFileList();
     end
 
     function selectDevice(hObject,callbackdata)
-        selection = get(hObject,'value');
+      
+        deviceIdx = get(hObject,'value');
+        
+        if deviceIdx == 2
+            useBitsSharp = true;
+        else
+            useBitsSharp = false;
+        end
         
         
     end
@@ -277,7 +285,7 @@ uicontrol(fh,'Style','pushbutton',...
             screenPref = res.screenNum;
             resPref = num2str([res.width res.height],'%dx%d');
             hzPref    = res.hz;
-            bitDepthPref = res.pixelSize;
+            bitDepthPref = res.pixelSize;            
         else
             screenPref= max(Screen('screens'));
             curRes    = Screen('resolution',screenPref);
@@ -297,13 +305,7 @@ uicontrol(fh,'Style','pushbutton',...
         computerName = get(nameTextBoxHandle,'string');
     end
 
-    function setPtbCorgiModePref(varargin)
-      
-
-        res = getSelVideoModeStruct();
-        setpref('ptbCorgi','resolution',res);
-        
-    end
+ 
 
     %Build video mode structure from selection.
     function res = getSelVideoModeStruct()
@@ -360,7 +362,7 @@ uicontrol(fh,'Style','pushbutton',...
     function changeScreen(varargin)
         
         selScreenIdx = get(screenPopupH,'value');
-        selScreenNum = screenList(selScreenIdx);
+        selScreenNum = screenHandleList(selScreenIdx);
         
         
         %Setup the resolution popup
@@ -375,7 +377,7 @@ uicontrol(fh,'Style','pushbutton',...
         resLabels{curResIdx} = [resLabels{curResIdx} ' *Current Active*'];
         
         %resLabels{selResIdx} = [resLabels{selResIdx} ' *ptbCorgi*'];
-        set(resPopupH,'labels',resLabels,'value',selResIdx)
+        set(resPopupH,'string',resLabels,'value',selResIdx)
 
         changeResolution();
         
@@ -414,18 +416,27 @@ uicontrol(fh,'Style','pushbutton',...
     function calibrateMode(hObject,callbackdata)
         
         res = getSelVideoModeStruct();
+        res.useBitsSharp = checkUseBitsSharp();
         calibrateDisplay(res);
     end
 
     function updateCalibFileList(hObject,callbackdata)
         
         modeString = generateModeString(getSelVideoModeStruct());
+        calibListIdx = [];
+        if ~isempty(calibList)
+            calibListIdx = find( strcmp({calibList(:).modeString},modeString));
+        end
         
-        calibModeIdx=strcmp(availCalibModes,modeString);
-        availCalibFile = calibFilesForMode{calibModeIdx}};
+        availCalibFiles = {'None'};
+        set(calibFileListH,'value',1);
+        if ~isempty(calibListIdx)
+            availCalibFiles = calibList(calibListIdx).filenames;
+            availCalibFiles = {'None', availCalibFiles{:}};
+            
+        end
         
-        
-        set(calibFileListH,'string',availCalibFiles)
+        set(calibFileListH,'string',availCalibFiles);
         
     end
 
@@ -437,6 +448,39 @@ uicontrol(fh,'Style','pushbutton',...
         
     end
 
+    function calibrationFile = getSelectedCalibrationFile()
+        
+        
+        calibSelected = get(calibFileListH,'value');
+        fileList = get(calibFileListH,'string');
+        calibrationFile = fileList{calibSelected};
+        
+        if strcmp('calibrationFile','none')
+            calibrationFile = [];
+        end
+        
+    end
+
+
+    function setPtbCorgiModePref(varargin)
+        
+
+        res = getSelVideoModeStruct();
+        setpref('ptbCorgi','resolution',res);
+        calibrationFile = getSelectedCalibrationFile();
+        setpref('ptbCorgi','calibrationFile',calibrationFile);
+        
+        setpref('ptbCorgi','useBitsSharp',useBitsSharp);
+
+        if useBitsSharp
+            deviceIdx = 2;
+            deviceList = {'None','Bits Sharp *ptbCorgi*'};
+            validateBitsVisible='on';
+            set( devicePopupH,'value',deviceIdx,'string',deviceList);
+        end
+
+        
+    end
 
 
 end
