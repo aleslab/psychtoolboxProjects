@@ -87,9 +87,11 @@ BitsPlusPlus('DIOCommand', expInfo.curWindow, 1, mask, pulseDef, 0,0, yPos);
 %if we want to send the trigger now we need to use 2 frames: 1 to send the
 %DIO state and one to clear it. 
 if sendNow
+drawFixation(expInfo);
 timeSent    = Screen('Flip', expInfo.curWindow);
 pulseDef = [repmat(0,highTime,1);zeros(lowTime,1)]';
 BitsPlusPlus('DIOCommand', expInfo.curWindow, 1, mask, pulseDef, 0,0, yPos);
+drawFixation(expInfo);
 timeCleared = Screen('Flip', expInfo.curWindow);
 trigDur=(timeCleared -timeSent)*1000
 end
