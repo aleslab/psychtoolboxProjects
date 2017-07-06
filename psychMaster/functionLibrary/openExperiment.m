@@ -69,6 +69,12 @@ if ~isfield(expInfo,'stereoMode')
     expInfo.stereoMode = 0;
 end
 
+%Default is instructions is empty;
+if ~isfield(expInfo,'instructions')
+    expInfo.instructions = '';
+end
+
+
 %Check if a specific resolution has been requested
 if ~isfield(expInfo,'requestedResolution') || isempty(expInfo.requestedResolution)
 
