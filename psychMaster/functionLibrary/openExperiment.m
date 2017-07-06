@@ -33,6 +33,8 @@ function expInfo = openExperiment( expInfo)
 clear PsychHID;
 clear KbCheck;
 
+%Close psychPortAudio handles if left open by crash
+PsychPortAudio('Close');
 %
 % This is a line that is easily skipped/missed but is important
 % Various default setup options, including color as float 0-1;
@@ -67,6 +69,12 @@ if ~isfield(expInfo,'stereoMode')
     expInfo.stereoMode = 0;
 end
 
+%Default is instructions is empty;
+if ~isfield(expInfo,'instructions')
+    expInfo.instructions = '';
+end
+
+
 %Check if a specific resolution has been requested
 if ~isfield(expInfo,'requestedResolution') || isempty(expInfo.requestedResolution)
 
@@ -76,8 +84,8 @@ if ~isfield(expInfo,'requestedResolution') || isempty(expInfo.requestedResolutio
     if ispref('ptbCorgi','screenResolution')
         requestedResolution = getpref('ptbCorgi','resolution');
     else    
-    %If nothing is set just use the current resolution. 
-    requestedResolution = Screen('resolution',expInfo.screenNum);
+        %If nothing is set just use the current resolution.
+        requestedResolution = Screen('resolution',expInfo.screenNum);
     end
     
 else     %Now check what is requested.
@@ -173,10 +181,59 @@ end
 Screen('Preference', 'VisualDebugLevel',2);
 Screen('Preference', 'Verbosity',3);
 
+
+if ~isfield(expInfo,'useBitsSharp')
+    expInfo.useBitsSharp = false;
+end
+
+if ~isfield(expInfo,'enableTriggers')
+    expInfo.enableTriggers = false;
+end
+
+%Now setup bitssharp if requested
+if  expInfo.useBitsSharp
+    %Setup taken from BitsPlusPlusIdentityClutTest
+     % Setup imaging pipeline:
+    PsychImaging('PrepareConfiguration');
+
+    % Require a 32 bpc float framebuffer: This would be the default anyway, but
+    % just here to be explicit about it:
+    PsychImaging('AddTask', 'General', 'FloatingPoint32Bit');
+
+%     
+    % Use Mono++ mode with overlay:
+    PsychImaging('AddTask', 'General', 'EnableBits++Mono++OutputWithOverlay');
+
+    
+    %     % Make sure we run with our default color correction mode for this test:
+    %     % 'ClampOnly' is the default, but we set it here explicitely, so no state
+    %     % from previously running scripts can bleed through:
+    %     PsychImaging('AddTask', 'FinalFormatting', 'DisplayColorCorrection', 'ClampOnly');
+    % Want to have simple power-law gamma correction of stims: We choose the
+    % method here. After opening the onscreen window, we can set and change
+    % encoding gamma via PsychColorCorrection() function...
+    PsychImaging('AddTask', 'FinalFormatting', 'DisplayColorCorrection', 'SimpleGamma');
+    
+    %Setup trigger values
+    if expInfo.enableTriggers
+        expInfo.triggerInfo = ptbCorgiTriggerDefault(expInfo);
+    end
+    
+end
+
+
 % Set the background to the background value.
 expInfo.bckgnd = 0.5;
 %This uses the new "psychImaging" pipeline.
 [expInfo.curWindow, expInfo.screenRect] = PsychImaging('OpenWindow', expInfo.screenNum, expInfo.bckgnd,windowRect,[],[], expInfo.stereoMode);
+
+%If we're using a bitsSharp mode we also have an overlay window.
+if expInfo.useBitsSharp
+    expInfo.curOverlay = PsychImaging('GetOverlayWindow', expInfo.curWindow);
+else %If we're not using a bitSharp mode we point the overlay to the current window. 
+    expInfo.curOverlay = expInfo.curWindow;
+end
+
 %Gather information about the system
 expInfo.modeInfo =Screen('Resolution', expInfo.screenNum);
 expInfo.windowInfo = Screen('GetWindowInfo', expInfo.curWindow);
@@ -223,8 +280,14 @@ if isfield(expInfo,'gammaTable')
         error('Cannot continue due to luminance calibration mismatch to current video mode')
     end
     
-    BackupCluts;
-    [oldClut sucess]=Screen('LoadNormalizedGammaTable',expInfo.curWindow,expInfo.gammaTable);
+    if expInfo.useBitsSharp
+        %If we are using the bits sharp in mono++ mode
+        % Set encoding gamma: It is 1/gamma to compensate for decoding gamma...
+        PsychColorCorrection('SetEncodingGamma', expInfo.curWindow, 1/expInfo.lumCalibInfo.gammaParams);        
+    else
+        BackupCluts;
+        [oldClut sucess]=Screen('LoadNormalizedGammaTable',expInfo.curWindow,expInfo.gammaTable);
+    end
 else
     oldClut = LoadIdentityClut(expInfo.curWindow);
     [gammaTable, dacbits, reallutsize] = Screen('ReadNormalizedGammaTable',expInfo.curWindow);

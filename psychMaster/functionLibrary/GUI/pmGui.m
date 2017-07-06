@@ -131,8 +131,8 @@ if isfield(handles.sessionInfo,'paradigmEditedByUser') && handles.sessionInfo.pa
     set(handles.saveParadigmBtn,'enable','on')
 end
 
-%If we have a handle to curWindow we are runnning an active session
-if isfield(handles.expInfo,'curWindow')
+%If there are open Screen windows assume we are runnning an active session
+if ~isempty(Screen('Windows'))
     setupWindowSettings(handles);
     disableGuiElementsWhenWindowActive(handles);
 end

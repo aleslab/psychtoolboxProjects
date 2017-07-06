@@ -303,6 +303,12 @@ end
     while sessionInfo.returnToGui
         
         
+        %If using full screen mode on single monitor make sure to
+        %close the ptb window after a test, otherwise we can get stuck. 
+        if length(Screen('Screens'))==1 && expInfo.useFullScreen
+            closeExperiment;
+        end
+        
         [sessionInfo,expInfo,conditionInfo] = pmGui(sessionInfo,expInfo,sessionInfo.backupConditionInfo);
         drawnow; %<- required to actually close the gui.
         
@@ -311,6 +317,12 @@ end
             cleanupPtbCorgi();
             closeExperiment();
             return;
+        end
+        
+        %Check if we crashed Screen and if so re-open the
+        %window.
+        if isempty(Screen('Windows'))
+            expInfo = openExperiment(sessionInfo.expInfoBeforeOpenExperiment);
         end
         
         %Initialize experiment data, this makes sure the experiment data
@@ -370,13 +382,20 @@ end
         %we're going to use a while loop so we can easily add trials for
         %invalid trials.
         
+        ptbCorgiSendTrigger(expInfo,'clear',true);%First clear DIO status.
+        ptbCorgiSendTrigger(expInfo,'startRecording',true);%Now trigger recording start
+        
+        
         %If returnToGui is set that means it's a test trial so set we don't need to show the instructions
-        %Only show the instructions if we've run a complete experiment.
-        if ~sessionInfo.returnToGui
+        %Only show the instructions if we're running a complete experiment
+        %and the instructions are not empty.
+        if ~sessionInfo.returnToGui && ~isempty(expInfo.instructions)
+
             %Show instructions and wait for a keypress.
             DrawFormattedTextStereo(expInfo.curWindow, expInfo.instructions,'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
             Screen('Flip', expInfo.curWindow);
             KbStrokeWait();
+            
         end
         
         
@@ -391,7 +410,8 @@ end
         Screen('Flip', expInfo.curWindow);
         
         while iTrial <=length(conditionList)
-            
+     
+    
             validTrialList(iTrial)= true;  %initialize this index variable to keep track of bad/aborted trials
             experimentData(iTrial).validTrial = true;
             feedbackMsg = [];
@@ -401,6 +421,10 @@ end
             thisBlock = blockList(iTrial);
             
             experimentData(iTrial).blockNumber = thisBlock;
+
+            %Send a trigger now indicating the condition number for
+            %upcoming trial.
+            ptbCorgiSendTrigger(expInfo,'conditionNumber',true,thisCond);%
             
             %Handle randomizing condition fields
             %This changes the conditionInfo structure so is a bit of a
@@ -949,16 +973,17 @@ end
             %If we're running a test condition return to the gui without
             %saving. This enables us to quickly debug code.
             if sessionInfo.returnToGui
-                
-                %Check if we crashed Screen and if so re-open the
-                %window. 
-                if isempty(Screen('Windows')) 
-                    expInfo = openExperiment(sessionInfo.expInfoBeforeOpenExperiment);
+               
+                %If using full screen mode on single monitor make sure to
+                %close the ptb window.
+                if length(Screen('Screens'))==1 && expInfo.useFullScreen
+                    closeExperiment;                  
                 end
                 
                 message = getReport(exception); %Get formated report
-                fprintf(2,message); %Display the error. Trick way to make it red. 
+                fprintf(2,message); %Display the error. Trick way to make text red is to use STDERR: 2.
                 return;
+                                
             end
             %JMA: Fix this to gracefully release KbQueue's on error
             %Need to do the following but we may not have expInfo in the event of an error.
