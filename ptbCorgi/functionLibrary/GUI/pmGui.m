@@ -119,6 +119,7 @@ handles.sessionInfo.tag = lastSessionTag;
 infoString = [  'v' handles.sessionInfo.ptbCorgiVer ' git SHA: ' handles.sessionInfo.gitHash(1:7)];
 set(handles.versionInfoTextBox,'String',infoString);
 
+handles = setupWindowSettings(handles); %Gui data is a very confusing passing handles back and forth makes more sense
 
 handles.expInfo = ptbCorgiLoadCalibrationInfo(handles.expInfo);
 updateCalibrationInfoPanel(handles);
@@ -733,12 +734,12 @@ else
     end
 end
 
-if isfield(handles.expInfo,'windowShieldingLevel') ...
-   if handles.expInfo.windowShieldingLevel >= 2000;
-    set(handles.useOpaqueRadioBtn,'value',1);
-   else
-       set(handles.useTranslucentRadioBtn,'value',1);
-   end
+if isfield(handles.expInfo,'windowShieldingLevel')
+    if handles.expInfo.windowShieldingLevel >= 2000;
+        set(handles.useOpaqueRadioBtn,'value',1);
+    else
+        set(handles.useTranslucentRadioBtn,'value',1);
+    end
 elseif handles.expInfo.useFullScreen
     
     set(handles.useOpaqueRadioBtn,'value',1);

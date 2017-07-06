@@ -214,50 +214,45 @@ end
 %different machines without having to hardcode things.
 %right now this just has some examples for setting per machine paths
 
+base = '';
+datadir = '';
+
 if ~isempty(getpref('ptbCorgi'))
     
-    if ispref('ptbCorgi','base');
-        base = getpref('ptbCorgi','base');
-    else
-        base = [];
+    if ispref('ptbCorgi','base')
+        base = getpref('ptbCorgi','base');    
+    end        
+    
+    if ispref('ptbCorgi','datadir')
+        datadir = getpref('ptbCorgi','datadir');   
     end
     
-    if isempty(base),
-        pathToPM = which('ptbCorgi');
-        [base] = fileparts(pathToPM);
-        setpref('ptbCorgi','base',base);
-        disp(['Setting ptbCorgi directory preference to: ' pwd]);
-    else
-        disp(['Setting ptbCorgi home directory: ' base]);
-    end
-    disp('Use the folowing command to change the base directory:');
-    disp('setpref(''ptbCorgi'',''base'',/path/to/ptbCorgi); ');
-    
-    
-    if ispref('ptbCorgi','datadir');
-        datadir = getpref('ptbCorgi','datadir');
-    else
-        datadir = [];
-    end
-    
-    if isempty(datadir),
-        setpref('ptbCorgi','datadir',fullfile(base,'Data'));
-        disp(['Setting ptbCorgi data directory preference to: ' fullfile(base,'Data')]);
-    else
-        disp(['Saving data to: ' datadir]);
-    end
-    disp('Use the folowing command to change the data directory:');
-    disp('setpref(''ptbCorgi'',''datadir'',/path/to/ptbCorgi/Data); ');
     
     
 else
     
-    disp('Use the folowing command to define a place to save data:');
-    disp('setpref(''ptbCorgi'',''datadir'',/path/to/ptbCorgi/Data); ');
+    disp('!!Please run the folowing command to define defaults:');
+    disp('ptbCorgiSetup ');
 end
 
 
+if isempty(base) || ~exist(datadir,'dir')
+    pathToPM = which('ptbCorgi');
+    [base] = fileparts(pathToPM);
+    setpref('ptbCorgi','base',base);
+    disp(['Setting ptbCorgi directory preference to: ' pwd]);
+else
+    disp(['Setting ptbCorgi home directory: ' base]);
+end
 
+if isempty(datadir) || ~exist(datadir,'dir'),
+    setpref('ptbCorgi','datadir',fullfile(base,'Data'));
+    disp(['Setting ptbCorgi data directory preference to: ' fullfile(base,'Data')]);
+else
+    disp(['Saving data to: ' datadir]);
+end
+
+disp('Use ptbCorgiSetup() to redefine defaults');
 
     
   
