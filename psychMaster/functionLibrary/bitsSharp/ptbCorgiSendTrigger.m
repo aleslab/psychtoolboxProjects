@@ -54,6 +54,14 @@ switch lower(command)
         triggerValue = expInfo.triggerInfo.startRecording;        
         disp(['sending startRecording trigger value: ' num2str(triggerValue)]);
         
+    case 'starttrial'
+        triggerValue = expInfo.triggerInfo.startTrial;        
+        disp(['sending startTrial trigger value: ' num2str(triggerValue)]);
+        
+    case 'endtrial'
+        triggerValue = expInfo.triggerInfo.startTrial;        
+        disp(['sending endTrial trigger value: ' num2str(triggerValue)]);
+        
     case 'conditionnumber' %Currently just sends the raw bits, but may change in future      
         triggerValue = varargin{1}+expInfo.triggerInfo.conditionNumberRange(1)-1; %Subtract one so the trigger range is inclusive
         if triggerValue > expInfo.triggerInfo.conditionNumberRange(2)

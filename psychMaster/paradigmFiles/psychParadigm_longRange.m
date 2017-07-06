@@ -5,11 +5,11 @@ function [conditionInfo, expInfo] = psychParadigm_longRange(expInfo)
 expInfo.paradigmName = 'longRange';
 expInfo.randomizationType = 'random';
 expInfo.viewingDistance = 57;
-
-% expInfo.useBitsSharp = true;
-% expInfo.enableTriggers = true;
-expInfo.useBitsSharp = false; 
-expInfo.enableTriggers = false;
+ 
+expInfo.useBitsSharp = true;
+expInfo.enableTriggers = true;
+% expInfo.useBitsSharp = false; 
+% expInfo.enableTriggers = false;
 
 %Setup a simple fixation cross. See help drawFixation for more info on how
 %to setup this field.
@@ -32,7 +32,7 @@ conditionInfo(1).maxDim = 5; % max number of luminance change in a trial
 % conditionInfo(1).randomizeField = 'false';
 
 %% stimulus
-conditionInfo(1).stimSize = [0 0 0.8 4]; % in deg
+conditionInfo(1).stimSize = [0 0 1 8]; % in deg
 conditionInfo(1).stimDuration = 6; % 12 sec
 conditionInfo(1).stimTagFreq = 2.5; % in Hz 
 conditionInfo(1).trialFun=@trial_longRange;
@@ -48,7 +48,7 @@ end
 
 % first 4 are long range
 for cc=1:4
-    conditionInfo(cc).xloc = 4; % in deg
+    conditionInfo(cc).xloc = 6; % in deg
 end
 conditionInfo(1).label = 'long range';
 conditionInfo(1).sideStim = 'both';
@@ -62,7 +62,7 @@ conditionInfo(4).sideStim = 'both';
 
 % 5:8 are long range
 for cc=5:8
-    conditionInfo(cc).xloc = 0.5; % = centerx/8
+    conditionInfo(cc).xloc = 0.6; 
 end
 conditionInfo(5).label = 'short range';
 conditionInfo(5).sideStim = 'both';
@@ -72,14 +72,14 @@ conditionInfo(6).sideStim = 'left';
 conditionInfo(7).label = 'short right';
 conditionInfo(7).sideStim = 'right';
 conditionInfo(8).label = 'short simult';
-conditionInfo(8).sideStim = 'both';
+conditionInfo(8).sideStim = 'both';        
 
 % last condition: sweep
 conditionInfo(9).label = 'sweep';
 conditionInfo(9).sideStim = 'both';
-conditionInfo(9).xloc = [0.5 4]; % where it starts and ends
+conditionInfo(9).xloc = [0.6 6]; % where it starts and ends
 conditionInfo(9).motion = 1;
-conditionInfo(9).movingStep = 3.5 / (conditionInfo(9).stimDuration * conditionInfo(9).stimTagFreq); % distance / nbTotalCycles
+conditionInfo(9).movingStep = ( conditionInfo(9).xloc(2)-conditionInfo(9).xloc(1) ) / (conditionInfo(9).stimDuration * conditionInfo(9).stimTagFreq); % distance / nbTotalCycles
 
 end
 
