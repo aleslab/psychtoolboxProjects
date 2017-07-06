@@ -19,7 +19,7 @@ rectObs = conditionInfo.rectObs*expInfo.ppd;
 % ycoordUp = expInfo.center(2)/3;
 % ycoordDown = ycoordUp*2;
 xcoord = expInfo.center(1);
-ycoord = expInfo.center(1);
+ycoord = expInfo.center(2);
 divXcoord = expInfo.center(1)/4;
 divYcoord = expInfo.center(2)/4;
 
