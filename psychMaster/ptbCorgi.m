@@ -303,6 +303,12 @@ end
     while sessionInfo.returnToGui
         
         
+        %If using full screen mode on single monitor make sure to
+        %close the ptb window after a test, otherwise we can get stuck. 
+        if length(Screen('Screens'))==1 && expInfo.useFullScreen
+            closeExperiment;
+        end
+        
         [sessionInfo,expInfo,conditionInfo] = pmGui(sessionInfo,expInfo,sessionInfo.backupConditionInfo);
         drawnow; %<- required to actually close the gui.
         
@@ -311,6 +317,12 @@ end
             cleanupPtbCorgi();
             closeExperiment();
             return;
+        end
+        
+        %Check if we crashed Screen and if so re-open the
+        %window.
+        if isempty(Screen('Windows'))
+            expInfo = openExperiment(sessionInfo.expInfoBeforeOpenExperiment);
         end
         
         %Initialize experiment data, this makes sure the experiment data
@@ -375,12 +387,15 @@ end
         
         
         %If returnToGui is set that means it's a test trial so set we don't need to show the instructions
-        %Only show the instructions if we've run a complete experiment.
-        if ~sessionInfo.returnToGui
+        %Only show the instructions if we're running a complete experiment
+        %and the instructions are not empty.
+        if ~sessionInfo.returnToGui && ~isempty(expInfo.instructions)
+
             %Show instructions and wait for a keypress.
             DrawFormattedTextStereo(expInfo.curWindow, expInfo.instructions,'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
             Screen('Flip', expInfo.curWindow);
             KbStrokeWait();
+            
         end
         
         
@@ -959,23 +974,14 @@ end
             %saving. This enables us to quickly debug code.
             if sessionInfo.returnToGui
                
-                %If using full screen mode on primary monitor make sure to
+                %If using full screen mode on single monitor make sure to
                 %close the ptb window.
-                if expInfo.screenNum==0 && expInfo.useFullScreen
-                    closeExperiment;
-                    expInfo = openExperiment(sessionInfo.expInfoBeforeOpenExperiment);
-                    sessionInfo.returnToGui = false;
-                    rethrow(exception);
-                end
-
-                %Check if we crashed Screen and if so re-open the
-                %window.
-                if isempty(Screen('Windows')) 
-                    expInfo = openExperiment(sessionInfo.expInfoBeforeOpenExperiment);
+                if length(Screen('Screens'))==1 && expInfo.useFullScreen
+                    closeExperiment;                  
                 end
                 
                 message = getReport(exception); %Get formated report
-                fprintf(2,message); %Display the error. Trick way to make it red.
+                fprintf(2,message); %Display the error. Trick way to make text red is to use STDERR: 2.
                 return;
                                 
             end
