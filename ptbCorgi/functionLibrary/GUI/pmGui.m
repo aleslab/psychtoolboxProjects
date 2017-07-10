@@ -740,15 +740,16 @@ if isfield(handles.expInfo,'windowShieldingLevel')
     else
         set(handles.useTranslucentRadioBtn,'value',1);
     end
-elseif handles.expInfo.useFullScreen
     
+elseif handles.expInfo.useFullScreen && length(Screen('Screens'))==1
+    
+    set(handles.useOpaqueRadioBtn,'value',0);
+    set(handles.useTranslucentRadioBtn,'value',1);
+    handles.expInfo.windowShieldingLevel = 1850;
+else
     set(handles.useOpaqueRadioBtn,'value',1);
     set(handles.useTranslucentRadioBtn,'value',0);
     handles.expInfo.windowShieldingLevel = 2000;
-else
-    set(handles.useTranslucentRadioBtn,'value',1);
-    set(handles.useOpaqueRadioBtn,'value',0);
-    handles.expInfo.windowShieldingLevel = 1850;
 end       
 
 
