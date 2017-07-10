@@ -167,8 +167,10 @@ if isempty(handles.datadir) || isequal(handles.datadir,0)
     return
 end
 
-set(handles.dataDirText,'String',handles.datadir);
+set(handles.dataDirText,'String','Loading.......');
+drawnow;
 [ handles.dataInfo ] = gatherInfoFromAllFiles( handles.datadir );
+set(handles.dataDirText,'String',handles.datadir);
 
 if isempty(handles.dataInfo)
     resetLists(hObject);
@@ -360,7 +362,18 @@ if ispref('ptbCorgiDataBrowser','lastDataDir')
     lastDir = getpref('ptbCorgiDataBrowser','lastDataDir');
 end
 
+%Check if we've gotten stuck with a bad preference that isn't a string. 
+if ~ischar(lastDir)
+    lastDir = [];
+end
+    
 dirName = uigetdir(lastDir);
+
+%If the  user presses cancel than don't do anything. 
+if dirName == 0
+    return;
+end
+
 handles.datadir = dirName;
 setpref('ptbCorgiDataBrowser','lastDataDir',dirName)
 % Update handles structure
