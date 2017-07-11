@@ -327,8 +327,9 @@ try
        
         if ~isempty(handles.conditionInfo(iCond).label) %if there's a label use it
             condNameList{iCond} =   handles.conditionInfo(iCond).label;
-        else %otherwise create a generic label
+        else %otherwise create a generic label            
             condNameList{iCond} = func2str(handles.conditionInfo(iCond).trialFun);
+             handles.conditionInfo(iCond).label = condNameList{iCond};
         end
         
         %Lets add condition number to label:

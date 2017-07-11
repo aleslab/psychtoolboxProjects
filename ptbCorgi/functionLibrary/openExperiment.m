@@ -188,6 +188,8 @@ end
 
 if ~isfield(expInfo,'enableTriggers')
     expInfo.enableTriggers = false;
+elseif expInfo.enableTriggers %if enabling triggers do so now. 
+    expInfo.triggerInfo = ptbCorgiTriggerDefault(expInfo);    
 end
 
 %Now setup bitssharp if requested
@@ -212,14 +214,10 @@ if  expInfo.useBitsSharp
     % Want to have simple power-law gamma correction of stims: We choose the
     % method here. After opening the onscreen window, we can set and change
     % encoding gamma via PsychColorCorrection() function...
-    PsychImaging('AddTask', 'FinalFormatting', 'DisplayColorCorrection', 'SimpleGamma');
-    
-    %Setup trigger values
-    if expInfo.enableTriggers
-        expInfo.triggerInfo = ptbCorgiTriggerDefault(expInfo);
-    end
+    PsychImaging('AddTask', 'FinalFormatting', 'DisplayColorCorrection', 'SimpleGamma');    
     
 end
+
 
 
 % Set the background to the background value.
