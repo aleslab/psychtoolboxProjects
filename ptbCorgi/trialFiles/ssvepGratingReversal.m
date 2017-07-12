@@ -32,8 +32,11 @@ end
 contrastPreMultiplicator = .5; 
 
 %Setup temporal parameters:
-[nFramesPerCycle trialData.achievedFreq] = ...
-    ssvepFramesGivenFrequency(conditionInfo.temporalFrequency,expInfo.monRefresh);
+%%%% ssvepFramesGivenFrequency does not exist, give random numbers for now
+% [nFramesPerCycle trialData.achievedFreq] = ...
+%     ssvepFramesGivenFrequency(conditionInfo.temporalFrequency,expInfo.monRefresh);
+nFramesPerCycle = 20;
+trialData.achievedFreq = 5;
 
 cycleHalfPeriod = (nFramesPerCycle/2)/expInfo.monRefresh;
 prePostDurSecs = conditionInfo.prePostDurSecs; 
@@ -89,6 +92,8 @@ for iCycle = 1:nCycles,
     
     drawFixation(expInfo);
     
+    % clear the trigger on the second half cycle
+    ptbCorgiSendTrigger(expInfo,'clear',false);
     [trialData.flipTime(flipIdx)] = Screen('flip',expInfo.curWindow,nextFlipTime);
     nextFlipTime=trialData.flipTime(flipIdx)+cycleHalfPeriod-expInfo.ifi/2;
   

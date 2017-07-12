@@ -2,7 +2,8 @@ function [conditionInfo, expInfo] = pdgm_ssvepGratingReversal(expInfo)
 
 %paradigmName is what will be prepended to data files
 expInfo.paradigmName = 'exampleGratingReversal';
-
+expInfo.useBitsSharp = true;
+expInfo.enableTriggers = true;
 
 expInfo.instructions = 'Instructions can go here.';
 
