@@ -40,7 +40,8 @@ function [ timeSent ] = ptbCorgiSendTrigger( expInfo,command,sendNow,varargin )
 % the toggle bit to 0.
 %
 %'startrecording'
-%         
+%         expInfo.useBitsSharp = true;
+expInfo.enableTriggers = true;
 % Sends the start recording trigger value. 
 %         
 %'conditionNumber' 
@@ -118,11 +119,19 @@ switch lower(command)
     case 'startrecording'
         
         triggerValue = expInfo.triggerInfo.startRecording;        
-        disp(['sending startRecording trigger value: ' num2str(triggerValue)]);
+        trigMessage = (['sending startRecording trigger value: ' num2str(triggerValue)]);
         
+    case 'starttrial'
+        triggerValue = expInfo.triggerInfo.startTrial;        
+        trigMessage=sprintf(['sending startTrial trigger value: ' num2str(triggerValue)]);
+        
+    case 'endtrial'
+        triggerValue = expInfo.triggerInfo.startTrial;        
+        trigMessage=sprintf(['sending endTrial trigger value: ' num2str(triggerValue)]);
+    
     case 'conditionnumber' 
         triggerValue = varargin{1}+expInfo.triggerInfo.conditionNumberRange(1)-1; %Subtract one so the trigger range is inclusive
-        if triggerValue > expInfo.triggerInfo.conditionNumberRange(1)
+        if triggerValue > expInfo.triggerInfo.conditionNumberRange(2)
             warning('ptbCorgi:sendTrigger:condNumMaxExceeded','Sending condition number trigger value over range, still sending but check yourself');
         end
         
