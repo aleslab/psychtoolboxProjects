@@ -119,6 +119,7 @@ handles.sessionInfo.tag = lastSessionTag;
 infoString = [  'v' handles.sessionInfo.ptbCorgiVer ' git SHA: ' handles.sessionInfo.gitHash(1:7)];
 set(handles.versionInfoTextBox,'String',infoString);
 
+handles = setupWindowSettings(handles); %Gui data is a very confusing passing handles back and forth makes more sense
 
 handles.expInfo = ptbCorgiLoadCalibrationInfo(handles.expInfo);
 updateCalibrationInfoPanel(handles);
@@ -270,8 +271,6 @@ lastParadigmFile = fullfile(handles.sessionInfo.paradigmPath,handles.sessionInfo
 [~, funcName ] = fileparts(handles.sessionInfo.paradigmFile);
 handles.sessionInfo.paradigmFun = str2func(funcName);
 
-setpref('ptbCorgi','lastParadigmFile',lastParadigmFile);
-
 %If we've already loaded a condition delete it and load the new file. 
 if isfield(handles,'conditionInfo')
     handles = rmfield(handles,'conditionInfo');
@@ -280,6 +279,9 @@ end
 handles.expInfo = handles.expInfoArgument;
 guidata(hObject,handles);
 loadParadigmFile(hObject);
+setpref('ptbCorgi','lastParadigmFile',lastParadigmFile);
+
+
 
 
 
@@ -298,8 +300,9 @@ try
     %Read in the paradigm file if condition info isn't already loaded. 
     if ~isfield(handles,'conditionInfo')
         %[handles.conditionInfo, handles.expInfo] = handles.sessionInfo.paradigmFun(handles.origExpInfo);
+        fileToLoad = fullfile(handles.sessionInfo.paradigmPath,handles.sessionInfo.paradigmFile);
         [handles.conditionInfo, handles.expInfo] =...
-            ptbCorgiLoadParadigm(handles.sessionInfo.paradigmFile,handles.expInfo);
+            ptbCorgiLoadParadigm(fileToLoad,handles.expInfo);
     end
     
     set(handles.paradigmFileNameBox,'String',handles.sessionInfo.paradigmFile);
@@ -326,8 +329,9 @@ try
        
         if ~isempty(handles.conditionInfo(iCond).label) %if there's a label use it
             condNameList{iCond} =   handles.conditionInfo(iCond).label;
-        else %otherwise create a generic label
+        else %otherwise create a generic label            
             condNameList{iCond} = func2str(handles.conditionInfo(iCond).trialFun);
+             handles.conditionInfo(iCond).label = condNameList{iCond};
         end
         
         %Lets add condition number to label:
@@ -562,6 +566,8 @@ handles.sessionInfo.backupConditionInfo = handles.conditionInfo;
 
 handles.conditionInfo = handles.conditionInfo(selectedCondition);
 handles.conditionInfo(1).nReps = 1;
+handles.conditionInfo(1).testCondTrueNum = selectedCondition;
+
 handles.sessionInfo.returnToGui = true;
 handles.sessionInfo.userCancelled = false;
 clear(func2str(handles.conditionInfo.trialFun));
@@ -733,21 +739,22 @@ else
     end
 end
 
-if isfield(handles.expInfo,'windowShieldingLevel') ...
-   if handles.expInfo.windowShieldingLevel >= 2000;
-    set(handles.useOpaqueRadioBtn,'value',1);
-   else
-       set(handles.useTranslucentRadioBtn,'value',1);
-   end
-elseif handles.expInfo.useFullScreen
+if isfield(handles.expInfo,'windowShieldingLevel')
+    if handles.expInfo.windowShieldingLevel >= 2000;
+        set(handles.useOpaqueRadioBtn,'value',1);
+    else
+        set(handles.useTranslucentRadioBtn,'value',1);
+    end
     
+elseif handles.expInfo.useFullScreen && length(Screen('Screens'))==1
+    
+    set(handles.useOpaqueRadioBtn,'value',0);
+    set(handles.useTranslucentRadioBtn,'value',1);
+    handles.expInfo.windowShieldingLevel = 1850;
+else
     set(handles.useOpaqueRadioBtn,'value',1);
     set(handles.useTranslucentRadioBtn,'value',0);
     handles.expInfo.windowShieldingLevel = 2000;
-else
-    set(handles.useTranslucentRadioBtn,'value',1);
-    set(handles.useOpaqueRadioBtn,'value',0);
-    handles.expInfo.windowShieldingLevel = 1850;
 end       
 
 

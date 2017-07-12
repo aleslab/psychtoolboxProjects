@@ -8,6 +8,13 @@ computerName = ptbCorgiGetComputerName();
 
 fh = figure('Visible','on','Units','normalized','Position',[.1 .2 .55 .6]);
 
+
+uicontrol(fh,'Style','pushbutton',...
+    'String','Close',...
+    'Units','normalized','Position',[.81 0 .15 .05],...
+    'callback',@closeSetup);
+
+
 yStartPos = .91;
 
 %Computer Name
@@ -26,23 +33,44 @@ uicontrol(fh,'Style','pushbutton',...
 
 %-------------------
 %Directories
+baseDir = '';
 if ispref('ptbCorgi','base')
     baseDir = getpref('ptbCorgi','base');
-else
+    if ~exist(baseDir,'dir')        
+        rmpref('ptbCorgi','base');
+    end
+end
+
+%Setup the base dir automatically
+if ~exist(baseDir,'dir')
+    fprintf('Cannot find base dir: %s\n',baseDir);
     baseDir = which('ptbCorgi.m');
+    fprintf('Setting base dir preference to: %s\n',baseDir);
     setpref('ptbCorgi','base',baseDir);
 end
 
+dataDir = '';
 if ispref('ptbCorgi','datadir');
     dataDir = getpref('ptbCorgi','datadir');
-else
-    dataDir = [];
+    if ~exist(dataDir,'dir')
+        rmpref('ptbCorgi','datadir');
+    end
 end
 
+if ~exist(dataDir,'dir')
+    dataDir = '';
+end
+
+calibDir = '';
 if ispref('ptbCorgi','calibdir');
     calibDir = getpref('ptbCorgi','calibdir');
-else
-    calibDir = [];
+    if ~exist(calibDir,'dir')
+        rmpref('ptbCorgi','calibdir');
+    end
+end
+
+if ~exist(calibDir,'dir')
+    calibDir = '';
 end
 
 uicontrol(fh,'Style','text',...
@@ -59,8 +87,8 @@ uicontrol(fh,'Style','pushbutton',...
     'callback',@chooseBaseDir);
 
 uicontrol(fh,'Style','text',...
-    'String','Data Directory:','HorizontalAlignment','left',...
-    'Units','normalized','Position',[.35 .77 .15 .05]);
+    'String','Directory to save data:','HorizontalAlignment','left',...
+    'Units','normalized','Position',[.35 .77 .25 .05]);
 
 dataDirHandle = uicontrol(fh,'Style','edit',...
     'String',dataDir,'HorizontalAlignment','left',...
@@ -73,8 +101,8 @@ uicontrol(fh,'Style','pushbutton',...
 
 yPos = .63;
 uicontrol(fh,'Style','text',...
-    'String','Calibration Directory:','HorizontalAlignment','left',...
-    'Units','normalized','Position',[.35 yPos .15 .05]);
+    'String','Directory to save calibration:','HorizontalAlignment','left',...
+    'Units','normalized','Position',[.35 yPos .3 .05]);
 
 calibDirHandle = uicontrol(fh,'Style','edit',...
     'String',calibDir,'HorizontalAlignment','left',...
@@ -519,7 +547,13 @@ updateCalibFileList();
 
                 end
 
-            end
+         end
+
+    function closeSetup(hObject,callbackdata)
+        
+        close(fh);
+        return;
+    end
 
 end
 

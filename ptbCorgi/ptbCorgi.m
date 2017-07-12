@@ -214,50 +214,45 @@ end
 %different machines without having to hardcode things.
 %right now this just has some examples for setting per machine paths
 
+base = '';
+datadir = '';
+
 if ~isempty(getpref('ptbCorgi'))
     
-    if ispref('ptbCorgi','base');
-        base = getpref('ptbCorgi','base');
-    else
-        base = [];
+    if ispref('ptbCorgi','base')
+        base = getpref('ptbCorgi','base');    
+    end        
+    
+    if ispref('ptbCorgi','datadir')
+        datadir = getpref('ptbCorgi','datadir');   
     end
     
-    if isempty(base),
-        pathToPM = which('ptbCorgi');
-        [base] = fileparts(pathToPM);
-        setpref('ptbCorgi','base',base);
-        disp(['Setting ptbCorgi directory preference to: ' pwd]);
-    else
-        disp(['Setting ptbCorgi home directory: ' base]);
-    end
-    disp('Use the folowing command to change the base directory:');
-    disp('setpref(''ptbCorgi'',''base'',/path/to/ptbCorgi); ');
-    
-    
-    if ispref('ptbCorgi','datadir');
-        datadir = getpref('ptbCorgi','datadir');
-    else
-        datadir = [];
-    end
-    
-    if isempty(datadir),
-        setpref('ptbCorgi','datadir',fullfile(base,'Data'));
-        disp(['Setting ptbCorgi data directory preference to: ' fullfile(base,'Data')]);
-    else
-        disp(['Saving data to: ' datadir]);
-    end
-    disp('Use the folowing command to change the data directory:');
-    disp('setpref(''ptbCorgi'',''datadir'',/path/to/ptbCorgi/Data); ');
     
     
 else
     
-    disp('Use the folowing command to define a place to save data:');
-    disp('setpref(''ptbCorgi'',''datadir'',/path/to/ptbCorgi/Data); ');
+    disp('!!Please run the folowing command to define defaults:');
+    disp('ptbCorgiSetup ');
 end
 
 
+if isempty(base) || ~exist(datadir,'dir')
+    pathToPM = which('ptbCorgi');
+    [base] = fileparts(pathToPM);
+    setpref('ptbCorgi','base',base);
+    disp(['Setting ptbCorgi directory preference to: ' pwd]);
+else
+    disp(['Setting ptbCorgi home directory: ' base]);
+end
 
+if isempty(datadir) || ~exist(datadir,'dir'),
+    setpref('ptbCorgi','datadir',fullfile(base,'Data'));
+    disp(['Setting ptbCorgi data directory preference to: ' fullfile(base,'Data')]);
+else
+    disp(['Saving data to: ' datadir]);
+end
+
+disp('Use ptbCorgiSetup() to redefine defaults');
 
     
   
@@ -424,7 +419,17 @@ end
 
             %Send a trigger now indicating the condition number for
             %upcoming trial.
-            ptbCorgiSendTrigger(expInfo,'conditionNumber',true,thisCond);%
+            
+            %Check if we're are running a test condition then there is only
+            %one condition in the condition field and the true condition number
+            %is put into the testCondTrueNum field. That's the number we
+            %want to signal on the trigger port.  
+            if isfield(conditionInfo(thisCond),'testCondTrueNum')
+                condToSend = conditionInfo(thisCond).testCondTrueNum;
+            else
+                condToSend = thisCond;
+            end
+            ptbCorgiSendTrigger(expInfo,'conditionNumber',true,condToSend);%
             
             %Handle randomizing condition fields
             %This changes the conditionInfo structure so is a bit of a
@@ -825,7 +830,7 @@ end
             
             if ~trialData.validTrial  %trial not valid
                 
-                if trialData.abortNow
+                if isfield(trialData,'abortNow') && trialData.abortNow
                     break;
                 end
                 

@@ -7,7 +7,6 @@ todo:
 
 Cleanup the condition inspector. Make it draw in the same place. Or something
 that makes it work a little more intuitively. 
-Issue #7 Create an automatic format to create paradigms
 Add a check for if ptbCorgi changed from last run and warn user.  
 Add a convenience function for creating a group of conditions.  
 Add some hashing functions to detect changes. 

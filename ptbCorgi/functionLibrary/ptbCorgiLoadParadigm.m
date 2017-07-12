@@ -28,10 +28,30 @@ if ischar(paradigmFile)
     
     [filePath, fileName, fileExt] = fileparts(paradigmFile);
     
-    
     %If it's an m file turn it into a function handle:
     if strcmp(fileExt,'.m')
         paradigmFile = str2func(fileName);
+        
+        %Check if the paradigm function location is on the path
+        if ~ismember(filePath, strsplit(path, pathsep))            
+            warning('ptbCorgi:loadParadigm:functionNotOnPath',...
+                'Paradigm function (*.m) files must be on the matlab path\n adding %s to the path',...
+            filePath); 
+            addpath(filePath);
+        end
+        
+        %After adding it to the path check if we've got duplicates hiding.
+        fileLocations = which(fileName,'-all');
+        
+        if length(fileLocations) >1
+            fprintf(2,'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+             fprintf(2,'Cannot load paradigm %s! Duplicate functions found on path:\n',fileName);
+             disp(char(fileLocations));
+            error('ptbCorgi:loadParadigm:shadowParadigm',...
+                'Multiple files share paradigm function name, rename paradigm file')
+                
+        end
+        
     elseif ~strcmp(fileExt,'.mat')
         error('ptbCorgi:loadParadigm:inputError',...
             'File must be either *.m or *.mat');
@@ -43,8 +63,8 @@ end
 %If it's a function handle execute the function to create the paradigm.
 %We can just execute the function to load the paradigm.
 if isa(paradigmFile,'function_handle')
-    msg = sprintf('Loading paradigm using funtion %s()', func2str(paradigmFile));
-    disp(msg);
+    fprintf('Loading paradigm using funtion %s()\n', func2str(paradigmFile));
+        
     %Call the function
     if nargin < 2
         [ conditionInfo, expInfo ] = paradigmFile();
