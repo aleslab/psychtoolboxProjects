@@ -271,8 +271,6 @@ lastParadigmFile = fullfile(handles.sessionInfo.paradigmPath,handles.sessionInfo
 [~, funcName ] = fileparts(handles.sessionInfo.paradigmFile);
 handles.sessionInfo.paradigmFun = str2func(funcName);
 
-setpref('ptbCorgi','lastParadigmFile',lastParadigmFile);
-
 %If we've already loaded a condition delete it and load the new file. 
 if isfield(handles,'conditionInfo')
     handles = rmfield(handles,'conditionInfo');
@@ -281,6 +279,9 @@ end
 handles.expInfo = handles.expInfoArgument;
 guidata(hObject,handles);
 loadParadigmFile(hObject);
+setpref('ptbCorgi','lastParadigmFile',lastParadigmFile);
+
+
 
 
 
@@ -299,8 +300,9 @@ try
     %Read in the paradigm file if condition info isn't already loaded. 
     if ~isfield(handles,'conditionInfo')
         %[handles.conditionInfo, handles.expInfo] = handles.sessionInfo.paradigmFun(handles.origExpInfo);
+        fileToLoad = fullfile(handles.sessionInfo.paradigmPath,handles.sessionInfo.paradigmFile);
         [handles.conditionInfo, handles.expInfo] =...
-            ptbCorgiLoadParadigm(handles.sessionInfo.paradigmFile,handles.expInfo);
+            ptbCorgiLoadParadigm(fileToLoad,handles.expInfo);
     end
     
     set(handles.paradigmFileNameBox,'String',handles.sessionInfo.paradigmFile);
@@ -564,6 +566,8 @@ handles.sessionInfo.backupConditionInfo = handles.conditionInfo;
 
 handles.conditionInfo = handles.conditionInfo(selectedCondition);
 handles.conditionInfo(1).nReps = 1;
+handles.conditionInfo(1).testCondTrueNum = selectedCondition;
+
 handles.sessionInfo.returnToGui = true;
 handles.sessionInfo.userCancelled = false;
 clear(func2str(handles.conditionInfo.trialFun));

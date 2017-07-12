@@ -68,7 +68,11 @@ function [ timeSent ] = ptbCorgiSendTrigger( expInfo,command,sendNow,varargin )
 % toggles the state of the bit on the next call to Screen('flip')
 % ptbCorgiSendTrigger(expInfo,'togglebit',false,true)       
 % Sets the state of the toggle bit to 1 on the next Screen('flip')
+%
+% {'tag', 'f1','tagf1','ssvep','ssveptag', 'ssveptagf1'}  
+% Any of these will send the value set in triggerInfo.ssvepTagF1
         
+    
 timeSent = NaN; %If we haven't sent a trigger init as NaN;
 
 %If triggers aren't enables just silently return;
@@ -128,7 +132,7 @@ switch lower(command)
         triggerValue = varargin{1};
         trigMessage=sprintf('Sending raw trigger value: %i ',triggerValue);
         
-    case {'tag', 'tagf1','ssvep','ssveptag'}                
+    case {'tag', 'f1','tagf1','ssvep','ssveptag', 'ssveptagf1'}                
         
         triggerValue = expInfo.triggerInfo.ssvepTagF1;
         trigMessage=sprintf('Sending SSVEP f1 trigger %i',triggerValue);

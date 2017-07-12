@@ -55,6 +55,15 @@ if ~isfield(expInfo,'screenNum')
     expInfo.screenNum = max(Screen('Screens'));
 end
 
+%Setting Priority is something that has changed a lot in the past 10-15
+%years. Different OS's are very different. See the following for more
+%information:
+%See PTB message 20193 and whole thread.
+%https://groups.yahoo.com/neo/groups/psychtoolbox/conversations/messages/20193
+%http://peterscarfe.com/accuratetimingdemo.html
+topPriority = MaxPriority(expInfo.screenNum); %Determines safest top priorty level for the current system.
+Priority(topPriority); %Sets the priority. 
+
 %If a window shielding level is set use it
 %This setting is used to make the window semi transparent to facilitate
 %development of stimuli.
@@ -224,6 +233,8 @@ end
 expInfo.bckgnd = 0.5;
 %This uses the new "psychImaging" pipeline.
 [expInfo.curWindow, expInfo.screenRect] = PsychImaging('OpenWindow', expInfo.screenNum, expInfo.bckgnd,windowRect,[],[], expInfo.stereoMode);
+
+
 
 %If we're using a bitsSharp mode we also have an overlay window.
 if expInfo.useBitsSharp
