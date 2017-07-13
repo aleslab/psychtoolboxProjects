@@ -20,12 +20,14 @@ for iFile = 1:length(fileList)
     
     modeString = [];
 
-    varlist=whos('-file',fileList(iFile).name); %Get list of variables
+    fullFilename = fullfile(dir2scan,fileList(iFile).name);
+    
+    varlist=whos('-file',fullFilename); %Get list of variables
 
     if any(strcmp({varlist(:).name},'modeString')) %Check if a modestring is set
         load(fileList(iFile).name,'modeString'); %Load the mode string
         foundFileList(foundCalibFileIdx).modeString = modeString;
-        foundFileList(foundCalibFileIdx).name       = fullfile(dir2scan,fileList(iFile).name);
+        foundFileList(foundCalibFileIdx).name       = fullFilename;
         foundCalibFileIdx = foundCalibFileIdx +1;
     end
     
