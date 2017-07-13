@@ -32,11 +32,9 @@ end
 contrastPreMultiplicator = .5; 
 
 %Setup temporal parameters:
-%%%% ssvepFramesGivenFrequency does not exist, give random numbers for now
-% [nFramesPerCycle trialData.achievedFreq] = ...
-%     ssvepFramesGivenFrequency(conditionInfo.temporalFrequency,expInfo.monRefresh);
-nFramesPerCycle = 20;
-trialData.achievedFreq = 5;
+[nFramesPerCycle trialData.achievedFreq] = ...
+    ssvepFramesGivenFrequency(conditionInfo.temporalFrequency,expInfo.monRefresh);
+
 
 cycleHalfPeriod = (nFramesPerCycle/2)/expInfo.monRefresh;
 prePostDurSecs = conditionInfo.prePostDurSecs; 
@@ -53,14 +51,15 @@ supportHeight = sizePix;
 %well. We want to ensure the alpha channel is >1 so so it gets clamped to a constant 1.
 %But we use a premult of .5
 [gratingId, gratingRect] = CreateProceduralSineGrating(expInfo.curWindow,...
-    supportWidth, supportHeight,[.5 .5 .5 4], radius, contrastPreMultiplicator);
+    supportWidth, supportHeight,[.5 .5 .5 0], radius, contrastPreMultiplicator);
 
+Screen('BlendFunction', expInfo.curWindow,  GL_ONE, GL_ZERO);
 
 dstRect = [0 0 sizePix sizePix]; 
 dstRect = CenterRect(dstRect,expInfo.screenRect); %Center the texture in the current window
 
 modulateColor = [];
-
+photoDiodeRect = [0 0 100 100];
 nextFlipTime = GetSecs;%Flip now for the first presentiation. 
 for iCycle = 1:nCycles,
 
@@ -70,7 +69,8 @@ for iCycle = 1:nCycles,
     flipIdx = 2*(iCycle-1)+1; 
     
     Screen('DrawTexture', expInfo.curWindow, gratingId, [], dstRect, tiltAngle, [], 1,...
-        [], [], [], [phase, freqCycPerPix, contrast, 0]);
+        modulateColor, [], [], [phase, freqCycPerPix, contrast, 0]);
+    Screen('fillrect',expInfo.curWindow,1,photoDiodeRect);
     
     drawFixation(expInfo); %Draw fixation on top of grating
     
@@ -85,10 +85,10 @@ for iCycle = 1:nCycles,
     nextFlipTime=trialData.flipTime(flipIdx)+cycleHalfPeriod-expInfo.ifi/2;
     
     flipIdx = 2*(iCycle-1)+2;%This index counts at 2x the cycle, each cycle has 2 flips
-    
     %Draw  180 phase shift which is equivalent to reversal
-    Screen('DrawTexture', expInfo.curWindow, gratingId, [], dstRect, tiltAngle, [], [],...
+    Screen('DrawTexture', expInfo.curWindow, gratingId, [], dstRect, tiltAngle, [], 1,...
         modulateColor, [], [], [phase-180, freqCycPerPix, contrast, 0]);
+    Screen('fillrect',expInfo.curWindow,0,photoDiodeRect);
     
     drawFixation(expInfo);
     
@@ -118,6 +118,7 @@ if any( abs(flipIntervals - cycleHalfPeriod) > expInfo.ifi/2 )
     trialData.cycleErrorDetected = true; %We detected at least one cycle with an incorrect time.
 
 end
+Screen('BlendFunction', expInfo.curWindow,  GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
 
