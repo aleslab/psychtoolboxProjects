@@ -1,18 +1,40 @@
-function [] = setupPtbCorgi()
+function [] = ptbCorgiSetup()
+
+
+
+%Code to make ptbCorgiSetup Singleton:
+%Search if the figure exists
+h = findall(0,'tag','ptbCorgiSetup');
+%If we found the figure bring the focus to front and don't spawn another
+%figure. 
+if ~(isempty(h))
+    figure(h)
+    return;
+end;
 
 luminanceCalibInfo=[];
 sizeCalibInfo     =[];
+calibFilenames    = {};
+
+settingsChanged = false; %boolean to set if any setting values have changed
 
 setupPath();
 computerName = ptbCorgiGetComputerName();
 
-fh = figure('Visible','on','Units','normalized','Position',[.1 .2 .55 .6]);
+
+
+fh = figure('Visible','on','Units','normalized','Position',[.1 .2 .55 .6],'tag','ptbCorgiSetup');
 
 
 uicontrol(fh,'Style','pushbutton',...
     'String','Close',...
     'Units','normalized','Position',[.81 0 .15 .05],...
     'callback',@closeSetup);
+
+uicontrol(fh,'Style','pushbutton',...
+    'String','Save and Close',...
+    'Units','normalized','Position',[.66 0 .15 .05],...
+    'callback',@saveSetup);
 
 
 yStartPos = .91;
@@ -121,6 +143,7 @@ uicontrol(fh,'Style','pushbutton',...
 deviceIdx = 1;
 deviceList = {'None','Bits Sharp'};
 validateBitsVisible = 'off';
+useBitsSharp = false;
 
 if ispref('ptbCorgi','useBitsSharp');
     
@@ -175,10 +198,10 @@ availRes= getUniqueResolutionsStr();
 selResIdx = find(strcmp(availRes,resPref)); %Selected Default resolution
 selResString = availRes{selResIdx};
 curResIdx = find(strcmp(num2str([curRes.width curRes.height],'%dx%d'),availRes));
+
 resLabels=availRes;
 resLabels{curResIdx} = [resLabels{curResIdx} ' *Current Active*'];
-
-%resLabels{selResIdx} = [resLabels{selResIdx} ' *ptbCorgi*'];
+resLabels{selResIdx} = [resLabels{selResIdx} ' *ptbCorgi*'];
 
 
 frameRateList = getUniqueFrameRateStr();
@@ -258,12 +281,18 @@ updateCalibFileList();
     function chooseBaseDir(varargin)
         
         startpath=which('ptbcorgi.m');
-        
+        [startpath] = fileparts(startpath);
         [dirname] = ...
             uigetdir(startpath,'Pick Base Dir');
         
-        set(lumStringHandle,'String',fullfile(pathname,filename));
-        setpref('ptbCorgi','base',dirname);
+        
+        if dirname == 0 
+            return;
+        else                       
+            set(baseDirHandle,'String',dirname);
+            settingsChanged = true;
+        end 
+            
         
     end
 
@@ -271,22 +300,35 @@ updateCalibFileList();
     function chooseDataDir(varargin)
         
         startpath=which('ptbcorgi.m');
+        [startpath] = fileparts(startpath);
         [dirname] = ...
             uigetdir(startpath,'Pick Data Dir');
         
-        set(dataDirHandle,'String',dirname);
-        setpref('ptbCorgi','datadir',dirname);
-        
+        if dirname == 0
+            return;
+        else
+            set(dataDirHandle,'String',dirname);
+            settingsChanged = true;
+        end
+                
     end
 
     function chooseCalibDir(varargin)
         
         startpath=which('ptbcorgi.m');
+        
+        [startpath] = fileparts(startpath);
         [dirname] = ...
             uigetdir(startpath,'Pick Calibration Dir');
         
-        set(calibDirHandle,'String',dirname);
-        setpref('ptbCorgi','calibdir',dirname);
+        
+        if dirname == 0
+            return;
+        else
+            set(calibDirHandle,'String',dirname);
+            settingsChanged = true;
+        end
+        
         calibDir = dirname;
         calibList = ptbCorgiGetCalibFileList(calibDir);
         updateCalibFileList();
@@ -337,12 +379,14 @@ updateCalibFileList();
 
     %Build video mode structure from selection.
     function res = getSelVideoModeStruct()
+        
         [scan] = sscanf(selResString,'%dx%d');
         res.width = scan(1);
         res.height = scan(2);
         
-        bitDepthSelIdx = get(bitDepthPopupH,'value');
-        res.pixelSize = str2double(bitDepthList(bitDepthSelIdx));
+        bitDepthSelIdx  = get(bitDepthPopupH,'value');
+        bitDepthStrings = get(bitDepthPopupH,'string');
+        res.pixelSize = str2double(bitDepthStrings(bitDepthSelIdx));
         
         frameRateSelIdx = get(frameRatePopupH,'value');
         res.hz = str2double(frameRateList(frameRateSelIdx));
@@ -458,15 +502,32 @@ updateCalibFileList();
             calibListIdx = find( strcmp({calibList(:).modeString},modeString));
         end
         
-        availCalibFiles = {'None'};
-        set(calibFileListH,'value',1);
-        if ~isempty(calibListIdx)
-            availCalibFiles = calibList(calibListIdx).filenames;
-            availCalibFiles = {'None', availCalibFiles{:}};
-            
+        currentActiveCalibFile = '';
+        if ispref('ptbCorgi','calibrationFile'),
+            currentActiveCalibFile = getpref('ptbCorgi','calibrationFile');
         end
         
-        set(calibFileListH,'string',availCalibFiles);
+        
+        listBoxLabels = {'None'};
+        calibFilenames = listBoxLabels;
+        set(calibFileListH,'value',1);
+        if ~isempty(calibListIdx)
+            listBoxLabels = calibList(calibListIdx).filenames;                        
+            listBoxLabels = {'None', listBoxLabels{:}};
+            
+            calibFilenames = listBoxLabels;
+            chosenFileListIdx = strcmp(currentActiveCalibFile,listBoxLabels);
+            
+            %If one of the files on the list is the current active one
+            %label it with *ptbCorgi
+            if any(chosenFileListIdx)
+                listBoxLabels{chosenFileListIdx} = ...
+                    ['*ptbCorgi* ' listBoxLabels{chosenFileListIdx}];
+            end
+        end
+        
+        
+        set(calibFileListH,'string',listBoxLabels);
         
     end
 
@@ -480,13 +541,12 @@ updateCalibFileList();
 
     function calibrationFile = getSelectedCalibrationFile()
         
+        calibFilenames
+        calibSelected = get(calibFileListH,'value');       
+        calibrationFile = calibFilenames{calibSelected};
         
-        calibSelected = get(calibFileListH,'value');
-        fileList = get(calibFileListH,'string');
-        calibrationFile = fileList{calibSelected};
-        
-        if strcmp('calibrationFile','none')
-            calibrationFile = [];
+        if strcmpi('calibrationFile','none')
+            calibrationFile = '';
         end
         
     end
@@ -495,11 +555,11 @@ updateCalibFileList();
     function setPtbCorgiModePref(varargin)
         
 
-        res = getSelVideoModeStruct();
-        setpref('ptbCorgi','resolution',res);
+        res = getSelVideoModeStruct();        
         calibrationFile = getSelectedCalibrationFile();
-        setpref('ptbCorgi','calibrationFile',calibrationFile);
-        
+       
+        setpref('ptbCorgi','resolution',res);
+        setpref('ptbCorgi','calibrationFile',calibrationFile);        
         setpref('ptbCorgi','useBitsSharp',useBitsSharp);
 
         if useBitsSharp
@@ -513,47 +573,101 @@ updateCalibFileList();
     end
 
 
-         function setupPath()
-
-
-                %find where this function is being called from.
-                thisFile = mfilename('fullpath');
-                [thisDir, ~, ~] = fileparts(thisFile);
-
-                %For now just grab this and all subdirectories
-                newPath2Add = genpath(thisDir);
-
-                %Now let's find the directories that are missing and add only them
-                %to the path.
-                %Why not just add all sub directories to the path and let matlab
-                %auto prune redundancies? Well, that always brings the added
-                %directoreis top of the path. Which _may_ not be wanted from the
-                %user.
-                subDirCell = regexp(newPath2Add, pathsep, 'split');
-                pathCell = regexp(path, pathsep, 'split');
-
-                for iSub = 1:length(subDirCell)
-
-                    thisFolder = subDirCell{iSub};
-
-                    %If thisFolder doesn't match any of the directories on the path
-                    %add it to the path.
-                    if  ~any(strcmp(thisFolder, pathCell));
-                        msg = sprintf('Adding to path: %s',thisFolder);
-                        disp(msg);
-                        addpath(thisFolder);
-
-                    end
-
-                end
-
-         end
+    function setupPath()
+        
+        
+        %find where this function is being called from.
+        thisFile = mfilename('fullpath');
+        [thisDir, ~, ~] = fileparts(thisFile);
+        
+        %For now just grab this and all subdirectories
+        newPath2Add = genpath(thisDir);
+        
+        %Now let's find the directories that are missing and add only them
+        %to the path.
+        %Why not just add all sub directories to the path and let matlab
+        %auto prune redundancies? Well, that always brings the added
+        %directoreis top of the path. Which _may_ not be wanted from the
+        %user.
+        subDirCell = regexp(newPath2Add, pathsep, 'split');
+        pathCell = regexp(path, pathsep, 'split');
+        
+        for iSub = 1:length(subDirCell)
+            
+            thisFolder = subDirCell{iSub};
+            
+            %If thisFolder doesn't match any of the directories on the path
+            %add it to the path.
+            if  ~isempty(thisFolder) && ~any(strcmp(thisFolder, pathCell))
+                msg = sprintf('Adding to path: %s',thisFolder);
+                disp(msg);
+                addpath(thisFolder);
+                
+            end
+            
+        end
+        
+    end
 
     function closeSetup(hObject,callbackdata)
+        
+        
+        if settingsChanged
+            
+            
+        end
         
         close(fh);
         return;
     end
+
+
+    function saveSetup(hObject, callbackdata)
+        
+        
+        
+        baseDirName = get(baseDirHandle,'String');
+        setpref('ptbCorgi','base',baseDirName);
+        
+        dataDirName = get(dataDirHandle,'String');
+        setpref('ptbCorgi','datadir',dataDirName);
+        
+        calibDirName = get(calibDirHandle,'String');
+        setpref('ptbCorgi','calibdir',calibDirName);
+        
+        setpref('ptbCorgi','computerName',computerName);
+        
+        
+        setPtbCorgiModePref();
+        
+        close(fh);
+        return;
+    end
+
+
+    function resetSetup(hObject,callbackdata)
+        
+        response = questdlg('Warning this will reset all ptbCorgi settings!',...
+            'Reset ptbCorgi settings','Reset','Cancel','Cancel');
+        
+        if strcmp(response,'Reset')        
+            rmpref('ptbCorgi');
+            rmpref('ptbCorgiDataBrowser');
+        end        
+        
+        
+        
+    end
+
+
+
+        function addIndicatorToDropDownMenu()
+            resLabels=availRes;
+            resLabels{curResIdx} = [resLabels{curResIdx} ' *Current Active*'];
+            resLabels{selResIdx} = [resLabels{selResIdx} ' *ptbCorgi*'];
+            
+            
+        end
 
 end
 
