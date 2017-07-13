@@ -17,6 +17,7 @@ triggerInfo.pulseDuration  = 24.8; %Pulse duration in milliseconds,
 %Define bit values for messages
 triggerInfo.startRecording = 2^8;
 triggerInfo.startTrial     = 64;
+triggerInfo.endTrial     = 65;
 triggerInfo.ssvepTagF1     = 1;
 triggerInfo.ssvepTagF2     = 2;
 triggerInfo.ssvepOddstep   = 4;
