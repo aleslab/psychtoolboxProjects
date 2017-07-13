@@ -110,9 +110,13 @@ else     %Now check what is requested.
         end
     end
                    
+    %TODO: Fix NearestResolution to also follow pixelSize
     requestedResolution = NearestResolution(expInfo.screenNum,...
         expInfo.requestedResolution.width,expInfo.requestedResolution.height,...
         expInfo.requestedResolution.hz,expInfo.requestedResolution.pixelSize);
+    
+    requestedResolution.pixelSize = expInfo.requestedResolution.pixelSize;
+    
     
 end
 
