@@ -178,6 +178,7 @@ uicontrol(fh,'Style','text','String','Output Device',...
 calibList = ptbCorgiGetCalibFileList(calibDir);
 
 %Setup the screen selection popup.
+%TODO: Fix for when monitor disappears when monitors are off
 screenHandleList = Screen('screens');
 screenLabelList = cellstr(num2str(screenHandleList(:)));
 
