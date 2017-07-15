@@ -3,9 +3,12 @@ function [ mfileBackup ] = backupExecutedFiles( )
 %[ mfileBackup ] = backupExecutedFiles( )
 %   This function is used to load/backup functions/files that have been run
 %   recently. Uses matlab "inmem" to get a list and parses that list for
-%   functions that are not part of MATLAB or Psychtoolbox
+%   functions that are not part of MATLAB or Psychtoolbox. It returns a
+%   structure that contains the filename and contents of each of these
+%   files. 
 %
-%   mfileBackup is a matlab structure with fields:
+% Output:
+%   mfileBackup - A structure, with each element being one is a matlab structure with fields:
 %    name   = Name of the file
 %   content = The contents of the mfile. 
 

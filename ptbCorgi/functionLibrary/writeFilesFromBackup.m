@@ -1,9 +1,23 @@
 function [ ] = writeFilesFromBackup( mfileBackup, outputDirectory )
 %writeFilesFromBackup write out all the files from a backup.
-%[ ] = writeFilesFromBackup( mfileBackup, outputDirectory )
+%[ ] = writeFilesFromBackup( mfileBackup, [outputDirectory] )
 %
 %   This function will write out the files backed up in a ptbCorgi
-%   mfileBackup structure.
+%   mfileBackup structure to the chosen directory. Used for recreating the
+%   code used when an experiment was run. 
+%
+%Input:
+% mfileBackup - The sessionInfo.mfileBackup structure see: backupExecutedFiles()
+% [outputDirectory] - [pwd/extractOutput/'] Optional directory to write
+%                      files to 
+%
+%Output:
+%Creates new files from whatever was stored in the mfileBackup structures.
+%Does not overwrite any existing files. 
+%
+%Warning: Indescriminate use of this function can cause multiple copies of
+%files in different subdirectories leading to shadowing of files and
+%confusion. 
 
 if nargin<=1 || isempty(outputDirectory)
     %If no input put files in a default locations, not the current

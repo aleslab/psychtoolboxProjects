@@ -1,13 +1,15 @@
-function [ trialData ] = validateConditions( trialData )
+function [ trialData ] = validateTrialData( trialData )
 %validateTrialData Ensures that the trial structure has required fields
-%   This function checks to see if all required fields are set in the trial
-%   structure. If not it sets things to a default value 
+%[ trialData ] = validateConditions( trialData )
+%
+%   This function checks to see if all required fields are set in the
+%   trialData structure. If not it sets things to a default value.
 
 
 %list of required fields and default values:
 fieldListCommon = {...
-'validTrial',true;...
-'feedbackMsg','';...
+'validTrial',true;... %Trials are valid unless something says they aren't
+'feedbackMsg','';...  %This is here incase feedback is turned on but no message is set
 };  
 
 

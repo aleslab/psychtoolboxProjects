@@ -2,16 +2,29 @@ function ptbCorgiSetPlotOptions( figHandle )
 %ptbCorgiSetPlotOptions Sets various matlab options for nicer plots. 
 %ptbCorgiSetPlotOptions( [figHandle] )
 %
+%This function changes many different matlab plotting defaults for making
+%nicer looking plots.  THis function can change the defaults used for all
+%subsequent plotting commands or just change the settings for a currently
+%drawn figure. 
+%
+%
+%Example:
+%To change the matlab defaults for ALL subsequent plotting commands run:
+%ptbCorgiSetPlotOptions() 
+%
+%To change the current figure:
+%%figH = plot(0:100,0:100*2)
+%ptbCorgiSetPlotOptions(figH)
 
 
-%If no handle given 
+
+%If no handle given use groot which contains the default for all figures
 if nargin== 0;
     figHandle = groot;
 elseif ishandle(figHandle) && strcmp(get(figHandle,'type'),'figure')
     %If given a figure handle
     box(findobj(gcf,'type','axes'),'off')
-else
-    figHandle
+else    
     warning('Input incorrect, Not setting graphics options')
 end
     

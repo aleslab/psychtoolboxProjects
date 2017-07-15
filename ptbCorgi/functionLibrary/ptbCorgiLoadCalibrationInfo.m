@@ -1,6 +1,17 @@
 function [ expInfo ] = ptbCorgiLoadCalibrationInfo( expInfo )
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+%ptbCorgiLoadCalibrationInfo Loads stored calibration information. 
+%   [ expInfo ] = ptbCorgiLoadCalibrationInfo( expInfo )
+%
+%This handles loading calibration information that is set from
+%ptbCorgiSetup(). It uses the matlab prefefrence 
+%getpref('ptbCorgi','calibrationFile') to find which file to load. Then it
+%adds the appropriate fields from the file into the expInfo structure. 
+%
+%
+%
+%Deprecated is using two files for calibration. This function still
+%implements loading of the separate size/luminance files. 
+%
 
 if nargin ==0
     expInfo = [];
