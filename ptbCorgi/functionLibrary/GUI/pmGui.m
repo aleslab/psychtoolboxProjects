@@ -165,7 +165,7 @@ else
     set(handles.monWidthText,'String',...
     ['Monitor Width: ' num2str(handles.expInfo.monitorWidth) ' CM']);
  
-dateString = datestr(handles.expInfo.sizeCalibInfo.date,'dd-mm-YYYY')
+dateString = datestr(handles.expInfo.sizeCalibInfo.date,'dd-mm-YYYY');
    set(handles.sizeCalibDateText,'String',...
        ['Measured On: ' dateString]);
 

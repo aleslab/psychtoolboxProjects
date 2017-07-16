@@ -63,7 +63,10 @@ function [ condInfo ] = createConditionsFromParamList( conditionTemplate, method
 %
 %
 
-
+if ~isstruct( conditionTemplate ) || numel(conditionTemplate)>1
+    error('ptbCorgi:createConditions:inputError',...
+        'Input variable conditionTemplate must be a length 1 structure');
+end
 
 %parse input
 for iKeyVal = 1:2:length(varargin),

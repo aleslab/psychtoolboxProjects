@@ -37,28 +37,33 @@ function [] = ptbCorgi(sessionInfo)
 %                        every trial and saves it.
 %          '2afc'     -  This will implement 2 temporal alternative forced
 %                        choice. This option will collect responses and
-%                        will optionally provide feedback (if giveFeedback is set to TRUE).
-%                          2afc can be specified in two ways. First you can
-%                          provide a complete description of the null
-%                          stimulus.
+%                        will optionally provide feedback (if giveFeedback
+%                        and/or giveAudioFeedback is set to TRUE). 2afc can
+%                        be specified in two ways. First you can provide a
+%                        complete description of the target and null
+%                        stimulus. The target is whatever is in the
+%                        conditionInfo struct. The null is specified in the
+%                        'nullCondition' field.
 %
 %                          nullCondition = a conditionInfo structure with a
 %                                          single condition that will be
-%                                          used as the comparison or you
-%                                          can specify the fieldname that
-%                                          will be used to set the target
-%                                          value and a "delta" or
-%                                          increment. This is used when a
-%                                          random value is being set on
-%                                          every trial
+%                                          used as the comparison. It
+%                                          will be passed in to the
+%                                          trialFun when rendering the null
+%                                          interval. 
+%
+%                        Another way is to let ptbCorgi generate the target
+%                        and null automatically if you want to change just
+%                        a single value. You do this by specifying which
+%                        fieldname will change and how much to change it
+%                        by. This is needed if you want to have an
+%                        increment from a random value on each trial.
+% 
 %                          targetFieldname = string name of field
 %                          targetDelta     = amount to change
-%                                           (targetFieldname) by (i.e. +1,
+%                                           (targetFieldname) by (i.e. 1,
 %                                           -10)
 %
-%           'directionreport' - For dealing with data from a direction
-%                       discrimination task where there are 8 different
-%                       options for response in a "circle".
 %
 %   label        = [''] A short string that identifies the condition
 %                  e.g. 'vertical', 'Contrast: 25', or  'Target: Red'

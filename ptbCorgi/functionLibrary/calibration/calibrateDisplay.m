@@ -1,4 +1,9 @@
 function [] = calibrateDisplay(varargin)
+% calibrateDisplay GUI to facilitate display calibration
+% [] = calibrateDisplay(varargin)
+%
+% This is a GUI that helps do luminance and size calibration. 
+
 
 lumCalibInfo      =[];
 sizeCalibInfo     =[];

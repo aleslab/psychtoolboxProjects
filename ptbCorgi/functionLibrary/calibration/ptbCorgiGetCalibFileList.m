@@ -27,7 +27,8 @@ for iFile = 1:length(fileList)
     if any(strcmp({varlist(:).name},'modeString')) %Check if a modestring is set
         load(fullFilename,'modeString'); %Load the mode string
         foundFileList(foundCalibFileIdx).modeString = modeString;
-        foundFileList(foundCalibFileIdx).name       = fullFilename;
+        foundFileList(foundCalibFileIdx).fullname   = fullFilename;
+        foundFileList(foundCalibFileIdx).name       = fileList(iFile).name;
         foundCalibFileIdx = foundCalibFileIdx +1;
     end
     
@@ -44,7 +45,8 @@ end
 for iMode = 1:length(ia)
     calibList(iMode).modeString = c{iMode};
     theseFiles = (ic==iMode);
-    calibList(iMode).filenames  = {foundFileList(theseFiles).name};
+    calibList(iMode).fullnames  = {foundFileList(theseFiles).fullname};
+    calibList(iMode).names  = {foundFileList(theseFiles).name};
 end
 
 

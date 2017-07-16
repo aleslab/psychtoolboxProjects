@@ -1,7 +1,18 @@
 function [ status, message ] = checkIfCalibrationIsForThisSystem( expInfo, calibInfo )
 %checkIfCalibrationIsForThisSystem Checks if the calibration info matches the current system  
 %  [ status, msg ] = checkIfCalibrationIsForThisSystem( expInfo, calibInfo )
-% Detailed explanation goes here
+% 
+%  Does several checks to make sure the loaded calibration has done on the
+%  current system.  Checks display mode, machine settings, graphics card
+%  model and driver versions. 
+%
+% Inputs:
+% expInfo - After calling openExperiment()
+% calibInfo - From calibration file.
+%
+% Outputs:
+% status - [boolean] TRUE if calibration is for the current system
+% message - [string] Message explaining why the check failed. 
 
 message = '';
 

@@ -25,15 +25,16 @@ computerName = ptbCorgiGetComputerName();
 
 fh = figure('Visible','on','Units','normalized','Position',[.1 .2 .55 .6],'tag','ptbCorgiSetup');
 
+set(fh,'menu','none','name','ptbCorgiSetup','NumberTitle','off');
 
 uicontrol(fh,'Style','pushbutton',...
     'String','Close',...
-    'Units','normalized','Position',[.81 0 .15 .05],...
+    'Units','normalized','Position',[.81 0.05 .15 .05],...
     'callback',@closeSetup);
 
 uicontrol(fh,'Style','pushbutton',...
     'String','Save and Close',...
-    'Units','normalized','Position',[.66 0 .15 .05],...
+    'Units','normalized','Position',[.66 0.05 .15 .05],...
     'callback',@saveSetup);
 
 
@@ -108,20 +109,22 @@ uicontrol(fh,'Style','pushbutton',...
     'Units','normalized','Position',[.35 .825 .25 .05],...
     'callback',@chooseBaseDir);
 
+yPad = .02;
+
 uicontrol(fh,'Style','text',...
     'String','Directory to save data:','HorizontalAlignment','left',...
-    'Units','normalized','Position',[.35 .77 .25 .05]);
+    'Units','normalized','Position',[.35 .77-yPad .25 .05]);
 
 dataDirHandle = uicontrol(fh,'Style','edit',...
     'String',dataDir,'HorizontalAlignment','left',...
-    'Units','normalized','Position',[.35 .74 .4 .05]);
+    'Units','normalized','Position',[.35 .74-yPad .4 .05]);
 
 uicontrol(fh,'Style','pushbutton',...
     'String','Choose Data Directory','HorizontalAlignment','left',...
-    'Units','normalized','Position',[.35 .685 .25 .05],...
+    'Units','normalized','Position',[.35 .685-yPad .25 .05],...
     'callback',@chooseDataDir);
 
-yPos = .63;
+yPos = .63-yPad*2;
 uicontrol(fh,'Style','text',...
     'String','Directory to save calibration:','HorizontalAlignment','left',...
     'Units','normalized','Position',[.35 yPos .3 .05]);
@@ -208,6 +211,7 @@ resLabels{selResIdx} = [resLabels{selResIdx} ' *ptbCorgi*'];
 frameRateList = getUniqueFrameRateStr();
 frameRateLabels = frameRateList;
 selFrameRateIdx = find(strcmp(frameRateList,num2str(hzPref)));
+frameRateLabels{selFrameRateIdx} = [frameRateList{selFrameRateIdx} '*'];
 
 bitDepthList  = getUniqueBitDepthStr();
 bitDepthLabels = bitDepthList;
@@ -240,7 +244,7 @@ uicontrol(fh,'Style','text','String','Resolution',...
 
 
 frameRatePopupH = uicontrol(fh,'Style','popupmenu',...
-    'String',frameRateList,'Value',selFrameRateIdx,...
+    'String',frameRateLabels,'Value',selFrameRateIdx,...
     'Units','normalized','Position',[.1 yPos-.08 popWidth .05],...
     'callback',@changeFrameRate);
 
@@ -467,6 +471,9 @@ updateCalibFileList();
         
         frameRateList = getUniqueFrameRateStr();
         frameRateLabels = frameRateList;
+        selFrameRateIdx = find(strcmp(frameRateList,num2str(hzPref)));
+        frameRateLabels{selFrameRateIdx} = [frameRateList{selFrameRateIdx} '*'];
+
         
         set(frameRatePopupH,'string',frameRateLabels);
         changeFrameRate();
@@ -513,11 +520,15 @@ updateCalibFileList();
         calibFilenames = listBoxLabels;
         set(calibFileListH,'value',1);
         if ~isempty(calibListIdx)
-            listBoxLabels = calibList(calibListIdx).filenames;                        
+            listBoxLabels = calibList(calibListIdx).names;                        
             listBoxLabels = {'None', listBoxLabels{:}};
             
             calibFilenames = listBoxLabels;
-            chosenFileListIdx = strcmp(currentActiveCalibFile,listBoxLabels);
+            
+            %Append the calibration directory to the filename list
+            %This makes sure the full path string is set
+            fullPathList = strcat([calibDir filesep],listBoxLabels);
+            chosenFileListIdx = strcmp(currentActiveCalibFile,fullPathList);
             
             %If one of the files on the list is the current active one
             %label it with *ptbCorgi
@@ -541,10 +552,10 @@ updateCalibFileList();
     end
 
     function calibrationFile = getSelectedCalibrationFile()
-        
-        calibFilenames
+                
         calibSelected = get(calibFileListH,'value');       
-        calibrationFile = calibFilenames{calibSelected};
+        calibrationFile = fullfile(calibDir, calibFilenames{calibSelected});
+        
         
         if strcmpi('calibrationFile','none')
             calibrationFile = '';
@@ -651,10 +662,10 @@ updateCalibFileList();
         response = questdlg('Warning this will reset all ptbCorgi settings!',...
             'Reset ptbCorgi settings','Reset','Cancel','Cancel');
         
-        if strcmp(response,'Reset')        
+        if strcmp(response,'Reset')
             rmpref('ptbCorgi');
             rmpref('ptbCorgiDataBrowser');
-        end        
+        end
         
         
         
@@ -662,13 +673,14 @@ updateCalibFileList();
 
 
 
-        function addIndicatorToDropDownMenu()
-            resLabels=availRes;
-            resLabels{curResIdx} = [resLabels{curResIdx} ' *Current Active*'];
-            resLabels{selResIdx} = [resLabels{selResIdx} ' *ptbCorgi*'];
-            
-            
-        end
+    function addIndicatorToDropDownMenu()
+        resLabels=availRes;
+        resLabels{curResIdx} = [resLabels{curResIdx} ' *Current Active*'];
+        resLabels{selResIdx} = [resLabels{selResIdx} ' *ptbCorgi*'];
+        
+        
+        
+    end
 
 end
 
