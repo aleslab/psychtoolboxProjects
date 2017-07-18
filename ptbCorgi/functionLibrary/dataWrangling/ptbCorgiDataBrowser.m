@@ -91,15 +91,29 @@ if isempty(ptbCorgiMakeDataBrowserModal)
 end
 
 
+if ptbCorgiMakeDataBrowserModal && length(varargin)<2
+        ptbCorgiMakeDataBrowserModal = false;
+end
 
+%TODO: SWitch grom global to something different. 
+%Possibly use dbstack to find the name of calling function. 
+%[st,i] =dbstack(3)
+%
+% if ~isempty(st) && strcmp(st(1).name,'uiGetPtbCorgiData')
+% end
 
 if ptbCorgiMakeDataBrowserModal == true
     %Sets the button that will close the gui
     uicontrol(handles.loadDataBtn);
     % UIWAIT makes pmGui wait for user response (see UIRESUME)
     
-    handles.output = [];
     
+    handles.output = [];    
+    
+    % Turn off any element that isn't appropriate for modal opening
+    set(handles.loadDataBtn,'string','Load Data'); %Change load button name to be more clear
+    turnTheseOff = [handles.organizeDataCheck handles.text8 handles.outputVarNameEditBox];
+    set(turnTheseOff,'HandleVisibility','off');
     
     if isempty(varargin{2}) 
         if ispref('ptbCorgiDataBrowser','lastDataDir')
@@ -136,6 +150,7 @@ loadDataInfo(hObject);
 if ptbCorgiMakeDataBrowserModal == true
     % UIWAIT makes pmGui wait for user response (see UIRESUME)
     uiwait(handles.dataBrowserParent);
+    
 end
 
 
@@ -516,7 +531,7 @@ handles.output.nParticipants = length(handles.output.participantList);
 handles.output.conditionInfo = loadedData(1).sessionInfo.conditionInfo;
 handles.output.nConditions = length(loadedData(1).sessionInfo.conditionInfo);
 handles.output.participantData = loadedData;
-
+handles.output.partipantErrorData = participantErrors;
 
 global ptbCorgiMakeDataBrowserModal
 % The figure can be deleted now
