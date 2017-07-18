@@ -531,16 +531,17 @@ updateCalibFileList();
             chosenFileListIdx = strcmp(currentActiveCalibFile,fullPathList);
             
             %If one of the files on the list is the current active one
-            %label it with *ptbCorgi
+            %label it with *ptbCorgi* and set it as active. 
             if any(chosenFileListIdx)
                 listBoxLabels{chosenFileListIdx} = ...
                     ['*ptbCorgi* ' listBoxLabels{chosenFileListIdx}];
+                selFile = find(chosenFileListIdx);
             end
         end
         
         
         set(calibFileListH,'string',listBoxLabels);
-        
+        set(calibFileListH,'value',selFile);
     end
 
     function modeString=generateModeString(res)
@@ -581,7 +582,7 @@ updateCalibFileList();
             set( devicePopupH,'value',deviceIdx,'string',deviceList);
         end
 
-        
+        changeScreen();
     end
 
 
