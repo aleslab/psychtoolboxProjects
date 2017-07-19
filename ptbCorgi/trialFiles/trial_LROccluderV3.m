@@ -82,7 +82,7 @@ end
 
 flipNb = 0; % keep track of the number of flips
 stimStartTime = trialData.trialStartTime; % this is wrong but need a starting value for the while loop
-seq = 0;seqObs=[];
+seq = 0;seqObs=[];clearOcc=0;
 % flip = trialData.testFlipFrame
 
 % presentation stimulus
@@ -117,10 +117,12 @@ while ~KbCheck && t<conditionInfo.stimDuration+stimStartTime-ifi/2
             else
                 colStim = black;
             end
-            if ismember(seq, trialData.testFlipSeq) && strcmp(conditionInfo.label,'expected') % put back in grey for the next sequence
-                for ss = 1:length(seqObsOld)
+            if clearOcc % put back the occluders in grey 
+%             if ismember(seq-1, trialData.testFlipSeq) && strcmp(conditionInfo.label,'expected') 
+                for ss = 1:length(seqObsOld) 
                     Screen('FillRect',expInfo.curWindow,gray,CenterRectOnPoint(rectObs,xcoordStim((seqObsOld(ss)-totLoc*(seq-1))),ycoordStim((seqObsOld(ss)-totLoc*(seq-1)))));
                 end
+                clearOcc = 0;
             end
             Screen('FillOval', expInfo.curWindow, colStim, CenterRectOnPoint(rectCircle,xcoordStim(pos+1),ycoordStim(pos+1)));
             Screen('FillOval', expInfo.curWindow, gray, CenterRectOnPoint(rectCircle,xcoordStim(pos),ycoordStim(pos)));
@@ -129,6 +131,7 @@ while ~KbCheck && t<conditionInfo.stimDuration+stimStartTime-ifi/2
                 for ss = 1:length(seqObs)
                     Screen('FillRect',expInfo.curWindow,black,CenterRectOnPoint(rectObs,xcoordStim((seqObs(ss)-totLoc*seq)),ycoordStim((seqObs(ss)-totLoc*seq))));
                 end
+                clearOcc = 1;
             end
             if ismember(flipNb,trialData.testFlipFrame-1) && strcmp(conditionInfo.label,'unexpected')
                 Screen('FillRect',expInfo.curWindow,gray,CenterRectOnPoint(rectCircle,xcoordStim(pos+1),ycoordStim(pos+1)));
