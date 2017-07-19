@@ -448,10 +448,11 @@ updateCalibFileList();
         availRes= getUniqueResolutionsStr();
         
         curResIdx = find(strcmp(num2str([curRes.width curRes.height],'%dx%d'),availRes));
-        selResIdx = curResIdx;%find(strcmp(availRes,resPref)); %Selected Default resolution
+        selResIdx = find(strcmp(availRes,resPref)); %Selected Default resolution
         selResString = availRes{selResIdx};
         resLabels=availRes;
         resLabels{curResIdx} = [resLabels{curResIdx} ' *Current Active*'];
+        resLabels{selResIdx} = [resLabels{selResIdx} ' *ptbCorgi*'];
         
         %resLabels{selResIdx} = [resLabels{selResIdx} ' *ptbCorgi*'];
         set(resPopupH,'string',resLabels,'value',selResIdx)
@@ -582,6 +583,7 @@ updateCalibFileList();
             set( devicePopupH,'value',deviceIdx,'string',deviceList);
         end
 
+        [screenPref resPref hzPref bitDepthPref]=getPtbCorgiMonPref();
         changeScreen();
     end
 
