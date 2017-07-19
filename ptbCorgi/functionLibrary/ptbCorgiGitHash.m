@@ -19,6 +19,13 @@ gitHashOnArchive = '$Format:%H$';
 checkString = ' $ F ormat:%H$ ';
 checkString = checkString(~isspace(checkString));
 
+%If this was a release archive use the string from GITHUB and 
+%don't bother checking for local git. 
+if ~strcmp(gitHashOnArchive,checkString);
+     gitHash = gitHashOnArchive;
+     return;
+end
+
 thisFile = mfilename('fullpath');
 [thisDir, ~, ~] = fileparts(thisFile);
 
@@ -44,10 +51,6 @@ thisFile = mfilename('fullpath');
      %trim off trailing whitespace/line break
      gitHash = strtrim(hashCheckResult);
      
-     %Using a silly white space addition to stop git from interpreting the
-     %string as something to replace with the githash.
- elseif ~strcmp(gitHashOnArchive,checkString);
-     gitHash = gitHashOnArchive;
  else     
      gitHash = 'HASHERR';
  end
