@@ -207,7 +207,7 @@ saveBtnH= uicontrol(fh,'Style','pushbutton',...
         setpref('ptbCorgi','computerName',computerName);
         
         saveFilename = fullfile(calibdir,filename);
-        
+        calibdir
         if ~exist(calibdir,'dir')
             mkdir(calibdir)
         end

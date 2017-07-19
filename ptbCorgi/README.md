@@ -13,6 +13,9 @@ Add some hashing functions to detect changes.
 
 
 Version History
+0.32.1
+Various changes to improve compatibility with windows. 
+
 0.32.0
 Renamed to ptbCorgi
 Started project management framework for data analysis: 

@@ -24,7 +24,11 @@ function [ timeSent ] = ptbCorgiSendTrigger( expInfo,command,sendNow,varargin )
 %
 %Inputs:
 %
-% expInfo - The experiment info structure
+% expInfo - The experiment info structure. The following fields are used:
+%         expInfo.useBitsSharp = [false] If true use bitsSharp
+%         expInfo.enableTriggers = [false] if true enable triggering, if
+%                                  false return silently.
+%
 % command - A string chosen from the available commands listed below
 % sendNow - a boolean, if set to 'true' the dio command is sent now via
 % executing 2 consecutive Screen('flip'). The first sets the command the
@@ -40,8 +44,6 @@ function [ timeSent ] = ptbCorgiSendTrigger( expInfo,command,sendNow,varargin )
 % the toggle bit to 0.
 %
 %'startrecording'
-%         expInfo.useBitsSharp = true;
-expInfo.enableTriggers = true;
 % Sends the start recording trigger value. 
 %         
 %'conditionNumber' 
@@ -81,6 +83,7 @@ if ~expInfo.enableTriggers
     return;
 end
 
+expInfo
 %If missing triggerInfo, rather than erroring out print a warning and keep
 %going. 
 if ~isfield(expInfo,'triggerInfo')

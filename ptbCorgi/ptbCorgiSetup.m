@@ -67,7 +67,7 @@ end
 %Setup the base dir automatically
 if ~exist(baseDir,'dir')
     fprintf('Cannot find base dir: %s\n',baseDir);
-    baseDir = which('ptbCorgi.m');
+    baseDir = fileparts(which('ptbCorgi.m'));
     fprintf('Setting base dir preference to: %s\n',baseDir);
     setpref('ptbCorgi','base',baseDir);
 end
@@ -448,10 +448,11 @@ updateCalibFileList();
         availRes= getUniqueResolutionsStr();
         
         curResIdx = find(strcmp(num2str([curRes.width curRes.height],'%dx%d'),availRes));
-        selResIdx = curResIdx;%find(strcmp(availRes,resPref)); %Selected Default resolution
+        selResIdx = find(strcmp(availRes,resPref)); %Selected Default resolution
         selResString = availRes{selResIdx};
         resLabels=availRes;
         resLabels{curResIdx} = [resLabels{curResIdx} ' *Current Active*'];
+        resLabels{selResIdx} = [resLabels{selResIdx} ' *ptbCorgi*'];
         
         %resLabels{selResIdx} = [resLabels{selResIdx} ' *ptbCorgi*'];
         set(resPopupH,'string',resLabels,'value',selResIdx)
@@ -518,7 +519,7 @@ updateCalibFileList();
         
         listBoxLabels = {'None'};
         calibFilenames = listBoxLabels;
-        set(calibFileListH,'value',1);
+        selFile = 1;
         if ~isempty(calibListIdx)
             listBoxLabels = calibList(calibListIdx).names;                        
             listBoxLabels = {'None', listBoxLabels{:}};
@@ -582,6 +583,7 @@ updateCalibFileList();
             set( devicePopupH,'value',deviceIdx,'string',deviceList);
         end
 
+        [screenPref resPref hzPref bitDepthPref]=getPtbCorgiMonPref();
         changeScreen();
     end
 
