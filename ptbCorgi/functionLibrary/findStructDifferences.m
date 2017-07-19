@@ -1,11 +1,19 @@
 function [ names ] = findStructDifferences( s1, s2 )
 %findStructDifferences Compare structures for differences
-%   function [ names ] = findStructDifferences( s1, s2 )
+%   [ names ] = findStructDifferences( s1, s2 )
 %
 %   Compares structures s1 and s2 and returns the names of any fields in
 %   s1 that have different values from those in s2.
 %   Does not return names of fields inside substructures, but compares the
-%   structures recursively. 
+%   structures recursively.
+%
+%   Inputs:
+%   s1,s2 - Two structures to compare. 
+%
+%   Output:
+%   names - A cell array containing the names of all fields that contain
+%   differences. 
+
 allNames = fieldnames(s1);
 
 names = {};

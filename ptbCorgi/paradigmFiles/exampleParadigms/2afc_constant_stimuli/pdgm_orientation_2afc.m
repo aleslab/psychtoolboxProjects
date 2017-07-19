@@ -27,7 +27,7 @@ expInfo.instructions = ['This is an orientation discrimination experiment\n' ...
     'or anticlockwise from the 1st\n' ...
     'Wait till the box appears before responding\n' ...
     'Press ''j'' for clockwise \n'...
-    'Press ''f'' for anticlockwise\n']
+    'Press ''f'' for anticlockwise\n'];
 
 %Done with setting the expInfo fields
 
@@ -53,15 +53,15 @@ conditionInfo(1).trialFun=@gaborInNoiseTrial;
 %changes it by "targetDelta" between each interval.
 conditionInfo(1).type = '2afc'; %2 interval forced choice
 
-%For this paradigm we want the gabor to take a random orientation
-%so we will use the "randomizeField" option.
+%For this paradigm we want the gabor to take a random starting orientation
+%on each trial, we will use the "randomizeField" option to accomplish that
 conditionInfo(1).randomizeField(1).fieldname = 'orientation'; %fieldname to randomize
 %We'll use a uniform distribtion on 0 to 360 for the setting.
 conditionInfo(1).randomizeField(1).type = 'uniform'; 
 conditionInfo(1).randomizeField(1).param = [0 360];
 
 %One way to create a 2afc paradigm is to use  "targetFieldname" 
-%
+%This automatically 
 conditionInfo(1).targetFieldname = 'orientation'; %Field to use to define the 2afc target
 conditionInfo(1).targetDelta = -15; %This is an example to subtract 15 from 'orientation' Actual values get set in the loop below
 
@@ -97,19 +97,10 @@ conditionInfo(1).noiseSigma        = .15;
 orientationDeltaList = linspace(-1,-10,10); 
 nCond = length(orientationDeltaList);
 
-for iCond = 1:nCond,
-    
-    %First set all the parameters to the values we set above.
-    conditionInfo(iCond) = conditionInfo(1);
-    
-    %Now setup the delta for this condition
-    conditionInfo(iCond).targetDelta = orientationDeltaList(iCond);
-    
-    %We can give each condition a human readable lable. 
-    conditionInfo(iCond).label = ['Orientation Change: ' num2str(conditionInfo(iCond).targetDelta)];
-
-end
-
+%Now lets take the template condition created above and create our set of
+%conditions.
+conditionInfo = createConditionsFromParamList(conditionInfo,'pairwise',...
+    'targetDelta',orientationDeltaList);
 
 
 

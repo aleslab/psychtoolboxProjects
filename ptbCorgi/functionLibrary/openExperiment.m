@@ -1,26 +1,24 @@
 function expInfo = openExperiment( expInfo)
-% expInfo = openExperiment(expInfo.monitorWidth, expInfo.viewingDistance, expInfo.screenNum,expInfo.useFullScreen)
-%Perform a bit of useful housekeeping before opening an experiment.
-% Arguments:
-%	expInfo.monitorWidth     - viewing width of monitor (cm)
-%	expInfo.viewingDistance  - distance from participant to monitor (cm)
-%   expInfo.screenNum        - screen number for experiment (defaults to  max)
-%   expInfo.stereoMode       -
-%   expInfo.useFullScreen: Boolean, True will open a full screen window FALSE
-%   will open a 500 pixel window.
+% expInfo = openExperiment([expInfo])
 %
-% returns expInfo structure with fields:
-% bckgnd  - Value of the background level
-% curWindow - Pointer to the current window
-% screenRect - the screen rectangle
-% monRefresh - monitor refresh rate in Hz.
-% ifi        - the interframe interval in seconds
-% frameDur   - frame duration in milliseconds
-% center     -  coordinates of the monitor center.
-% ppd        - pixels per degree
-% pixPerCm   - pixels per centimeter
-% useKbQueue - Defaults to false. Override if needed
-%            - Determines if program should use KbQueue's to get keyboard
+%This is an important function that handles all the housekeeping for
+%initializing an experimental session including opening the window.
+%Important to note, this function sets things up with PsychDefaultSetup(2),
+%and opens the window using PsychImaging(). So it uses a modern floating
+%point color range of 0-1 NOT 0-255!
+%
+%
+%Optional input expInfo is a structure defining various things controlling
+%how an experiment is initialized/handled. Aything not set is given a
+%default value. See help expInfoFieldDescriptions for a complete
+%description of how each field is used. The mininum needed is probably just
+%setting the viewing distance:
+%
+%	expInfo.viewingDistance  - [default 57] distance from participant to
+%	monitor (cm)%
+%
+%Important see: help expInfoFieldDescriptions for a full description of all
+%fields
 
 
 
@@ -42,7 +40,7 @@ PsychPortAudio('Close');
 PsychDefaultSetup(2)
 
 
-
+%Default size to use for 
 defaultWindowRect = [0 0 720 720];
 
 
@@ -415,6 +413,9 @@ end
 
 %Set default font size.
 Screen('TextSize', expInfo.curWindow, 60);
+%Set the default blending function to what is needed for alpha-blending of
+%lines/dots and for masking textures. This is different from the ptb
+%default of no blending. 
 Screen('BlendFunction', expInfo.curWindow,  GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
@@ -425,7 +426,7 @@ Screen('BlendFunction', expInfo.curWindow,  GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
 %If you need high performance responses turn them on. But be careful and
 %read the help and the help for ListenChar
 expInfo.useKbQueue = false;
-KbName('UnifyKeyNames');
+
 %-3 Merges all connected keypads and keyboards for KbCheck()
 %Negative numbers mean use default keyboard for kbQueueXXX()
 expInfo.inputDeviceNumber = -3;

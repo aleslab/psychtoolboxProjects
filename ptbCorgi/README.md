@@ -32,6 +32,7 @@ Updated overloadOpenPtbCorgiData to handle cell arrays of filenames.
 Added Condition groups to ptbCorgi gui.
 Add more information to calibration routines to avoid filename ambiguities
 Calibration files now show a computer name.
+Calibration information now is saved in a single file. 
 Simple response trial type has upgraded keypress handling (e.g. escape aborts)
 Simple response upgraded to allow defintion of the "correct" key press for each condition. 
 expInfo structure documented (mostly)
@@ -39,6 +40,7 @@ Updated keyboard initialization to get keypresses from all devices when using Kb
 Structured code to enable easy testing/debugging of trial files. 
 Added new ptbCorgiSetup() that unifies setup and calibration
 Added support for BitsSharp mono++ mode and triggering. 
+Added createConditionsFromParamList to simplify creation of groups of condInfo
 
 
 

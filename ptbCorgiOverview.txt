@@ -23,7 +23,8 @@ Commonly individuals utilize monolithic scripts for experiment code.  These scri
 Key modules:
 
 
-Experiment Paradigm: 			Defines that parameters for an experimental session.
+Experiment Paradigm:  Defines that parameters for an
+		  	experimental session.
 Trial Display:       			Renders the stimulus for a single trial.
 Experimental Session Handling:		Handles trial ordering and presentation and collection and saving of data.
 Psychtoolbox system initialization: 	Handles initialization of psychtoolbox.

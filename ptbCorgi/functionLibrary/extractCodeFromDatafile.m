@@ -4,6 +4,8 @@ function [  ] = extractCodeFromDatafile( inputFile, outputDirectory )
 %   
 %     This function will load a ptbCorgi datafile and extracts the saved
 %     code in the datafile, and writes out all the mfiles that were saved.
+%
+%SEE also: writeFilesFromBackup()  backupExecutedFiles()
 
 if nargin == 0
     help('extractCodeFromDatafile')

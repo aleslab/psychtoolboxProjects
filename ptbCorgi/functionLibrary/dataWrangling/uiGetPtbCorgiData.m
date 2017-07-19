@@ -39,10 +39,10 @@ end
 %use.
 try
     ptbCorgiData = ptbCorgiDataBrowser([],chosenDirectory);
-catch ME
+catch ME    
     ptbCorgiMakeDataBrowserModal = false;
     ptbCorgiData = [];
-    
+    rethrow(ME)
 end
     ptbCorgiMakeDataBrowserModal = false;
 end

@@ -1,10 +1,13 @@
 function closeExperiment()
-% closeExperiment
-% closes the screen, returns priority to zero,
-% and shows the cursor.
+% closeExperiment Restores settings and closes screen
+%[] = closeExperiment()
+%
+%This function is called when sessions are finished to restore settings and
+%close Screen windows/textures. 
 
-Priority(0);
-RestoreCluts;
-Screen('CloseAll');
-PsychPortAudio('Close');
-ListenChar(0);
+Priority(0); %Restore priority settings
+RestoreCluts; %Restore gamma table
+Screen('CloseAll'); %close open windows/textures
+PsychPortAudio('Close'); %
+ListenChar(0); %Show Keypresses
+ShowCursor(); %Show cursor
