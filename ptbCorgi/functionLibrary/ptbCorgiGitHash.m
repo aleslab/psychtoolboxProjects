@@ -22,13 +22,17 @@ checkString = checkString(~isspace(checkString));
 thisFile = mfilename('fullpath');
 [thisDir, ~, ~] = fileparts(thisFile);
 
-
+ if ispc %on pc command line calling of git not yet fixed/worked out
+     repoCheckError = true;
+     hashCheckError = true;
+ else
  %Try to get the git commit hash 
  % Check if thisFile is tracked in a git repository
  %Need to "cd" into the directory for some reason. Can't use git --exec-dir
  %option.  This "cd" happens in the local bash shell spawned by the system
  %command so should not change the directory matlab is in.
  [repoCheckError,repoCheckResult] = system(['cd ' thisDir ';git status ' thisFile ' --porcelain']);
+ end
  
  %If we're in a git repository, try and load the hash
  if ~repoCheckError

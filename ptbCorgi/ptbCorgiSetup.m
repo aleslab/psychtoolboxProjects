@@ -67,7 +67,7 @@ end
 %Setup the base dir automatically
 if ~exist(baseDir,'dir')
     fprintf('Cannot find base dir: %s\n',baseDir);
-    baseDir = which('ptbCorgi.m');
+    baseDir = fileparts(which('ptbCorgi.m'));
     fprintf('Setting base dir preference to: %s\n',baseDir);
     setpref('ptbCorgi','base',baseDir);
 end
@@ -518,7 +518,7 @@ updateCalibFileList();
         
         listBoxLabels = {'None'};
         calibFilenames = listBoxLabels;
-        set(calibFileListH,'value',1);
+        selFile = 1;
         if ~isempty(calibListIdx)
             listBoxLabels = calibList(calibListIdx).names;                        
             listBoxLabels = {'None', listBoxLabels{:}};
