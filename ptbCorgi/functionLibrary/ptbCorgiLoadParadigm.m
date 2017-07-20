@@ -32,26 +32,44 @@ if ischar(paradigmFile)
     if strcmp(fileExt,'.m')
         paradigmFile = str2func(fileName);
         
-        %Check if the paradigm function location is on the path
-        if ~ismember(filePath, strsplit(path, pathsep))            
-            warning('ptbCorgi:loadParadigm:functionNotOnPath',...
-                'Paradigm function (*.m) files must be on the matlab path\n adding %s to the path',...
-            filePath); 
-            addpath(filePath);
-        end
         
-        %After adding it to the path check if we've got duplicates hiding.
+        %Check how many copies of the paradigm file is on the path.
         fileLocations = which(fileName,'-all');
         
+        
+        %If there's more than one location quit now and tell user to fix
+        %the problem.
         if length(fileLocations) >1
-            fprintf(2,'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+            fprintf(2,'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n');
              fprintf(2,'Cannot load paradigm %s! Duplicate functions found on path:\n',fileName);
              disp(char(fileLocations));
             error('ptbCorgi:loadParadigm:shadowParadigm',...
                 'Multiple files share paradigm function name, rename paradigm file')
-                
-        end
+            
+        elseif isempty(fileLocations) %If the paradigm can't be found it must not be on the path, add it
+            warning('ptbCorgi:loadParadigm:functionNotOnPath',...
+                'Paradigm function (*.m) files must be on the matlab path\n adding %s to the path',...
+                filePath);
         
+            addpath(filePath);
+        else %Ok it's on the path.  But is it the correct file on the path?
+            
+            %Check if the paradigm function location is on the path
+            if ~ismember(filePath, strsplit(path, pathsep))
+                
+                fprintf(2,'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n');
+                fprintf(2,'Cannot load paradigm %s! Duplicate functions found on path:\n',fileName);
+                fprintf(2,'You requested to load: %s\n',fullfile(filePath, fileName, fileExt));
+                fprintf(2,'But this different file is already on the matlab path: %s\n', fileLocations{1});
+                fprintf(2,'Rename one of the paradigms or fix the matlab path. Please note ptbCorgi automatically adds subdirectories of the basedir to the path\n');
+                error('ptbCorgi:loadParadigm:shadowParadigm',...
+                    'Multiple files share paradigm function name, rename paradigm file')
+                                
+            end
+            
+        end
+                           
+                
     elseif ~strcmp(fileExt,'.mat')
         error('ptbCorgi:loadParadigm:inputError',...
             'File must be either *.m or *.mat');

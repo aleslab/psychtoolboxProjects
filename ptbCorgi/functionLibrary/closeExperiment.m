@@ -8,6 +8,5 @@ function closeExperiment()
 Priority(0); %Restore priority settings
 RestoreCluts; %Restore gamma table
 Screen('CloseAll'); %close open windows/textures
-PsychPortAudio('Close'); %
 ListenChar(0); %Show Keypresses
 ShowCursor(); %Show cursor
