@@ -22,7 +22,7 @@ function [ verStr, verStruct] = ptbCorgiVersion()
 
 
 verStruct.major = 0;
-verStruct.minor = 32;
+verStruct.minor = 33;
 verStruct.patch = 0;
 verStruct.label = '-dev';
 verStruct.gitHash = ptbCorgiGitHash();
