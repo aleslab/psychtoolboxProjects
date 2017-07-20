@@ -37,7 +37,7 @@ if ispref('ptbCorgi','calibrationFile')
         
         if isfield(calibInfo,'lumCalibInfo')
             disp('<><><><><><> PTBCORGI <><><><><><><>')
-            disp(['Loading Size Calibration from: ' calibFile])
+            disp(['Loading Luminance Calibration from: ' calibFile])
             expInfo.gammaTable = calibInfo.lumCalibInfo.gammaTable;
             expInfo.lumCalibInfo = calibInfo.lumCalibInfo;
             foundCalibData = true;

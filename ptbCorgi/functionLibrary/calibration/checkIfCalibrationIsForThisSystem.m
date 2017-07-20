@@ -37,14 +37,15 @@ end
 
 %Now lets check the computer.
 
-if ~strcmp(currentComputer.hw.machine,calibInfo.computer.hw.machine) ...
-        || ~strcmp(currentComputer.hw.model,calibInfo.computer.hw.model)
-    
-    status = false;
-    message = 'Computer machine and/or model string does not match';
-
+if ~ispc %these fields can only be checked on linux/mac
+    if ~strcmp(currentComputer.hw.machine,calibInfo.computer.hw.machine) ...
+            || ~strcmp(currentComputer.hw.model,calibInfo.computer.hw.model)
+        
+        status = false;
+        message = 'Computer machine and/or model string does not match';
+        
+    end
 end
-
 
 %Check if we have the window info structure for comparing graphics card
 %information.

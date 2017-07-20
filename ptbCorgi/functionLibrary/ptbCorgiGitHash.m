@@ -19,16 +19,27 @@ gitHashOnArchive = '$Format:%H$';
 checkString = ' $ F ormat:%H$ ';
 checkString = checkString(~isspace(checkString));
 
+%If this was a release archive use the string from GITHUB and 
+%don't bother checking for local git. 
+if ~strcmp(gitHashOnArchive,checkString);
+     gitHash = gitHashOnArchive;
+     return;
+end
+
 thisFile = mfilename('fullpath');
 [thisDir, ~, ~] = fileparts(thisFile);
 
-
+ if ispc %on pc command line calling of git not yet fixed/worked out
+     repoCheckError = true;
+     hashCheckError = true;
+ else
  %Try to get the git commit hash 
  % Check if thisFile is tracked in a git repository
  %Need to "cd" into the directory for some reason. Can't use git --exec-dir
  %option.  This "cd" happens in the local bash shell spawned by the system
  %command so should not change the directory matlab is in.
  [repoCheckError,repoCheckResult] = system(['cd ' thisDir ';git status ' thisFile ' --porcelain']);
+ end
  
  %If we're in a git repository, try and load the hash
  if ~repoCheckError
@@ -40,10 +51,6 @@ thisFile = mfilename('fullpath');
      %trim off trailing whitespace/line break
      gitHash = strtrim(hashCheckResult);
      
-     %Using a silly white space addition to stop git from interpreting the
-     %string as something to replace with the githash.
- elseif ~strcmp(gitHashOnArchive,checkString);
-     gitHash = gitHashOnArchive;
  else     
      gitHash = 'HASHERR';
  end
