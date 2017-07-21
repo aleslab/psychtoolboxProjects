@@ -376,7 +376,7 @@ try
 catch ME
     disp('<><><><><><> PTBCORGI <><><><><><><>')
     disp('ERROR Loading Paradigm File, check your paradigm file')
-    disp('The following report should help diagnose what is wrong:')
+    disp('Read the messages above to help diagnose what is wrong')
     disp(' ')
     disp(getReport(ME))
     

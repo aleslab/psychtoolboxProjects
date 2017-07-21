@@ -281,6 +281,19 @@ disp('Use ptbCorgiSetup() to redefine defaults');
         return;
     end
     
+    %If any conditions request audiofeedback that forces enabling audio.
+    %If any conditions request interval beeps played that forces audio
+    %Add any other checks for things that require audio here
+    if  any( [conditionInfo(:).giveAudioFeedback]) ...
+            || (isfield(conditionInfo,'intervalBeep') && any([conditionInfo(:).intervalBeep]))        
+        
+        if isfield(expInfo,'enableAudio') && ~expInfo.enableAudio
+            warning('ptbCorgi:ptbCorgi:audioForced',...
+                'User requested disabling audio, however conditionInfo requested providing audio feedback. Forcing audio to be enabled');
+        end
+        expInfo.enableAudio = true;        
+    end
+    
     sessionInfo.expInfoBeforeOpenExperiment = expInfo;
     
     %Now lets begin the experiment and loop over the conditions to show.

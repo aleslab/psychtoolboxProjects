@@ -13,6 +13,15 @@ Add some hashing functions to detect changes.
 
 
 Version History
+0.32.2
+Added checks to ensure audio is enabled when implicitly needed by conditions.
+Ensured calls to PsychPortAudio() only happen after InitializePsychPortAudio has been run.
+Added more informative checks and error messages when attempting to load a 
+paradigm that conflicts with others on the path.
+
+0.32.1
+Various changes to improve compatibility with windows. 
+
 0.32.0
 Renamed to ptbCorgi
 Started project management framework for data analysis: 

@@ -31,8 +31,6 @@ function expInfo = openExperiment( expInfo)
 clear PsychHID;
 clear KbCheck;
 
-%Close psychPortAudio handles if left open by crash
-PsychPortAudio('Close');
 %
 % This is a line that is easily skipped/missed but is important
 % Various default setup options, including color as float 0-1;
@@ -375,12 +373,16 @@ end
 
 %Figure out a better way of handling turning on/off audio.
 if ~isfield(expInfo,'enableAudio')
-    expInfo.enableAudio = true;
+    expInfo.enableAudio = false;
 end
 
-%TODO: clean up this code. 
+%TODO: add more user controllable options. 
 if expInfo.enableAudio
+    %Must call InitialzePsychSound before any call to PsychPortAudio
     InitializePsychSound
+    
+    %Close psychPortAudio handles if left open by crash
+    PsychPortAudio('Close');
     
     %Basic audio information for interval beeps and audio
     %feedback
@@ -392,7 +394,6 @@ if expInfo.enableAudio
     audioInfo.beepFreq = 500;
     audioInfo.startCue = 0; %starts immediately on call
     audioInfo.ibi = 0.05; %inter-beep interval; only used for the second interval
-    audioInfo.pahandle = [];%PsychPortAudio('Open', [], 1, 1, audioInfo.samplingFreq, audioInfo.nOutputChannels);
     audioInfo.postFeedbackPause = 0.25;
     thisBeep = MakeBeep(500, audioInfo.beepLength, audioInfo.samplingFreq);
     audioInfo.intervalBeep = repmat(thisBeep,audioInfo.nOutputChannels,1);
@@ -403,9 +404,10 @@ if expInfo.enableAudio
     thisBeep = MakeBeep(250, audioInfo.beepLength, audioInfo.samplingFreq);
     audioInfo.incorrectSnd = repmat(thisBeep,audioInfo.nOutputChannels,1);
     
-             
-    
-    audioInfo.pahandle = PsychPortAudio('Open', [], [], 0, [], 2);
+    %Now lets open an audio device
+    latencyClass = 0;
+    audioInfo.pahandle = PsychPortAudio('Open',...
+        [], 1, latencyClass, audioInfo.samplingFreq, audioInfo.nOutputChannels);
     expInfo.audioInfo = audioInfo;
     
 end

@@ -9,10 +9,16 @@ function [ computerName ] = ptbCorgiGetComputerName()
 if ispref('ptbCorgi','computerName');
     computerName = getpref('ptbCorgi','computerName');
 else
-    currentComputer = Screen('Computer');
-    computerName = currentComputer.localHostName;
+    
+    if ispc %PC doesn't set PTB localHostName field. 
+        [idum,hostname]= system('hostname');
+        computerName = hostname;
+    else
+        currentComputer = Screen('Computer');
+        computerName = currentComputer.localHostName;
+    end
 end
 
-
+computerName = deblank(computerName);
 end
 
