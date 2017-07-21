@@ -46,6 +46,8 @@ if conditionInfo.motion
 else % if no motion then it has to be when the stim is on (only odd numbers) + avoid successive dims
     trialData.stimDim = randsample(1:4:(totStimPresented),trialData.dims);
 end
+% trialData.dims = 4;
+% trialData.stimDim = [7 10 16 19];
 
 %%% stim presentation parameters
 rectCircle = conditionInfo.stimSize*expInfo.ppd;
@@ -85,6 +87,8 @@ for cycleNb = 1 : nbTotalCycles
         end
         drawFixation(expInfo, expInfo.fixationInfo);
         Screen('FillRect', expInfo.curWindow, colStim,CenterRectOnPoint(rectCircle,expInfo.center(1)-xcoord,ycoord));
+        % for the photodiode
+        Screen('FillRect', expInfo.curWindow, [1 1 1],[0 0 100 100]);
         ptbCorgiSendTrigger(expInfo,'raw',0,triggerCode);
         prevStim = t;
         t = Screen('Flip', expInfo.curWindow, t + nbFramesPerStim * ifi - ifi/2 ); % or + ifi/2??
@@ -109,6 +113,9 @@ for cycleNb = 1 : nbTotalCycles
         end
         drawFixation(expInfo, expInfo.fixationInfo);
         Screen('FillRect', expInfo.curWindow, colStim,CenterRectOnPoint(rectCircle,expInfo.center(1)+xcoord,ycoord));
+        % for the photodiode
+        t = Screen('Flip', expInfo.curWindow);
+        Screen('FillRect', expInfo.curWindow, [0 0 0],[0 0 100 100]);
         ptbCorgiSendTrigger(expInfo,'raw',0,triggerCode);
         prevStim = t;
         t = Screen('Flip', expInfo.curWindow, t + nbFramesPerStim * ifi - ifi/2 );
@@ -148,6 +155,8 @@ for cycleNb = 1 : nbTotalCycles
         end
         ptbCorgiSendTrigger(expInfo,'raw',0,triggerCode); 
         prevStim = t;
+        % for the photodiode
+        Screen('FillRect', expInfo.curWindow, [1 1 1],[0 0 100 100]);
         t = Screen('Flip', expInfo.curWindow, t + nbFramesPerStim * ifi - ifi/2);
         if nbStimPresented == 1
             stimStartTime = t;
@@ -163,6 +172,8 @@ for cycleNb = 1 : nbTotalCycles
         drawFixation(expInfo, expInfo.fixationInfo);
         ptbCorgiSendTrigger(expInfo,'clear',0);
         prevStim = t;
+        % for the photodiode
+        Screen('FillRect', expInfo.curWindow, [0 0 0],[0 0 100 100]);   
         t = Screen('Flip', expInfo.curWindow, t + nbFramesPerStim * ifi - ifi/2);
 %         t-prevStim
         if t-prevStim > durationPerStim + ifi/2 || t-prevStim < durationPerStim - ifi/2

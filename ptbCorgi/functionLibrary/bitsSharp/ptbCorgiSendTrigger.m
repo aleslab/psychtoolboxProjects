@@ -83,7 +83,7 @@ if ~expInfo.enableTriggers
     return;
 end
 
-expInfo
+
 %If missing triggerInfo, rather than erroring out print a warning and keep
 %going. 
 if ~isfield(expInfo,'triggerInfo')
@@ -180,7 +180,7 @@ switch lower(command)
 end
 
 
-%disp(trigMessage);
+% disp(trigMessage);
 
 pulseDef = [repmat(triggerValue,highTime,1);zeros(lowTime,1)]';
 BitsPlusPlus('DIOCommand', expInfo.curWindow, 1, mask, pulseDef, 0,0, yPos);
