@@ -7,6 +7,7 @@ function [trialData] = trial_longRange(expInfo, conditionInfo)
 if expInfo.useBitsSharp
     ptbCorgiSendTrigger(expInfo,'starttrial',true); 
 end
+
 drawFixation(expInfo, expInfo.fixationInfo);
 t = Screen('Flip', expInfo.curWindow);
 trialData.validTrial = true;
@@ -19,23 +20,29 @@ dimColour = 0.3;
 
 %%% VEP parameters
 nbFramesPerStim = expInfo.monRefresh/conditionInfo.stimTagFreq/2; % at 85Hz refresh = 5 img/sec and 2.5Hz per side
-nbTotalCycles = conditionInfo.stimDuration * conditionInfo.stimTagFreq;
-totStimPresented = (expInfo.monRefresh/nbFramesPerStim) * conditionInfo.stimDuration; % not useful to check anymore
+preStimCycles = ceil(conditionInfo.preStimDuration * conditionInfo.stimTagFreq);
+stimCycles = conditionInfo.stimDuration * conditionInfo.stimTagFreq ;
+nbTotalCycles = preStimCycles*2 + stimCycles;
 durationPerStim = nbFramesPerStim * 1/expInfo.monRefresh;
+trialDuration = nbTotalCycles*2 * durationPerStim;
+totStimPresented = (expInfo.monRefresh/nbFramesPerStim) * trialDuration; 
 
 trialData.nbFramesPerStim = nbFramesPerStim;
 trialData.nbTotalCycles = nbTotalCycles;
 trialData.durationPerStim = durationPerStim;
+trialData.trialDuration = trialDuration;
+trialData.preStimDuration = preStimCycles * durationPerStim * 2; % *2 since 2 stim in 1 cycle
 
 if expInfo.useBitsSharp
-    oddTrigger = expInfo.triggerInfo.ssvepOddstep;
+%     oddTrigger = expInfo.triggerInfo.ssvepOddstep;
     f1Trigger = expInfo.triggerInfo.ssvepTagF1;
 else 
-    oddTrigger = 4;
+%     oddTrigger = 4;
     f1Trigger = 1;
 end
 abortExpTrigger = 99;
 invalidTrialTrigger = 98; % miss frame
+endStimTrigger = 10;
 
 %%% parameters for the task
 trialData.dims = randi((conditionInfo.maxDim+1),1)-1; % number of dims for this trial (can be 0)
@@ -81,15 +88,15 @@ for cycleNb = 1 : nbTotalCycles
         %%% first stimulus
         % check if the stim is dim
         if ismember(nbStimPresented,trialData.stimDim)
-            colStim = dimColour; triggerCode = oddTrigger;
+            colStim = dimColour;  % triggerCode = oddTrigger;
         else
-            colStim = black; triggerCode = f1Trigger;
+            colStim = black;  % triggerCode = f1Trigger;
         end
         drawFixation(expInfo, expInfo.fixationInfo);
         Screen('FillRect', expInfo.curWindow, colStim,CenterRectOnPoint(rectCircle,expInfo.center(1)-xcoord,ycoord));
-        % for the photodiode
-        Screen('FillRect', expInfo.curWindow, [1 1 1],[0 0 100 100]);
-        ptbCorgiSendTrigger(expInfo,'raw',0,triggerCode);
+%         % for the photodiode
+%         Screen('FillRect', expInfo.curWindow, [1 1 1],[0 0 100 100]);
+        ptbCorgiSendTrigger(expInfo,'raw',0,f1Trigger);
         prevStim = t;
         t = Screen('Flip', expInfo.curWindow, t + nbFramesPerStim * ifi - ifi/2 ); % or + ifi/2??
         if nbStimPresented == 1
@@ -107,16 +114,15 @@ for cycleNb = 1 : nbTotalCycles
         %%% second stimulus
         % check if the stim is dim
         if ismember(nbStimPresented,trialData.stimDim)
-            colStim = dimColour;triggerCode = oddTrigger;
+            colStim = dimColour; % triggerCode = oddTrigger;
         else
-            colStim = black;triggerCode = 0;
+            colStim = black; % triggerCode = 0;
         end
         drawFixation(expInfo, expInfo.fixationInfo);
         Screen('FillRect', expInfo.curWindow, colStim,CenterRectOnPoint(rectCircle,expInfo.center(1)+xcoord,ycoord));
-        % for the photodiode
-        t = Screen('Flip', expInfo.curWindow);
-        Screen('FillRect', expInfo.curWindow, [0 0 0],[0 0 100 100]);
-        ptbCorgiSendTrigger(expInfo,'raw',0,triggerCode);
+%         % for the photodiode
+%         Screen('FillRect', expInfo.curWindow, [0 0 0],[0 0 100 100]);
+        ptbCorgiSendTrigger(expInfo,'clear',0);
         prevStim = t;
         t = Screen('Flip', expInfo.curWindow, t + nbFramesPerStim * ifi - ifi/2 );
 %         t-prevStim
@@ -135,9 +141,9 @@ for cycleNb = 1 : nbTotalCycles
             %%% stim ON
             % check if the stim is dim
             if ismember(nbStimPresented,trialData.stimDim)
-                colStim = Shuffle([dimColour,black]); triggerCode = oddTrigger;
+                colStim = Shuffle([dimColour,black]); % triggerCode = oddTrigger;
             else
-                colStim = [black black]; triggerCode = f1Trigger;
+                colStim = [black black]; % triggerCode = f1Trigger;
             end
             drawFixation(expInfo, expInfo.fixationInfo);
             Screen('FillRect', expInfo.curWindow, colStim(1),CenterRectOnPoint(rectCircle,expInfo.center(1)-xcoord,ycoord));
@@ -146,17 +152,17 @@ for cycleNb = 1 : nbTotalCycles
             %%% stim ON
             % check if the stim is dim
             if ismember(nbStimPresented,trialData.stimDim)
-                colStim = dimColour; triggerCode = oddTrigger;
+                colStim = dimColour; % triggerCode = oddTrigger;
             else
-                colStim = black; triggerCode = f1Trigger;
+                colStim = black; % triggerCode = f1Trigger;
             end
             drawFixation(expInfo, expInfo.fixationInfo);
             Screen('FillRect', expInfo.curWindow, colStim,CenterRectOnPoint(rectCircle,xcoordSingle,ycoord));
         end
-        ptbCorgiSendTrigger(expInfo,'raw',0,triggerCode); 
+        ptbCorgiSendTrigger(expInfo,'raw',0,f1Trigger); 
         prevStim = t;
-        % for the photodiode
-        Screen('FillRect', expInfo.curWindow, [1 1 1],[0 0 100 100]);
+%         % for the photodiode
+%         Screen('FillRect', expInfo.curWindow, [1 1 1],[0 0 100 100]);
         t = Screen('Flip', expInfo.curWindow, t + nbFramesPerStim * ifi - ifi/2);
         if nbStimPresented == 1
             stimStartTime = t;
@@ -172,8 +178,8 @@ for cycleNb = 1 : nbTotalCycles
         drawFixation(expInfo, expInfo.fixationInfo);
         ptbCorgiSendTrigger(expInfo,'clear',0);
         prevStim = t;
-        % for the photodiode
-        Screen('FillRect', expInfo.curWindow, [0 0 0],[0 0 100 100]);   
+%         % for the photodiode
+%         Screen('FillRect', expInfo.curWindow, [0 0 0],[0 0 100 100]);   
         t = Screen('Flip', expInfo.curWindow, t + nbFramesPerStim * ifi - ifi/2);
 %         t-prevStim
         if t-prevStim > durationPerStim + ifi/2 || t-prevStim < durationPerStim - ifi/2
@@ -186,7 +192,7 @@ for cycleNb = 1 : nbTotalCycles
 end
 
 drawFixation(expInfo, expInfo.fixationInfo);
-% ptbCorgiSendTrigger(expInfo,'clear',0);
+ptbCorgiSendTrigger(expInfo,'raw',0,endStimTrigger); 
 prevStim = t;
 t = Screen('Flip', expInfo.curWindow, t + nbFramesPerStim * ifi - ifi/2);
 trialData.stimEndTime = t;

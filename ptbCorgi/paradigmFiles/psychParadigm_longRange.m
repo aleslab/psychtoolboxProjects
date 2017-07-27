@@ -22,18 +22,19 @@ expInfo.instructions = 'count the number of dims';
 
 %% General conditions
 conditionInfo(1).iti = 0.5; 
-conditionInfo(1).nReps = 2; %30 repeats should make it around 60min 
+conditionInfo(1).nReps = 30; %30 repeats should make it around 60min 
 conditionInfo(1).type = 'Generic';
 conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;
 conditionInfo(1).intervalBeep = 0;
-conditionInfo(1).maxToAnswer = 2; % max time to answer
-conditionInfo(1).maxDim = 5; % max number of luminance change in a trial
+conditionInfo(1).maxToAnswer = 3; % max time to answer
+conditionInfo(1).maxDim = 6; % max number of luminance change in a trial
 % conditionInfo(1).randomizeField = 'false';
 
 %% stimulus
 conditionInfo(1).stimSize = [0 0 1 8]; % in deg
-conditionInfo(1).stimDuration = 6; % 12 sec
+conditionInfo(1).stimDuration = 10; % in sec
+conditionInfo(1).preStimDuration = 1; % if set at 1sec, it will automatically be 1.2 sec to fit the right nb of cycles
 conditionInfo(1).stimTagFreq = 2.5; % in Hz 
 conditionInfo(1).trialFun=@trial_longRange;
 conditionInfo(1).movingStep = 0;
