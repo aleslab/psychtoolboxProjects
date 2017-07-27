@@ -3,7 +3,9 @@ function [conditionInfo, expInfo] = psychParadigm_longRange(expInfo)
 
 %paradigmName is what will be prepended to data files
 expInfo.paradigmName = 'longRange';
-expInfo.randomizationType = 'random';
+expInfo.trialRandomization.type = 'blocked';
+expInfo.trialRandomization.nBlockReps   = 4;
+
 expInfo.viewingDistance = 57;
  
 expInfo.useBitsSharp = true;
@@ -22,7 +24,7 @@ expInfo.instructions = 'count the number of dims';
 
 %% General conditions
 conditionInfo(1).iti = 0.5; 
-conditionInfo(1).nReps = 30; %30 repeats should make it around 60min 
+conditionInfo(1).nReps = 5; %30 repeats should make it around 60min 
 conditionInfo(1).type = 'Generic';
 conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;
@@ -78,9 +80,9 @@ conditionInfo(8).sideStim = 'both';
 % last condition: sweep
 conditionInfo(9).label = 'sweep';
 conditionInfo(9).sideStim = 'both';
-conditionInfo(9).xloc = [0.6 6]; % where it starts and ends
+conditionInfo(9).xloc = [0.6 6]; % where it starts and ends1
 conditionInfo(9).motion = 1;
-conditionInfo(9).movingStep = ( conditionInfo(9).xloc(2)-conditionInfo(9).xloc(1) ) / (conditionInfo(9).stimDuration * conditionInfo(9).stimTagFreq); % distance / nbTotalCycles
+conditionInfo(9).movingStep = ( conditionInfo(9).xloc(2)-conditionInfo(9).xloc(1) ) / 4; % (conditionInfo(9).stimDuration * conditionInfo(9).stimTagFreq); % distance / nbTotalCycles
 
 end
 

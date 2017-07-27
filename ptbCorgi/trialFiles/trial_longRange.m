@@ -33,6 +33,9 @@ trialData.durationPerStim = durationPerStim;
 trialData.trialDuration = trialDuration;
 trialData.preStimDuration = preStimCycles * durationPerStim * 2; % *2 since 2 stim in 1 cycle
 
+
+
+
 if expInfo.useBitsSharp
 %     oddTrigger = expInfo.triggerInfo.ssvepOddstep;
     f1Trigger = expInfo.triggerInfo.ssvepTagF1;
@@ -132,8 +135,10 @@ for cycleNb = 1 : nbTotalCycles
             break;
         end
         %%% SWEEP CONDITION 9
-        if strcmp(conditionInfo.label,'sweep')
-            xcoord = xcoord + movingStep;
+        if cycleNb > preStimCycles && cycleNb< nbTotalCycles-preStimCycles
+            if strcmp(conditionInfo.label,'sweep') && mod(cycleNb-preStimCycles,5)==0
+                xcoord = xcoord + movingStep;
+            end
         end
         nbStimPresented = nbStimPresented + 1;
     else
@@ -243,6 +248,7 @@ end
 
 if trialData.response==999 % no response
     trialData.validTrial = false;
+    ptbCorgiSendTrigger(expInfo,'raw',1,invalidTrialTrigger); % abort trial 
 end
 
 drawFixation(expInfo, expInfo.fixationInfo);
@@ -252,7 +258,7 @@ trialData.trialEndTime = t;
 trialData.stimDurationReal = trialData.stimEndTime - trialData.stimStartTime ;
 trialData.trialDurationReal = trialData.trialEndTime - trialData.trialStartTime ;
 
-if trialData.validTrial && expInfo.useBitsSharp
+if expInfo.useBitsSharp
     ptbCorgiSendTrigger(expInfo,'endtrial',true); 
 end
 
