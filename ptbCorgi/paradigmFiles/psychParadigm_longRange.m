@@ -1,17 +1,18 @@
 function [conditionInfo, expInfo] = psychParadigm_longRange(expInfo)
-% fix iti? why not 500+500*rand(1)
+
+KbName('UnifyKeyNames');
 
 %paradigmName is what will be prepended to data files
 expInfo.paradigmName = 'longRange';
 expInfo.trialRandomization.type = 'blocked';
-expInfo.trialRandomization.nBlockReps   = 4;
+expInfo.trialRandomization.nBlockReps   = 10;
 
 expInfo.viewingDistance = 57;
  
-expInfo.useBitsSharp = true;
-expInfo.enableTriggers = true;
-% expInfo.useBitsSharp = false; 
-% expInfo.enableTriggers = false;
+% expInfo.useBitsSharp = true;
+% expInfo.enableTriggers = true;
+expInfo.useBitsSharp = false; 
+expInfo.enableTriggers = false;
 
 %Setup a simple fixation cross. See help drawFixation for more info on how
 %to setup this field.
@@ -24,7 +25,7 @@ expInfo.instructions = 'count the number of dims';
 
 %% General conditions
 conditionInfo(1).iti = 0.5; 
-conditionInfo(1).nReps = 5; %30 repeats should make it around 60min 
+conditionInfo(1).nReps = 2; %30 repeats should make it around 60min 
 conditionInfo(1).type = 'Generic';
 conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;

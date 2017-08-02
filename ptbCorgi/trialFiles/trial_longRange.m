@@ -82,8 +82,21 @@ for cycleNb = 1 : nbTotalCycles
         trialData.validTrial = false;
         if keyCode(KbName('escape'))
             trialData.abortNow   = true;
+            ptbCorgiSendTrigger(expInfo,'raw',1,abortExpTrigger); % abort experiment trigger
+        elseif keyCode(KbName('space'))
+            trialData.validTrial = false;
+            Screen('DrawText', expInfo.curWindow, 'Taking a break', expInfo.center(1), expInfo.center(2), [0 0 0]);
+            Screen('DrawText', expInfo.curWindow, 'Press enter to continue', expInfo.center(1), expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
+            Screen('Flip',expInfo.curWindow);
+            pressSpace = 1;
+            while pressSpace
+                [keyIsDown, secs, keyCode]=KbCheck(expInfo.deviceIndex);
+                    if keyCode(KbName('enter'))
+                        pressSpace = 0;
+                    end
+            end
+            ptbCorgiSendTrigger(expInfo,'raw',1,invalidTrialTrigger); % abort trial 
         end
-        ptbCorgiSendTrigger(expInfo,'raw',1,abortExpTrigger); % abort experiment trigger
         break;
     end
     if conditionInfo.motion == 1 % in motion (condition 1, 5, 9)
@@ -219,7 +232,7 @@ if trialData.validTrial
         trialData.validTrial = false;
     else
         % response screen
-        Screen('DrawText', expInfo.curWindow, 'Nb of dims?', expInfo.center(1), expInfo.center(2), [0 0 0]);
+        Screen('DrawText', expInfo.curWindow, 'Number of dim objects?', expInfo.center(1), expInfo.center(2), [0 0 0]);
         Screen('DrawText', expInfo.curWindow, ['(0-' num2str(conditionInfo.maxDim) ')'], expInfo.center(1), expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
         trialData.respScreenTime =Screen('Flip',expInfo.curWindow);
         % check for key press
