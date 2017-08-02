@@ -21,7 +21,7 @@ expInfo.fixationInfo(1).size  = .2;
 expInfo.fixationInfo(1).lineWidthPix = 2;
 expInfo.fixationInfo(1).color = 0;
 
-expInfo.instructions = 'count the number of dims';
+expInfo.instructions = 'count the number of dim objects';
 
 %% General conditions
 conditionInfo(1).iti = 0.5; 

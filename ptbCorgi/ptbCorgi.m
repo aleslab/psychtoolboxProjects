@@ -423,7 +423,7 @@ disp('Use ptbCorgiSetup() to redefine defaults');
         Screen('Flip', expInfo.curWindow);
         
         while iTrial <=length(conditionList)
-     
+            fprintf('trial %d / %d \n', iTrial, length(conditionList))
     
             validTrialList(iTrial)= true;  %initialize this index variable to keep track of bad/aborted trials
             experimentData(iTrial).validTrial = true;
@@ -863,8 +863,8 @@ disp('Use ptbCorgiSetup() to redefine defaults');
                     
                     %Add the condition to just after the end of the block
                     %(blockEndIdx+1)
-                    conditionList(blockEndIdx+1:end+1) =[ thisCond conditionList(blockEndIdx+1:end)]
-                    blockList(blockEndIdx+1:end+1)     =[ thisBlock blockList(blockEndIdx+1:end)]
+                    conditionList(blockEndIdx+1:end+1) =[ thisCond conditionList(blockEndIdx+1:end)];
+                    blockList(blockEndIdx+1:end+1)     =[ thisBlock blockList(blockEndIdx+1:end)];
                     
                 else %For other trial randomizations just add the current condition to the end, and extend blockList
                     conditionList(end+1) = conditionList(iTrial);
