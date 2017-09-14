@@ -1,4 +1,4 @@
-function [trialData] = dep_gabor_trial(expInfo, conditionInfo)
+function [trialData] = step_gabor_trial(expInfo, conditionInfo)
 %test edit
 
 trialData.validTrial = true;
