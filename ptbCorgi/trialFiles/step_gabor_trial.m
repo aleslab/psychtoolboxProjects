@@ -1,4 +1,4 @@
-function [trialData] = step_gabor_trial(expInfo, conditionInfo)
+function [trialData] = dep_gabor_trial(expInfo, conditionInfo)
 %test edit
 
 trialData.validTrial = true;
@@ -33,24 +33,37 @@ phase = 90;      %phase of gabor
 destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
 
 
-%If no update is specified default to brownian.
-if ~isfield( conditionInfo, 'updateMethod') || isempty(conditionInfo.updateMethod)
-    conditionInfo.updateMethod = 'brownian';
+% %If no update is specified default to brownian.
+% if ~isfield( conditionInfo, 'updateMethod') || isempty(conditionInfo.updateMethod)
+%     conditionInfo.updateMethod = 'brownian';
+% end
+% 
+% persistent orient;
+% if isempty(orient);
+%     orient=360*rand;
+% end
+% 
+% switch lower(conditionInfo.updateMethod)
+%     case 'brownian' %brownian motion updates from last trial
+%         orient = orient + randn*conditionInfo.orientationSigma;
+%     case 'uniform' %draws a uniform orientation from 360 degrees
+%         orient = rand*360;
+%         
+% end
+
+orient=orient;
+currentIndex = mod(expInfo.currentTrial.number,3*conditionInfo.trials_per_step);
+if currentIndex==1;
+    orient=(360*rand);
+elseif currentIndex==conditionInfo.trials_per_step+1;
+    orient=orient+conditionInfo.step_size_deg;
+elseif currentIndex==conditionInfo.trials_per_step*2+1
+    orient=orient-conditionInfo.step_size_deg;
 end
 
-persistent orient;
-if isempty(orient);
-    orient=360*rand;
-end
 
-switch lower(conditionInfo.updateMethod)
-    case 'brownian' %brownian motion updates from last trial
-        orient = orient + randn*conditionInfo.orientationSigma;
-    case 'uniform' %draws a uniform orientation from 360 degrees
-        orient = rand*360;
-        
-end
-
+    
+    
 
 
 
