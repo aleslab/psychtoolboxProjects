@@ -35,7 +35,7 @@ conditionInfo(1).freq              =1; %frequency of the gabor in cycles per sig
 conditionInfo(1).nReps             = 10; %% number of trials to present this condition. 
 conditionInfo(1).stimRadiusDeg     =   8;    %stimulus size in degree;
 
-conditionInfo(1).trials_per_step =  5; %how many trial at each orientation 
+conditionInfo(1).trials_per_step =  5; %how many trials at each orientation 
 conditionInfo(1).step_size_deg = 10; %size of step 
 
 
