@@ -33,11 +33,11 @@ phase = 90;      %phase of gabor
 destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
 
 
-% %If no update is specified default to brownian.
-% if ~isfield( conditionInfo, 'updateMethod') || isempty(conditionInfo.updateMethod)
-%     conditionInfo.updateMethod = 'brownian';
-% end
-% 
+%If no update is specified default to brownian.
+if ~isfield( conditionInfo, 'updateMethod') || isempty(conditionInfo.updateMethod)
+    conditionInfo.updateMethod = 'brownian';
+end
+
 % persistent orient;
 % if isempty(orient);
 %     orient=360*rand;
@@ -52,7 +52,7 @@ destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
 % end
 
 orient=orient;
-currentIndex = mod(expInfo.currentTrial.number,3*conditionInfo.trials_per_step);
+currentIndex = mod(expInfo.currentTrial.number,3*conditionInfo.trials_per_step);% current phase of orientation 
 if currentIndex==1;
     orient=(360*rand);
 elseif currentIndex==conditionInfo.trials_per_step+1;
