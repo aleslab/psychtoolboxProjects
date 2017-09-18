@@ -1,4 +1,4 @@
-function [conditionInfo, expInfo] = psychParadigm_longRange(expInfo)
+function [conditionInfo, expInfo] = psychParadigm_longRange_Dot(expInfo)
 
 KbName('UnifyKeyNames');
 
@@ -21,7 +21,7 @@ expInfo.fixationInfo(1).size  = .2;
 expInfo.fixationInfo(1).lineWidthPix = 2;
 expInfo.fixationInfo(1).color = 0;
 
-expInfo.instructions = 'count the number of dim objects';
+expInfo.instructions = 'count the number of dots';
 
 %% General conditions
 conditionInfo(1).iti = 0.5; 
@@ -30,7 +30,7 @@ conditionInfo(1).type = 'Generic';
 conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;
 conditionInfo(1).intervalBeep = 0;
-conditionInfo(1).maxToAnswer = 3; % max time to answer
+conditionInfo(1).maxToAnswer = 8; % max time to answer
 conditionInfo(1).maxDim = 6; % max number of luminance change in a trial
 % conditionInfo(1).randomizeField = 'false';
 
@@ -39,9 +39,10 @@ conditionInfo(1).stimSize = [0 0 1 8]; % in deg
 conditionInfo(1).stimDuration = 10; % in sec
 conditionInfo(1).preStimDuration = 1; % if set at 1sec, it will automatically be 1.2 sec to fit the right nb of cycles
 conditionInfo(1).stimTagFreq = 2.5; % in Hz 
-conditionInfo(1).trialFun=@trial_longRange;
+conditionInfo(1).trialFun=@trial_longRange_Dot;
 conditionInfo(1).movingStep = 0;
 conditionInfo(1).motion = 0; % by default, no motion 
+conditionInfo(1).dotSize = [0 0 0.5 0.5];
 
 % same parameters in all conditions
 for cc=2:9
