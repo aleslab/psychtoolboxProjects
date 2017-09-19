@@ -73,8 +73,10 @@ elseif strcmp(conditionInfo.sideStim,'right')
 end
 
 dotSize = conditionInfo.dotSize*expInfo.ppd;
-maxYdot = (conditionInfo.stimSize(4)-1)*expInfo.ppd; % the dot is not presented within 0.5 deg of the border of the rectangle stimulus
-minYdot = 0.5*expInfo.ppd;
+% the dot is not presented within 0.5 deg of the border of the rectangle stimulus
+maxYdot = ycoord + (conditionInfo.stimSize(4)-1)/2 * expInfo.ppd;
+minYdot = ycoord - (conditionInfo.stimSize(4)-1)/2 * expInfo.ppd;
+
 
 nbStimPresented = 1; % keep count of the nb of stimulus (for the dim). 1 cycle is 2 stim
 
@@ -108,7 +110,7 @@ for cycleNb = 1 : nbTotalCycles
         drawFixation(expInfo, expInfo.fixationInfo);
         Screen('FillRect', expInfo.curWindow, black,CenterRectOnPoint(rectCircle,expInfo.center(1)-xcoord,ycoord));
         if ismember(nbStimPresented,trialData.stimDim) % check for stim to detect
-            yDot = (maxYdot-minYdot)*rand(1)+minYdot; 
+            yDot = (maxYdot-minYdot)*rand(1)+minYdot;
             Screen('FillOval', expInfo.curWindow, dimColour,CenterRectOnPoint(dotSize,expInfo.center(1)-xcoord,yDot));
         end
 %         % for the photodiode
@@ -163,7 +165,7 @@ for cycleNb = 1 : nbTotalCycles
             Screen('FillRect', expInfo.curWindow, black,CenterRectOnPoint(rectCircle,expInfo.center(1)+xcoord,ycoord));
             if ismember(nbStimPresented,trialData.stimDim) % check for stim to detect
                 yDot = (maxYdot-minYdot)*rand(1)+minYdot;
-                xDotp = shuffle([expInfo.center(1)-xcoord expInfo.center(1)+xcoord]);
+                xDotp = Shuffle([expInfo.center(1)-xcoord expInfo.center(1)+xcoord]);
                 Screen('FillOval', expInfo.curWindow, dimColour,CenterRectOnPoint(dotSize,xDotp(1),yDot));
             end
         else % only one stim (left or right), conditions 2,3,6,7

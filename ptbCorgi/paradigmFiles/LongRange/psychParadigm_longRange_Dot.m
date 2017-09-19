@@ -9,10 +9,10 @@ expInfo.trialRandomization.nBlockReps   = 10;
 
 expInfo.viewingDistance = 57;
  
-% expInfo.useBitsSharp = true;
-% expInfo.enableTriggers = true;
-expInfo.useBitsSharp = false; 
-expInfo.enableTriggers = false;
+expInfo.useBitsSharp = true;
+expInfo.enableTriggers = true;
+% expInfo.useBitsSharp = false; 
+% expInfo.enableTriggers = false;
 
 %Setup a simple fixation cross. See help drawFixation for more info on how
 %to setup this field.
@@ -31,7 +31,7 @@ conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;
 conditionInfo(1).intervalBeep = 0;
 conditionInfo(1).maxToAnswer = 8; % max time to answer
-conditionInfo(1).maxDim = 6; % max number of luminance change in a trial
+conditionInfo(1).maxDim = 8; % max number of luminance change in a trial
 % conditionInfo(1).randomizeField = 'false';
 
 %% stimulus
