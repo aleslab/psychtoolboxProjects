@@ -423,6 +423,7 @@ disp('Use ptbCorgiSetup() to redefine defaults');
         Screen('Flip', expInfo.curWindow);
         
         while iTrial <=length(conditionList)
+            
      
     
             validTrialList(iTrial)= true;  %initialize this index variable to keep track of bad/aborted trials
@@ -985,6 +986,7 @@ disp('Use ptbCorgiSetup() to redefine defaults');
             
             experimentData(iTrial).trialData = trialData;
             iTrial = iTrial+1;
+            expInfo.currentTrial.number = iTrial; %%%%% attention
             
         end %End while loop for showing trials.
         

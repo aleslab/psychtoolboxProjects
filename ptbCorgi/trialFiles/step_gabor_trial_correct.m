@@ -1,4 +1,4 @@
-function [trialData] = step_gabor_trial(expInfo, conditionInfo)
+function [trialData] = step_gabor_trial_correct(expInfo, conditionInfo)
 %test edit
 
 trialData.validTrial = true;
@@ -38,29 +38,33 @@ if ~isfield( conditionInfo, 'updateMethod') || isempty(conditionInfo.updateMetho
     conditionInfo.updateMethod = 'brownian';
 end
 
-persistent orient;
+persistent orient
 if isempty(orient);
     orient=360*rand;
 end
 
-switch lower(conditionInfo.updateMethod)
-    case 'brownian' %brownian motion updates from last trial
-        orient = orient + randn*conditionInfo.orientationSigma;
-    case 'uniform' %draws a uniform orientation from 360 degrees
-        orient = rand*360;
-        
-end
+% switch lower(conditionInfo.updateMethod)
+%     case 'brownian' %brownian motion updates from last trial
+%         orient = orient + randn*conditionInfo.orientationSigma;
+%     case 'uniform' %draws a uniform orientation from 360 degrees
+%         orient = rand*360;
+%         
+% end
 
-orient=orient;
-currentIndex = mod(expInfo.currentTrial.number,3*conditionInfo.trials_per_step);% current phase of orientation 
+% orient=360*rand;
+% expInfo.currentTrial.number
+currentIndex = mod(expInfo.currentTrial.number,3*conditionInfo.trials_per_step)% current phase of orientation 
 if currentIndex==1;
     orient=(360*rand);
 elseif currentIndex==conditionInfo.trials_per_step+1;
     orient=orient+conditionInfo.step_size_deg;
 elseif currentIndex==conditionInfo.trials_per_step*2+1
     orient=orient-conditionInfo.step_size_deg;
+else
+    orient = orient;
+    
 end
-
+orient
 
     
     
@@ -124,7 +128,7 @@ trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
 
 %This subroutine draws a line and allows it to be adjusted with a mouse or
 %powermate. The funtion ends when a mouse button is clicked.
-    function getParticipantResponse()
+function getParticipantResponse()
         waitingForResponse = true;
         responseStartTime = GetSecs;
         lastFlipTime = responseStartTime;
