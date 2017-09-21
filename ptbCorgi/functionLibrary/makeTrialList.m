@@ -131,8 +131,10 @@ switch lower(randomization.type)
             [ groupingIndices ] = groupConditionsByField( conditionInfo, groupingFieldname );            
         
         
-        else %Otherwise make 1 group containing all conditions.
-            groupingIndices{1} = 1:nConditions;
+        else %Otherwise make groups that each contain only a single condition.
+            for iCond = 1:nConditions,
+                groupingIndices{iCond} = iCond;
+            end
         end
         
         %If block reps is not set default to 1. 
