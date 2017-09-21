@@ -48,7 +48,6 @@ conditionInfo(2) = conditionInfo(1);
 conditionInfo(2).orientationSigma = 0;
 conditionInfo(2).contrast = 0.20 ;
 conditionInfo(2).label = 'Contrast: 0.20';
-conditionInfo(1).step_size_deg = 60; %size of step 
 conditionInfo(2).trialFun=@step_gabor_trial_correct;
 
 
@@ -58,7 +57,7 @@ conditionInfo(3).orientationSigma = 0;
 conditionInfo(3).contrast = 0.05;
 conditionInfo(3).label = 'Contrast: 0.05';
 %conditionInfo(3).trials_per_step =  5; %how many trials at each orientation 
-conditionInfo(3).step_size_deg = 10; %size of step 
+conditionInfo(3).step_size_deg = 60; %size of step 
 conditionInfo(3).trialFun=@step_gabor_trial_correct;
 
 conditionInfo(4) = conditionInfo(1);
