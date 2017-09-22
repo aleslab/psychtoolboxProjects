@@ -1,4 +1,4 @@
-function [conditionInfo,expInfo] = FA_pdgm_orientation_2afc(expInfo)
+function [conditionInfo,expInfo] = psychparadigm_orient_test_2afc(expInfo)
 %This is an example paradigm file that implements an orienatation
 %discrimination task. 
 

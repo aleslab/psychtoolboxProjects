@@ -64,7 +64,6 @@ else
     orient = orient;
     
 end
-orient
 
     
     
