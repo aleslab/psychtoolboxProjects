@@ -65,16 +65,23 @@ end
 
 %Check the opengl version driver versions
 
-if ~strcmp( expInfo.windowInfo.GLVersion, calibInfo.expInfo.windowInfo.GLVersion) ...
-        || ~strcmp( expInfo.windowInfo.GLVendor, calibInfo.expInfo.windowInfo.GLVendor) ...
-        || ~strcmp( expInfo.windowInfo.GLRenderer, calibInfo.expInfo.windowInfo.GLRenderer) ...
-
+if ~strcmp( expInfo.windowInfo.GLVendor, calibInfo.expInfo.windowInfo.GLVendor) 
+    
     status = false;
-    message = 'Current graphics driver version is different from calibration';
+    message = ['Current GL system different! Calibrated using: ' calibInfo.expInfo.windowInfo.GLVendor ...
+        ', but current system is using: ' expInfo.windowInfo.GLVendor];
 
 end
 
+if ~strcmp( expInfo.windowInfo.GLVersion, calibInfo.expInfo.windowInfo.GLVersion) ...
+        || ~strcmp( expInfo.windowInfo.GLRenderer, calibInfo.expInfo.windowInfo.GLRenderer) ...
 
-
+    status = true;
+    warning('OpenGl versions do not match.  This may cause problems, but will allow to continue. Checking calibration is suggested')
+    fprintf(2,['Current GLversion: ' expInfo.windowInfo.GLVersion '\n']);
+    fprintf(2,['Calibration GLversion: ' calibInfo.expInfo.windowInfo.GLVersion '\n']);
+    fprintf(2,['Current GLRenderer: ' expInfo.windowInfo.GLRenderer '\n']);
+    fprintf(2,['Calibration GLRenderer: ' calibInfo.expInfo.windowInfo.GLRenderer '\n']);
+    
 end
 
