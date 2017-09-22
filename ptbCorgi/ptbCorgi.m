@@ -418,10 +418,13 @@ disp('Use ptbCorgiSetup() to redefine defaults');
         Screen('Flip', expInfo.curWindow);
         
         while iTrial <=length(conditionList)
+            
             fprintf('trial %d / %d \n', iTrial, length(conditionList))
+            
             %Adding some info about the current trial to expInfo. This is so
             %trialFun functions can use it.
             expInfo.currentTrial.number = iTrial;
+            
             validTrialList(iTrial)= true;  %initialize this index variable to keep track of bad/aborted trials
             experimentData(iTrial).validTrial = true;
             feedbackMsg = [];
