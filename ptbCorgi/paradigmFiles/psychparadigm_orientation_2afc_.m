@@ -81,7 +81,7 @@ conditionInfo(1).noiseSigma        = .15;
 %That makes the task consistent with the instructions
 
 
-orientationDeltaList = linspace(-0.25,-5,7);
+orientationDeltaList = linspace(-1.5,-14.3,7);
 orientationDeltaList = repmat (orientationDeltaList, 1,2);
 contrastList = [repmat(0.05,1,7) repmat(0.20, 1,7)];
 
