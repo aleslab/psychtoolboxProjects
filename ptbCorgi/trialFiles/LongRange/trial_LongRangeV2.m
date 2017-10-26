@@ -14,7 +14,7 @@ trialData.trialStartTime = t;
 trialData.response = 999;
 
 black = BlackIndex(expInfo.curWindow);
-dimColour = 0.2;
+dimColour = 0.5;
 
 %%% VEP parameters
 cycleDuration = 1/conditionInfo.stimTagFreq; % 1 cycle is 2 stimulus (left, right and then back to left)
@@ -22,8 +22,8 @@ halfCycleDuration = cycleDuration/2;
 isi = conditionInfo.isi;
 stimDuration = cycleDuration/2 - isi;
 monitorPeriodSecs = 1/expInfo.monRefresh;
-framesPerHalfCycle = cycleDuration/2/monitorPeriodSecs;
-framesPerStim = stimDuration/monitorPeriodSecs;
+framesPerHalfCycle = round(cycleDuration/2/monitorPeriodSecs);
+framesPerStim = round(stimDuration/monitorPeriodSecs);
 
 
 % compute the nb of cycles before and after stim presentation
@@ -34,6 +34,7 @@ trialDuration = nbTotalCycles * cycleDuration;
 totStimPresented = trialDuration / halfCycleDuration;
 
 % save it in the data output structure
+trialData.framesPerHalfCycle = framesPerHalfCycle;
 trialData.nbFramesPerStim = framesPerStim;
 trialData.nbTotalCycles = nbTotalCycles;
 trialData.durationPerStim = stimDuration;
@@ -174,7 +175,7 @@ for cycleNb = 1 : nbTotalCycles
             end
         end
         nbStimPresented = nbStimPresented + 1;
-    else
+    else % not in motion
         %%% 1st stimulus
         if strcmp(conditionInfo.sideStim,'both')  % simultaneous condition 
             %%% stim ON
@@ -210,7 +211,7 @@ for cycleNb = 1 : nbTotalCycles
         Screen('Flip', expInfo.curWindow, t + framesPerStim * ifi - ifi/2 );
         
         if checkTiming
-            if t-prevStim > stimDuration + ifi/2 || t-prevStim < stimDuration - ifi/2
+            if t-prevStim > halfCycleDuration + ifi/2 || t-prevStim < halfCycleDuration - ifi/2
                 trialData.validTrial = false;
                 ptbCorgiSendTrigger(expInfo,'raw',1,invalidTrialTrigger); % abort trial
                 break;
@@ -249,7 +250,7 @@ for cycleNb = 1 : nbTotalCycles
         Screen('Flip', expInfo.curWindow, t + framesPerStim * ifi - ifi/2 );
         
         if checkTiming
-            if t-prevStim > stimDuration + ifi/2 || t-prevStim < stimDuration - ifi/2
+            if t-prevStim > halfCycleDuration + ifi/2 || t-prevStim < halfCycleDuration - ifi/2
                 trialData.validTrial = false;
                 ptbCorgiSendTrigger(expInfo,'raw',1,invalidTrialTrigger); % abort trial
                 break;
@@ -268,7 +269,7 @@ t = Screen('Flip', expInfo.curWindow, t + framesPerHalfCycle * ifi - ifi/2);
 trialData.stimEndTime = t;
 % t-prevStim
 if checkTiming
-    if t-prevStim > stimDuration + ifi/2 || t-prevStim < stimDuration - ifi/2
+    if t-prevStim > halfCycleDuration + ifi/2 || t-prevStim < halfCycleDuration - ifi/2
     trialData.validTrial = false;
     ptbCorgiSendTrigger(expInfo,'raw',1,invalidTrialTrigger); % abort trial
     end
@@ -322,8 +323,8 @@ drawFixation(expInfo, expInfo.fixationInfo);
 t = Screen('Flip', expInfo.curWindow);
 trialData.trialEndTime = t;
 
-trialData.stimDurationReal = trialData.stimEndTime - trialData.stimStartTime ;
-trialData.trialDurationReal = trialData.trialEndTime - trialData.trialStartTime ;
+trialData.trialDurationReal = trialData.stimEndTime - trialData.stimStartTime ;
+trialData.trialDurationTotal = trialData.trialEndTime - trialData.trialStartTime ;
 
 if expInfo.useBitsSharp
     ptbCorgiSendTrigger(expInfo,'endtrial',true);
