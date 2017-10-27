@@ -5,7 +5,7 @@ KbName('UnifyKeyNames');
 %paradigmName is what will be prepended to data files
 expInfo.paradigmName = 'longRange';
 expInfo.trialRandomization.type = 'blocked';
-expInfo.trialRandomization.nBlockReps   = 15; % 15 blocks, 1 rep per block, 15 s trial = 45 min without breaks
+expInfo.trialRandomization.nBlockReps   = 17; % 15 blocks, 1 rep per block, 15 s trial = 45 min without breaks
 
 expInfo.viewingDistance = 57;
  
