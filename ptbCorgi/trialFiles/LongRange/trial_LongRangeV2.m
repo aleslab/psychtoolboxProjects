@@ -19,12 +19,11 @@ dimColour = 0.5;
 %%% VEP parameters
 cycleDuration = 1/conditionInfo.stimTagFreq; % 1 cycle is 2 stimulus (left, right and then back to left)
 halfCycleDuration = cycleDuration/2;
-isi = conditionInfo.isi;
-stimDuration = cycleDuration/2 - isi;
 monitorPeriodSecs = 1/expInfo.monRefresh;
-framesPerHalfCycle = round(cycleDuration/2/monitorPeriodSecs);
-framesPerStim = round(stimDuration/monitorPeriodSecs);
-
+framesPerHalfCycle = halfCycleDuration/monitorPeriodSecs;
+framesPerStim = round((halfCycleDuration - conditionInfo.isi)/monitorPeriodSecs);
+isi = (framesPerHalfCycle - framesPerStim) * monitorPeriodSecs;
+stimDuration = framesPerStim * monitorPeriodSecs;
 
 % compute the nb of cycles before and after stim presentation
 % and compute the trial duration depending on that
@@ -37,9 +36,11 @@ totStimPresented = trialDuration / halfCycleDuration;
 trialData.framesPerHalfCycle = framesPerHalfCycle;
 trialData.nbFramesPerStim = framesPerStim;
 trialData.nbTotalCycles = nbTotalCycles;
-trialData.durationPerStim = stimDuration;
+trialData.durationPerStim = framesPerStim * monitorPeriodSecs;
+trialData.durationISI = isi;
 trialData.trialDuration = trialDuration;
-trialData.preStimDuration = preStimCycles * stimDuration * 2; % *2 since 2 stim in 1 cycle
+trialData.cycleDuration = cycleDuration;
+trialData.preStimDuration = preStimCycles * stimDuration * 2; % *2 since 2 stim in 1 cycle 
 trialData.totStimPresented = totStimPresented;
 
 if expInfo.useBitsSharp
