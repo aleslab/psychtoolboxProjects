@@ -53,9 +53,9 @@ end
 
 % orient=360*rand;
 % expInfo.currentTrial.number
-currentIndex = mod(expInfo.currentTrial.number,3*conditionInfo.trials_per_step)% current phase of orientation 
+currentIndex = mod(expInfo.currentTrial.number,3*conditionInfo.trials_per_step);% current phase of orientation 
 if currentIndex==1;
-    orient=(360*rand);
+    orient=(orient);
 elseif currentIndex==conditionInfo.trials_per_step+1;
     orient=orient+conditionInfo.step_size_deg;
 elseif currentIndex==conditionInfo.trials_per_step*2+1
