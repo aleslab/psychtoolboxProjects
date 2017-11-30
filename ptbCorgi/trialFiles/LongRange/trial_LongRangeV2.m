@@ -2,6 +2,8 @@ function [trialData] = trial_LongRangeV2(expInfo, conditionInfo)
 % if the escape key is pressed then the experiment is aborted
 % press space to pause the experiment
 
+stimStartTime = 0;
+
 if expInfo.useBitsSharp
     ptbCorgiSendTrigger(expInfo,'starttrial',true);
 end
