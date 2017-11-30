@@ -432,7 +432,6 @@ disp('Use ptbCorgiSetup() to redefine defaults');
             
             thisCond = conditionList(iTrial);
             thisBlock = blockList(iTrial);
-            
             experimentData(iTrial).blockNumber = thisBlock;
 
             %Send a trigger now indicating the condition number for
@@ -463,7 +462,7 @@ disp('Use ptbCorgiSetup() to redefine defaults');
                     
                     %In the future add code here to enable custom block
                     %messages
-                    blockMessage = 'Block Completed. Press any key to start next block';
+                    blockMessage = ['Block ' num2str(blockList(iTrial-1)) '/' num2str(max(blockList)) 'completed. Press any key to start next block'];
                     DrawFormattedTextStereo(expInfo.curWindow, blockMessage,...
                         'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
                     Screen('Flip', expInfo.curWindow);
