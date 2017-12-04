@@ -1,4 +1,4 @@
-function [trialData] = step_gabor_trial_correct(expInfo, conditionInfo)
+function [trialData] = step_gabor_trial_brownian(expInfo, conditionInfo)
 %test edit
 
 trialData.validTrial = true;
