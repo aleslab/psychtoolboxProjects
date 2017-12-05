@@ -34,9 +34,9 @@ destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
 
 
 %If no update is specified default to brownian.
-if ~isfield( conditionInfo, 'updateMethod') || isempty(conditionInfo.updateMethod)
-    conditionInfo.updateMethod = 'brownian';
-end
+% if ~isfield( conditionInfo, 'updateMethod') || isempty(conditionInfo.updateMethod)
+%     conditionInfo.updateMethod = 'brownian';
+% end
 
 persistent orient 
 if isempty(orient);%if array is empty then orientation = 360 deg at random
@@ -53,13 +53,13 @@ end
 
 % orient=360*rand;
 % expInfo.currentTrial.number
-currentIndex = mod(expInfo.currentTrial.number,3*conditionInfo.trials_per_step+orient);% current phase of orientation 
-if currentIndex==1;
+currentIndex = mod(expInfo.currentTrial.number,3*conditionInfo.trials_per_step);% current phase of orientation- trials per step = 8
+if currentIndex==1;%
     orient=(orient);
 elseif currentIndex==conditionInfo.trials_per_step+1;
-    orient=orient+conditionInfo.step_size_deg;
+    orient=orient+conditionInfo.step_size_deg+orient;
 elseif currentIndex==conditionInfo.trials_per_step*2+1
-    orient=orient-conditionInfo.step_size_deg;
+    orient=orient-conditionInfo.step_size_deg*3+orient;
 else
     orient = orient;
     
