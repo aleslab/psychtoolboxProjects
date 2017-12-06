@@ -38,28 +38,28 @@ destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
 %     conditionInfo.updateMethod = 'brownian';
 % end
 
-persistent orient 
-if isempty(orient);%if array is empty then orientation = 360 deg at random
-orient=orient+randn*conditionInfo.orientationSigma;
+persistent orient
+if isempty(orient);
+    orient=360*rand;
 end
 
-% switch lower(conditionInfo.updateMethod)
-%     case 'brownian' %brownian motion updates from last trial
-%         orient = orient + randn*conditionInfo.orientationSigma;
-%     case 'uniform' %draws a uniform orientation from 360 degrees
-%         orient = rand*360;
-%         
-% end
+switch lower(conditionInfo.updateMethod)
+    case 'brownian' %brownian motion updates from last trial
+        orient = orient + randn*conditionInfo.orientationSigma;
+    case 'uniform' %draws a uniform orientation from 360 degrees
+        orient = rand*360;
+        
+end
 
 % orient=360*rand;
 % expInfo.currentTrial.number
-currentIndex = mod(expInfo.currentTrial.number,3*conditionInfo.trials_per_step);% current phase of orientation- trials per step = 8
-if currentIndex==1;%
+currentIndex = mod(expInfo.currentTrial.number,3*conditionInfo.trials_per_step);% current phase of orientation 
+if currentIndex==1;
     orient=(orient);
 elseif currentIndex==conditionInfo.trials_per_step+1;
-    orient=orient+conditionInfo.step_size_deg+orient;
+    orient=orient+conditionInfo.step_size_deg;
 elseif currentIndex==conditionInfo.trials_per_step*2+1
-    orient=orient-conditionInfo.step_size_deg*3+orient;
+    orient=orient-conditionInfo.step_size_deg;
 else
     orient = orient;
     

@@ -20,7 +20,7 @@ expInfo.instructions = ['Try and align the white line \n' ...
 %Crucial: requires the @ sign prefix.  Because it needs it to be a
 %"function handle"
 conditionInfo(1).label = 'Contrast: 0.20';
-conditionInfo(1).trialFun=@step_gabor_trial_correct;
+conditionInfo(1).trialFun=@step_gabor_trial_brownian;
 conditionInfo(1).giveFeedback = false;
 
 % %Condition definitions
