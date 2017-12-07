@@ -84,7 +84,7 @@ end
 
 if ismac
     port = '/dev/cu.usbmodem0001';
-elseif isunix %Untested
+elseif isunix 
     port = '/dev/ttyACM0';
 elseif ispc %Untested
     error('Sorry PC mode is untested, you need to check the code and set the port yourself')
@@ -139,7 +139,7 @@ end
 
     
 
-
+set(CC2_serialHandle,'Timeout',2); %Set a timeout of 2 seconds.
 %probably ready to go lets flush the read buffer if there was any junk left
 
 if CC2_serialHandle.BytesAvailable >0
