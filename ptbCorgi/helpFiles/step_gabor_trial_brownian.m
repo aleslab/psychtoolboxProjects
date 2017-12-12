@@ -34,9 +34,9 @@ destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
 
 
 %If no update is specified default to brownian.
-% if ~isfield( conditionInfo, 'updateMethod') || isempty(conditionInfo.updateMethod)
-%     conditionInfo.updateMethod = 'brownian';
-% end
+%if ~isfield( conditionInfo, 'updateMethod') || isempty(conditionInfo.updateMethod)
+    conditionInfo.updateMethod = 'brownian';
+%end
 
 persistent orient
 if isempty(orient);
@@ -59,7 +59,7 @@ if currentIndex==1;
 elseif currentIndex==conditionInfo.trials_per_step+1;
     orient=orient+conditionInfo.step_size_deg;
 elseif currentIndex==conditionInfo.trials_per_step*2+1
-    orient=orient-conditionInfo.step_size_deg;
+    orient=orient-conditionInfo.step_size_deg*3+orient;
 else
     orient = orient;
     
