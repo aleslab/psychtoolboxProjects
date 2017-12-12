@@ -19,7 +19,7 @@ expInfo.instructions = ['Try and align the white line \n' ...
 %This defines what function to call to draw the condition
 %Crucial: requires the @ sign prefix.  Because it needs it to be a
 %"function handle"
-conditionInfo(1).label = 'Contrast: 0.20';
+conditionInfo(1).label = 'Contrast: 0.05';
 conditionInfo(1).trialFun=@step_gabor_trial_brownian;
 conditionInfo(1).giveFeedback = false;
 
@@ -35,10 +35,10 @@ conditionInfo(1).freq              =0.1; %frequency of the gabor in cycles per s
 conditionInfo(1).nReps             = 10; %% number of trials to present this condition. 
 conditionInfo(1).stimRadiusDeg     =   16;    %stimulus size in degree;
 conditionInfo(1).trials_per_step =  8; %how many trials at each orientation 
-conditionInfo(1).step_size_deg = 20; %size of step 
+conditionInfo(1).step_size_deg = 10; %size of step 
 conditionInfo(1).contrast = 0.05;
 conditionInfo(1).noiseSigma = .15;
-conditionInfo(1).orientationSigma = 0.8;
+conditionInfo(1).orientationSigma = 0.5;
 
 %Implement arbitrary forward models. 
 %conditionInfo(1).forwardModel = [ 1 0 ]; %Forward model
