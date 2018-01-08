@@ -1,5 +1,7 @@
 function [conditionInfo, expInfo] = lateralLine_gap_screening(expInfo)
 
+%screening paradigm for exp 4 (temporal integration experiment).
+
 expInfo.paradigmName = 'lateralLine_gap_screening';
 
 expInfo.viewingDistance = 92; %in cm; 92 rounded up, it's 91.7 from the screen to the outer edge of the chin rest

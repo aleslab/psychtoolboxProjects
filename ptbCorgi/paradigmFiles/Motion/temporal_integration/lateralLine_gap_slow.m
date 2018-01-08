@@ -1,5 +1,7 @@
 function [conditionInfo, expInfo] = lateralLine_gap_slow(expInfo)
 
+%paradigm for experiment 4 (temporal integration exp).
+
 expInfo.paradigmName = 'lateralLine_gap_slow';
 
 expInfo.viewingDistance = 92; %in cm; 92 rounded up, it's 91.7 from the screen to the outer edge of the chin rest
