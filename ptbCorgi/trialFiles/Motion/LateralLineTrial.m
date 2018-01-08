@@ -14,7 +14,7 @@ trialData.abortNow   = false;
 lw = 1; %width of line is one pixel
 
 %Draw fixation. Take the parameters from the default fixation set in
-%expInfo. 
+%expInfo.
 drawFixation(expInfo, expInfo.fixationInfo);
 
 vbl=Screen('Flip', expInfo.curWindow);
@@ -41,6 +41,24 @@ frameIdx = 1;
 
 %% Creating the line and the structure of the stimulus presentation
 
+if isfield(conditionInfo,'shortLines') && conditionInfo.shortLines
+    
+    shortLines = true;
+    spatialGap = conditionInfo.spatialGap;
+    
+    pixelSpatialGap = round(expInfo.pixPerDeg * spatialGap);
+    
+    lineYStartPos = round(expInfo.center(2) -2*expInfo.pixPerDeg -0.5*pixelSpatialGap);
+    lineYS2StartPos = round(expInfo.center(2) -2*expInfo.pixPerDeg +0.5*pixelSpatialGap);
+    lineYEndPos = round(lineYStartPos + 4*expInfo.pixPerDeg);
+    lineYS2EndPos = round(lineYS2StartPos + 4*expInfo.pixPerDeg);
+    
+else
+    lineYStartPos = 0;
+    lineYEndPos = screenYpixels;
+    shortLines = false;
+end
+
 pixelStartPos = (expInfo.center(1) + round(expInfo.pixPerDeg * conditionInfo.startPos));
 %finding the pixel start position relative to the centre of the screen
 %(left of screen centre is - and right is +) converting from the cm value
@@ -50,7 +68,7 @@ currLinePos = pixelStartPos;
 
 %drawing the line at the current line position (in the x axis) from the
 %top to the bottom of the screen
-Screen('DrawLines', expInfo.curWindow, [currLinePos, currLinePos; 0, screenYpixels], lw);
+Screen('DrawLines', expInfo.curWindow, [currLinePos, currLinePos; lineYStartPos, lineYEndPos], lw);
 drawFixation(expInfo, expInfo.fixationInfo);
 LAT = Screen('Flip', expInfo.curWindow,vbl+expInfo.ifi/2); %line appearance time
 trialData.LinePos(frameIdx) = currLinePos;
@@ -73,32 +91,50 @@ while currentTime < section2endtime
     if currentTime < preStimEndTime
         velocityPixPerSec = 0;
         drawLine = true;
+        s2offsetDrawLine = false;
         
     elseif currentTime > preStimEndTime && currentTime < section1endtime
         velocityPixPerSec = velSection1PixPerSec;
         drawLine = true;
+        s2offsetDrawLine = false;
         
     elseif currentTime > section1endtime && currentTime < gapendtime
         velocityPixPerSec = gapVelocityPixPerSec;
         drawLine = false;
+        s2offsetDrawLine = false;
         
-    elseif currentTime > gapendtime && currentTime < section2endtime
+    elseif currentTime > gapendtime && currentTime < section2endtime && ~shortLines
         velocityPixPerSec = velSection2PixPerSec;
         drawLine = true;
+        s2offsetDrawLine = false;
+        
+    elseif currentTime > gapendtime && currentTime < section2endtime && shortLines
+        velocityPixPerSec = velSection2PixPerSec;
+        drawLine = false;
+        s2offsetDrawLine = true;
         
     else
         velocityPixPerSec = velocityPixPerSec;
         drawLine = true;
-        
+        s2offsetDrawLine = false;
     end
     
     currLinePos = currLinePos + velocityPixPerSec * currIfi; %currLinePos is in pixels per frame
     
-    if drawLine == true
+    if s2offsetDrawLine == true
         
-        Screen('DrawLines', expInfo.curWindow, [currLinePos, currLinePos; 0, screenYpixels], lw);
+        Screen('DrawLines', expInfo.curWindow, [currLinePos, currLinePos; lineYS2StartPos, lineYS2EndPos], lw);
         
     end
+    
+    
+    if drawLine == true
+        
+        Screen('DrawLines', expInfo.curWindow, [currLinePos, currLinePos; lineYStartPos, lineYEndPos], lw);
+        
+    end
+    
+    
     
     drawFixation(expInfo, expInfo.fixationInfo);
     currentFlipTime = Screen('Flip', expInfo.curWindow,nextFlipTime);
@@ -108,8 +144,8 @@ while currentTime < section2endtime
     nextFlipTime = currentFlipTime + expInfo.ifi/2;
     currentTime = currentFlipTime;
     currIfi = currentFlipTime - previousFlipTime;
-    previousFlipTime = currentFlipTime;   
-
+    previousFlipTime = currentFlipTime;
+    
 end
 
 %After the line moves we'll turn off the line and turn on a response
@@ -117,7 +153,7 @@ end
 %
 
 responseIndicator.type = 'square';
-responseIndicator.size = .4; 
+responseIndicator.size = .4;
 
 drawFixation(expInfo, expInfo.fixationInfo);
 drawFixation(expInfo, responseIndicator);
