@@ -57,6 +57,7 @@ for iSpeed = 1: length(section2velocity);
     nullCondition = conditionInfo(iCond); %setting it to be the same as other conditions
     nullCondition.velocityDegPerSecSection1 = 10;  %then always setting the velocity to be the standard
     nullCondition.velocityDegPerSecSection2 = 10; %in both sections
+    nullCondition.stimDurationSection2 = 0.5;
     conditionInfo(iCond).nullCondition = nullCondition; %putting it as a field to be accessed within the condition info struct
     
     
