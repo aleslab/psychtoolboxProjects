@@ -25,6 +25,10 @@ iCond = 1; %defining here initially to prevent overwriting
 
 for iSpeed = 1: length(section2velocity);
     
+    conditionInfo(iCond).randomizeField(1).fieldname = 'iti'; %fieldname to randomize.
+    conditionInfo(iCond).randomizeField(1).type = 'uniform';
+    conditionInfo(iCond).randomizeField(1).param = [0.5 1.5]; %randomise between 0.5 and 1.5s for iti
+    
     %general
     conditionInfo(iCond).trialFun=@LateralLineTrial; %This defines what function to call to draw the condition
     conditionInfo(iCond).type = '2afc'; %type of task based on ptbCorgi definition
@@ -40,7 +44,7 @@ for iSpeed = 1: length(section2velocity);
     conditionInfo(iCond).stimDurationSection1 = 0.50; %approximate stimulus duration in seconds
     conditionInfo(iCond).stimDurationSection2 = section2duration(iSpeed); %variable in future but for now fixed
     conditionInfo(iCond).responseDuration = 3;    %How long participants will have to respond
-    conditionInfo(iCond).iti = 1; %this value is unused because iti is randomised
+    conditionInfo(iCond).iti = 0; %this value is unused because iti is randomised
     conditionInfo(iCond).temporalGap = 0; %the approximate length of time
     %in seconds that people will have between section 1 and section 2. Here
     %we always want a temporal gap of 0.
