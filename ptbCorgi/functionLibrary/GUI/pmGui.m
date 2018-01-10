@@ -22,7 +22,7 @@ function varargout = pmGui(varargin)
 
 % Edit the above text to modify the response to help pmGui
 
-% Last Modified by GUIDE v2.5 03-Jul-2017 09:10:57
+% Last Modified by GUIDE v2.5 10-Jan-2018 12:21:31
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -829,3 +829,26 @@ function editSelectedTrialFileMenu_Callback(hObject, eventdata, handles)
 conditionIdx = getConditionIndex(handles);
 
 edit( func2str(handles.conditionInfo(conditionIdx).trialFun));
+
+
+% --------------------------------------------------------------------
+function Debug_Test_Callback(hObject, eventdata, handles)
+% hObject    handle to Debug_Test (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function genExampleTrialList_Callback(hObject, eventdata, handles)
+% hObject    handle to genExampleTrialList (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+ [conditionList, blockList] = makeTrialList(handles.expInfo,handles.conditionInfo);
+ 
+ 
+ disp('Example trial list and block numbers for paradigm: ')
+ disp([conditionList;blockList])
+ 
+ 
+ 

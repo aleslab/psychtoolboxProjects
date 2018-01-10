@@ -80,7 +80,7 @@ randomization = expInfo.trialRandomization;
 switch lower(randomization.type)
     
     case 'random'
-        
+         disp('Creating a random trial structure')
         %lets enumerate the total number of trials we need.
         %This type of loop construction where the index is incremented by
         %the loop is STRONGLY advised against. But I'm lazy and this works
@@ -101,7 +101,7 @@ switch lower(randomization.type)
         trialList = trialList(idx);
         blockList = ones(size(trialList));
     case 'custom' %Custom allows user specification.
-        
+         disp('Creating a custom trial structure')
         if ~isfield(randomization,'trialList')
             error('ptbCorgi:makeTrialList:missingField','Custom trial randomization requires trialList field to be set');            
         end
@@ -113,7 +113,7 @@ switch lower(randomization.type)
         end
         
     case 'blocked'
-        
+        disp('Creating a blocked trial structure')
         
         %If user didn't set a specific randomization grouping field. But
         %set the conditionGrouping field.  Default to using the
@@ -129,12 +129,16 @@ switch lower(randomization.type)
             
             groupingFieldname = randomization.blockByField;
             [ groupingIndices ] = groupConditionsByField( conditionInfo, groupingFieldname );            
-        
+
+            msg = sprintf('Blocking using fieldname: '' %s '' to create %d groups',groupingFieldname, length(groupingIndices));
+            disp(msg);
         
         else %Otherwise make 1 group containing all conditions.
             groupingIndices{1} = 1:nConditions;
+            disp('Blocking using 1 group containing all conditions')
         end
-        
+                       
+
         %If block reps is not set default to 1. 
         if ~isfield(randomization,'nBlockReps') ...
                 || isempty(randomization.nBlockReps)
