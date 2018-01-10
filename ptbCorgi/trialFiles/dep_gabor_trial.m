@@ -56,7 +56,7 @@ end
 
 %Some parameters for the response line
 lineWidth = 4;
-lineLength = expInfo.ppd*3; %Line length in pixels
+lineLength = expInfo.ppd*3; %Line length in pixels-this visual degs into pixels
 lineColor = [1];
 
 
