@@ -490,6 +490,12 @@ disp('Use ptbCorgiSetup() to redefine defaults');
                     %if they don't exist they're given default values
                     trialData = validateTrialData(trialData);
                     
+                    %Add a simple box around fixation to indicate a
+                    %response is being waited for. 
+                    expInfo = drawFixation(expInfo, expInfo.fixationInfo);
+                    responseMarker.type = 'square';
+                    expInfo = drawFixation(expInfo, responseMarker);
+                    Screen('Flip', expInfo.curWindow);
                     
                     %Here we'll add the response collection
                     %There is a bit of redunancy with the [-90,90,-90,90] code.  I

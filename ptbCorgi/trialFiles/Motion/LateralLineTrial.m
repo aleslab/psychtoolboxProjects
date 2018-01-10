@@ -147,18 +147,18 @@ while currentTime < section2endtime
     previousFlipTime = currentFlipTime;
     
 end
-
-%After the line moves we'll turn off the line and turn on a response
-%indicator
-%
-
-responseIndicator.type = 'square';
-responseIndicator.size = .4;
-
-drawFixation(expInfo, expInfo.fixationInfo);
-drawFixation(expInfo, responseIndicator);
-
-currentFlipTime = Screen('Flip', expInfo.curWindow);
+% 
+% %After the line moves we'll turn off the line and turn on a response
+% %indicator
+% %
+% 
+% responseIndicator.type = 'square';
+% responseIndicator.size = .4;
+% 
+% drawFixation(expInfo, expInfo.fixationInfo);
+% % drawFixation(expInfo, responseIndicator);
+% 
+% currentFlipTime = Screen('Flip', expInfo.curWindow);
 
 
 end
