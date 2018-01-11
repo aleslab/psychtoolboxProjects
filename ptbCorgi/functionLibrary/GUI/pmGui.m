@@ -560,7 +560,8 @@ function testCondBtn_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-selectedCondition = get(handles.condListbox,'Value');
+%selectedCondition = get(handles.condListbox,'Value');
+selectedCondition = getConditionIndex(handles);
 %Backup the preloaded conditions before selecting the test condition. 
 handles.sessionInfo.backupConditionInfo = handles.conditionInfo;
 
