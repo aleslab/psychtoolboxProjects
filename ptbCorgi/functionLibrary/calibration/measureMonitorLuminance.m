@@ -59,6 +59,8 @@ end
 %cMatrix = ColorCal2('ReadColorMatrix');
 cMatrix = deviceFunction('ReadColorMatrix');
 
+
+
 myCorrectionMatrix = cMatrix(1:3,:);
 
 %cMatrix = ColorCal2('ReadColorMatrix');

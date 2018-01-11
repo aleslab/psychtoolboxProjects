@@ -104,7 +104,6 @@ about the session.
 
 Psychtoolbox initialization
 
-
 Initializing psychtoolbox is often confusing for new users. There are lot’s of
 different options and things that can be done.  This code handles setting up the
 display, audio interface (if needed), loading luminance and size calibration,

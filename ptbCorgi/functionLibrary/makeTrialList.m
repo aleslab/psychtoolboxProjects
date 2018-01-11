@@ -133,9 +133,11 @@ switch lower(randomization.type)
             msg = sprintf('Blocking using fieldname: '' %s '' to create %d groups',groupingFieldname, length(groupingIndices));
             disp(msg);
         
-        else %Otherwise make 1 group containing all conditions.
-            groupingIndices{1} = 1:nConditions;
-            disp('Blocking using 1 group containing all conditions')
+        else %Otherwise make groups that each contain only a single condition.
+            for iCond = 1:nConditions,
+                groupingIndices{iCond} = iCond;
+            end
+            
         end
                        
 

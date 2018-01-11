@@ -22,9 +22,9 @@ function [ verStr, verStruct] = ptbCorgiVersion()
 
 
 verStruct.major = 0;
-verStruct.minor = 32;
-verStruct.patch = 2;
-verStruct.label = '';
+verStruct.minor = 33;
+verStruct.patch = 0;
+verStruct.label = '-dev';
 verStruct.gitHash = ptbCorgiGitHash();
 verStr = sprintf('%i.%i.%i%s',verStruct.major,verStruct.minor,verStruct.patch,verStruct.label);
 

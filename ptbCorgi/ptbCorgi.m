@@ -232,8 +232,6 @@ if ~isempty(getpref('ptbCorgi'))
         datadir = getpref('ptbCorgi','datadir');   
     end
     
-    
-    
 else
     
     disp('!!Please run the folowing command to define defaults:');
@@ -413,18 +411,16 @@ disp('Use ptbCorgiSetup() to redefine defaults');
         
         
         iTrial = 1;
-        
-        %Adding some info about the current trial to expInfo. This is so
-        %trialFun functions can use it.
-        expInfo.currentTrial.number = iTrial;
-        
-        
+  
         expInfo = drawFixation(expInfo, expInfo.fixationInfo);
         Screen('Flip', expInfo.curWindow);
         
         while iTrial <=length(conditionList)
-     
-    
+            
+            %Adding some info about the current trial to expInfo. This is so
+            %trialFun functions can use it.
+            expInfo.currentTrial.number = iTrial;
+        
             validTrialList(iTrial)= true;  %initialize this index variable to keep track of bad/aborted trials
             experimentData(iTrial).validTrial = true;
             feedbackMsg = [];
