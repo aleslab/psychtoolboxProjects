@@ -37,10 +37,6 @@ end
 % Obtains the XYZ colour correction matrix specific to the ColorCAL II
 % being used, via the CDC port. This is a separate function (see further
 % below in this script).
-<<<<<<< HEAD:psychMaster/calibration/measureMonitorLuminance.m
-cMatrix = ColorCal2Serial('ReadColorMatrix');
-%cMatrix = ColorCal2('ReadColorMatrix');
-=======
 
 
 %Try to open ColorCal2 as USB;
@@ -62,8 +58,6 @@ end
 %cMatrix = ColorCal2Serial('ReadColorMatrix');
 %cMatrix = ColorCal2('ReadColorMatrix');
 cMatrix = deviceFunction('ReadColorMatrix');
-
->>>>>>> master:ptbCorgi/functionLibrary/calibration/measureMonitorLuminance.m
 
 myCorrectionMatrix = cMatrix(1:3,:);
 
@@ -111,15 +105,12 @@ for iValue = 1:nValues
                
         % Ask the ColorCAL II to take a measurement. It will return 3 values.
         % This is a separate function (see further below in this script).
-<<<<<<< HEAD:psychMaster/calibration/measureMonitorLuminance.m
-        s = ColorCal2Serial('MeasureXYZ');
-=======
+
         %s = ColorCal2Serial('MeasureXYZ');
         PsychHID('CloseUSBDevice')
         clear ColorCal2;
         s = deviceFunction('MeasureXYZ');
         
->>>>>>> master:ptbCorgi/functionLibrary/calibration/measureMonitorLuminance.m
    %clear ColorCal2;
     %  s = ColorCal2('MeasureXYZ');
 

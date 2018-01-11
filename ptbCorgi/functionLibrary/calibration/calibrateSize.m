@@ -4,13 +4,12 @@ function sizeCalibInfo=calibrateSize(varargin)
 
 try
     %Open a window
-<<<<<<< HEAD:psychMaster/calibration/calibrateSize.m
-=======
+
     if nargin>0
         expInfo = varargin{1};
     end
     
->>>>>>> master:ptbCorgi/functionLibrary/calibration/calibrateSize.m
+
     expInfo.useFullScreen = true;
     expInfo = openExperiment(expInfo);
     Screen('TextSize',expInfo.curWindow, 22);
@@ -53,32 +52,6 @@ try
     sizeCalibInfo.monitorWidth =    sizeCalibInfo.monitorPixelWidth/sizeCalibInfo.pixPerCm;
     
 
-<<<<<<< HEAD:psychMaster/calibration/calibrateSize.m
-    computerName = userResponse{2};
-    
-    modeString = [num2str(sizeCalibInfo.modeInfo.width) 'x' num2str(sizeCalibInfo.modeInfo.height) ...
-        '_' num2str(sizeCalibInfo.modeInfo.hz) 'Hz_' num2str(sizeCalibInfo.modeInfo.pixelSize) 'bpp_'];
-    
-    filename = ['size_' computerName '_' modeString datestr(now,'yyyymmdd_HHMM') '.mat'];
-    
-    setpref('ptbCorgi','computerName',computerName);
-    
-    if ispref('ptbCorgi','calibdir');
-        calibdir = getpref('ptbCorgi','calibdir');
-    elseif ispref('ptbCorgi','base');
-        calibdir = fullfile(getpref('ptbCorgi','base'),'calibrationData');
-    else
-        calibdir = '';
-    end
-    
-    saveFilename = fullfile(calibdir,filename);
-    
-    if ~exist(calibdir,'dir')
-        mkdir(calibdir)
-    end
-    
-    save(saveFilename,'-struct','sizeCalibInfo')
-=======
 %     computerName = userResponse{2};
 %     
 %     modeString = [num2str(sizeCalibInfo.modeInfo.width) 'x' num2str(sizeCalibInfo.modeInfo.height) ...
@@ -103,7 +76,6 @@ try
 %     end
 %     
 %     save(saveFilename,'-struct','sizeCalibInfo')
->>>>>>> master:ptbCorgi/functionLibrary/calibration/calibrateSize.m
          
     
 catch
