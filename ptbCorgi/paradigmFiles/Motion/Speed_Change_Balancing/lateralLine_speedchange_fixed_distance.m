@@ -53,7 +53,7 @@ for iSpeed = 1: length(section2velocity);
     conditionInfo(iCond).velocityDegPerSecSection1 = 10; %velocity of section 1 in deg/s. Constant for this exp
     conditionInfo(iCond).velocityDegPerSecSection2 = section2velocity(iSpeed); %velocity of section 2 in deg/s
     conditionInfo(iCond).gapVelocity = 0; %velocity in deg/s for temporal gap
-    conditionInfo(iCond).startPos = -8; %the start position of the line on the screen in degrees of visual angle.
+    conditionInfo(iCond).startPos = -5; %the start position of the line on the screen in degrees of visual angle.
     %Negative = left hand side of the screen.
     
     
