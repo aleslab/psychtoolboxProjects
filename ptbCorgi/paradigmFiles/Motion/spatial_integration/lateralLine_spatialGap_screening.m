@@ -1,8 +1,8 @@
-function [conditionInfo, expInfo] = lateralLine_spatialGap_offset_2(expInfo)
+function [conditionInfo, expInfo] = lateralLine_spatialGap_screening(expInfo)
 
 %paradigm for exp 5 (spatial integration experiment).
 
-expInfo.paradigmName = 'lateralLine_spatialGap_offset_2';
+expInfo.paradigmName = 'lateralLine_spatialGap_screening';
 
 expInfo.viewingDistance = 92; %in cm; 92 rounded up, it's 91.7 from the screen to the outer edge of the chin rest
 
@@ -16,12 +16,11 @@ expInfo.fixationInfo(1).lineWidthPix = 1;
 expInfo.fixationInfo(1).size  = .3;
 
 %velocities
-section2velocity = [10 15 18 20 22 25 30]; %velocities to use in deg/s;
+section2velocity = [10 30]; %velocities to use in deg/s;
+spatialGap = [0 6];
 
 iCond = 1; %defining here initially to prevent overwriting
-
-%for iGap = 1:length(spatialGap);
-    
+for iGap = 1: length(spatialGap);
     for iSpeed = 1: length(section2velocity);
         
         conditionInfo(iCond).randomizeField(1).fieldname = 'iti'; %fieldname to randomize.
@@ -31,11 +30,12 @@ iCond = 1; %defining here initially to prevent overwriting
         %general
         conditionInfo(iCond).trialFun=@LateralLineTrial; %This defines what function to call to draw the condition
         conditionInfo(iCond).type = 'simpleResponse'; %type of task based on ptbCorgi definition
-        conditionInfo(iCond).label = ['second_speed_' num2str(section2velocity(iSpeed))];
+        conditionInfo(iCond).label = ['gap_' num2str(spatialGap(iGap)) '_second_speed_' num2str(section2velocity(iSpeed))];
         %the labels for the levels when viewing in ptbCorgi gui
-        conditionInfo(iCond).nReps = 10; %number of repeats of the level
+        conditionInfo(iCond).nReps = 15; %number of repeats of the level
         conditionInfo(iCond).validKeyNames = {'f','j'};
         %key presses that will be considered valid responses and not keyboard errors
+        conditionInfo(iCond).giveAudioFeedback = true;
         conditionInfo(iCond).shortLines = true;
         
         %timings
@@ -47,7 +47,7 @@ iCond = 1; %defining here initially to prevent overwriting
         %conditionInfo(iCond).spatialGap = spatialGap(iGap); %the spatial gap in the
         %Y axis between section 1 and 2
         
-        conditionInfo(iCond).spatialGap = 2;
+        conditionInfo(iCond).spatialGap = spatialGap(iGap);
         conditionInfo(iCond).temporalGap = 0; %the approximate length of time
         %in seconds that people will have between section 1 and section 2
         
@@ -60,7 +60,11 @@ iCond = 1; %defining here initially to prevent overwriting
         
         iCond = iCond+1; %so you don't overwrite the conditions you create with each gap
     end
-    
-%end
+end
+
+    conditionInfo(1).correctKey = 'f'; %first condition is spatial gap 0, 20-10
+    conditionInfo(2).correctKey = 'j';%spatial gap 0 20-30
+    conditionInfo(3).correctKey = 'f';%spatial gap 6 20-10
+    conditionInfo(4).correctKey = 'j';%spatial gap 6 20-30
 
 end

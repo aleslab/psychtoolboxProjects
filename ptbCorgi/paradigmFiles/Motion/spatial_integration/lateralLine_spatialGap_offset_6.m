@@ -1,6 +1,6 @@
 function [conditionInfo, expInfo] = lateralLine_spatialGap_offset_6(expInfo)
 
-%paradigm for exp 6 (spatial integration experiment).
+%paradigm for exp 5 (spatial integration experiment).
 
 expInfo.paradigmName = 'lateralLine_spatialGap_offset_6';
 
@@ -33,7 +33,7 @@ iCond = 1; %defining here initially to prevent overwriting
         conditionInfo(iCond).type = 'simpleResponse'; %type of task based on ptbCorgi definition
         conditionInfo(iCond).label = ['second_speed_' num2str(section2velocity(iSpeed))];
         %the labels for the levels when viewing in ptbCorgi gui
-        conditionInfo(iCond).nReps = 5; %number of repeats of the level
+        conditionInfo(iCond).nReps = 10; %number of repeats of the level
         conditionInfo(iCond).validKeyNames = {'f','j'};
         %key presses that will be considered valid responses and not keyboard errors
         conditionInfo(iCond).shortLines = true;
