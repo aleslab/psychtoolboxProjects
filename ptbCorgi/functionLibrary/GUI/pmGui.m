@@ -121,8 +121,7 @@ set(handles.versionInfoTextBox,'String',infoString);
 
 handles = setupWindowSettings(handles); %Gui data is a very confusing passing handles back and forth makes more sense
 
-handles.expInfo = ptbCorgiLoadCalibrationInfo(handles.expInfo);
-updateCalibrationInfoPanel(handles);
+
 
 % %If an experiment window is active remove the saving button
 % if isfield(handles.expInfo,'curWindow')
@@ -152,7 +151,7 @@ function []=updateCalibrationInfoPanel(handles)
 %Report the size calibration status.
 %TODO Unify montior size guessing!
 if ~isfield(handles.expInfo, 'sizeCalibInfo')
-   set(handles.sizeCalibLoadText,'String','Size Calibration Not Loaded');
+   set(handles.sizeCalibLoadText,'String','Size Calibration Not Set');
    set(handles.sizeCalibLoadText,'BackgroundColor',[1 .2 .2]);
     
    set(handles.monWidthText,'String',...
@@ -161,7 +160,7 @@ if ~isfield(handles.expInfo, 'sizeCalibInfo')
 
 
 else
-    set(handles.sizeCalibLoadText,'String','Size Calibration Loaded');
+    set(handles.sizeCalibLoadText,'String','Size Calibration To Be Applied');
     set(handles.monWidthText,'String',...
     ['Monitor Width: ' num2str(handles.expInfo.monitorWidth) ' CM']);
  
@@ -173,13 +172,13 @@ end
 
 %Report the luminance calibration status.
 if ~isfield(handles.expInfo, 'lumCalibInfo')
-    set(handles.lumCalibLoadText,'String','Luminance Calibration Not Loaded');
+    set(handles.lumCalibLoadText,'String','Luminance Calibration Not Set');
     set(handles.lumCalibLoadText,'BackgroundColor',[1 .2 .2]);
     set(handles.lumCalibDateText,'String',['']);
     
     
 else
-    set(handles.lumCalibLoadText,'String','Luminance Calibration Loaded');
+    set(handles.lumCalibLoadText,'String','Luminance Calibration To Be Applied');
     
     dateString = datestr(handles.expInfo.lumCalibInfo.date,'dd-mm-YYYY')
     set(handles.lumCalibDateText,'String',...
@@ -359,6 +358,9 @@ try
     else
         set(handles.editParadigmFileMenu,'enable','off')
     end
+    
+    handles.expInfo = ptbCorgiLoadCalibrationInfo(handles.expInfo);
+    updateCalibrationInfoPanel(handles);
     
     set(handles.editSelectedTrialFileMenu,'enable','on');
     set(handles.condListbox,'String',condNameList(condIndices));
