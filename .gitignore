@@ -5,7 +5,7 @@ tmp_*
 
 #Default datafile location psychMaster
 psychMaster/Data/*
-
+ptbCorgi/Data/*
 #Default datafile location psychMaster
 Data/*
 
