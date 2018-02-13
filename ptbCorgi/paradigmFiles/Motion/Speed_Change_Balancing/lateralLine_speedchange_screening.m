@@ -37,6 +37,7 @@ for iSpeed = 1: length(section1velocity);
     conditionInfo(iCond).validKeyNames = {'f','j'};
     %key presses that will be considered valid responses and not keyboard errors
     conditionInfo(iCond).intervalBeep = true; %will beep to indicate intervals
+    conditionInfo(iCond).giveAudioFeedback = true;
     
     %timings
     conditionInfo(iCond).preStimDuration  = 0.25;  %Static time before stimulus change
