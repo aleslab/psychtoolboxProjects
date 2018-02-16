@@ -162,9 +162,7 @@ end
             [xStart,yStart] = GetMouse(expInfo.curWindow);
         end
         
-        if expInfo.enableKeyboard
-            oriIncrement = 0;
-        end
+        oriIncrement = 0;
         
        
         y = 0;
