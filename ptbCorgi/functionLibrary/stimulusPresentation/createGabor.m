@@ -1,13 +1,12 @@
-function img = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient)
+function img = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient, centerX,centerY)
 % 
-% img = mrUtilGabor(radiusPix, sigmaPix, cyclesPerSigma, [contrast=0.25], [phase=0],[orient=0])
+% img = mrUtilGabor(radiusPix, sigmaPix, cyclesPerSigma, [contrast=0.25], [phase=0],[orient=0],[centerX=0],[centerY=0] )
 %
 % Make a gobor image. Orientation (0=vertical) and phase are in degrees.
 % E.g.: 
 %   img = mrUtilGabor(200, 100, 2);
 %   image(img); truesize; colormap gray(256);
 %
-% Also see the end of this file for more examples.
 % 
 % HISTORY:
 % 2006.01 RFD wrote it.
@@ -25,11 +24,24 @@ if(~exist('orient','var') | isempty(orient))
     orient = 0;
 end
 
+if(~exist('centerX','var') || isempty(centerX))
+    centerX = 0;
+end
+
+
+if(~exist('centerY','var') || isempty(centerY))
+    centerY = 0;
+end
+
+
 orient = (pi/180)*orient; %Convert degrees to radians.
 phase  = (pi/180)*phase;
 
 sigmasPerImage = 2*radiusPix/sigmaPix;
 [x,y] = meshgrid(-radiusPix:radiusPix,-radiusPix:radiusPix);
+
+x=x-centerX;
+y=y-centerY;
 imgPix = size(x,1);
 % cycles per pixel
 sf = (sigmasPerImage*cyclesPerSigma)/imgPix*2*pi;
@@ -45,5 +57,3 @@ img = img/2+.5;
 
 return;
 
-
-% Other compression methods don't seem to work

@@ -18,6 +18,18 @@ function [ mergedStruct ] = updateStruct( intoStruct, fromStruct )
 
 
 %-- input checking here --%
+
+%First lets do some empty handling. Some variable can be initialized with
+%[] instead of struct().  We want to treat an empty matrix the same as an
+%empty struct. So something is empty turn it into an empty struct
+if isempty(fromStruct)
+    fromStruct = struct();    
+end
+
+if isempty(intoStruct)
+    intoStruct = struct();    
+end
+
 if ~isstruct(intoStruct) || ~isstruct(fromStruct)
    error('ptbCorgi:updateStruct:inputError', 'Inputs must be structures') 
 end
