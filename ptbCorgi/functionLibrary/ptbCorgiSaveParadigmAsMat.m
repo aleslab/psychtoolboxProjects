@@ -18,7 +18,7 @@ function [ success ] = ptbCorgiSaveParadigmAsMat( expInfo,conditionInfo,filename
 
 fileInfo.ptbCorgiVersion = ptbCorgiVersion();
 fileInfo.timeCreatedNum  = now();
-fileInfo.timeCreatedHuman  = datestr(fileInfo.timeCreatedNum,'YYYY-MM-DD hh:mm PM');
+fileInfo.timeCreatedHuman  = datestr(now);
 
 %If more info to include put it here. 
 if nargin==4    
