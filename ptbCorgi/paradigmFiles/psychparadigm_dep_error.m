@@ -1,13 +1,25 @@
 function [conditionInfo,expInfo] = psychparadigm_dep_error(expInfo)
 expInfo.paradigmName = 'error_calib';
 expInfo.randomizationType = 'blocked';
-expInfo.fixationInfo = fixationInfo;
+
+fixationInfo(1).type  = 'cross';
+fixationInfo(1).size  = .5;
+fixationInfo(1).lineWidthPix = 2;
+fixationInfo(1).color = 0;
  
+
 
 % use kbQueue's as they have high performance
 expInfo.useKbQueue = false;
 expInfo.enablePowermate = false;
 expInfo.viewingDistance = 57;
+
+
+fixationInfo(1).type  = 'cross';
+fixationInfo(1).size  = .5;
+fixationInfo(1).lineWidthPix = 2;
+fixationInfo(1).color = 0;
+ 
 
 
 
