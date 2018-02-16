@@ -1,5 +1,5 @@
 function [expInfo] = drawFixation(expInfo, fixationInfo)
-%function [expInfo] = drawFixation(expInfo, [fixationInfo])
+%function [] = drawFixation(expInfo, [fixationInfo])
 %This function is used to draw fixation markers.
 % Since it is called throughout the experiment it can also be used to draw
 % other things that should be on screen in the intertrial interval. For
@@ -43,6 +43,19 @@ function [expInfo] = drawFixation(expInfo, fixationInfo)
 % fixationInfo(1).type = 'cross';
 % fixationInfo(2).type = 'noiseFrame';
 % fixationInfo(2).size = 100;
+%
+%
+% After defining the fixation information make sure to asssign it the the 
+% expInfo structure in the paradigm file:
+% expInfo.fixationInfo = fixationInfo
+%
+% If you want to draw the fixation as set by the paradigm file use the 
+% following in the trial file:
+% drawFixation(expInfo,expInfo.fixationInfo);
+%
+%
+% Or if rendering a custom fixation change in a trial file:
+% drawFixation(expInfo,fixationInfo);
 
 if nargin ==1
     fixationInfo = expInfo.fixationInfo;

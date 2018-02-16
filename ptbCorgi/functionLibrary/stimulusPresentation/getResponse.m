@@ -1,7 +1,13 @@
 function [ responseData ] = getResponse(expInfo,responseDuration)
 %getResponse - Gets a response with a specified response time window.
 %   [ responseData ] = getResponse(expInfo,responseDuration)
-%   Detailed explanation goes here
+%   This is a convenience function and wrapper for both KbCheck and KbQueueCheck to unify the returned
+%   data and allow either to be used interchangably. 
+%
+%   responseData has fields:
+%
+%   pressed
+%   firstPress
 
 startTime = GetSecs;
 
