@@ -33,7 +33,7 @@ for iSpeed = 1: length(section1velocity);
     conditionInfo(iCond).type = '2afc'; %type of task based on ptbCorgi definition
     conditionInfo(iCond).label = ['first_speed_' num2str(section1velocity(iSpeed))];
     %the labels for the levels when viewing in ptbCorgi gui
-    conditionInfo(iCond).nReps = 15; %number of repeats of the level
+    conditionInfo(iCond).nReps = 30; %number of repeats of the level
     conditionInfo(iCond).validKeyNames = {'f','j'};
     %key presses that will be considered valid responses and not keyboard errors
     conditionInfo(iCond).intervalBeep = true; %will beep to indicate intervals
