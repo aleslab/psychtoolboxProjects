@@ -2,10 +2,10 @@ function [conditionInfo,expInfo] = psychparadigm_dep_error(expInfo)
 expInfo.paradigmName = 'error_calib';
 expInfo.randomizationType = 'blocked';
 
-fixationInfo(1).type  = 'cross';
-fixationInfo(1).size  = .5;
-fixationInfo(1).lineWidthPix = 2;
-fixationInfo(1).color = 0;
+expInfo.fixationInfo(1).type  = 'cross';
+expInfo.fixationInfo(1).size  = .5;
+expInfo.fixationInfo(1).lineWidthPix = 2;
+expInfo.fixationInfo(1).color = 0;
  
 
 
@@ -14,12 +14,6 @@ expInfo.useKbQueue = false;
 expInfo.enablePowermate = false;
 expInfo.viewingDistance = 57;
 
-
-fixationInfo(1).type  = 'cross';
-fixationInfo(1).size  = .5;
-fixationInfo(1).lineWidthPix = 2;
-fixationInfo(1).color = 0;
- 
 
 
 
@@ -67,22 +61,31 @@ conditionInfo(1).orientationSigma = 11.552; %standard dev of the stim orientatio
 %conditionInfo(1).forwardModel = [ 1 0 ]; %Forward model
 conditionInfo(1).label = 'Contrast: 0.20';
 conditionInfo(1).showFeedbackGabor = false;
-
+conditionInfo(1).gaborCenterX=4;
+conditionInfo(1).gaborCenterY=4;
 
 conditionInfo(2) = conditionInfo(1);
 conditionInfo(2).contrast = 0.20 ;
 conditionInfo(2).label = 'Contrast: 0.20';
-conditionInfo(1).showFeedbackGabor = true;
+conditionInfo(2).showFeedbackGabor = true;
+conditionInfo(2).gaborCenterX=2;
+conditionInfo(2).gaborCenterY=2;
+
 
 conditionInfo(3) = conditionInfo(1);
 conditionInfo(3).contrast = 0.20 ;
 conditionInfo(3).label = 'Contrast: 0.20';
 conditionInfo(3).showFeedbackGabor = false;
+conditionInfo(3).gaborCenterX=2;
+conditionInfo(3).gaborCenterY=2;
+
 
 conditionInfo(4) = conditionInfo(1);
 conditionInfo(4).contrast = 0.20 ;
 conditionInfo(4).label = 'Contrast: 0.20';
 conditionInfo(4).showFeedbackGabor = true;
+conditionInfo(4).gaborCenterX=2;
+conditionInfo(4).gaborCenterY=2;
 
 
 
