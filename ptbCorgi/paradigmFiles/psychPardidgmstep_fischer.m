@@ -1,6 +1,6 @@
 function [conditionInfo,expInfo] = psychPardidgmstep_fischer(expInfo)
 
-expInfo.paradigmName = 'stepGabor';
+expInfo.paradigmName = '_fish_Gabor';
 expInfo.trialRandomization.type = 'blocked';
 expInfo.trialRandomization.nbBlockReps = 1;
 
