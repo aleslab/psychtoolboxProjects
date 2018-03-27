@@ -274,7 +274,11 @@ if isfield(expInfo,'sizeCalibInfo')
         error('Cannot continue due to size calibration mismatch to current video mode')
     end
     
+else
     
+    fprintf(2,'\t\t<!><!><!><!><!><!> PTBCORGI <!><!><!><!><!><!><!>\n');
+    fprintf(2,'\t\t  Warning: Using default size calibration\n');
+
 end
 
 if isfield(expInfo,'gammaTable')
@@ -289,18 +293,36 @@ if isfield(expInfo,'gammaTable')
         error('Cannot continue due to luminance calibration mismatch to current video mode')
     end
     
+    
+    disp('<><><><><><> PTBCORGI <><><><><><>');
+   
     if expInfo.useBitsSharp
         %If we are using the bits sharp in mono++ mode
         % Set encoding gamma: It is 1/gamma to compensate for decoding gamma...
         PsychColorCorrection('SetEncodingGamma', expInfo.curWindow, 1/expInfo.lumCalibInfo.gammaParams);        
+        disp('Doing luminance calibration using PsychColorCorrection(''SetEncodingGamma'')');
+        disp(['Using encoding gamma of: ' num2str(1/expInfo.lumCalibInfo.gammaParams) ]);
     else
         BackupCluts;
         [oldClut sucess]=Screen('LoadNormalizedGammaTable',expInfo.curWindow,expInfo.gammaTable);
+        
+        if ~success
+            error('Error trying to apply luminance calibration using Screen(''LoadNormalizedGammaTable'')');
+        end
+        
+        disp('Luminance calibration loaded using Screen(''LoadNormalizedGammaTable'')');
+        
+        
     end
 else
+    
+    fprintf(2,'\t\t<!><!><!><!><!><!> PTBCORGI <!><!><!><!><!><!><!>\n');
+    fprintf(2,'\t\t  Warning: Using default luminance calibration\n');
     oldClut = LoadIdentityClut(expInfo.curWindow);
     [gammaTable, dacbits, reallutsize] = Screen('ReadNormalizedGammaTable',expInfo.curWindow);
     expInfo.gammaTable = gammaTable;
+    
+    
 end
 
 
