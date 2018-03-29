@@ -11,8 +11,8 @@ expInfo.viewingDistance = 57;
  
 expInfo.useBitsSharp = true;
 expInfo.enableTriggers = true;
-% expInfo.useBitsSharp = false; 
-% expInfo.enableTriggers = false;
+expInfo.useBitsSharp = false; 
+expInfo.enableTriggers = false;
 
 %Setup a simple fixation cross. See help drawFixation for more info on how
 %to setup this field.
@@ -38,7 +38,7 @@ conditionInfo(1).maxDots = 3; % max number of luminance change in a trial
 conditionInfo(1).stimSize = [0 0 1 8]; % in deg
 conditionInfo(1).trialDuration = 10; % in sec
 conditionInfo(1).preStimDuration = 2; % if set at 1sec, it will automatically be 1.2 sec to fit the right nb of cycles
-conditionInfo(1).stimTagFreq = 2.5; % in Hz this is the onset of stimulus
+conditionInfo(1).stimTagFreq = 2.5; % in Hz this is the onset of 1st stimulus in the cycle (2 stim in one cycle = 5 Hz cycle)
 conditionInfo(1).isi = 0.05; % in sec time OFF between 2 stimuli
 conditionInfo(1).trialFun=@trial_LongRangeV2;
 conditionInfo(1).movingStep = 0;

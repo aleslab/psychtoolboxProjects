@@ -128,13 +128,16 @@ switch lower(randomization.type)
                 && ~isempty(randomization.blockByField)
             
             groupingFieldname = randomization.blockByField;
-            [ groupingIndices ] = groupConditionsByField( conditionInfo, groupingFieldname );            
-        
-        
-        else %Otherwise make groups that each contain only a single condition.
+            [ groupingIndices ] = groupConditionsByField( conditionInfo, groupingFieldname );
+            
+        % make groups that each contain only a single condition.
+        elseif isfield(randomization,'blockByCondition')
             for iCond = 1:nConditions,
                 groupingIndices{iCond} = iCond;
             end
+            
+        else %Otherwise make 1 group containing all conditions.
+            groupingIndices{1} = 1:nConditions;
         end
         
         %If block reps is not set default to 1. 
