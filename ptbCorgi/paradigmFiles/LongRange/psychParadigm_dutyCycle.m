@@ -3,7 +3,7 @@ function [conditionInfo, expInfo] = psychParadigm_dutyCycle(expInfo)
 KbName('UnifyKeyNames');
 
 %paradigmName is what will be prepended to data files
-expInfo.paradigmName = 'longRange';
+expInfo.paradigmName = 'dutyCycle';
 expInfo.trialRandomization.type = 'blocked';
 expInfo.trialRandomization.blockByField = 'xloc'; % or just have a field group for each condition to determine which condition is in which group. Here xloc is the same for all conditions so all conditions are in each block
 expInfo.trialRandomization.nBlockReps   = 10; 
@@ -13,8 +13,8 @@ expInfo.viewingDistance = 57;
  
 expInfo.useBitsSharp = true;
 expInfo.enableTriggers = true;
-expInfo.useBitsSharp = false; 
-expInfo.enableTriggers = false;
+% expInfo.useBitsSharp = false; 
+% expInfo.enableTriggers = false;
 
 %Setup a simple fixation cross. See help drawFixation for more info on how
 %to setup this field.
@@ -37,8 +37,9 @@ conditionInfo(1).maxDots = 3; % max number of luminance change in a trial
 % conditionInfo(1).randomizeField = 'false';
 
 %% stimulus
-conditionInfo(1).stimSize = [0 0 0.5 6]; % in deg
-conditionInfo(1).xloc = 3; % eccentricity of stim from centre in deg
+conditionInfo(1).stimSize = [0 0 0.5 5]; % in deg
+conditionInfo(1).xloc = 3; % eccentricity of stim centre from screen centre in deg
+conditionInfo(1).yloc = 5; % y eccentricity of stim centre
 conditionInfo(1).trialDuration = 10; % in sec
 conditionInfo(1).trialFun=@trial_dutyCycle;
 conditionInfo(1).motion = 0; % by default, no motion 

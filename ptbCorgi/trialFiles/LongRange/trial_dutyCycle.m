@@ -24,6 +24,9 @@ cycleDuration = 1/conditionInfo.stimTagFreq;
 monitorPeriodSecs = 1/expInfo.monRefresh;
 timeStimOn = cycleDuration * conditionInfo.dutyCycle; 
 timeStimOff = cycleDuration * (1-conditionInfo.dutyCycle); 
+% framesPerCycle = floor(cycleDuration / monitorPeriodSecs);
+% framesOn = round(timeStimOn / monitorPeriodSecs);
+% framesOff = round(timeStimOff / monitorPeriodSecs);
 framesPerCycle = cycleDuration / monitorPeriodSecs;
 framesOn = timeStimOn / monitorPeriodSecs;
 framesOff = timeStimOff / monitorPeriodSecs;
@@ -68,8 +71,8 @@ trialData.dots = randsample(4:4:nbTotalCycles-3,trialData.nbDots);
 
 %%% stim presentation parameters
 rectCircle = conditionInfo.stimSize*expInfo.ppd;
-ycoord = expInfo.center(2)/2;
-xcoord = expInfo.center(1)+ (conditionInfo.xloc * expInfo.ppd); 
+ycoord = expInfo.center(2) - (conditionInfo.yloc * expInfo.ppd); % - above
+xcoord = expInfo.center(1) + (conditionInfo.xloc * expInfo.ppd); % + right
 eccMotion = xcoord + (conditionInfo.xMotion * expInfo.ppd); 
 
 %%% CHECK
