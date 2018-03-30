@@ -59,7 +59,7 @@ invalidTrialTrigger = 98; % miss frame
 endStimTrigger = 10;
 
 %%% parameters for the task
-trialData.nbDots = randi((conditionInfo.maxDots+1),1)-1 % number of dots for this trial (can be 0)
+trialData.nbDots = randi((conditionInfo.maxDots+1),1)-1; % number of dots for this trial (can be 0)
 % determine when the dot appears, restrict it to avoid successive dots 
 % (not presented during off or the next on = every 4 cycles) and
 % do not include pre-post 'baseline'
@@ -69,7 +69,8 @@ trialData.dots = randsample(4:4:nbTotalCycles-3,trialData.nbDots);
 %%% stim presentation parameters
 rectCircle = conditionInfo.stimSize*expInfo.ppd;
 ycoord = expInfo.center(2)/2;
-xcoord = conditionInfo.xloc(1)*expInfo.ppd; 
+xcoord = expInfo.center(1)+ (conditionInfo.xloc * expInfo.ppd); 
+eccMotion = xcoord + (conditionInfo.xMotion * expInfo.ppd); 
 
 %%% CHECK
 % % FOR MOTION ??
@@ -114,10 +115,18 @@ for cycleNb = 1 : nbTotalCycles
 
     %%% stim ON
     drawFixation(expInfo, expInfo.fixationInfo);
-    Screen('FillRect', expInfo.curWindow, black,CenterRectOnPoint(rectCircle,xcoord,ycoord));
-    if ismember(cycleNb,trialData.dots) % check for stim to detect
-        yDot = (maxYdot-minYdot)*rand(1)+minYdot;
-        Screen('FillOval', expInfo.curWindow, dimColour,CenterRectOnPoint(dotSize,xcoord,yDot));
+    if conditionInfo.motion == 1 && mod(cycleNb,2)==0 % in motion
+        Screen('FillRect', expInfo.curWindow, black,CenterRectOnPoint(rectCircle,eccMotion,ycoord));
+        if ismember(cycleNb,trialData.dots) % check for stim to detect
+            yDot = (maxYdot-minYdot)*rand(1)+minYdot;
+            Screen('FillOval', expInfo.curWindow, dimColour,CenterRectOnPoint(dotSize,eccMotion,yDot));
+        end
+    else
+        Screen('FillRect', expInfo.curWindow, black,CenterRectOnPoint(rectCircle,xcoord,ycoord));
+        if ismember(cycleNb,trialData.dots) % check for stim to detect
+            yDot = (maxYdot-minYdot)*rand(1)+minYdot;
+            Screen('FillOval', expInfo.curWindow, dimColour,CenterRectOnPoint(dotSize,xcoord,yDot));
+        end        
     end
     ptbCorgiSendTrigger(expInfo,'raw',0,f1Trigger);
     prevStim = t;
@@ -127,6 +136,7 @@ for cycleNb = 1 : nbTotalCycles
     end
     
     %%% stim OFF
+    Screen('FillRect', expInfo.curWindow, expInfo.bckgnd);
     drawFixation(expInfo, expInfo.fixationInfo);
     Screen('Flip', expInfo.curWindow, t + framesOn * ifi - ifi/2 );
         
@@ -138,67 +148,6 @@ for cycleNb = 1 : nbTotalCycles
         end
     end
         
-        
-%             if conditionInfo.motion == 1 % in motion 
-%         %%% first stimulus ON
-%         drawFixation(expInfo, expInfo.fixationInfo);
-%         Screen('FillRect', expInfo.curWindow, black,CenterRectOnPoint(rectCircle,expInfo.center(1)-xcoord,ycoord));
-%         if ismember(nbStimPresented,trialData.dots) % check for stim to detect
-%             yDot = (maxYdot-minYdot)*rand(1)+minYdot;
-%             Screen('FillOval', expInfo.curWindow, dimColour,CenterRectOnPoint(dotSize,expInfo.center(1)-xcoord,yDot));
-%         end
-%         %         % for the photodiode
-%         %         Screen('FillRect', expInfo.curWindow, [1 1 1],[0 0 100 100]);
-%         
-%         ptbCorgiSendTrigger(expInfo,'raw',0,f1Trigger);
-%         prevStim = t;
-%         t = Screen('Flip', expInfo.curWindow, t + framesPerHalfCycle * ifi - ifi/2 ); % or + ifi/2??
-%         if nbStimPresented == 1
-%             stimStartTime = t;
-%         end
-%         %         t-prevStim
-%         
-%         %%% end 1st stimulus
-%         drawFixation(expInfo, expInfo.fixationInfo);
-%         Screen('Flip', expInfo.curWindow, t + framesPerStim * ifi - ifi/2 );
-%         
-%         % check timing (halfCycleDuration +/- 1/2 frame)
-%         if checkTiming
-%             if t-prevStim > halfCycleDuration + ifi/2 || t-prevStim < halfCycleDuration - ifi/2
-%                 trialData.validTrial = false;
-%                 ptbCorgiSendTrigger(expInfo,'raw',1,invalidTrialTrigger); % abort trial
-%                 break;
-%             end
-%         end
-%         nbStimPresented = nbStimPresented + 1;
-%         
-%         %%% second stimulus ON
-%         drawFixation(expInfo, expInfo.fixationInfo);
-%         Screen('FillRect', expInfo.curWindow, black,CenterRectOnPoint(rectCircle,expInfo.center(1)+xcoord,ycoord));
-%         if ismember(nbStimPresented,trialData.dots) % check for stim to detect
-%             yDot = (maxYdot-minYdot)*rand(1)+minYdot;
-%             Screen('FillOval', expInfo.curWindow, dimColour,CenterRectOnPoint(dotSize,expInfo.center(1)+xcoord,yDot));
-%         end
-%         %         % for the photodiode
-%         %         Screen('FillRect', expInfo.curWindow, [0 0 0],[0 0 100 100]);
-%         ptbCorgiSendTrigger(expInfo,'clear',0);
-%         prevStim = t;
-%         t = Screen('Flip', expInfo.curWindow, t + framesPerHalfCycle * ifi - ifi/2 );
-%         
-%         %%% end 2nd stimulus
-%         drawFixation(expInfo, expInfo.fixationInfo);
-%         Screen('Flip', expInfo.curWindow, t + framesPerStim * ifi - ifi/2 );
-%         
-%         % check timing (halfCycleDuration +/- 1/2 frame)
-%         if checkTiming
-%             if t-prevStim > halfCycleDuration + ifi/2 || t-prevStim < halfCycleDuration - ifi/2
-%             trialData.validTrial = false;
-%             ptbCorgiSendTrigger(expInfo,'raw',1,invalidTrialTrigger); % abort trial
-%             break;
-%             end
-%         end
-% %         t-prevStim
-%     end
 end
 
 % this is to send a last trigger

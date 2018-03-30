@@ -5,7 +5,9 @@ KbName('UnifyKeyNames');
 %paradigmName is what will be prepended to data files
 expInfo.paradigmName = 'longRange';
 expInfo.trialRandomization.type = 'blocked';
-expInfo.trialRandomization.nBlockReps   = 10; % 15 blocks, 1 rep per block, 15 s trial = 45 min without breaks
+expInfo.trialRandomization.blockByField = 'xloc'; % or just have a field group for each condition to determine which condition is in which group. Here xloc is the same for all conditions so all conditions are in each block
+expInfo.trialRandomization.nBlockReps   = 10; 
+% 10 repetitions * 14 s per trial (including resp) * 22 conditions = 50 min
 
 expInfo.viewingDistance = 57;
  
@@ -35,16 +37,17 @@ conditionInfo(1).maxDots = 3; % max number of luminance change in a trial
 % conditionInfo(1).randomizeField = 'false';
 
 %% stimulus
-conditionInfo(1).stimSize = [0 0 1 8]; % in deg
-conditionInfo(1).xloc = 6;
+conditionInfo(1).stimSize = [0 0 0.5 6]; % in deg
+conditionInfo(1).xloc = 3; % eccentricity of stim from centre in deg
 conditionInfo(1).trialDuration = 10; % in sec
 conditionInfo(1).trialFun=@trial_dutyCycle;
 conditionInfo(1).motion = 0; % by default, no motion 
-conditionInfo(1).dotSize = [0 0 0.5 0.5];
+conditionInfo(1).dotSize = [0 0 0.2 0.2];
 conditionInfo(1).preStimDuration = 1.2; % in s
+conditionInfo(1).xMotion = 0.6; % eccentricity from the other stim in motion condition (xStim = xloc + xMotion)
 
 % same parameters in all conditions
-for cc=2:15
+for cc=2:22
     conditionInfo(cc) = conditionInfo(1);
 end
 
@@ -54,7 +57,7 @@ testedFreq = [2.5 5 10]; % in Hz this is the onset the single stimulus
 onTime = [1 2 4 6 7];
 condNb = 1;
 for testFq=1:length(testedFreq)
-    for tt = 1:5
+    for tt = 1:length(onTime)
         conditionInfo(condNb).stimTagFreq = testedFreq(testFq); 
         conditionInfo(condNb).dutyCycle = onTime(tt)/8;
         conditionInfo(condNb).label = [num2str(testedFreq(testFq)) 'Hz ' num2str(onTime(tt)/8*100) '% DC'];
@@ -63,6 +66,25 @@ for testFq=1:length(testedFreq)
 end
 
 % motion condition
+% 'pyramid'
+testedFreq = [2.5 5 10 5 2.5]; % in Hz this is the onset the single stimulus
+onTime = [1 2 4 6 7];
+for tt = 1:length(testedFreq)
+    conditionInfo(condNb).stimTagFreq = testedFreq(tt);
+    conditionInfo(condNb).dutyCycle = onTime(tt)/8;
+    conditionInfo(condNb).motion = 1;
+    conditionInfo(condNb).label = ['motion ' num2str(testedFreq(tt)) 'Hz ' num2str(onTime(tt)/8*100) '% DC'];
+    condNb = condNb+1;
+end
+% other 50/50
+conditionInfo(condNb).stimTagFreq = 2.5;
+conditionInfo(condNb).dutyCycle = 4/8;
+conditionInfo(condNb).motion = 1;
+conditionInfo(condNb).label = 'motion 2.5Hz 50% DC';
 
+conditionInfo(condNb+1).stimTagFreq = 5;
+conditionInfo(condNb+1).dutyCycle = 4/8;
+conditionInfo(condNb+1).motion = 1;
+conditionInfo(condNb+1).label = 'motion 5Hz 50% DC';
 end
 
