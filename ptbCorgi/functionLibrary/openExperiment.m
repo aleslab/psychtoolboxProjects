@@ -304,7 +304,7 @@ if isfield(expInfo,'gammaTable')
         disp(['Using encoding gamma of: ' num2str(1/expInfo.lumCalibInfo.gammaParams) ]);
     else
         BackupCluts;
-        [oldClut sucess]=Screen('LoadNormalizedGammaTable',expInfo.curWindow,expInfo.gammaTable);
+        [oldClut success]=Screen('LoadNormalizedGammaTable',expInfo.curWindow,expInfo.gammaTable);
         
         if ~success
             error('Error trying to apply luminance calibration using Screen(''LoadNormalizedGammaTable'')');
