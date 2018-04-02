@@ -20,25 +20,26 @@ black = BlackIndex(expInfo.curWindow);
 dimColour = 0.5;
 
 %%% VEP parameters
-framesPerCycle = 1/conditionInfo.stimTagFreq * expInfo.monRefresh;
-framesOn = conditionInfo.dutyCycle * framesPerCycle/6;
-framesOff = framesPerCycle - framesOn;
-
+framesPerCycle = round(1/conditionInfo.stimTagFreq * expInfo.monRefresh);
 cycleDuration = 1/conditionInfo.stimTagFreq; 
 monitorPeriodSecs = 1/expInfo.monRefresh;
+
+% framesPerCycle = cycleDuration / monitorPeriodSecs;
+framesOn = conditionInfo.dutyCycle * framesPerCycle;
+framesOff = framesPerCycle - framesOn;
+
 timeStimOn = monitorPeriodSecs * framesOn; 
 timeStimOff = monitorPeriodSecs * framesOff; 
 
-% framesPerCycle = cycleDuration / monitorPeriodSecs;
-% framesOn = timeStimOn / monitorPeriodSecs;
-% framesOff = timeStimOff / monitorPeriodSecs;
 % timeStimOn = cycleDuration * conditionInfo.dutyCycle; 
 % timeStimOff = cycleDuration * (1-conditionInfo.dutyCycle); 
+% framesOn = timeStimOn / monitorPeriodSecs;
+% framesOff = timeStimOff / monitorPeriodSecs;
 
 % compute the nb of cycles before and after stim presentation
 % and compute the trial duration depending on that
 preStimCycles = ceil(conditionInfo.preStimDuration * conditionInfo.stimTagFreq);
-nbTotalCycles = preStimCycles*2 + conditionInfo.trialDuration * conditionInfo.stimTagFreq;
+nbTotalCycles = ceil(preStimCycles*2 + conditionInfo.trialDuration * conditionInfo.stimTagFreq);
 trialDuration = nbTotalCycles * cycleDuration;
 
 % save it in the data output structure
@@ -73,7 +74,7 @@ trialData.nbDots = randi((conditionInfo.maxDots+1),1)-1; % number of dots for th
 trialData.dots = randsample(4:4:nbTotalCycles-3,trialData.nbDots);
 
 
-%%% stim presentation parameters
+%%% stim pres_FormattingShaderentation parameters
 rectCircle = conditionInfo.stimSize*expInfo.ppd;
 ycoord = expInfo.center(2) - (conditionInfo.yloc * expInfo.ppd); % - above
 xcoord = expInfo.center(1) + (conditionInfo.xloc * expInfo.ppd); % + right
@@ -143,9 +144,9 @@ for cycleNb = 1 : nbTotalCycles
     end
     
     %%% stim OFF
-    Screen('FillRect', expInfo.curWindow, expInfo.bckgnd);
+    %Screen('FillRect', expInfo.curWindow, expInfo.bckgnd);
     drawFixation(expInfo, expInfo.fixationInfo);
-    Screen('Flip', expInfo.curWindow, t + framesOn * ifi - ifi/2 );
+    t = Screen('Flip', expInfo.curWindow, t + framesOn * ifi - ifi/2 );
         
     if checkTiming
         if t-prevStim > cycleDuration + ifi/2 || t-prevStim < cycleDuration - ifi/2

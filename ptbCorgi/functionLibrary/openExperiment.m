@@ -86,7 +86,7 @@ if ~isfield(expInfo,'requestedResolution') || isempty(expInfo.requestedResolutio
     %If the user hasn't requested a resolution let's see if the resolution
     %preference has been set. 
     
-    if ispref('ptbCorgi','screenResolution')
+    if ispref('ptbCorgi','resolution')
         requestedResolution = getpref('ptbCorgi','resolution');
     else    
         %If nothing is set just use the current resolution.

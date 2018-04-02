@@ -37,7 +37,7 @@ conditionInfo(1).maxDots = 3; % max number of luminance change in a trial
 % conditionInfo(1).randomizeField = 'false';
 
 %% stimulus
-conditionInfo(1).stimSize = [0 0 0.5 5]; % in deg
+conditionInfo(1).stimSize = [0 0 0.5 10]; % in deg
 conditionInfo(1).xloc = 3; % eccentricity of stim centre from screen centre in deg
 conditionInfo(1).yloc = 5; % y eccentricity of stim centre
 conditionInfo(1).trialDuration = 10; % in sec
@@ -54,63 +54,64 @@ end
 
 %% experimental manipulation
 % single stim condition
-testedFreq = [2.5 5 10]; % in Hz this is the onset of the single stimulus
-cycle = [0.2 0.5 1 2 5];
-onTime = 1:5;
-condNb = 1;
-for testFq=1:length(testedFreq)
-    for cc = 1:length(cycle)
-        conditionInfo(condNb).stimTagFreq = testedFreq(testFq); 
-        conditionInfo(condNb).dutyCycle = onTime(cc);
-        conditionInfo(condNb).label = [num2str(testedFreq(testFq)) 'Hz ' num2str(cycle(cc)/6*100) '% DC'];
-        condNb = condNb+1;
-    end
-end
-
 
 % testedFreq = [2.5 5 10]; % in Hz this is the onset of the single stimulus
-% onTime = [1 2 4 6 7];
+% cycle = [0.2 0.5 1 2 5];
+% onTime = 1:5;
 % condNb = 1;
 % for testFq=1:length(testedFreq)
-%     for tt = 1:length(onTime)
+%     for cc = 1:length(cycle)
 %         conditionInfo(condNb).stimTagFreq = testedFreq(testFq); 
-%         conditionInfo(condNb).dutyCycle = onTime(tt)/8;
-%         conditionInfo(condNb).label = [num2str(testedFreq(testFq)) 'Hz ' num2str(onTime(tt)/8*100) '% DC'];
+%         conditionInfo(condNb).dutyCycle = onTime(cc);
+%         conditionInfo(condNb).label = [num2str(testedFreq(testFq)) 'Hz ' num2str(cycle(cc)/6*100) '% DC'];
 %         condNb = condNb+1;
 %     end
 % end
 
-% motion condition
-% 'pyramid'
-testedFreq = [2.5 5 10 5 2.5]; % in Hz this is the onset the single stimulus
-onTime = 1:5;
-for tt = 1:length(testedFreq)
-    conditionInfo(condNb).stimTagFreq = testedFreq(tt);
-    conditionInfo(condNb).dutyCycle = onTime(tt);
-    conditionInfo(condNb).motion = 1;
-    conditionInfo(condNb).label = ['motion ' num2str(testedFreq(tt)) 'Hz ' num2str(cycle(tt)/6*100) '% DC'];
-    condNb = condNb+1;
+
+testedFreq = [85/8 85/16 85/32]; % in Hz this is the onset of the single stimulus
+onTime = [1 2 4 6 7];
+condNb = 1;
+for testFq=1:length(testedFreq)
+    for tt = 1:length(onTime)
+        conditionInfo(condNb).stimTagFreq = testedFreq(testFq); 
+        conditionInfo(condNb).dutyCycle = onTime(tt)/8;
+        conditionInfo(condNb).label = [num2str(testedFreq(testFq)) 'Hz ' num2str(onTime(tt)/8*100) '% DC'];
+        condNb = condNb+1;
+    end
 end
 
+% motion condition
+% 'pyramid'
 % testedFreq = [2.5 5 10 5 2.5]; % in Hz this is the onset the single stimulus
-% onTime = [1 2 4 6 7];
+% onTime = 1:5;
 % for tt = 1:length(testedFreq)
 %     conditionInfo(condNb).stimTagFreq = testedFreq(tt);
-%     conditionInfo(condNb).dutyCycle = onTime(tt)/8;
+%     conditionInfo(condNb).dutyCycle = onTime(tt);
 %     conditionInfo(condNb).motion = 1;
-%     conditionInfo(condNb).label = ['motion ' num2str(testedFreq(tt)) 'Hz ' num2str(onTime(tt)/8*100) '% DC'];
+%     conditionInfo(condNb).label = ['motion ' num2str(testedFreq(tt)) 'Hz ' num2str(cycle(tt)/6*100) '% DC'];
 %     condNb = condNb+1;
 % end
 
-% other 50/50
-conditionInfo(condNb).stimTagFreq = 2.5;
-conditionInfo(condNb).dutyCycle = 3;
-conditionInfo(condNb).motion = 1;
-conditionInfo(condNb).label = 'motion 2.5Hz 50% DC';
+testedFreq = [85/32 85/16 85/8 85/16 85/32]; % in Hz this is the onset of the single stimulus
+onTime = [1 2 4 6 7];
+for tt = 1:length(testedFreq)
+    conditionInfo(condNb).stimTagFreq = testedFreq(tt);
+    conditionInfo(condNb).dutyCycle = onTime(tt)/8;
+    conditionInfo(condNb).motion = 1;
+    conditionInfo(condNb).label = ['motion ' num2str(testedFreq(tt)) 'Hz ' num2str(onTime(tt)/8*100) '% DC'];
+    condNb = condNb+1;
+end
 
-conditionInfo(condNb+1).stimTagFreq = 5;
-conditionInfo(condNb+1).dutyCycle = 3;
+% other 50/50
+conditionInfo(condNb).stimTagFreq = 85/32;
+conditionInfo(condNb).dutyCycle = 4/8;
+conditionInfo(condNb).motion = 1;
+conditionInfo(condNb).label = ['motion ' num2str(85/32) 'Hz 50% DC'];
+
+conditionInfo(condNb+1).stimTagFreq = 85/16;
+conditionInfo(condNb+1).dutyCycle = 4/8;
 conditionInfo(condNb+1).motion = 1;
-conditionInfo(condNb+1).label = 'motion 5Hz 50% DC';
+conditionInfo(condNb+1).label = ['motion ' num2str(85/16) 'Hz 50% DC'];
 end
 
