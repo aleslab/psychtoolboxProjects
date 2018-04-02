@@ -20,16 +20,20 @@ black = BlackIndex(expInfo.curWindow);
 dimColour = 0.5;
 
 %%% VEP parameters
+framesPerCycle = 1/conditionInfo.stimTagFreq * expInfo.monRefresh;
+framesOn = conditionInfo.dutyCycle * framesPerCycle/6;
+framesOff = framesPerCycle - framesOn;
+
 cycleDuration = 1/conditionInfo.stimTagFreq; 
 monitorPeriodSecs = 1/expInfo.monRefresh;
-timeStimOn = cycleDuration * conditionInfo.dutyCycle; 
-timeStimOff = cycleDuration * (1-conditionInfo.dutyCycle); 
-% framesPerCycle = floor(cycleDuration / monitorPeriodSecs);
-% framesOn = round(timeStimOn / monitorPeriodSecs);
-% framesOff = round(timeStimOff / monitorPeriodSecs);
-framesPerCycle = cycleDuration / monitorPeriodSecs;
-framesOn = timeStimOn / monitorPeriodSecs;
-framesOff = timeStimOff / monitorPeriodSecs;
+timeStimOn = monitorPeriodSecs * framesOn; 
+timeStimOff = monitorPeriodSecs * framesOff; 
+
+% framesPerCycle = cycleDuration / monitorPeriodSecs;
+% framesOn = timeStimOn / monitorPeriodSecs;
+% framesOff = timeStimOff / monitorPeriodSecs;
+% timeStimOn = cycleDuration * conditionInfo.dutyCycle; 
+% timeStimOff = cycleDuration * (1-conditionInfo.dutyCycle); 
 
 % compute the nb of cycles before and after stim presentation
 % and compute the trial duration depending on that
