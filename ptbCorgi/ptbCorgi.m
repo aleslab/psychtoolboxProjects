@@ -462,7 +462,7 @@ disp('Use ptbCorgiSetup() to redefine defaults');
                     
                     %In the future add code here to enable custom block
                     %messages
-                    blockMessage = ['Block ' num2str(blockList(iTrial-1)) '/' num2str(max(blockList)) 'completed. Press any key to start next block'];
+                    blockMessage = ['Block ' num2str(blockList(iTrial-1)) '/' num2str(max(blockList)) ' completed. Press any key to start'];
                     DrawFormattedTextStereo(expInfo.curWindow, blockMessage,...
                         'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
                     Screen('Flip', expInfo.curWindow);

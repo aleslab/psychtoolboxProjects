@@ -3,6 +3,8 @@ function [trialData] = trial_dutyCycle(expInfo, conditionInfo)
 % press space to pause the experiment
 
 stimStartTime = 0;
+black = BlackIndex(expInfo.curWindow);
+dimColour = 0.3;
 
 if expInfo.useBitsSharp
     ptbCorgiSendTrigger(expInfo,'starttrial',true);
@@ -10,19 +12,18 @@ end
 
 drawFixation(expInfo, expInfo.fixationInfo);
 t = Screen('Flip', expInfo.curWindow);
+Screen('FillRect', expInfo.curWindow, black,[0 0 1280 3]);
 trialData.validTrial = true;
 trialData.abortNow   = false;
 trialData.trialStartTime = t;
 trialData.response = 999;
 ifi = expInfo.ifi;
 
-black = BlackIndex(expInfo.curWindow);
-dimColour = 0.5;
 
 %%% VEP parameters
-framesPerCycle = round(1/conditionInfo.stimTagFreq * expInfo.monRefresh);
+framesPerCycle = 1/conditionInfo.stimTagFreq * round(expInfo.monRefresh);
 cycleDuration = 1/conditionInfo.stimTagFreq; 
-monitorPeriodSecs = 1/expInfo.monRefresh;
+monitorPeriodSecs = 1/round(expInfo.monRefresh);
 
 % framesPerCycle = cycleDuration / monitorPeriodSecs;
 framesOn = conditionInfo.dutyCycle * framesPerCycle;
@@ -38,9 +39,10 @@ timeStimOff = monitorPeriodSecs * framesOff;
 
 % compute the nb of cycles before and after stim presentation
 % and compute the trial duration depending on that
+% preStimCycles = ceil(conditionInfo.preStimDuration / cycleDuration);
 preStimCycles = ceil(conditionInfo.preStimDuration * conditionInfo.stimTagFreq);
 nbTotalCycles = ceil(preStimCycles*2 + conditionInfo.trialDuration * conditionInfo.stimTagFreq);
-trialDuration = nbTotalCycles * cycleDuration;
+trialDuration = nbTotalCycles * cycleDuration; % =11.6706
 
 % save it in the data output structure
 trialData.framesPerCycle = framesPerCycle;
@@ -139,6 +141,7 @@ for cycleNb = 1 : nbTotalCycles
     ptbCorgiSendTrigger(expInfo,'raw',0,f1Trigger);
     prevStim = t;
     t = Screen('Flip', expInfo.curWindow, t + framesOff * ifi - ifi/2);
+Screen('FillRect', expInfo.curWindow, black,[0 0 1280 3]);
     if cycleNb == 1
         stimStartTime = t;
     end
@@ -146,7 +149,9 @@ for cycleNb = 1 : nbTotalCycles
     %%% stim OFF
     %Screen('FillRect', expInfo.curWindow, expInfo.bckgnd);
     drawFixation(expInfo, expInfo.fixationInfo);
+    ptbCorgiSendTrigger(expInfo,'clear',0);
     t = Screen('Flip', expInfo.curWindow, t + framesOn * ifi - ifi/2 );
+Screen('FillRect', expInfo.curWindow, black,[0 0 1280 3]);
         
     if checkTiming
         if t-prevStim > cycleDuration + ifi/2 || t-prevStim < cycleDuration - ifi/2
@@ -163,6 +168,7 @@ drawFixation(expInfo, expInfo.fixationInfo);
 ptbCorgiSendTrigger(expInfo,'raw',0,endStimTrigger);
 prevStim = t;
 t = Screen('Flip', expInfo.curWindow, t + framesPerCycle * ifi - ifi/2);
+Screen('FillRect', expInfo.curWindow, black,[0 0 1280 3]);
 trialData.stimEndTime = t;
 % t-prevStim
 if checkTiming
@@ -214,6 +220,7 @@ end
 
 drawFixation(expInfo, expInfo.fixationInfo);
 t = Screen('Flip', expInfo.curWindow);
+Screen('FillRect', expInfo.curWindow, black,[0 0 1280 3]);
 trialData.trialEndTime = t;
 
 trialData.trialDurationReal = trialData.stimEndTime - trialData.stimStartTime ;

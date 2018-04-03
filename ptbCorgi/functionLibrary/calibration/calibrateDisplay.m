@@ -139,7 +139,8 @@ saveBtnH= uicontrol(fh,'Style','pushbutton',...
 
     function loadCB(varargin)
         filename=uigetfile();
-        lumCalibInfo = load(filename);
+        allCalibInfo = load(filename);
+        lumCalibInfo = allCalibInfo.lumCalibInfo;
         nValues = size(lumCalibInfo.allCIExyY,1);
         plot(ah,linspace(0,1,nValues),lumCalibInfo.meanCIExyY(:,3),'o');
         hold on;
