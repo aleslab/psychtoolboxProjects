@@ -191,7 +191,7 @@ if trialData.validTrial
     Screen('DrawText', expInfo.curWindow, ['(0-' num2str(conditionInfo.maxDots) ')'], 0, expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
     trialData.respScreenTime =Screen('Flip',expInfo.curWindow);
     % check for key press
-    while trialData.response==999 && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer -ifi/2)
+    while trialData.response==999 % && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer -ifi/2)
         [keyDown, secs, keyCode] = KbCheck;
         if keyDown
             if find(keyCode)>=min(vectKeyVal) && find(keyCode)<=max(vectKeyVal)

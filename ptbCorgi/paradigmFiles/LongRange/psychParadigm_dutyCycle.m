@@ -32,7 +32,7 @@ conditionInfo(1).type = 'Generic';
 conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;
 conditionInfo(1).intervalBeep = 0;
-conditionInfo(1).maxToAnswer = 8; % max time to answer
+conditionInfo(1).maxToAnswer = 999; % next trial starts only after giving an answer % max time to answer
 conditionInfo(1).maxDots = 3; % max number of luminance change in a trial
 % conditionInfo(1).randomizeField = 'false';
 
