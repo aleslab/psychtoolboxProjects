@@ -22,15 +22,15 @@ ifi = expInfo.ifi;
 
 %%% VEP parameters
 framesPerCycle = 1/conditionInfo.stimTagFreq * round(expInfo.monRefresh);
-cycleDuration = 1/conditionInfo.stimTagFreq
+cycleDuration = 1/conditionInfo.stimTagFreq;
 monitorPeriodSecs = 1/round(expInfo.monRefresh);
 
 % framesPerCycle = cycleDuration / monitorPeriodSecs;
 framesOn = conditionInfo.dutyCycle * framesPerCycle;
 framesOff = framesPerCycle - framesOn;
 
-timeStimOn = monitorPeriodSecs * framesOn
-timeStimOff = monitorPeriodSecs * framesOff
+timeStimOn = monitorPeriodSecs * framesOn;
+timeStimOff = monitorPeriodSecs * framesOff;
 
 % timeStimOn = cycleDuration * conditionInfo.dutyCycle; 
 % timeStimOff = cycleDuration * (1-conditionInfo.dutyCycle); 
