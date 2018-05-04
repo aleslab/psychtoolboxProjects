@@ -16,8 +16,12 @@ multiple participants.
 
 Quick Start:
 
-Run: 
+First Run: 
+
 ptbCorgiSetup
+
+
+Then run:
 ptbCorgi 
 
 From the GUI select "choose paradigm", in the "exampleParadigms" directory
