@@ -11,6 +11,9 @@ function [trialList, blockList] = makeTrialList(expInfo,conditionInfo)
 %          'blocked' - Block single/groups of conditions together. Can
 %                      block either a group of conditions together, or
 %                      single conditions.
+%          'markov'  - Conditions randomized according to a markov chain
+%    'blockedMarkov' - Allows specifying different markov chain probabilities
+%                      in each block.  This is fairly complex. 
 %          'custom'  - Predfined custom trial sequence.
 %
 %  'Blocked' Type Extra fields:
@@ -23,12 +26,51 @@ function [trialList, blockList] = makeTrialList(expInfo,conditionInfo)
 %  Currently blocks are repeated as a group.
 %  E.g.: Block rep 1: 221133, Block rep 2: 332211
 %
+%  'markov' type extra fields:
+%  
+%  transitionMatrix - [no default] Matrix specifying transition
+%                     probabilities.  Rows specify the current condition,
+%                     columns for the next condition. For example if
+%                     condition 1 always goes to 2, 2 always to 3, 3 has
+%                     80% chance of 1, and 20% of 2, 0% staying 3 use: 
+%                     [ 0  1  0; ...
+%                       0  0  1; ...
+%                      .8 .2  0 ]
+%                     The transition matrix -MUST- have as many rows and
+%                     columns as conditions in the paradigm.
+%  nTrials          - Number of trials
+%                     
+%  
+%  'blockedMarkov' type fields:
+%   Blocked markov is complex and takes care. Be especially careful with
+%   condition lists. But this mode allows powerful trial order design. One
+%   use is to change the probabilities during the experiment.
+%
+%   markovInfo - A structure with as many entries as different groupings.
+%   markovInfo(iGroup).conditionList    - list of conditions to include in
+%                this block. !!IMPORTANT: The order of this list is also used
+%                for the transitionMatrix!
+%   markovInfo(iGroup).transitionMatrix - specific transition probailities
+%                                        for the conditions in this block
+%   markovInfo(iGroup).nTrials - How many trials for this block.
+%
+%   groupOrder - This can be either the string 'random' or a a list
+%                specifying the order to present the above defined grouping
+%                (e.g. [ 1 1 1 2 2 2])
+%   nBlockReps - Only used if markovList is 'random' how many times to
+%                repeat each grouping. 
+%
 %  'Custom' Type extra fields:
 %  trialList  = [No Default]  A list of condition numbers to present in
 %                sequence (e.g. [1 2 3 3 2 1]);
 %
 %  blockList  = [ones(size(trialList))]  A list indentifying which (if any)
 %               block the trial belongs to. Should be monotonicly increasing.
+%
+% Outputs:
+% trialsList = List of trial numbers
+% blockList  = For blocked trials the block number for each trial. For
+%              random we define all trials as block 1.
 %
 %  Examples:
 %  The default is just to present trials in random order, which corresponds
@@ -47,10 +89,25 @@ function [trialList, blockList] = makeTrialList(expInfo,conditionInfo)
 %  Result in a trial order, for example:
 %  [4 5 5 4 (block end) 1 2 1 3 3 2 (block end) 5 5 4 4 (block end) 3 3 2 1 1 2]
 %
-% Outputs:
-% trialsList = List of trial numbers
-% blockList  = For blocked trials the block number for each trial. For
-%              random we define all trials as block 1.
+%  Blocked Markov Example:
+% 
+%  Say we have the same 5 conditions in 2 groups as above and we never want
+%  to repeat a stimulus:
+%  expInfo.trialRandomization.type = 'blockedMarkov'
+%  markovInfo(1).conditionList = [1 2 3];
+%  markovInfo(1).transitionMatrix = [0 .5 .5; .5 0 .5; .5 .5 0];
+%  markovInfo(1).nTrials = 6;
+%  markovInfo(2).conditionList = [4 5];
+%  markovInfo(2).transitionMatrix = [0 1; 1 0];
+%  markovInfo(2).nTrials = 4;
+%  expInfo.trialRandomization.markovInfo = markovInfo;
+%  expInfo.trialRandomization.groupOrder = [2 1 2 1]; % Say
+% 
+%  Results in example trial order:
+%  [4 5 4 5 3 2 1 2 3 1 5 4 5 4 3 1 3 2 1 2]
+%
+%
+
 
 %  This code is currently fairly kludgy.  Just looping and building lists
 %  of trials.  Which is starting to make it grow a bit cumbersome. At some
@@ -193,6 +250,58 @@ switch lower(randomization.type)
                 blockIdx = blockIdx+1;
             end
         end    
+        
+        
+    case 'markov'           
+        trialList = generateMarkovSequence(randomization.nTrials,randomization.transitionMatrix);
+        blockList = ones(size(trialList));
+        
+    case 'blockedmarkov'
+        %This is a crazy seciont
+        nGroups = length(randomization.markovInfo);
+        
+        %See how to ra
+        if ischar(randomization.groupOrder)
+            if strcmpi(randomization.groupOrder,'random')
+               
+                %Repeat the group ids nBlcokReps times
+                groupOrder=repmat(1:nGroups,1,randomization.nBlockReps);                
+                %Nuts nesting of things to achieve random permutation of
+                %the group order. 
+                groupOrder = groupOrder(randperm(length(groupOrder)));
+                
+                
+            else
+                error('Unkown groupOrder');
+            end
+        else
+            groupOrder = randomization.groupOrder;
+        end
+        
+        
+        nBlocks = length(groupOrder);
+
+
+        %Build up trial order, 
+        trialList = [];
+        blockList = [];
+        for iBlock = 1:nBlocks,
+            
+            %Pull out the specific markovian parameters for this block
+            thisGroup = groupOrder(iBlock);%W
+            transMatrix = randomization.markovInfo(thisGroup).transitionMatrix;
+            nTrials     = randomization.markovInfo(thisGroup).nTrials;
+            thisTrialList = generateMarkovSequence(nTrials,transMatrix);
+            
+            %Now translate trials into condition indices.
+            thisTrialList = randomization.markovInfo(thisGroup).conditionList(thisTrialList);
+            trialList = [trialList thisTrialList];
+            blockList = [blockList iBlock*ones(size(thisTrialList))];
+        end
+        
+    otherwise
+        error('Unkown trialRandomization.type')
+        
     
 end
 
