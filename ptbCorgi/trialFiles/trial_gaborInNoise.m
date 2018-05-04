@@ -66,18 +66,18 @@ defaultStimValues = {
 %If any fields are missing or empty from conditionInfo set them to their default value
 conditionInfo = validateFields(conditionInfo,defaultStimValues);
 
-drawFixation(expInfo,conditionInfo.fixationPreStimulus);
+drawFixation(expInfo,conditionInfo.fixationPreStimulus);%draws fixation from condInfo in paradigm
 trialData.stimStartTime = Screen('Flip',expInfo.curWindow);
 
 preStimDuration = conditionInfo.preStimDurationMin+exprnd(conditionInfo.preStimDurationMu)
-requestedStimStartTime = trialData.stimStartTime + preStimDuration;
+requestedStimStartTime = trialData.stimStartTime + preStimDuration;%prestim+start times
 
 %Change defrees to pixels.
-gaborCenterXPix = expInfo.ppd*conditionInfo.gaborCenterX;
+gaborCenterXPix = expInfo.ppd*conditionInfo.gaborCenterX;%converts visual degrees to  pixels on the screen
 gaborCenterYPix = expInfo.ppd*conditionInfo.gaborCenterY;
 
 %Vector form for some options. 
-gaborCenterPix = [gaborCenterXPix gaborCenterYPix];
+gaborCenterPix = [gaborCenterXPix gaborCenterYPix];%sets the centre point of teh gabor so we can change it
 
 
 
