@@ -4,7 +4,7 @@ expInfo.paradigmName = 'gabor_in_noise';
 
 % use kbQueue's as they have high performance
 expInfo.useKbQueue = false;
-expInfo.enablePowermate = true;
+expInfo.enablePowermate = false;
 expInfo.viewingDistance = 57;
 
 
@@ -26,8 +26,8 @@ expInfo.instructions = ['Where is the stimulus? its 10 points for every correct 
 %"function handle"
 conditionInfo(1).trialFun=@trial_gaborInNoise;
 conditionInfo(1).giveFeedback = false;
-conditionInfo(1).powermateSpeed = 2;
-conditionInfo(1).powermateAccel = 3;
+%conditionInfo(1).powermateSpeed = 2;
+%conditionInfo(1).powermateAccel = 3;
 
 %updateMethod determines how the orientation is updated on a trial by trial
 %basis. 
