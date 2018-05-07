@@ -131,7 +131,7 @@ if ~isfield(expInfo,'viewingDistance')
 end
 
 %Default fully randomize everything
-if ~isfield(expInfo, 'trialRandomization')
+if ~isfield(expInfo, 'trialRandomization') || isempty(expInfo.trialRandomization)
 
     expInfo.trialRandomization.type = 'random';
     
@@ -147,6 +147,29 @@ if ~isfield(expInfo, 'trialRandomization')
     
 
 end
+
+%   pauseBetweenBlocks - [true] If set will pause and show a message before
+%                        start of next block of trials
+%   repeatInvalidTrial - [true] If true will repeat any trial flagged
+%                        "invalid"
+defaults= {'pauseBetweenBlocks',true,...%Default to pausing between blocks
+    'repeatInvalidTrials',true,...%Default to repeating invalid trials.
+    };
+
+expInfo = validateFields(expInfo,defaults);
+%Repeating invalid trials is not compatible with markovian trial structure
+%because we need to preserve contingent probabilities. Disable repeating if
+%both markov and repeating requested. 
+if  expInfo.repeatInvalidTrials ... 
+        && (strcmpi(expInfo.trialRandomization.type,'markov') ...
+        || strcmpi(expInfo.trialRandomization.type,'blockedmarkov'))
+
+    disp('Repeating invlaid trials and markovian trial structure not compatible, disabling repeating invalid trials')
+    expInfo.repeatInvalidTrials = false;
+    
+end            
+               
+
 
 
 %Default to testing in a small window

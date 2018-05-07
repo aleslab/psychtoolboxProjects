@@ -16,6 +16,7 @@ function [trialList, blockList] = makeTrialList(expInfo,conditionInfo)
 %                      in each block.  This is fairly complex. 
 %          'custom'  - Predfined custom trial sequence.
 %
+%
 %  'Blocked' Type Extra fields:
 %  blockByField = [expInfo.conditionGroupingField] A string containing the
 %  name of the condition field to use for blocking. If the paradigm sets a

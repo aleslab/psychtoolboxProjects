@@ -294,6 +294,7 @@ disp('Use ptbCorgiSetup() to redefine defaults');
         expInfo.enableAudio = true;        
     end
     
+    
     sessionInfo.expInfoBeforeOpenExperiment = expInfo;
     
     %Now lets begin the experiment and loop over the conditions to show.
@@ -453,24 +454,38 @@ disp('Use ptbCorgiSetup() to redefine defaults');
             %to implement changing things on the fly.
             conditionInfo(thisCond) = randomizeConditionField(conditionInfo(thisCond));
             
-            
-            if strcmpi(expInfo.trialRandomization.type,'blocked')
-                %In the block design lets put a message and
-                %pause when blocks change
-                if iTrial >1 && thisBlock ~= blockList(iTrial-1)
+            %If it's blocked type see if we should pause and show an
+            %inter-block message
+            if strcmpi(expInfo.trialRandomization.type,'blocked') ...
+                    || strcmpi(expInfo.trialRandomization.type,'blockedmarkov')
+                
+                %Nest this check in here.  TODO: implement a validation
+                %function for trialRandomization structure - JMA
+                if isfield(expInfo.trialRandomization,'pauseBetweenBlocks') ...
+                        && expInfo.trialRandomization.pauseBetweenBlocks
                     
-                    %In the future add code here to enable custom block
-                    %messages
-                    blockMessage = 'Block Completed. Press any key to start next block';
-                    DrawFormattedTextStereo(expInfo.curWindow, blockMessage,...
-                        'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
-                    Screen('Flip', expInfo.curWindow);
-                    KbStrokeWait();
-                    
+                    %Check if this trial is the start of a new block
+                    %If so show a message and pause
+                    if iTrial >1 && thisBlock ~= blockList(iTrial-1)
+                        
+                        
+                        %Init the default message then check if a custom
+                        %message is defined.
+                        blockMessage = 'Block Completed. Press any key to start next block';
+                        if isfield(expInfo.trialRandomization,'blockMessage')...
+                                && ~isempty(expInfo.trialRandomization.blockMessage)
+                            blockMessage = expInfo.trialRandomization.blockMessage;
+                        end
+                        
+                        DrawFormattedTextStereo(expInfo.curWindow, blockMessage,...
+                            'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
+                        Screen('Flip', expInfo.curWindow);
+                        KbStrokeWait();
+                        
+                    end
                 end
             end
             
-               
             %decide how to display trial depending on what type of trial it is.
             switch lower(conditionInfo(thisCond).type)
                 %generic trials just fire the trial function. Everything is
@@ -850,26 +865,38 @@ disp('Use ptbCorgiSetup() to redefine defaults');
                     break;
                 end
                 
-                %If the structure is blocked add a trial to the current
-                %block.  %JMA: TEST THIS CAREFULLY. Not full vetted
-                if strcmpi(expInfo.trialRandomization.type,'blocked')
-                    thisCond = conditionList(iTrial);
-                    thisBlock = blockList(iTrial);
-                    
-                    %Find the end of this block
-                    blockEndIdx = max(find(blockList==thisBlock));
-                    
-                    %Add the condition to just after the end of the block
-                    %(blockEndIdx+1)
-                    conditionList(blockEndIdx+1:end+1) =[ thisCond conditionList(blockEndIdx+1:end)]
-                    blockList(blockEndIdx+1:end+1)     =[ thisBlock blockList(blockEndIdx+1:end)]
-                    
-                else %For other trial randomizations just add the current condition to the end, and extend blockList
-                    conditionList(end+1) = conditionList(iTrial);
-                    blockList(end+1)     = 1;
+                if expInfo.repeatInvalidTrials
+                    %If the structure is blocked add a trial to the current
+                    %block.  %JMA: TEST THIS CAREFULLY. Not full vetted
+                    if strcmpi(expInfo.trialRandomization.type,'blocked')
+                        thisCond = conditionList(iTrial);
+                        thisBlock = blockList(iTrial);
+                        
+                        %Find the end of this block
+                        blockEndIdx = max(find(blockList==thisBlock));
+                        
+                        %Add the condition to just after the end of the block
+                        %(blockEndIdx+1)
+                        conditionList(blockEndIdx+1:end+1) =[ thisCond conditionList(blockEndIdx+1:end)]
+                        blockList(blockEndIdx+1:end+1)     =[ thisBlock blockList(blockEndIdx+1:end)]
+                    elseif strcmpi(expInfo.trialRandomization.type,'markov') ...
+                            || strcmpi(expInfo.trialRandomization.type,'blockedmarkov')
+                        
+                        warning('Repeating Invalid Trials Not supported for markovian trial order');
+                        
+                    else %For other trial randomizations just add the current condition to the end, and extend blockList
+                        conditionList(end+1) = conditionList(iTrial);
+                        blockList(end+1)     = 1;
+                    end
                 end
+                
+                
+                
+                
                 validTrialList(iTrial) = false;
                 experimentData(iTrial).validTrial = false;
+                
+                
                 
                 expInfo = drawFixation(expInfo, expInfo.fixationInfo);
                 
