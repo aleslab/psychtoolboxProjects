@@ -59,7 +59,7 @@ conditionInfo(1).giveFeedback = false; %Should we give written feedback after ea
 % %Condition definitions
 %These fields are 
 %Condition 1, lets set some defaults:
-conditionInfo(1).stimDuration             = 0.5; %Gabor stimulus duration in seconds
+conditionInfo(1).stimDuration             = 2; %Gabor stimulus duration in seconds
 conditionInfo(1).postStimMaskDuration     = 1; %Noise mask duration in seconds
 
 conditionInfo(1).iti              = .2;     %Minimum Inter Trial Interval
@@ -68,10 +68,10 @@ conditionInfo(1).responseDuration  = 3;    %Post trial window for waiting for a 
 %Gabor parameters
 conditionInfo(1).sigma             = 2; %standard deviation of the gabor in degrees
 conditionInfo(1).freq              = 1; %frequency of the gabor in cycles per sigma. 
-conditionInfo(1).nReps             = 3; %% number of trials to present this condition. 
+conditionInfo(1).nReps             = 7; %% number of trials to present this condition. 
 conditionInfo(1).stimRadiusDeg     = 8;    %stimulus size in degree;
 conditionInfo(1).orientation       = 0; %Unused in this paradigm because it gets set by the randomization option (randomizeField) above
-conditionInfo(1).contrast          = 10;
+conditionInfo(1).contrast          = .80;
 conditionInfo(1).noiseSigma        = .15;
 
 
@@ -107,10 +107,12 @@ for iCond = 1:nCond,
 end
 
 
-% conditionInfo(3) = conditionInfo(1);
-% conditionInfo(3).contrast = 0.40 ;
-% conditionInfo(3).label = 'Contrast: 0.40';
+conditionInfo(3) = conditionInfo(1);
+conditionInfo(3).contrast = 0.8 ;
+conditionInfo(3).label = 'Contrast: 0.40';
 
+
+end
 
 
 

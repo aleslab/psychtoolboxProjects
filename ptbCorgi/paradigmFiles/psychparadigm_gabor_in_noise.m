@@ -1,6 +1,17 @@
 function [conditionInfo,expInfo] = psychparadigm_gabor_in_noise(expInfo)
 expInfo.paradigmName = 'gabor_in_noise';
-%expInfo.randomizationType = 'blocked';
+
+
+expInfo.trialRandomization.type = 'markov';
+expInfo.trialRandomization.nTrials = 400;
+
+expInfo.trialRandomization.transitionMatrix=[ 0  .5  0 .5; ...
+                                              0  .3 .3 .4 ; ...
+                                              .8 .2  0  0
+                                              .2 .0 .8  0];
+
+
+
 
 % use kbQueue's as they have high performance
 expInfo.useKbQueue = false;
@@ -25,17 +36,9 @@ expInfo.instructions = ['Where is the stimulus? its 10 points for every correct 
 %Crucial: requires the @ sign prefix.  Because it needs it to be a
 %"function handle"
 conditionInfo(1).trialFun=@trial_gaborInNoise;
-conditionInfo(1).giveFeedback = false;
-%conditionInfo(1).powermateSpeed = 2;
-%conditionInfo(1).powermateAccel = 3;
+conditionInfo(1).type='simpleresponse';
 
-%updateMethod determines how the orientation is updated on a trial by trial
-%basis. 
-%'brownian' does a random walk like brownian motion and utilizes
-%orientationSigma to set the update size.
-%'uniform' randomly chooses an orientation from 0-360 degrees on each
-%trial.
-%conditionInfo(1).updateMethod = 'brownian';
+
 
 % %Condition definitions
 %Condition 1, lets set some defaults:
@@ -44,7 +47,7 @@ conditionInfo(1).preStimDuration  = 1;  %Static time before stimulus change
 
 conditionInfo(1).postStimDuration = 0;  %static time aftter stimulus change
 conditionInfo(1).iti              = 1;     %Minimum Inter Trial Interval
-conditionInfo(1).responseDuration  = 0;    %Post trial window for waiting for a response
+conditionInfo(1).responseDuration  = 3;    %Post trial window for waiting for a response
 
 conditionInfo(1).sigma             =2; %standard deviation of the gabor in degrees
 conditionInfo(1).freq              =1; %frequency of the gabor in cycles per sigma. 
@@ -61,7 +64,7 @@ conditionInfo(1).gaborCenterY      =   0;
 conditionInfo(1).gaborCenterX      =   0;
 
 conditionInfo(2) = conditionInfo(1);
-conditionInfo(2).contrast = 0.50 ;
+conditionInfo(2).gaborContrast = 0.50 ;
 conditionInfo(2).label = 'Contrast: 0.50';
 conditionInfo(2).gaborCenterY      =   5;%just rough screen posisitions for now. 
 conditionInfo(2).gaborCenterX      =   6.5;%will see where to put in lab
@@ -71,6 +74,12 @@ conditionInfo(3).contrast = 0.50 ;
 conditionInfo(3).label = 'Contrast: 0.50';
 conditionInfo(3).gaborCenterY      =   2;
 conditionInfo(3).gaborCenterX      =   2;
+
+conditionInfo(4) = conditionInfo(1);
+conditionInfo(4).GaborContrast = 0 ;
+conditionInfo(4).label = 'Contrast: 0.50';
+conditionInfo(4).gaborCenterY      =   2;
+conditionInfo(4).gaborCenterX      =   2;
 
 end
 
