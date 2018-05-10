@@ -3,12 +3,16 @@ expInfo.paradigmName = 'gabor_in_noise';
 
 
 expInfo.trialRandomization.type = 'markov';
-expInfo.trialRandomization.nTrials = 400;
+expInfo.trialRandomization.nTrials = 20;
 
-expInfo.trialRandomization.transitionMatrix=[ 0  .5  0 .5; ...
+expInfo.trialRandomization.transitionMatrix=[ 0  .5  0 .5 ; ...
                                               0  .3 .3 .4 ; ...
-                                              .8 .2  0  0
-                                              .2 .0 .8  0];
+                                             .8  .2  0  0 ;
+                                             .2  .0 .8  0;
+                                              0  .8  0 .2;
+                                              0  .8  0 .2;
+                                              0  .8  0 .2;
+                                              0.5 0  0.5 0];
 
 
 
@@ -60,20 +64,50 @@ conditionInfo(1).gaborCenterY      =   0;%Horizontal location of gabor in degree
 conditionInfo(1).gaborCenterX      =   0;%vertical location
 
 conditionInfo(2) = conditionInfo(1);
-conditionInfo(2).label = 'Contrast: 0.50';
+conditionInfo(2).label = 'upper left?';
+
 conditionInfo(2).gaborCenterY      =   5;%just rough screen posisitions for now. 
 conditionInfo(2).gaborCenterX      =   6.5;%will see where to put in lab
 
 conditionInfo(3) = conditionInfo(1);
 conditionInfo(3).label = 'Contrast: 0.50';
+conditionInfo(2).label = 'upper right?';
 conditionInfo(3).gaborCenterY      =   2;
 conditionInfo(3).gaborCenterX      =   2;
 
 conditionInfo(4) = conditionInfo(1);
 conditionInfo(4).GaborContrast = 0 ;
 conditionInfo(4).label = 'Contrast: 0.50';
+conditionInfo(2).label = 'blank';
 conditionInfo(4).gaborCenterY      =   2;
 conditionInfo(4).gaborCenterX      =   2;
+
+conditionInfo(5) = conditionInfo(1);
+conditionInfo(5).label = 'upper left?';
+conditionInfo(5).gaborCenterY      =   5;%just rough screen posisitions for now. 
+conditionInfo(5).gaborCenterX      =   6.5;%will see where to put in lab
+
+
+
+conditionInfo(6) = conditionInfo(1);
+conditionInfo(6).label = 'upper left?';
+conditionInfo(6).gaborCenterY      =   5;%just rough screen posisitions for now. 
+conditionInfo(6).gaborCenterX      =   6.5;%will see where to put in lab
+
+conditionInfo(7) = conditionInfo(1);
+conditionInfo(7).label = 'Contrast: 0.50';
+conditionInfo(7).label = 'upper right?';
+conditionInfo(7).gaborCenterY      =   2;
+conditionInfo(7).gaborCenterX      =   2;
+
+conditionInfo(8) = conditionInfo(1);
+conditionInfo(8).GaborContrast = 0 ;
+conditionInfo(8).label = 'Contrast: 0.50';
+conditionInfo(8).label = 'blank';
+conditionInfo(8).gaborCenterY      =   2;
+conditionInfo(8).gaborCenterX      =   2;
+
+
 
 end
 
