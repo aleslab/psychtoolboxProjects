@@ -5,15 +5,15 @@ expInfo.paradigmName = 'gabor_in_noise';
 expInfo.trialRandomization.type = 'markov';
 expInfo.trialRandomization.nTrials = 20;
 
-expInfo.trialRandomization.transitionMatrix=[ 0  .5  0 .5 ; ...
-                                              0  .3 .3 .4 ; ...
-                                             .8  .2  0  0 ;
-                                             .2  .0 .8  0;
-                                              0  .8  0 .2;
-                                              0  .8  0 .2;
-                                              0  .8  0 .2;
-                                              0.5 0  0.5 0];
-
+expInfo.trialRandomization.transitionMatrix=[.3  0 .2 .5  0  0  0  0;  ...%if in con 1 .2 chance of staying in one
+                                             .5  0  0 .5  0  0  0  0; ...
+                                             .2 .3 .5  0  0  0  0  0;
+                                             .8  0  0 .2  0  0  0  0;
+                                              0  0  0  0  0 .8  0 .2;
+                                              0  0  0  0  0 .5 .3 .2;
+                                              0  0  0  0 .5  0  0 .5  ;
+                                              0  0  0  0 .5 .2  0 .3];
+ 
 
 
 
