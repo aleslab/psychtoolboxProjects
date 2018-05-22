@@ -467,17 +467,27 @@ Screen('BlendFunction', expInfo.curWindow,  GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
 
 
 
-%Setup some defaults for keyboard interactions. 
-%Turn off KbQueue's because they can be fragile on untested systems. And
-%the code hasn't fully implemented them. 
-%If you need high performance responses turn them on. But be careful and
-%read the help and the help for ListenChar
-expInfo.useKbQueue = false;
 
 %-3 Merges all connected keypads and keyboards for KbCheck()
 %Negative numbers mean use default keyboard for kbQueueXXX()
 expInfo.inputDeviceNumber = -3;
 expInfo.deviceIndex = expInfo.inputDeviceNumber; %For old fieldname that wasn't clear
+
+%Setup some defaults for keyboard interactions. 
+%Turn off KbQueue's because they can be fragile on untested systems. And
+%the code hasn't fully implemented them. 
+%If you need high performance responses turn them on. But be careful and
+%read the help and the help for ListenChar
+if ~isfield(expInfo,'useKbQueue') || isempty(expInfo.useKbQueue)
+     expInfo.useKbQueue = false;
+end
+
+if expInfo.useKbQueue     
+    disp('!!! Warning kbQueue is a bit fragile.  Take care !!!');
+     keysOfInterest=ones(1,256);
+    KbQueueCreate(expInfo.inputDeviceNumber, keysOfInterest);
+    KbQueueStart(expInfo.inputDeviceNumber);    
+end
 
 %If we're in full screen mode we'll disable keypress mirroring to the
 %matlab window.
@@ -488,10 +498,10 @@ if expInfo.useFullScreen
         %supress inp
         ListenChar(0);
         ListenChar(-1);
-        expInfo.inputDeviceNumber = -3; %Negative numbers mean use default for kbQueue
+        
     else
         ListenChar(2); %disable echoing keypress to matlab window
-        expInfo.inputDeviceNumber = -3; 
+        
     end
 else
     

@@ -4,6 +4,11 @@ function [ responseData ] = getResponse(expInfo,responseDuration)
 %   This is a convenience function and wrapper for both KbCheck and KbQueueCheck to unify the returned
 %   data and allow either to be used interchangably. 
 %
+%   NOTE!  KbQueue's record and store data in the background while KbCheck
+%   checks the current state.  If you want to collect keypresses AFTER the
+%   call to getResponse flush the KbQueue before calling. E.g.:
+%   KbQueueFlush();
+%
 %   responseData has fields:
 %
 %   pressed
@@ -18,11 +23,11 @@ if expInfo.useKbQueue
     
     %keysOfInterest=zeros(1,256);
     %keysOfInterest(KbName({'f' 'j' 'ESCAPE'}))=1;
-    keysOfInterest=ones(1,256);
-    KbQueueCreate(expInfo.inputDeviceNumber, keysOfInterest);
-    KbQueueStart(expInfo.inputDeviceNumber);    
-    %Flush any events that happend before the end of the trial
-    KbQueueFlush();
+%     keysOfInterest=ones(1,256);
+%     KbQueueCreate(expInfo.inputDeviceNumber, keysOfInterest);
+%     KbQueueStart(expInfo.inputDeviceNumber);    
+    %Flush any events that happend before calling this function
+    %KbQueueFlush();
     
 end
 

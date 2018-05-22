@@ -32,16 +32,16 @@ trialData.abortNow   = false;
 
 % %Now lets setup response gathering
 % KBqueue's are the better way to get responses, quick and accurate but they can be
-% fragile on different systems
-if expInfo.useKbQueue
-    
-    keysOfInterest=zeros(1,256);
-    keysOfInterest(KbName({'f' 'j' 'ESCAPE'}))=1;
-    KbQueueCreate(expInfo.deviceIndex, keysOfInterest);
-    KbQueueStart(expInfo.deviceIndex);
-    
-    KbQueueFlush();
-end
+% % fragile on different systems
+% if expInfo.useKbQueue
+%     
+%     keysOfInterest=zeros(1,256);
+%     keysOfInterest(KbName({'f' 'j' 'ESCAPE'}))=1;
+%     KbQueueCreate(expInfo.deviceIndex, keysOfInterest);
+%     KbQueueStart(expInfo.deviceIndex);
+%     
+%     KbQueueFlush();
+% end
 
 %setup default options for the stimulus:
 defaultStimValues = {
@@ -69,7 +69,7 @@ conditionInfo = validateFields(conditionInfo,defaultStimValues);
 drawFixation(expInfo,conditionInfo.fixationPreStimulus);%draws fixation from condInfo in paradigm
 trialData.stimStartTime = Screen('Flip',expInfo.curWindow);
 
-preStimDuration = conditionInfo.preStimDurationMin+exprnd(conditionInfo.preStimDurationMu)
+preStimDuration = conditionInfo.preStimDurationMin+exprnd(conditionInfo.preStimDurationMu);
 requestedStimStartTime = trialData.stimStartTime + preStimDuration;%prestim+start times
 
 %Change defrees to pixels.
@@ -128,6 +128,11 @@ drawFixation(expInfo,conditionInfo.fixationDuringStimulus);
 stimStartTime= Screen('Flip',expInfo.curWindow,requestedStimStartTime);
 requestedStimEndTime=stimStartTime + conditionInfo.stimDuration;
 
+%If using kbQueue's flush any button presses from the pre-stim intervals
+%Start collecting just after the stimulus flip. 
+if expInfo.useKbQueue
+    KbQueueFlush();
+end
 
 %Make it empty
 maskTex = [];
