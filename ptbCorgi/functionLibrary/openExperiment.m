@@ -489,6 +489,38 @@ if expInfo.useKbQueue
     KbQueueStart(expInfo.inputDeviceNumber);    
 end
 
+
+%should we enable
+if ~isfield(expInfo,'enableBitsRTBox') || isempty(expInfo.enableBitsRTBox)
+     expInfo.enableBitsRTBox = false;
+end
+
+
+%Really fragile code here right now - JMA
+if expInfo.enableBitsRTBox
+    disp('Activating RT box')
+    
+    %ExpInfo is using bits sharp.  If so we can just get the handle.
+    if expInfo.useBitsSharp
+        
+        bitsSharpHandle = BitsPlusPlus('getBitsSharpPort');
+        expInfo.RTBoxHandle = BitsSharpPsychRTBox('Open',bitsSharpHandle);
+   
+    else %WARNING HARDCODED PORT FIX THIS
+        try
+            expInfo.RTBoxHandle = BitsSharpPsychRTBox('Open','/dev/ttyACM0');
+        catch ME
+            
+            disp('error enabling RTBOX,  disabling RTBOX');
+            expInfo.enableBitsRTBox = false;
+            disp(getReport(ME))
+        end
+        
+    end
+    
+    
+end
+
 %If we're in full screen mode we'll disable keypress mirroring to the
 %matlab window.
 if expInfo.useFullScreen

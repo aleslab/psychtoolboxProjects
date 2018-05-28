@@ -41,6 +41,44 @@ while curTime<startTime+responseDuration
         [ responseData.pressed, secs, keyCode]=KbCheck(expInfo.inputDeviceNumber);
         responseData.firstPress = secs*keyCode;
     end
+    
+    %Now, if RTBox enabled check that and merge it use keyboard test. 
+    if expInfo.enableBitsRTBox
+        
+        [time, event, boxtime] = BitsSharpPsychRTBox('GetSecs', expInfo.RTBoxHandle);
+        
+        %Store RTBox data
+        responseData.RTBoxGetSecsTime = time;
+        responseData.RTBoxEvent = event;
+        responseData.RTBoxBoxTime = boxtime;
+        
+        
+        %Now merge with keyboard data.   
+        if ~isempty(time)
+
+            %Now check if the RTBOX events map to valid key names
+            validNames = KbName('KeyNames');
+            [c,ia,ib] = intersect(event,validNames);
+            validEvent = event(ia);
+            validTime = time(ia);
+            
+            %find the firstpress
+            [c,ia,ic]=unique(validEvent,'first');
+            firstPressEvent = validEvent(ia);
+            firstPressTime  = validTime(ia);
+            
+            kbIdx = KbName(firstPressEvent);
+            responseData.pressed = true;
+            responseData.firstPress(kbIdx) = firstPressTime;
+                                
+                        
+            
+        end
+        
+        
+       
+    end
+    
         
     if responseData.pressed
         break;

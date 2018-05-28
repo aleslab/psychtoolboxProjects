@@ -518,7 +518,12 @@ disp('Use ptbCorgiSetup() to redefine defaults');
                         trialData.validTrial = false; %Default not valid unless proven otherwise
                         validKeyIndices = []; %For user set valid keys.
                         
-                        
+                        %If RTBOX enabled.  Store data from RTBOX. May no
+                        if expInfo.enableBitsRTBox
+                            trialData.RTBoxGetSecsTime = responseData.RTBoxGetSecsTime;
+                            trialData.RTBoxEvent = responseData.RTBoxEvent;
+                            trialData.RTBoxBoxTime = responseData.RTBoxBoxTime;
+                        end
                         
                         %If user has set 'validKeyNames' and it is not empty
                         %Could put this in the if/elseif below, but I think
