@@ -22,12 +22,12 @@ expInfo.useKbQueue = false;
 expInfo.enablePowermate = false;
 expInfo.viewingDistance = 57;
 
-
-fixationInfo(1).type  = 'cross';
-fixationInfo(1).size  = .5;
-fixationInfo(1).lineWidthPix = 2;
-fixationInfo(1).color = 1;
-expInfo.fixationInfo = fixationInfo;
+%fixationDuringStimulus=[expInfo.fixationInfo]; %
+% fixationInfo(1).type  = 'cross';
+% fixationInfo(1).size  = .5;
+% fixationInfo(1).lineWidthPix = 2;
+% fixationInfo(1).color = 1;
+% expInfo.fixationInfo = fixationInfo;
 
 
 
@@ -46,67 +46,36 @@ conditionInfo(1).type='simpleresponse';
 
 % %Condition definitions
 %Condition 1, lets set some defaults:
-conditionInfo(1).stimDuration     = 0; %approximate stimulus duration in seconds
-conditionInfo(1).post  = 1;  %Static time before stimulus change
-%conditionInfo(1).postStimMaskDuration =  .5; %mask duration in seconds. 
-conditionInfo(1).postStimDuration = 0;  %static time aftter stimulus change
-conditionInfo(1).iti              = 1;     %Minimum Inter Trial Interval
-conditionInfo(1).responseDuration  = 3;    %Post trial window for waiting for a response
-conditionInfo(1).gaborOrientation = 90;
-conditionInfo(1).gaborSigma             =2; %standard deviation of the gabor in degrees
-conditionInfo(1).gaborFreq              =1; %frequency of the gabor in cycles per sigma. 
-conditionInfo(1).stimSizeDeg     =   8;    %stimulus size in degree;
-conditionInfo(1).gaborContrast = 0.50;
-conditionInfo(1).noiseSigma = .15;
-
-conditionInfo(1).label = 'center';
-conditionInfo(1).gaborCenterY      =   0;%Horizontal location of gabor in degrees
-conditionInfo(1).gaborCenterX      =   0;%vertical location
+conditionInfo(1).preStimDurationMin = 0.2;% minimum time before next stimulus
+conditionInfo(1).preStimDurationMu = 0.5; % prestimduration is drawn from a mu expotential distribution which has a "memeoryless" property
+conditionInfo(1).stimDuration     = 0.2; %approximate stimulus duration in seconds
+% conditionInfo(1). postStimMaskDuration=0; % no real need for a mask here 
+conditionInfo(1).gaborCenterX = 0; % going to be around 3 degs but il set this in the lab
+conditionInfo(1).gaborCenterY = 0; % see above 
+conditionInfo(1).gaborPhase=90; % phase of gabor (i dont actually know what this means)
+conditionInfo(1).gaborOrientation = 0; % orientation of Gabor-doest really matter here as long as it is constant 
+conditionInfo(1).gaborContrast= .50; % picked 0.5 but anything over 0.20 is ok. 
+conditionInfo(1).gaborSigma = 1; % standard dev of gaussian envlope
+conditionInfo(1).gaborFreq = 1; % sine wave freq in cycles per degree 
+conditionInfo(1).stimSizeDeg = 2; % size of stimulu in degrees
+conditionInfo(1).nosie = 0.15; % standard dev of the luminance values for noise mask
+conditionInfo(1).label = 'state 1'; % label of position in markov
 
 conditionInfo(2) = conditionInfo(1);
-conditionInfo(2).label = 'upper left?';
-
-conditionInfo(2).gaborCenterY      =   5;%just rough screen posisitions for now. 
-conditionInfo(2).gaborCenterX      =   6.5;%will see where to put in lab
+conditionInfo(2).label = 'state 2';
+conditionInfo(2).gaborCenterX = 0; % going to be around 3 degs but il set this in the lab
+conditionInfo(2).gaborCenterY = 0; % see above
 
 conditionInfo(3) = conditionInfo(1);
-conditionInfo(3).label = 'Contrast: 0.50';
-conditionInfo(2).label = 'upper right?';
-conditionInfo(3).gaborCenterY      =   2;
-conditionInfo(3).gaborCenterX      =   2;
+conditionInfo(3).label = 'state 3';
+conditionInfo(3).gaborCenterY      =   0;
+conditionInfo(3).gaborCenterX      =   0;
 
 conditionInfo(4) = conditionInfo(1);
 conditionInfo(4).GaborContrast = 0 ;
-conditionInfo(4).label = 'Contrast: 0.50';
-conditionInfo(2).label = 'blank';
-conditionInfo(4).gaborCenterY      =   2;
-conditionInfo(4).gaborCenterX      =   2;
-
-conditionInfo(5) = conditionInfo(1);
-conditionInfo(5).label = 'upper left?';
-conditionInfo(5).gaborCenterY      =   5;%just rough screen posisitions for now. 
-conditionInfo(5).gaborCenterX      =   6.5;%will see where to put in lab
-
-
-
-conditionInfo(6) = conditionInfo(1);
-conditionInfo(6).label = 'upper left?';
-conditionInfo(6).gaborCenterY      =   5;%just rough screen posisitions for now. 
-conditionInfo(6).gaborCenterX      =   6.5;%will see where to put in lab
-
-conditionInfo(7) = conditionInfo(1);
-conditionInfo(7).label = 'Contrast: 0.50';
-conditionInfo(7).label = 'upper right?';
-conditionInfo(7).gaborCenterY      =   2;
-conditionInfo(7).gaborCenterX      =   2;
-
-conditionInfo(8) = conditionInfo(1);
-conditionInfo(8).GaborContrast = 0 ;
-conditionInfo(8).label = 'Contrast: 0.50';
-conditionInfo(8).label = 'blank';
-conditionInfo(8).gaborCenterY      =   2;
-conditionInfo(8).gaborCenterX      =   2;
-
+conditionInfo(3).label = 'state 4 blank';
+conditionInfo(4).gaborCenterY      =   0;
+conditionInfo(4).gaborCenterX      =   0;
 
 
 end
