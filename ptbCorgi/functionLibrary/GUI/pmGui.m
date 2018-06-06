@@ -22,7 +22,7 @@ function varargout = pmGui(varargin)
 
 % Edit the above text to modify the response to help pmGui
 
-% Last Modified by GUIDE v2.5 10-Jan-2018 12:21:31
+% Last Modified by GUIDE v2.5 22-May-2018 12:42:42
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -807,6 +807,17 @@ set(handles.useTranslucentRadioBtn,'enable','off');
 set(handles.useWindowRadioBtn,'enable','off');
 set(handles.useFullScreenRadioBtn,'enable','off');
 
+%These are the gui elements to enable after resetting window
+function enableGuiElements(handles)
+
+set(handles.chooseParadigmBtn,'enable','on')
+set(handles.useSecondaryMonitorRadioBtn,'enable','on');    
+set(handles.usePrimaryMonitorRadioBtn,'enable','on');
+set(handles.useOpaqueRadioBtn,'enable','on');
+set(handles.useTranslucentRadioBtn,'enable','on');
+set(handles.useWindowRadioBtn,'enable','on');
+set(handles.useFullScreenRadioBtn,'enable','on');
+
 
 % --------------------------------------------------------------------
 function Untitled_1_Callback(hObject, eventdata, handles)
@@ -834,24 +845,11 @@ conditionIdx = getConditionIndex(handles);
 edit( func2str(handles.conditionInfo(conditionIdx).trialFun));
 
 
-% --------------------------------------------------------------------
-function Debug_Test_Callback(hObject, eventdata, handles)
-% hObject    handle to Debug_Test (see GCBO)
+
+% --- Executes on button press in scaBtn.
+function scaBtn_Callback(hObject, eventdata, handles)
+% hObject    handle to scaBtn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-
-% --------------------------------------------------------------------
-function genExampleTrialList_Callback(hObject, eventdata, handles)
-% hObject    handle to genExampleTrialList (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
- [conditionList, blockList] = makeTrialList(handles.expInfo,handles.conditionInfo);
- 
- 
- disp('Example trial list and block numbers for paradigm: ')
- disp([conditionList;blockList])
- 
- 
- 
+sca;
+disableGuiElementsWhenWindowActive(handles);

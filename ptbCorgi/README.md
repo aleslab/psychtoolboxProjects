@@ -14,6 +14,11 @@ Add some hashing functions to detect changes.
 
 Version History
 
+0.33.0
+Added new checks for which system calibration was created on. 
+Added new and changed messages to users regarding calibration
+Various bug fixes
+
 0.32.2
 Added checks to ensure audio is enabled when implicitly needed by conditions.
 Ensured calls to PsychPortAudio() only happen after InitializePsychPortAudio has been run.

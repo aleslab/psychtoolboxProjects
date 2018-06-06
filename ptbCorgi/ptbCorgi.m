@@ -438,8 +438,9 @@ disp('Use ptbCorgiSetup() to redefine defaults');
             %one condition in the condition field and the true condition number
             %is put into the testCondTrueNum field. That's the number we
             %want to signal on the trigger port.  
-            if isfield(conditionInfo(thisCond),'testCondTrueNum')
-                condToSend = conditionInfo(thisCond).testCondTrueNum;
+            if isfield(conditionInfo(1),'testCondTrueNum')
+                condToSend = conditionInfo(1).testCondTrueNum;
+                thisCond = 1;
             else
                 condToSend = thisCond;
             end
