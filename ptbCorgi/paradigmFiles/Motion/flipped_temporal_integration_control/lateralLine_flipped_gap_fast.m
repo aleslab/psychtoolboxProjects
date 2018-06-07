@@ -56,7 +56,7 @@ for iGap = 1:length(temporalGap);
         conditionInfo(iCond).velocityDegPerSecSection1 = 20; %velocity of section 1 in deg/s. Constant for this exp
         conditionInfo(iCond).velocityDegPerSecSection2 = section2velocity(iSpeed); %velocity of section 2 in deg/s
         conditionInfo(iCond).gapVelocity = 0; %velocity in deg/s for temporal gap
-        conditionInfo(iCond).startPos = -8.5; %the start position of the line on the screen in degrees of visual angle.
+        conditionInfo(iCond).startPos = -9.5; %the start position of the line on the screen in degrees of visual angle.
         %Negative = left hand side of the screen.
   
         iCond = iCond+1; %so you don't overwrite the conditions you create with each gap
