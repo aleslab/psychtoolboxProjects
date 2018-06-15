@@ -22,9 +22,9 @@ expInfo.trialRandomization.blockList =  condition(:,2);
 
 expInfo.viewingDistance = 57;
 
-% expInfo.useBitsSharp = true;
+expInfo.useBitsSharp = true;
 % expInfo.enableTriggers = true;
-expInfo.useBitsSharp = false; 
+% expInfo.useBitsSharp = false; 
 expInfo.enableTriggers = false;
 
 %Setup a simple fixation cross. See help drawFixation for more info on how
@@ -34,7 +34,7 @@ expInfo.fixationInfo(1).size  = .2;
 expInfo.fixationInfo(1).lineWidthPix = 2;
 expInfo.fixationInfo(1).color = 0;
 
-expInfo.instructions = 'FIXATE the cross and count the number of dots appearing on the bar';
+expInfo.instructions = 'Rate the strenght of motion';
 
 %% General conditions
 conditionInfo(1).iti = 0.5; % inter-trial-interval
@@ -48,27 +48,31 @@ conditionInfo(1).maxToAnswer = 999; % next trial starts only after giving an ans
 
 %% stimulus
 conditionInfo(1).stimSize = [0 0 0.5 20]; % in deg
+conditionInfo(1).xloc = 3; % eccentricity of stim centre from screen centre in deg
 conditionInfo(1).yloc = 0; % y eccentricity of stim centre
 conditionInfo(1).trialFun=@trial_DC_rating;
+conditionInfo(1).trialDuration = 4*32/85; % in sec - around 9.0353 (or 100*8/85 or 50*16/85)
 conditionInfo(1).motion = 0; % by default, no motion 
 conditionInfo(1).xMotion = 0.6; % eccentricity from the other stim in motion condition (xStim = xloc + xMotion)
 conditionInfo(1).loc1 = 2; % xlocation of the 2nd stimulus IN ADDITION to the first stimulus
 conditionInfo(1).loc2 = 4; % x coord of the 3rd stimulus IN ADDITION to the first stimulus
 conditionInfo(1).horizBar = [0 0 conditionInfo(1).loc2+0.5 0.1];
 
+
 % same parameters in all conditions
 for cc=2:44
     conditionInfo(cc) = conditionInfo(1);
 end
+for cc=23:44
+    conditionInfo(cc).xloc = -1; % eccentricity of stim centre from screen centre in deg
+end
 
 %% experimental manipulation
 
-condNb = 0;
-xlocation = [2 -1];
-for xx=1:2
-condNb = condNb+1;
-conditionInfo(condNb).xloc = xlocation(xx); % eccentricity of stim centre from screen centre in deg
+condNb = 1;
 
+for repeat=1:2
+    
 % single stim condition
 testedFreq = [85/8 85/16 85/32]; % in Hz this is the onset of the single stimulus
 onTime = [1 2 4 6 7];
@@ -102,7 +106,7 @@ conditionInfo(condNb).stimTagFreq = 85/16;
 conditionInfo(condNb).dutyCycle = 4/8;
 conditionInfo(condNb).motion = 1;
 conditionInfo(condNb).label = ['motion ' num2str(85/16,'%.1f') 'Hz 50% DC'];
-
+condNb = condNb+1;
 end
 
 end
