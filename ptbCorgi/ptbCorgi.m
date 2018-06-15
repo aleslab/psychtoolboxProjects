@@ -455,7 +455,7 @@ disp('Use ptbCorgiSetup() to redefine defaults');
             conditionInfo(thisCond) = randomizeConditionField(conditionInfo(thisCond));
             
             
-            if strcmpi(expInfo.trialRandomization.type,'blocked')
+            if strcmpi(expInfo.trialRandomization.type,'blocked') || strcmpi(expInfo.trialRandomization.type,'custom')
                 %In the block design lets put a message and
                 %pause when blocks change
                 if iTrial >1 && thisBlock ~= blockList(iTrial-1)
