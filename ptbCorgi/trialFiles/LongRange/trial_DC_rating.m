@@ -143,8 +143,8 @@ if trialData.validTrial
     % response screen
     Screen('DrawText', expInfo.curWindow, 'Did the stimulus move?', 0, expInfo.center(2)-expInfo.center(2)/2, [0 0 0]);
     Screen('DrawText', expInfo.curWindow, '0. for sure not ', 0, expInfo.center(2), [0 0 0]);
-    Screen('DrawText', expInfo.curWindow, '1. proably not', 0, expInfo.center(2)+expInfo.center(2)/8, [0 0 0]);
-    Screen('DrawText', expInfo.curWindow, '2. proably yes', 0, expInfo.center(2)+expInfo.center(2)*2/8, [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, '1. probably not', 0, expInfo.center(2)+expInfo.center(2)/8, [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, '2. probably yes', 0, expInfo.center(2)+expInfo.center(2)*2/8, [0 0 0]);
     Screen('DrawText', expInfo.curWindow, '3. for sure yes', 0, expInfo.center(2)+expInfo.center(2)*3/8, [0 0 0]);
     trialData.respScreenTime =Screen('Flip',expInfo.curWindow);
     % check for key press
