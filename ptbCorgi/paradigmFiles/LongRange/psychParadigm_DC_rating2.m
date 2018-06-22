@@ -6,13 +6,13 @@ KbName('UnifyKeyNames');
 expInfo.paradigmName = 'DC_rating';
 expInfo.trialRandomization.type = 'blocked';
 expInfo.trialRandomization.blockByField = 'xloc'; % or just have a field group for each condition to determine which condition is in which group. Here xloc is the same for all conditions so all conditions are in each block
-expInfo.trialRandomization.nBlockReps   = 10; 
+expInfo.trialRandomization.nBlockReps   = 9; 
 
 expInfo.viewingDistance = 57;
 
-% expInfo.useBitsSharp = true;
+expInfo.useBitsSharp = true;
 % expInfo.enableTriggers = true;
-expInfo.useBitsSharp = false; 
+% expInfo.useBitsSharp = false; 
 expInfo.enableTriggers = false;
 
 %Setup a simple fixation cross. See help drawFixation for more info on how
