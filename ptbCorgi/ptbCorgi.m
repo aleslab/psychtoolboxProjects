@@ -400,6 +400,8 @@ disp('Use ptbCorgiSetup() to redefine defaults');
         ptbCorgiSendTrigger(expInfo,'startRecording',true);%Now trigger recording start
         
         
+        
+        
         %If returnToGui is set that means it's a test trial so set we don't need to show the instructions
         %Only show the instructions if we're running a complete experiment
         %and the instructions are not empty.
@@ -448,6 +450,13 @@ disp('Use ptbCorgiSetup() to redefine defaults');
                 condToSend = thisCond;
             end
             ptbCorgiSendTrigger(expInfo,'conditionNumber',true,condToSend);%
+            
+            if expInfo.enableBitsRTBox
+                disp('Activating RT box')                
+                if mod(iTrial,expInfo.RTBoxSyncInterval)==0            
+                    [syncResult, clockRatio] = BitsSharpPsychRTBox('SyncClocks');
+                end
+            end
             
             %Handle randomizing condition fields
             %This changes the conditionInfo structure so is a bit of a
@@ -1205,6 +1214,11 @@ disp('Use ptbCorgiSetup() to redefine defaults');
             [~,name] = fileparts(mfiles{iFile});
             sessionInfo.mfileBackup(iFile).name = name;
             sessionInfo.mfileBackup(iFile).content = fileread(mfiles{iFile});
+        end
+        
+        
+        if expInfo.enableBitsRTBox
+            sessionInfo.RTBoxInfo = PsychRTBox('BoxInfo');
         end
         
         diary OFF

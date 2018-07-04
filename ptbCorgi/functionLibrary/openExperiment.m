@@ -500,6 +500,7 @@ end
 if expInfo.enableBitsRTBox
     disp('Activating RT box')
     
+    expInfo.RTBoxSyncInterval = 30;
     %ExpInfo is using bits sharp.  If so we can just get the handle.
     if expInfo.useBitsSharp
         
