@@ -538,6 +538,9 @@ disp('Use ptbCorgiSetup() to redefine defaults');
                         
                         %Now let's do some response parsing
                         
+                        %First make sure to init fields to default values.                       
+                        experimentData(iTrial).response =[];
+                        experimentData(iTrial).responseTime =[];
                         %1st check if user defined valid keys and any of
                         %them were pressed.
                         numberOfKeysPressed = length(find(trialData.firstPress));
@@ -547,13 +550,17 @@ disp('Use ptbCorgiSetup() to redefine defaults');
                             trialData.validTrial = false;
                             experimentData(iTrial).validTrial = false;
                             experimentData(iTrial).response = KbName(trialData.firstPress);
-                        
+                            experimentData(iTrial).responseTime = nonzeros(trialData.firstPress);
+                            %Below here we're gauranteed to have single key
+                            %press. So check if the single key is a
+                            %"validkey"
+                            %If user pressed valid key 
                         elseif ~isempty(validKeyIndices) ...
                                 && any( trialData.firstPress( validKeyIndices) )
                             trialData.validTrial = true;
                             experimentData(iTrial).validTrial = true;
                             experimentData(iTrial).response = KbName(trialData.firstPress);
-                            
+                            experimentData(iTrial).responseTime = nonzeros(trialData.firstPress);
                             %If the user hasn't defined valid keys or the particpant hasn't pressed let's decide what to do.
                             %'Space' comes next because it allows defining
                             %'space' as a valid key and collected data from it'
@@ -562,21 +569,24 @@ disp('Use ptbCorgiSetup() to redefine defaults');
                         elseif trialData.firstPress(KbName('space'))
                             trialData.validTrial = false;
                             experimentData(iTrial).validTrial = false;
-                            experimentData(iTrial).response = [];
+                            experimentData(iTrial).response = 'space';
+                            experimentData(iTrial).responseTime = nonzeros(trialData.firstPress);
                             
                             DrawFormattedTextStereo(expInfo.curWindow, expInfo.pauseInfo, ...
                                 'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
                             Screen('Flip', expInfo.curWindow);
+                            
                             KbStrokeWait();
                             
                             %If there's no user defined valid keys, and we
                             %haven't caught a 'space' above count any other
-                            %keypress as valid trial or 'space has been
-                            %pressed.
+                            %keypress as valid trial 
                         elseif isempty(validKeyIndices) && any(trialData.firstPress)
                             trialData.validTrial = true;
                             experimentData(iTrial).validTrial = true;
                             experimentData(iTrial).response = KbName(trialData.firstPress);
+                            experimentData(iTrial).responseTime = nonzeros(trialData.firstPress);
+                            
                             %Nothing caught above so it's not a valid trial.
                             %Not strictly neccessary, but here for clarity.
                         else

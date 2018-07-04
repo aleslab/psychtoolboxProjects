@@ -29,20 +29,6 @@ function [trialData] = trial_gaborInNoise(expInfo, conditionInfo)
 trialData.validTrial = true;
 trialData.abortNow   = false;
 
-
-% %Now lets setup response gathering
-% KBqueue's are the better way to get responses, quick and accurate but they can be
-% % fragile on different systems
-% if expInfo.useKbQueue
-%     
-%     keysOfInterest=zeros(1,256);
-%     keysOfInterest(KbName({'f' 'j' 'ESCAPE'}))=1;
-%     KbQueueCreate(expInfo.deviceIndex, keysOfInterest);
-%     KbQueueStart(expInfo.deviceIndex);
-%     
-%     KbQueueFlush();
-% end
-
 %setup default options for the stimulus:
 defaultStimValues = {
     'preStimDurationMin',.5,...
@@ -67,10 +53,10 @@ defaultStimValues = {
 conditionInfo = validateFields(conditionInfo,defaultStimValues);
 
 drawFixation(expInfo,conditionInfo.fixationPreStimulus);%draws fixation from condInfo in paradigm
-trialData.stimStartTime = Screen('Flip',expInfo.curWindow);
+trialData.trialStartTime = Screen('Flip',expInfo.curWindow);
 
 preStimDuration = conditionInfo.preStimDurationMin+exprnd(conditionInfo.preStimDurationMu);
-requestedStimStartTime = trialData.stimStartTime + preStimDuration;%prestim+start times
+requestedStimStartTime = trialData.trialStartTime + preStimDuration;%prestim+start times
 
 %Change defrees to pixels.
 gaborCenterXPix = expInfo.ppd*conditionInfo.gaborCenterX;%converts visual degrees to  pixels on the screen
@@ -88,7 +74,7 @@ sigmaPix  = expInfo.ppd*conditionInfo.gaborSigma;  % standard deviation in degre
 %createGabor() uses a silly cycles per sigma freqeuncy value
 % dimensional analysis:
 % cycles/deg * deg/sigma = cycles/sigma
-cyclesPerSigma = conditionInfo.gaborFreq * conditionInfo.stimSizeDeg;   
+cyclesPerSigma = conditionInfo.gaborFreq * conditionInfo.gaborSigma;   
 contrast = conditionInfo.gaborContrast;   % contrast
 phase = conditionInfo.gaborPhase;  %phase of gabor
 gaborDestRect = [ expInfo.center-stimSizePix-1 expInfo.center+stimSizePix  ];
@@ -128,11 +114,22 @@ drawFixation(expInfo,conditionInfo.fixationDuringStimulus);
 stimStartTime= Screen('Flip',expInfo.curWindow,requestedStimStartTime);
 requestedStimEndTime=stimStartTime + conditionInfo.stimDuration;
 
+
+%Flush any  queued responses pressed before stimulys appears. 
+%Consider using responses to make invalid trials f reponse pressed before stimulus. 
+
+%If using RT box Flush the response box queue of presses just after stimulus starts
+if expInfo.enableBitsRTBox        
+        [time, event, boxtime] = BitsSharpPsychRTBox('GetSecs', expInfo.RTBoxHandle);
+end
+
 %If using kbQueue's flush any button presses from the pre-stim intervals
 %Start collecting just after the stimulus flip. 
 if expInfo.useKbQueue
     KbQueueFlush();
 end
+
+
 
 %Make it empty
 maskTex = [];
