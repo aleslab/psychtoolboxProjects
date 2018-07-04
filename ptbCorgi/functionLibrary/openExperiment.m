@@ -509,6 +509,7 @@ if expInfo.enableBitsRTBox
    
     else %WARNING HARDCODED PORT FIX THIS
         try
+            BitsSharpPsychRTBox('closeAll');%Close any port left open to get ready to restart.
             expInfo.RTBoxHandle = BitsSharpPsychRTBox('Open','/dev/ttyACM0');
         catch ME
             

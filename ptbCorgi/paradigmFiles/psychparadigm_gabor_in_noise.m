@@ -33,6 +33,8 @@ expInfo.useKbQueue = true;
 expInfo.enablePowermate = false;
 expInfo.viewingDistance = 57;
 
+expInfo.useBitsSharp = true;
+expInfo.enableBitsRTBox = true;
 
 fixationInfo(1).type  = 'cross';
 fixationInfo(1).size  = .5;

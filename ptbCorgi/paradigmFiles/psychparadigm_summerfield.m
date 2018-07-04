@@ -48,6 +48,7 @@ expInfo.trialRandomization.blockList=blockList;
 expInfo.useKbQueue = true;
 expInfo.enablePowermate = false;
 expInfo.viewingDistance = 57;
+expInfo.enableBitsRTBox = true;
 
 
 fixationInfo(1).type  = 'cross';
@@ -56,7 +57,12 @@ fixationInfo(1).lineWidthPix = 2;
 fixationInfo(1).color = 1;
 expInfo.fixationInfo = fixationInfo;
 
-%expInfo.conditionGroupingField = 'markovDir';
+%PreStimFixation
+fixationPreStimulus(1) = fixationInfo;
+fixationPreStimulus(2).type = 'square';
+fixationPreStimulus(2).size  = .5;
+fixationPreStimulus(2).lineWidthPix = 2;
+fixationPreStimulus(2).color = 1;
 
 %Lets add an experiment wide setting here:
 
@@ -69,7 +75,7 @@ conditionInfo(1).type='generic';
 conditionInfo(1).label = 'A/B instructions'; % label of position in markov
 conditionInfo(1).orientA = orientA;
 conditionInfo(1).instructionType = 'a/b';
-
+conditionInfo(1).iti = 2;
 
 %This defines what function to call to draw the condition
 %Crucial: requires the @ sign prefix.  Because it needs it to be a
@@ -81,7 +87,8 @@ conditionInfo(2).type='simpleresponse';
 
 % %Condition definitions
 %Condition 1, lets set some defaults:
-conditionInfo(2).preStimDurationMin = 0.2;% minimum time before next stimulus
+conditionInfo(2).iti = 0;
+conditionInfo(2).preStimDurationMin = 1;% minimum time before next stimulus
 conditionInfo(2).preStimDurationMu = 0.5; % prestimduration is drawn from a mu expotential distribution which has a "memeoryless" property
 conditionInfo(2).stimDuration     = 1; %approximate stimulus duration in seconds
 conditionInfo(2).postStimMaskDuration=0; % no real need for a mask here 
@@ -100,10 +107,11 @@ conditionInfo(2).randomizeField(1).param = [-30 30]+orientA;
 
 conditionInfo(2).gaborContrast= .11; % picked 0.5 but anything over 0.20 is ok. 
 conditionInfo(2).gaborSigma = 1; % standard dev of gaussian envlope
-conditionInfo(2).gaborFreq = .1; % sine wave freq in cycles per degree 
+conditionInfo(2).gaborFreq = 1.6; % sine wave freq in cycles per degree 
 conditionInfo(2).stimSizeDeg = 12; % size of stimulu in degrees
 conditionInfo(2).noiseSigma = .05; % standard dev of the luminance values for noise mask
 conditionInfo(2).label = 'A'; % label of position in markov
+conditionInfo(2).fixationPreStimulus =  fixationPreStimulus;
 
 conditionInfo(3) = conditionInfo(2);
 conditionInfo(3).label = 'B';
@@ -125,7 +133,7 @@ conditionInfo(4).type='generic';
 conditionInfo(4).label = 'A/~A instructions'; % label of position in markov
 conditionInfo(4).orientA = orientA;
 conditionInfo(4).instructionType = 'a/~a';
-
+conditionInfo(4).iti = 2;
 
 conditionInfo(5) = conditionInfo(2);
 conditionInfo(5).label = 'A';
