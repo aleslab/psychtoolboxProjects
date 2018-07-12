@@ -5,7 +5,7 @@ function [trialData] = trial_LRshortDC(expInfo, conditionInfo)
 
 stimStartTime = 0;
 black = BlackIndex(expInfo.curWindow);
-dimColour = 0.3;
+dimColour = 0.4;
 
 if expInfo.useBitsSharp
     ptbCorgiSendTrigger(expInfo,'starttrial',true);
@@ -27,16 +27,12 @@ cycleDuration = 1/conditionInfo.stimTagFreq;
 monitorPeriodSecs = 1/round(expInfo.monRefresh);
 
 % framesPerCycle = cycleDuration / monitorPeriodSecs;
-framesOn = conditionInfo.dutyCycle * framesPerCycle;
+framesOn = conditionInfo.framesOn;
 framesOff = framesPerCycle - framesOn;
 
 timeStimOn = monitorPeriodSecs * framesOn;
 timeStimOff = monitorPeriodSecs * framesOff;
 
-% timeStimOn = cycleDuration * conditionInfo.dutyCycle; 
-% timeStimOff = cycleDuration * (1-conditionInfo.dutyCycle); 
-% framesOn = timeStimOn / monitorPeriodSecs;
-% framesOff = timeStimOff / monitorPeriodSecs;
 
 % compute the nb of cycles before and after stim presentation
 % and compute the trial duration depending on that

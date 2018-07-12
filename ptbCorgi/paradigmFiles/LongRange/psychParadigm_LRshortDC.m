@@ -39,15 +39,14 @@ conditionInfo(1).maxDots = 3; % max number of dots change in a trial
 conditionInfo(1).stimSize = [0 0 0.5 20]; % in deg
 conditionInfo(1).trialDuration = 4*6*32/85; % 4*6*32/85; % in sec - around 9.0353 (or 100*8/85 or 50*16/85)
 conditionInfo(1).preStimDuration = 3*32/85; 
-conditionInfo(1).stimTagFreq = 85/32; % OR 85/48 % in Hz this is the onset of 1st stimulus in the cycle (local 2.6 Hz, both stim = 5 Hz)
-conditionInfo(1).dutyCycle = 2/8; % % duty cycle
 conditionInfo(1).trialFun=@trial_LRshortDC;
 conditionInfo(1).motion = 0; % by default, no motion 
 conditionInfo(1).dotSize = [0 0 0.2 0.2];
-conditionInfo(1).cycle = 'full';
 conditionInfo(1).xloc = -0.3;
 conditionInfo(1).yloc = 0; % y eccentricity of stim centre
 conditionInfo(1).simult = 0;
+conditionInfo(1).stimTagFreq = 85/16; % this is for half motion cycle and halfcycle conditions, full cycle condition is twice stimTagFreq
+conditionInfo(1).framesOn = 4;
 
 % same parameters in all conditions
 for cc=2:10
@@ -65,22 +64,19 @@ conditionInfo(1).sideStim = 'both';
 conditionInfo(1).motion = 1;
 conditionInfo(2).label = 'left';
 conditionInfo(2).sideStim = 'left';
+conditionInfo(2).stimTagFreq = conditionInfo(1).stimTagFreq/2;
 conditionInfo(3).label = 'long right';
 conditionInfo(3).sideStim = 'right';
+conditionInfo(3).stimTagFreq = conditionInfo(1).stimTagFreq/2;
 conditionInfo(4).label = 'long simult';
 conditionInfo(4).sideStim = 'both';
 conditionInfo(4).simult = 1;
-% OR 85/48 % in Hz this is the onset of 1st stimulus in the cycle (local 2.6 Hz, both stim = 5 Hz)
+conditionInfo(4).stimTagFreq = conditionInfo(1).stimTagFreq/2;
 
 conditionInfo(5).label = 'left halfcycle';
 conditionInfo(5).sideStim = 'left';
-conditionInfo(5).stimTagFreq = conditionInfo(1).stimTagFreq*2;
-conditionInfo(5).cycle = 'half';
 conditionInfo(6).label = 'long right halfcycle';
 conditionInfo(6).sideStim = 'right';
-conditionInfo(6).cycle = 'half';
-conditionInfo(6).stimTagFreq = conditionInfo(1).stimTagFreq*2;
-
 
 % then short range - the repeating conditions from long range (same left
 % stim)
@@ -94,9 +90,11 @@ conditionInfo(7).motion = 1;
 % conditionInfo(8).sideStim = 'left';
 conditionInfo(8).label = 'short right';
 conditionInfo(8).sideStim = 'right';
+conditionInfo(8).stimTagFreq = conditionInfo(1).stimTagFreq/2;
 conditionInfo(9).label = 'short simult';
 conditionInfo(9).sideStim = 'both';        
 conditionInfo(9).simult = 1;
+conditionInfo(9).stimTagFreq = conditionInfo(1).stimTagFreq/2;
 
 % conditionInfo(11).label = 'short left halfcycle';
 % conditionInfo(11).sideStim = 'left';
@@ -104,8 +102,6 @@ conditionInfo(9).simult = 1;
 % conditionInfo(11).cycle = 'half';
 conditionInfo(10).label = 'short right halfcycle';
 conditionInfo(10).sideStim = 'right';
-conditionInfo(10).cycle = 'half';
-conditionInfo(10).stimTagFreq = conditionInfo(1).stimTagFreq*2;
 
 
 % % last condition: sweep
