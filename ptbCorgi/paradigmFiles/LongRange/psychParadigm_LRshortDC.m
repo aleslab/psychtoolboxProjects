@@ -10,10 +10,10 @@ expInfo.trialRandomization.blockByField = 'xloc';
 
 expInfo.viewingDistance = 57;
  
-% expInfo.useBitsSharp = true;
-% expInfo.enableTriggers = true;
-expInfo.useBitsSharp = false; 
-expInfo.enableTriggers = false;
+expInfo.useBitsSharp = true;
+expInfo.enableTriggers = true;
+% expInfo.useBitsSharp = false; 
+% expInfo.enableTriggers = false;
 
 %Setup a simple fixation cross. See help drawFixation for more info on how
 %to setup this field.
@@ -32,13 +32,13 @@ conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;
 conditionInfo(1).intervalBeep = 0;
 conditionInfo(1).maxToAnswer = 8; % max time to answer
-conditionInfo(1).maxDots = 1; % max number of luminance change in a trial
+conditionInfo(1).maxDots = 3; % max number of dots change in a trial
 % conditionInfo(1).randomizeField = 'false';
 
 %% stimulus
 conditionInfo(1).stimSize = [0 0 0.5 20]; % in deg
-conditionInfo(1).trialDuration = 4; % 4*6*32/85; % in sec - around 9.0353 (or 100*8/85 or 50*16/85)
-conditionInfo(1).preStimDuration = 0; % if set at 1sec, it will automatically be 1.2 sec to fit the right nb of cycles
+conditionInfo(1).trialDuration = 4*6*32/85; % 4*6*32/85; % in sec - around 9.0353 (or 100*8/85 or 50*16/85)
+conditionInfo(1).preStimDuration = 3*32/85; 
 conditionInfo(1).stimTagFreq = 85/32; % OR 85/48 % in Hz this is the onset of 1st stimulus in the cycle (local 2.6 Hz, both stim = 5 Hz)
 conditionInfo(1).dutyCycle = 2/8; % % duty cycle
 conditionInfo(1).trialFun=@trial_LRshortDC;
@@ -70,6 +70,7 @@ conditionInfo(3).sideStim = 'right';
 conditionInfo(4).label = 'long simult';
 conditionInfo(4).sideStim = 'both';
 conditionInfo(4).simult = 1;
+% OR 85/48 % in Hz this is the onset of 1st stimulus in the cycle (local 2.6 Hz, both stim = 5 Hz)
 
 conditionInfo(5).label = 'left halfcycle';
 conditionInfo(5).sideStim = 'left';
