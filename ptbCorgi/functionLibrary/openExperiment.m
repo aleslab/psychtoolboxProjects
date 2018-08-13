@@ -31,6 +31,12 @@ function expInfo = openExperiment( expInfo)
 clear PsychHID;
 clear KbCheck;
 
+%This is another stupid line to try and clear any leftover bits from
+%previous runs.  These are getting annoyingly ad-hoc.  Should really deal
+%with everything needed for clearing in one place. Hopefully this closes
+%all orphan ports. 
+IOPort('closeAll');
+
 %
 % This is a line that is easily skipped/missed but is important
 % Various default setup options, including color as float 0-1;
@@ -226,6 +232,8 @@ end
 
 %Now setup bitssharp if requested
 if  expInfo.useBitsSharp
+    %First make sure to close any prior open bits connections
+    rc = BitsPlusPlus('Close');
     %Setup taken from BitsPlusPlusIdentityClutTest
      % Setup imaging pipeline:
     PsychImaging('PrepareConfiguration');

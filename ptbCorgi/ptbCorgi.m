@@ -387,10 +387,16 @@ disp('Use ptbCorgiSetup() to redefine defaults');
         end
         
         
-        %Determine trial randomization
-        %Should rename conditionList to trialList to make it more clearly
-        %explanatory and consistent with makeTrialList();
-        [conditionList, blockList] = makeTrialList(expInfo,conditionInfo);
+        %Check if we're are running a test condition
+        if isfield(conditionInfo(1),'isTest') && conditionInfo(1).isTest
+            conditionList = 1;
+            blockList = 1;
+        else
+            %Determine trial randomization
+            %Should rename conditionList to trialList to make it more clearly
+            %explanatory and consistent with makeTrialList();
+            [conditionList, blockList] = makeTrialList(expInfo,conditionInfo);
+        end
         
         %Let's start the expeirment
         %we're going to use a while loop so we can easily add trials for
@@ -1218,7 +1224,7 @@ disp('Use ptbCorgiSetup() to redefine defaults');
         
         
         if expInfo.enableBitsRTBox
-            sessionInfo.RTBoxInfo = PsychRTBox('BoxInfo');
+            sessionInfo.RTBoxInfo = BitsSharpPsychRTBox('BoxInfo');
         end
         
         diary OFF
