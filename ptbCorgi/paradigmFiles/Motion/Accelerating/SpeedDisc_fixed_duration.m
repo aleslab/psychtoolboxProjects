@@ -59,9 +59,9 @@ conditionInfo(8).velocityCmPerSecSection2 = -40;
 conditionInfo(8).label = [ condStimTypes{iCond} '_catch_fixed_speed_long_duration'];
 
 
-% %Slower speed with a fixed duration catch. response to speed = 0%
-% correct; response to longer distance = 100% correct, response to shorter
-% duration = 0% correct.
+% Slower speed with a fixed distance. Travels for a longer period of time. 
+% response to speed = 0 correct; response to longer distance = 100% correct,
+% response to shorter duration = 0% correct.
 conditionInfo(9) = conditionInfo(1);
 conditionInfo(9).fixedDistance = true;
 conditionInfo(9).velocityCmPerSecSection2 = -20;  
