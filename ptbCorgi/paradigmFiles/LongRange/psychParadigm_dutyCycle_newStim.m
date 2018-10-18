@@ -38,7 +38,7 @@ conditionInfo(1).maxDots = 3; % max number of luminance change in a trial
 
 %% stimulus
 conditionInfo(1).stimSize = [0 0 0.5 20]; % in deg
-conditionInfo(1).xloc = 3; % eccentricity of stim centre from screen centre in deg
+conditionInfo(1).xloc = 1; % eccentricity of stim centre from screen centre in deg
 conditionInfo(1).yloc = 0; % y eccentricity of stim centre
 conditionInfo(1).trialDuration = 4*6*32/85; % in sec - around 9.0353 (or 100*8/85 or 50*16/85)
 conditionInfo(1).trialFun=@trial_dutyCycle_newStim;
