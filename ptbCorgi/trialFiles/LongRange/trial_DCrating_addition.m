@@ -67,15 +67,15 @@ else
 end
 
 texRect = conditionInfo.texRect*expInfo.ppd;
-baseImg = double(rand(24,24)>.5) * 0.5+.25;
+baseImg = double(rand(50,50)>.5) * 0.5+.25;
 baseTex = Screen('MakeTexture',expInfo.curWindow,baseImg);
 img2 = baseImg;
 imgMov = baseImg;
 % img2(2:23,11:14) = img2(2:23,11:14) *-1+1;
 % img2(2:23,11:14) = img2(2:23,11:14) *-0.5+.25;
-img2(3:22,12:13) = (baseImg(3:22,12:13) -.25) * 2;
+img2(5:46,24:27  ) = (baseImg(5:46,24:27) -.25) * 2;
 img2Tex = Screen('MakeTexture',expInfo.curWindow,img2);
-imgMov(3:22,14:15) = (baseImg(3:22,14:15) -.25) * 2;
+imgMov(5:46,29:32) = (baseImg(5:46,29:32 ) -.25) * 2;
 imgMovTex = Screen('MakeTexture',expInfo.curWindow,imgMov);
 
 % xPos=[];yPos=[];
@@ -147,7 +147,7 @@ for cycleNb = 1 : nbTotalCycles
         %         Screen('FillRect', expInfo.curWindow, expInfo.bckgnd,CenterRectOnPoint(topStim,x_coord,ycoord));
         %         Screen('DrawLines', expInfo.curWindow, [xPos_S; yPos_S], [], stimCol, [x_coord ycoord],1);
     end
-    Screen('FrameRect', expInfo.curWindow, stimCol,CenterRectOnPoint(rectStim,x_coord,ycoord));
+%     Screen('FrameRect', expInfo.curWindow, stimCol,CenterRectOnPoint(rectStim,x_coord,ycoord));
     prevStim = t;
     t = Screen('Flip', expInfo.curWindow, t + framesOff * ifi - ifi/2);
     if cycleNb == 1
@@ -193,7 +193,7 @@ end
 
 if trialData.validTrial
     % response screen
-    Screen('DrawText', expInfo.curWindow, 'Did the stimulus move horizontally?', 0, expInfo.center(2)-expInfo.center(2)/2, [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, 'Did the stimulus move back and forth horizontally?', 0, expInfo.center(2)-expInfo.center(2)/2, [0 0 0]);
     Screen('DrawText', expInfo.curWindow, '0. definitely not ', 0, expInfo.center(2), [0 0 0]);
     Screen('DrawText', expInfo.curWindow, '1. probably not', 0, expInfo.center(2)+expInfo.center(2)/8, [0 0 0]);
     Screen('DrawText', expInfo.curWindow, '2. probably yes', 0, expInfo.center(2)+expInfo.center(2)*2/8, [0 0 0]);

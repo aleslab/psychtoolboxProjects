@@ -14,13 +14,12 @@ expInfo.paradigmName = 'DC_rating_addition';
                 
 expInfo.viewingDistance = 57;
 
-expInfo.useBitsSharp = false; 
+% expInfo.useBitsSharp = false; 
 expInfo.enableTriggers = false;
-% expInfo.useBitsSharp = true;
-% expInfo.enableTriggers = true;
-% expInfo.trialRandomization.type = 'custom';
-% expInfo.trialRandomization.trialList = Shuffle(repmat(1:90,1,6));% 90 trials repeated 6 times
-% expInfo.trialRandomization.blockList = sort(repmat(1:12,1,length(expInfo.trialRandomization.trialList)/12)); % split into 12 blocks
+expInfo.useBitsSharp = true;
+expInfo.trialRandomization.type = 'custom';
+expInfo.trialRandomization.trialList = Shuffle(repmat(1:90,1,6));% 90 trials repeated 6 times
+expInfo.trialRandomization.blockList = sort(repmat(1:12,1,length(expInfo.trialRandomization.trialList)/12)); % split into 12 blocks
 
 
 %Setup a simple fixation cross. See help drawFixation for more info on how
@@ -53,8 +52,8 @@ conditionInfo(1).xMotion = 0.6; % eccentricity from the other stim in motion con
 % conditionInfo(1).loc1 = 2; % xlocation of the 2nd stimulus IN ADDITION to the first stimulus
 % conditionInfo(1).loc2 = 4; % x coord of the 3rd stimulus IN ADDITION to the first stimulus
 % conditionInfo(1).horizBar = [0 0 conditionInfo(1).loc2+0.5 0.1];
+% conditionInfo(1).lineSize = 0.3;
 
-conditionInfo(1).lineSize = 0.3;
 conditionInfo(1).texRect = [0 0 6 12];
 
 %% experimental manipulation
