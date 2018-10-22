@@ -18,8 +18,27 @@ expInfo.viewingDistance = 57;
 expInfo.enableTriggers = false;
 expInfo.useBitsSharp = true;
 expInfo.trialRandomization.type = 'custom';
-expInfo.trialRandomization.trialList = Shuffle(repmat(1:90,1,6));% 90 trials repeated 6 times
-expInfo.trialRandomization.blockList = sort(repmat(1:12,1,length(expInfo.trialRandomization.trialList)/12)); % split into 12 blocks
+
+%%% this is for fully random trials
+% expInfo.trialRandomization.trialList = Shuffle(repmat(1:90,1,6));% 90 trials repeated 6 times
+% expInfo.trialRandomization.blockList = sort(repmat(1:12,1,length(expInfo.trialRandomization.trialList)/12)); % split into 12 blocks
+
+%%% this is with different stim in separate blocks
+% gonna have 5 blocks per stim, each of 36 trials
+% still 90 conditions repeated 6 times
+
+% create 15 columns of 36 rows with all conditions
+allStim = [];
+for btype = 1:3
+    allStim = [allStim Shuffle(repmat(1+30*(btype-1):30*btype,1,6))];
+end
+allStim=reshape(allStim,[36 15]);
+% shuffle the columns/blocks
+stimList=allStim(:,randperm(size(allStim,2)));
+% recreate a 1D vector
+stimList = reshape(stimList,[1 36*15]);
+expInfo.trialRandomization.trialList = stimList;
+expInfo.trialRandomization.blockList = sort(repmat(1:15,1,540/15));
 
 
 %Setup a simple fixation cross. See help drawFixation for more info on how
