@@ -24,21 +24,20 @@ expInfo.trialRandomization.type = 'custom';
 % expInfo.trialRandomization.blockList = sort(repmat(1:12,1,length(expInfo.trialRandomization.trialList)/12)); % split into 12 blocks
 
 %%% this is with different stim in separate blocks
-% gonna have 5 blocks per stim, each of 36 trials
-% still 90 conditions repeated 6 times
-
-% create 15 columns of 36 rows with all conditions
+% gonna have 6 blocks per stim, each of 35 trials
+% still 90 conditions repeated 7 times
+nbBlk = 18; nbTrials = 35;
 allStim = [];
 for btype = 1:3
-    allStim = [allStim Shuffle(repmat(1+30*(btype-1):30*btype,1,6))];
+    allStim = [allStim Shuffle(repmat(1+30*(btype-1):30*btype,1,7))];
 end
-allStim=reshape(allStim,[36 15]);
+allStim=reshape(allStim,[nbTrials nbBlk]);
 % shuffle the columns/blocks
 stimList=allStim(:,randperm(size(allStim,2)));
 % recreate a 1D vector
-stimList = reshape(stimList,[1 36*15]);
+stimList = reshape(stimList,[1 nbTrials*nbBlk]);
 expInfo.trialRandomization.trialList = stimList;
-expInfo.trialRandomization.blockList = sort(repmat(1:15,1,540/15));
+expInfo.trialRandomization.blockList = sort(repmat(1:nbBlk,1,nbTrials));
 
 
 %Setup a simple fixation cross. See help drawFixation for more info on how
