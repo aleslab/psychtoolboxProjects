@@ -203,6 +203,7 @@ if trialData.validTrial
     while trialData.response==999 % && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer -ifi/2)
         [keyDown, secs, keyCode] = KbCheck;
         if keyDown
+            if length(find(keyCode)) == 1 % if more than one key pressed
             if find(keyCode)>=min(vectKeyVal) && find(keyCode)<=max(vectKeyVal)
                 trialData.response = str2num(KbName(keyCode));
                 trialData.rt = secs - trialData.respScreenTime;
@@ -211,6 +212,9 @@ if trialData.validTrial
                     trialData.abortNow   = true;
                 end
                 trialData.validTrial = false;break;
+            end
+            else
+                trialData.validTrial = false;
             end
         end
     end

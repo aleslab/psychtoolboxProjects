@@ -24,12 +24,12 @@ expInfo.trialRandomization.type = 'custom';
 % expInfo.trialRandomization.blockList = sort(repmat(1:12,1,length(expInfo.trialRandomization.trialList)/12)); % split into 12 blocks
 
 %%% this is with different stim in separate blocks
-% gonna have 6 blocks per stim, each of 35 trials
-% still 90 conditions repeated 7 times
-nbBlk = 18; nbTrials = 35;
+% gonna have 5 blocks per stim, each of 36 trials
+% 90 conditions repeated 6 times
+nbBlk = 15; nbTrials = 36;
 allStim = [];
 for btype = 1:3
-    allStim = [allStim Shuffle(repmat(1+30*(btype-1):30*btype,1,7))];
+    allStim = [allStim Shuffle(repmat(1+30*(btype-1):30*btype,1,6))];
 end
 allStim=reshape(allStim,[nbTrials nbBlk]);
 % shuffle the columns/blocks
