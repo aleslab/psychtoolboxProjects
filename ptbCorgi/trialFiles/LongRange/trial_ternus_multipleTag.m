@@ -11,12 +11,11 @@ Screen('Flip', expInfo.curWindow);
 WaitSecs(0.1);
 drawFixation(expInfo, expInfo.fixationInfo);
 t = Screen('Flip', expInfo.curWindow);
-tcenter = t; tperi=t;
+
 trialData.validTrial = true;
 trialData.abortNow   = false;
 trialData.trialStartTime = t;
 trialData.response = 999;
-ifi = expInfo.ifi;
 
 if expInfo.useBitsSharp
     checkTiming = 1;
@@ -82,18 +81,16 @@ intX = conditionInfo.intX * expInfo.ppd;
 % horizBar = conditionInfo.horizBar*expInfo.ppd;
 % yBarTop = ycoord - conditionInfo.stimSize(4)/2*expInfo.ppd;
 % yBarBottom = ycoord + conditionInfo.stimSize(4)/2*expInfo.ppd;
-
-if conditionInfo.stimType == 1
-    extraCol = stimCol;
-else
-    extraCol = [0 1 0];
-end
+extraCol = [0 1 0];
+% if conditionInfo.stimType == 1
+%     extraCol = stimCol;
+% else
+%     extraCol = [0 1 0];
+% end
 
 curCycle = 1;curCyclePeri=1;
 % start trial
-for curFrame = 1 : nbTotalFrames
-    periflip = 0; centerflip=0;
-    
+for curFrame = 1 : nbTotalFrames    
     % check which cycle it is
     if curFrame == framesPerCycle+1 + (curCycle-1)*framesPerCycle
         curCycle = curCycle+1;
@@ -120,85 +117,61 @@ for curFrame = 1 : nbTotalFrames
                 end
             end
         end
-        break;
+        break;1
     end
     
     % CENTRAL STIM
     if curFrame == framesPerCycle * (curCycle - 1) +1 %%% central stim ON
-        drawFixation(expInfo, expInfo.fixationInfo);
-        for num=1:nbStim
-            Screen('FillOval', expInfo.curWindow, stimCol,CenterRectOnPoint(rectStim,xcoord+(num-1)*intX,ycoord));
-        end
-        centerflip = 1;
+        centerOn = 1; 
     end
-    
     if curFrame == (framesOn + 1) + framesPerCycle * (curCycle - 1) %%% central stim OFF
-        drawFixation(expInfo, expInfo.fixationInfo);
-        for num=1:nbStim
-            Screen('FillOval', expInfo.curWindow, expInfo.bckgnd,CenterRectOnPoint(rectStim,xcoord+(num-1)*intX,ycoord));
-        end
-        centerflip = 1;
+        centerOn = 0; 
     end
     
     % PERIPHERAL STIM (different freq + motion)
     if curFrame == framesPerCyclePeri * (curCyclePeri - 1) +1 %%% stim ON
-        drawFixation(expInfo, expInfo.fixationInfo);
-        if mod(curCyclePeri,2)==0
-            Screen('FillOval', expInfo.curWindow, extraCol,CenterRectOnPoint(rectStim,xcoord-intX,ycoord));
-            Screen('FillOval', expInfo.curWindow, extraCol,CenterRectOnPoint(rectStim,xcoord-2*intX,ycoord));
-        else
-            Screen('FillOval', expInfo.curWindow, extraCol,CenterRectOnPoint(rectStim,xcoord+nbStim*intX,ycoord));
-            Screen('FillOval', expInfo.curWindow, extraCol,CenterRectOnPoint(rectStim,xcoord+(1+nbStim)*intX,ycoord));
-        end
-        periflip = 1;
+        periOn = 1; 
     end
-    
     if curFrame == (framesPeriOn + 1) + framesPerCyclePeri * (curCyclePeri - 1) %%% stim OFF
-        drawFixation(expInfo, expInfo.fixationInfo);
-        if mod(curCyclePeri,2)==0
-            Screen('FillOval', expInfo.curWindow, expInfo.bckgnd,CenterRectOnPoint(rectStim,xcoord-intX,ycoord));
-            Screen('FillOval', expInfo.curWindow, expInfo.bckgnd,CenterRectOnPoint(rectStim,xcoord-2*intX,ycoord));
-        else
-            Screen('FillOval', expInfo.curWindow, expInfo.bckgnd,CenterRectOnPoint(rectStim,xcoord+nbStim*intX,ycoord));
-            Screen('FillOval', expInfo.curWindow, expInfo.bckgnd,CenterRectOnPoint(rectStim,xcoord+(1+nbStim)*intX,ycoord));
-        end
-        periflip = 1;
+        periOn = 0; 
     end
+
     
-    
-    %%% now flip if needed and check timing
-    if centerflip || periflip
-        if centerflip == 1
-            prevCenter = tcenter;
-        elseif periflip == 1
-            prevPeri = tperi;
-        end
-        t = Screen('Flip', expInfo.curWindow);
-        if curFrame == 1
-            stimStartTime = t;
-        end
-        if checkTiming
-            if centerflip == 1
-                if t-prevCenter > timeStimOff + ifi/2 || t-prevCenter < timeStimOff - ifi/2
-                    trialData.validTrial = false;
-                    break;
-                end
-            elseif periflip == 1
-                if t-prevPeri > timeStimOffPeri + ifi/2 || t-prevPeri < timeStimOffPeri - ifi/2
-                    trialData.validTrial = false;
-                    break;
-                end
+    %%% now flip if needed 
+%     if doFlip == 1
+        drawFixation(expInfo, expInfo.fixationInfo);
+        if centerOn
+            for num=1:nbStim
+                Screen('FillOval', expInfo.curWindow, stimCol,CenterRectOnPoint(rectStim,xcoord+(num-1)*intX,ycoord));
             end
         end
-    end
+        if periOn
+            if mod(curCyclePeri,2)==0
+                Screen('FillOval', expInfo.curWindow, extraCol,CenterRectOnPoint(rectStim,xcoord-intX,ycoord));
+                Screen('FillOval', expInfo.curWindow, extraCol,CenterRectOnPoint(rectStim,xcoord-2*intX,ycoord));
+            else
+                Screen('FillOval', expInfo.curWindow, extraCol,CenterRectOnPoint(rectStim,xcoord+nbStim*intX,ycoord));
+                Screen('FillOval', expInfo.curWindow, extraCol,CenterRectOnPoint(rectStim,xcoord+(1+nbStim)*intX,ycoord));
+            end
+        end
+        prevStim = t;
+        t = Screen('Flip', expInfo.curWindow);
+        if checkTiming
+            if t-prevStim > ifi/2
+                trialData.validTrial = false;
+            end
+        end
+            
+%     end
+        
 end
 
 % this is to send a last trigger
 drawFixation(expInfo, expInfo.fixationInfo);
 prevStim = t;
-t = Screen('Flip', expInfo.curWindow, t + framesPerCycle * ifi - ifi/2);
+t = Screen('Flip', expInfo.curWindow);
 trialData.stimEndTime = t;
-        
+
 trialData.stimStartTime = stimStartTime;
 
 % Find the key values (not the same in PC and MAC) for the response loop

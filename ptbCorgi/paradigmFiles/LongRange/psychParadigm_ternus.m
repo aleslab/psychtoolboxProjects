@@ -54,14 +54,15 @@ conditionInfo(1).periFreq = 85/28;
 % so total number of central cycles should be a multiple of 7
 conditionInfo(1).trialDuration = 4*7*32/85;
 
-%% experimental manipulation
+%% experimental manipulation            prevCenter = tcenter;
+
 condNb = 1;
 
 % single stim condition
 % testedFreq = [85/8 85/16 85/32]; % in Hz this is the onset of the single stimulus
 % onTime = [1 2 4 6 7];
 onTime = [2:7];
-typeStim = 2;
+typeStim = 1;
 
 % same parameters in all conditions
 for cc=2:typeStim*length(onTime)
