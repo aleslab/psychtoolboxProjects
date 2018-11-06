@@ -1,13 +1,17 @@
 function [trialData] = trial_ternus_multipleTag(expInfo, conditionInfo)
 
+expInfo.monRefresh = 85; %% force to be 85Hz so that the fram counting works
+
+
 stimStartTime = 0;
-stimCol = BlackIndex(expInfo.curWindow);   
+stimCol = BlackIndex(expInfo.curWindow);
 
 drawFixation(expInfo, expInfo.fixationInfo);
 Screen('Flip', expInfo.curWindow);
 WaitSecs(0.1);
 drawFixation(expInfo, expInfo.fixationInfo);
 t = Screen('Flip', expInfo.curWindow);
+tcenter = t; tperi=t;
 trialData.validTrial = true;
 trialData.abortNow   = false;
 trialData.trialStartTime = t;
@@ -28,13 +32,22 @@ monitorPeriodSecs = 1/round(expInfo.monRefresh);
 % framesPerCycle = cycleDuration / monitorPeriodSecs;
 framesOn = conditionInfo.dutyCycle * framesPerCycle;
 framesOff = framesPerCycle - framesOn;
-
 timeStimOn = monitorPeriodSecs * framesOn;
 timeStimOff = monitorPeriodSecs * framesOff;
 
 nbTotalCycles = ceil(conditionInfo.trialDuration * conditionInfo.stimTagFreq);
 trialDuration = nbTotalCycles * cycleDuration; % =11.67060200
 nbTotalFrames = framesPerCycle * nbTotalCycles;
+
+%%% peripheral stimulus
+framesPerCyclePeri = 1/conditionInfo.periFreq * round(expInfo.monRefresh);
+cycleDurationPeri = 1/conditionInfo.periFreq;
+framesPeriOn = conditionInfo.dutyCycle * framesPerCyclePeri;
+framesPeriOff = framesPerCyclePeri - framesPeriOn;
+timeStimOnPeri = monitorPeriodSecs * framesPeriOn;
+timeStimOffPeri = monitorPeriodSecs * framesPeriOff;
+nbTotalCyclesPeri = ceil(conditionInfo.trialDuration * conditionInfo.periFreq);
+nbTotalFramesPeri = framesPerCyclePeri * nbTotalCyclesPeri;
 
 % save it in the data output structure
 trialData.framesPerCycle = framesPerCycle;
@@ -47,7 +60,14 @@ trialData.nbTotalFrames = nbTotalFrames;
 trialData.trialDuration = trialDuration;
 trialData.cycleDuration = cycleDuration;
 
-
+trialData.framesPerCyclePeri = framesPerCyclePeri;
+trialData.cycleDurationPeri = cycleDurationPeri;
+trialData.framesPeriOn = framesPeriOn;
+trialData.framesPeriOff = framesPeriOff;
+trialData.timeStimOnPeri = timeStimOnPeri;
+trialData.timeStimOffPeri = timeStimOffPeri;
+trialData.nbTotalCyclesPeri = nbTotalCyclesPeri;
+trialData.nbTotalFramesPeri = nbTotalFramesPeri;
 
 %%% stim presentation
 rectStim = conditionInfo.stimSize*expInfo.ppd;
@@ -68,21 +88,25 @@ if conditionInfo.stimType == 1
 else
     extraCol = [0 1 0];
 end
-        
 
-curCycle = 1;
+curCycle = 1;curCyclePeri=1;
 % start trial
 for curFrame = 1 : nbTotalFrames
+    periflip = 0; centerflip=0;
+    
     % check which cycle it is
-    if curFrame == framesPerCycle+1
+    if curFrame == framesPerCycle+1 + (curCycle-1)*framesPerCycle
         curCycle = curCycle+1;
+    end
+    if curFrame == framesPerCyclePeri+1 + (curCyclePeri-1)*framesPerCyclePeri
+        curCyclePeri = curCyclePeri+1;
     end
     % check if key is pressed in case needs to quit
     [keyIsDown, secs, keyCode]=KbCheck(expInfo.deviceIndex);
     if keyIsDown
         trialData.validTrial = false;
         if keyCode(KbName('escape'))
-            trialData.abortNow   = true;
+            trialData.abortNow = true;
         elseif keyCode(KbName('space'))
             trialData.validTrial = false;
             Screen('DrawText', expInfo.curWindow, 'Taking a break', 0, expInfo.center(2), [0 0 0]);
@@ -98,40 +122,75 @@ for curFrame = 1 : nbTotalFrames
         end
         break;
     end
-
-    if currFrame == framesPerCycle * (curCycle - 1) +1 %%% stim ON
+    
+    % CENTRAL STIM
+    if curFrame == framesPerCycle * (curCycle - 1) +1 %%% central stim ON
         drawFixation(expInfo, expInfo.fixationInfo);
         for num=1:nbStim
             Screen('FillOval', expInfo.curWindow, stimCol,CenterRectOnPoint(rectStim,xcoord+(num-1)*intX,ycoord));
         end
-        if conditionInfo.stimType<3
-            if mod(cycleNb,2)==0
-                Screen('FillOval', expInfo.curWindow, extraCol,CenterRectOnPoint(rectStim,xcoord-intX,ycoord));
-                Screen('FillOval', expInfo.curWindow, extraCol,CenterRectOnPoint(rectStim,xcoord-2*intX,ycoord));
-            else
-                Screen('FillOval', expInfo.curWindow, extraCol,CenterRectOnPoint(rectStim,xcoord+nbStim*intX,ycoord));
-                Screen('FillOval', expInfo.curWindow, extraCol,CenterRectOnPoint(rectStim,xcoord+(1+nbStim)*intX,ycoord));
-            end
+        centerflip = 1;
+    end
+    
+    if curFrame == (framesOn + 1) + framesPerCycle * (curCycle - 1) %%% central stim OFF
+        drawFixation(expInfo, expInfo.fixationInfo);
+        for num=1:nbStim
+            Screen('FillOval', expInfo.curWindow, expInfo.bckgnd,CenterRectOnPoint(rectStim,xcoord+(num-1)*intX,ycoord));
         end
-        prevStim = t;
-        t = Screen('Flip', expInfo.curWindow, t + framesOff * ifi - ifi/2);
+        centerflip = 1;
+    end
+    
+    % PERIPHERAL STIM (different freq + motion)
+    if curFrame == framesPerCyclePeri * (curCyclePeri - 1) +1 %%% stim ON
+        drawFixation(expInfo, expInfo.fixationInfo);
+        if mod(curCyclePeri,2)==0
+            Screen('FillOval', expInfo.curWindow, extraCol,CenterRectOnPoint(rectStim,xcoord-intX,ycoord));
+            Screen('FillOval', expInfo.curWindow, extraCol,CenterRectOnPoint(rectStim,xcoord-2*intX,ycoord));
+        else
+            Screen('FillOval', expInfo.curWindow, extraCol,CenterRectOnPoint(rectStim,xcoord+nbStim*intX,ycoord));
+            Screen('FillOval', expInfo.curWindow, extraCol,CenterRectOnPoint(rectStim,xcoord+(1+nbStim)*intX,ycoord));
+        end
+        periflip = 1;
+    end
+    
+    if curFrame == (framesPeriOn + 1) + framesPerCyclePeri * (curCyclePeri - 1) %%% stim OFF
+        drawFixation(expInfo, expInfo.fixationInfo);
+        if mod(curCyclePeri,2)==0
+            Screen('FillOval', expInfo.curWindow, expInfo.bckgnd,CenterRectOnPoint(rectStim,xcoord-intX,ycoord));
+            Screen('FillOval', expInfo.curWindow, expInfo.bckgnd,CenterRectOnPoint(rectStim,xcoord-2*intX,ycoord));
+        else
+            Screen('FillOval', expInfo.curWindow, expInfo.bckgnd,CenterRectOnPoint(rectStim,xcoord+nbStim*intX,ycoord));
+            Screen('FillOval', expInfo.curWindow, expInfo.bckgnd,CenterRectOnPoint(rectStim,xcoord+(1+nbStim)*intX,ycoord));
+        end
+        periflip = 1;
+    end
+    
+    
+    %%% now flip if needed and check timing
+    if centerflip || periflip
+        if centerflip == 1
+            prevCenter = tcenter;
+        elseif periflip == 1
+            prevPeri = tperi;
+        end
+        t = Screen('Flip', expInfo.curWindow);
         if curFrame == 1
             stimStartTime = t;
         end
-    end
-    
-    if checkTiming
-        if t-prevStim > cycleDuration + ifi/2 || t-prevStim < cycleDuration - ifi/2
-            trialData.validTrial = false;
-            break;
+        if checkTiming
+            if centerflip == 1
+                if t-prevCenter > timeStimOff + ifi/2 || t-prevCenter < timeStimOff - ifi/2
+                    trialData.validTrial = false;
+                    break;
+                end
+            elseif periflip == 1
+                if t-prevPeri > timeStimOffPeri + ifi/2 || t-prevPeri < timeStimOffPeri - ifi/2
+                    trialData.validTrial = false;
+                    break;
+                end
+            end
         end
     end
-    
-    if curFrame == (frameOn + 1) + framesPerCycle * (curCycle - 1) %%% stim OFF
-        Screen('FillRect', expInfo.curWindow, expInfo.bckgnd);
-        drawFixation(expInfo, expInfo.fixationInfo);
-        t = Screen('Flip', expInfo.curWindow, t + framesOn * ifi - ifi/2 );
-    end        
 end
 
 % this is to send a last trigger
@@ -139,13 +198,7 @@ drawFixation(expInfo, expInfo.fixationInfo);
 prevStim = t;
 t = Screen('Flip', expInfo.curWindow, t + framesPerCycle * ifi - ifi/2);
 trialData.stimEndTime = t;
-% t-prevStim
-if checkTiming
-    if t-prevStim > cycleDuration + ifi/2 || t-prevStim < cycleDuration - ifi/2
-    trialData.validTrial = false;
-    end
-end
-
+        
 trialData.stimStartTime = stimStartTime;
 
 % Find the key values (not the same in PC and MAC) for the response loop

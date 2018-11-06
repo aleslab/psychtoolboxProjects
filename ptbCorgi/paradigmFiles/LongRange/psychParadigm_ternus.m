@@ -44,39 +44,38 @@ conditionInfo(1).intX = 3; % space interval between all the stimuli
 %% stimulus
 conditionInfo(1).stimSize = [0 0 2 2]; % in deg
 conditionInfo(1).xloc = -4.5; % eccentricity of stim centre from screen centre in deg
-conditionInfo(1).yloc = 3; % y eccentricity of stim centre
-conditionInfo(1).trialFun=@trial_ternus;
-conditionInfo(1).trialDuration = 4*6*32/85; % in sec - around 9.0353 (or 100*8/85 or 50*16/85)
+conditionInfo(1).yloc = 2; % y eccentricity of stim centre
+conditionInfo(1).trialFun=@trial_ternus_multipleTag;
 conditionInfo(1).dutyCycle = 1;
-
+conditionInfo(1).stimTagFreq = 85/32;
+conditionInfo(1).periFreq = 85/28;
+% 2.65Hz = 32 frames and 3.0357Hz = 28 frames
+% get back at 7*32 = 8*28
+% so total number of central cycles should be a multiple of 7
+conditionInfo(1).trialDuration = 4*7*32/85;
 
 %% experimental manipulation
-
 condNb = 1;
 
 % single stim condition
 % testedFreq = [85/8 85/16 85/32]; % in Hz this is the onset of the single stimulus
 % onTime = [1 2 4 6 7];
-testedFreq = 85/16;
 onTime = [2:7];
 typeStim = 2;
 
 % same parameters in all conditions
-for cc=2:length(testedFreq)*typeStim*length(onTime)
+for cc=2:typeStim*length(onTime)
     conditionInfo(cc) = conditionInfo(1);
 end
 
 
 for st=1:typeStim
     for dc=1:length(onTime)
-        for testFq=1:length(testedFreq)
             conditionInfo(condNb).motion = 1;
-            conditionInfo(condNb).stimTagFreq = testedFreq(testFq);
             conditionInfo(condNb).dutyCycle = onTime(dc)/8;
             conditionInfo(condNb).stimType = st;
-            conditionInfo(condNb).label = ['S' num2str(st) '_' num2str(round(testedFreq(testFq))) 'Hz_' num2str(round(onTime(dc)/8*100)) '%'];
+            conditionInfo(condNb).label = ['S' num2str(st) '_' num2str(round(onTime(dc)/8*100)) '%'];
             condNb = condNb+1;
-        end
     end
 end
 
