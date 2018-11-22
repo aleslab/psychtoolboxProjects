@@ -81,12 +81,12 @@ intX = conditionInfo.intX * expInfo.ppd;
 % horizBar = conditionInfo.horizBar*expInfo.ppd;
 % yBarTop = ycoord - conditionInfo.stimSize(4)/2*expInfo.ppd;
 % yBarBottom = ycoord + conditionInfo.stimSize(4)/2*expInfo.ppd;
-extraCol = [0 1 0];
-% if conditionInfo.stimType == 1
-%     extraCol = stimCol;
-% else
-%     extraCol = [0 1 0];
-% end
+
+if conditionInfo.stimType == 1
+    extraCol = stimCol;
+else
+    extraCol = WhiteIndex(expInfo.curWindow);
+end
 
 curCycle = 1;curCyclePeri=1;
 % start trial
@@ -117,7 +117,7 @@ for curFrame = 1 : nbTotalFrames
                 end
             end
         end
-        break;1
+        break;
     end
     
     % CENTRAL STIM
