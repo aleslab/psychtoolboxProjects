@@ -47,7 +47,7 @@ trialData.timeStimOff = timeStimOff;
 % trialData.trialDuration = trialDuration;
 trialData.cycleDuration = cycleDuration;
 
-presentLeftHF = randi([0 1]);
+presentLeftHF = 0; % randi([0 1]);
 trialData.presentLeftHF = presentLeftHF;
 
 %%% stim presentation
@@ -64,17 +64,18 @@ end
 
 
 %%% stimulus
-if conditionInfo.stim == 1
-    stimCol = 0.47; % 0.55 = 10% contrast, 0.47 = 6% (47 is towards black)
+stimCol = BlackIndex(expInfo.curWindow);
+% if conditionInfo.stim == 1
+%     stimCol = 0.47; % 0.55 = 10% contrast, 0.47 = 6% (47 is towards black)
 % else
 %     stimCol = BlackIndex(expInfo.curWindow);
-end
+% end
 
-texRect = conditionInfo.texRect*expInfo.ppd;
-baseImg = double(rand(100,100)>.5) * 0.5+.25;
-baseTex = Screen('MakeTexture',expInfo.curWindow,baseImg);
-img2 = baseImg;
-imgMov = baseImg;
+% texRect = conditionInfo.texRect*expInfo.ppd;
+% baseImg = double(rand(100,100)>.5) * 0.5+.25;
+% baseTex = Screen('MakeTexture',expInfo.curWindow,baseImg);
+% img2 = baseImg;
+% imgMov = baseImg;
 % img2(2:23,11:14) = img2(2:23,11:14) *-1+1;
 % img2(2:23,11:14) = img2(2:23,11:14) *-0.5+.25;
 % img2(5:46,24:27) = (baseImg(5:46,24:27) -.25) * 2;
@@ -82,52 +83,53 @@ imgMov = baseImg;
 % imgMov(5:46,29:32) = (baseImg(5:46,29:32 ) -.25) * 2;
 % imgMovRight = Screen('MakeTexture',expInfo.curWindow,imgMov);
 
-img2(40:60,44:45) = (baseImg(40:60,44:45) -.25) * 2;
-img2Tex = Screen('MakeTexture',expInfo.curWindow,img2);
-if conditionInfo.xMotion == 0.1
-    imgMov(40:60,46:47) = (baseImg(40:60,46:47 ) -.25) * 2;
-    imgMovTex = Screen('MakeTexture',expInfo.curWindow,imgMov);
-elseif conditionInfo.xMotion == 0.6
-    imgMov(40:60,52:53) = (baseImg(40:60,52:53 ) -.25) * 2;
-    imgMovTex = Screen('MakeTexture',expInfo.curWindow,imgMov);
-end
+% img2(40:60,44:45) = (baseImg(40:60,44:45) -.25) * 2;
+% img2Tex = Screen('MakeTexture',expInfo.curWindow,img2);
+% if conditionInfo.xMotion == 0.1
+%     imgMov(40:60,46:47) = (baseImg(40:60,46:47 ) -.25) * 2;
+%     imgMovTex = Screen('MakeTexture',expInfo.curWindow,imgMov);
+% elseif conditionInfo.xMotion == 0.6
+%     imgMov(40:60,52:53) = (baseImg(40:60,52:53 ) -.25) * 2;
+%     imgMovTex = Screen('MakeTexture',expInfo.curWindow,imgMov);
+% end
 
 trialData.direction = randi([1 2]);
 trialData.xMotion = conditionInfo.xMotion;
 
 xcoord = xcoord + (conditionInfo.xMotion * expInfo.ppd); % required for 2nd order motion stim
 
-trialData.direction
 % start trial
 for ss=1:2
-    
+
     if conditionInfo.xMotion > 0
         if trialData.direction == 1 && ss == 1 || trialData.direction == 2 && ss == 2 % present the stim on the right
-            x_coord = xcoord + (conditionInfo.xMotion * expInfo.ppd); imgTex = imgMovTex;
+            x_coord = xcoord + (conditionInfo.xMotion * expInfo.ppd); 
         elseif trialData.direction == 1 && ss == 2 || trialData.direction == 2 && ss == 1
-            x_coord = xcoord; imgTex = img2Tex;
+            x_coord = xcoord; 
         end
     else
-        x_coord = xcoord; imgTex = img2Tex;
+        x_coord = xcoord; 
     end
-
-%     if conditionInfo.order == 2 && ss == 2 || conditionInfo.order == 1 && ss == 1
-%         if conditionInfo.direction == 1 % left
-%             x_coord = xcoord - (conditionInfo.xMotion * expInfo.ppd); imgTex = imgMovLeft;
-%         elseif conditionInfo.direction == 2 % right
-%             x_coord = xcoord + (conditionInfo.xMotion * expInfo.ppd); imgTex = imgMovRight;
+    
+%     if conditionInfo.xMotion > 0
+%         if trialData.direction == 1 && ss == 1 || trialData.direction == 2 && ss == 2 % present the stim on the right
+%             x_coord = xcoord + (conditionInfo.xMotion * expInfo.ppd); imgTex = imgMovTex;
+%         elseif trialData.direction == 1 && ss == 2 || trialData.direction == 2 && ss == 1
+%             x_coord = xcoord; imgTex = img2Tex;
 %         end
-%     else 
-%         x_coord = xcoord;imgTex = img2Tex;
+%     else
+%         x_coord = xcoord; imgTex = img2Tex;
 %     end
+
+
     
     %%% stim ON
     drawFixation(expInfo, expInfo.fixationInfo);
-    if conditionInfo.stim == 1
+%     if conditionInfo.stim == 1
         Screen('FillRect', expInfo.curWindow, stimCol,CenterRectOnPoint(rectStim,x_coord,ycoord));
-    elseif conditionInfo.stim == 2
-        Screen('DrawTexture', expInfo.curWindow, imgTex, [],CenterRectOnPoint(texRect,xcoord,ycoord),[],0);
-    end
+%     elseif conditionInfo.stim == 2
+%         Screen('DrawTexture', expInfo.curWindow, imgTex, [],CenterRectOnPoint(texRect,xcoord,ycoord),[],0);
+%     end
     prevStim = t;
     t = Screen('Flip', expInfo.curWindow, t + framesOff * ifi - ifi/2);
     if ss == 1
@@ -136,9 +138,9 @@ for ss=1:2
     
     %%% stim OFF
     Screen('FillRect', expInfo.curWindow, expInfo.bckgnd);
-    if conditionInfo.stim == 2
-        Screen('DrawTexture', expInfo.curWindow, baseTex, [],CenterRectOnPoint(texRect,xcoord,ycoord),[],0);
-    end
+%     if conditionInfo.stim == 2
+%         Screen('DrawTexture', expInfo.curWindow, baseTex, [],CenterRectOnPoint(texRect,xcoord,ycoord),[],0);
+%     end
     drawFixation(expInfo, expInfo.fixationInfo);
     t = Screen('Flip', expInfo.curWindow, t + framesOn * ifi - ifi/2 );
     
