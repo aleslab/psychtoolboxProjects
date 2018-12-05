@@ -47,17 +47,15 @@ trialData.timeStimOff = timeStimOff;
 % trialData.trialDuration = trialDuration;
 trialData.cycleDuration = cycleDuration;
 
-presentLeftHF = 0; % randi([0 1]);
-trialData.presentLeftHF = presentLeftHF;
+% presentLeftHF = 0; % randi([0 1]);
+% trialData.presentLeftHF = presentLeftHF;
 
-%%% stim presentation
-rectStim = conditionInfo.stimSize*expInfo.ppd;
-ycoord = expInfo.center(2) - (conditionInfo.yloc * expInfo.ppd); % - above
-if presentLeftHF
-    xcoord = expInfo.center(1) - (conditionInfo.xloc * expInfo.ppd); % + right
-else
-    xcoord = expInfo.center(1) + (conditionInfo.xloc * expInfo.ppd); % + right
-end
+
+% if presentLeftHF
+%     xcoord = expInfo.center(1) - (conditionInfo.xloc * expInfo.ppd); % + right
+% else
+%     xcoord = expInfo.center(1) + (conditionInfo.xloc * expInfo.ppd); % + right
+% end
 % loc1 = conditionInfo.loc1 * expInfo.ppd;
 % loc2 = conditionInfo.loc2 * expInfo.ppd;
 
@@ -93,23 +91,54 @@ stimCol = BlackIndex(expInfo.curWindow);
 %     imgMovTex = Screen('MakeTexture',expInfo.curWindow,imgMov);
 % end
 
-trialData.direction = randi([1 2]);
+
+
+%%% stim presentation
+rectStim = conditionInfo.stimSize*expInfo.ppd;
 trialData.xMotion = conditionInfo.xMotion;
 
-xcoord = xcoord + (conditionInfo.xMotion * expInfo.ppd); % required for 2nd order motion stim
+% location should be a little bit random!
+% keep the stim between 4.8 and 6.2 eccentricity
+startLoc = rand(1);
+if startLoc > 0.5
+    trialData.direction = 1;
+else
+    trialData.direction = 2;
+end
+
+if conditionInfo.stim == 1
+    xcoord = expInfo.center(1) + ((conditionInfo.xloc + rand(1)) * expInfo.ppd);
+    ycoord = expInfo.center(2) - (conditionInfo.yloc * expInfo.ppd); % - above
+    mcoord = xcoord;
+elseif conditionInfo.stim == 2 % vertical
+    rectStim = [rectStim(1) rectStim(2) rectStim(4) rectStim(3)];
+    xcoord = expInfo.center(1) + ((conditionInfo.xloc +0.5) * expInfo.ppd);
+    ycoord = expInfo.center(2) - ((conditionInfo.yloc + rand(1) - 0.5) * expInfo.ppd); 
+    mcoord = ycoord;
+end
+
+m_coord = mcoord;
 
 % start trial
 for ss=1:2
 
-    if conditionInfo.xMotion > 0
-        if trialData.direction == 1 && ss == 1 || trialData.direction == 2 && ss == 2 % present the stim on the right
-            x_coord = xcoord + (conditionInfo.xMotion * expInfo.ppd); 
-        elseif trialData.direction == 1 && ss == 2 || trialData.direction == 2 && ss == 1
-            x_coord = xcoord; 
+    if conditionInfo.xMotion > 0 && ss==2
+        if trialData.direction == 1  
+            m_coord = mcoord - (conditionInfo.xMotion * expInfo.ppd); 
+        elseif trialData.direction == 2 
+            m_coord = mcoord + (conditionInfo.xMotion * expInfo.ppd); 
         end
-    else
-        x_coord = xcoord; 
     end
+    
+    %     if conditionInfo.xMotion > 0
+%         if trialData.direction == 1 && ss == 1 || trialData.direction == 2 && ss == 2 % present the stim on the right
+%             m_coord = mcoord + (conditionInfo.xMotion * expInfo.ppd); 
+%         elseif trialData.direction == 1 && ss == 2 || trialData.direction == 2 && ss == 1
+%             m_coord = mcoord; 
+%         end
+%     else
+%         m_coord = mcoord; 
+%     end
     
 %     if conditionInfo.xMotion > 0
 %         if trialData.direction == 1 && ss == 1 || trialData.direction == 2 && ss == 2 % present the stim on the right
@@ -123,10 +152,16 @@ for ss=1:2
 
 
     
-    %%% stim ON
+    %%% stim ONstimSize = [0 0 0.1 2]
     drawFixation(expInfo, expInfo.fixationInfo);
-%     if conditionInfo.stim == 1
-        Screen('FillRect', expInfo.curWindow, stimCol,CenterRectOnPoint(rectStim,x_coord,ycoord));
+    if conditionInfo.stim == 1
+        Screen('FillRect', expInfo.curWindow, stimCol,CenterRectOnPoint(rectStim,m_coord,ycoord));
+    else
+        Screen('FillRect', expInfo.curWindow, stimCol,CenterRectOnPoint(rectStim,xcoord,m_coord));
+    end       
+    
+    %     if conditionInfo.stim == 1
+%         Screen('FillRect', expInfo.curWindow, stimCol,CenterRectOnPoint(rectStim,x_coord,ycoord));
 %     elseif conditionInfo.stim == 2
 %         Screen('DrawTexture', expInfo.curWindow, imgTex, [],CenterRectOnPoint(texRect,xcoord,ycoord),[],0);
 %     end
@@ -176,27 +211,43 @@ end
 if trialData.validTrial
     % response screen
     Screen('DrawText', expInfo.curWindow, 'In which direction the stimulus moved?', 0, expInfo.center(2)-expInfo.center(2)/2, [0 0 0]);
+    if conditionInfo.stim == 1 
     Screen('DrawText', expInfo.curWindow, 'Left: press left arrow', 0, expInfo.center(2)+expInfo.center(2)/8, [0 0 0]);
     Screen('DrawText', expInfo.curWindow, 'Right: press right arrow', 0, expInfo.center(2)+expInfo.center(2)*2/8, [0 0 0]);
+    else
+    Screen('DrawText', expInfo.curWindow, 'Up: press up arrow', 0, expInfo.center(2)+expInfo.center(2)/8, [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, 'Down: press down arrow', 0, expInfo.center(2)+expInfo.center(2)*2/8, [0 0 0]);        
+    end
     trialData.respScreenTime =Screen('Flip',expInfo.curWindow);
     % check for key press
     while trialData.response==999 % && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer -ifi/2)
         [keyDown, secs, keyCode] = KbCheck;
         if keyDown
             if length(find(keyCode)) == 1 % only one key pressed
-%                 if find(keyCode)>=min(vectKeyVal) && find(keyCode)<=max(vectKeyVal)
-%                     trialData.response = str2num(KbName(keyCode));
-%                     trialData.rt = secs - trialData.respScreenTime;
-                if keyCode(KbName('LeftArrow'))
-                    trialData.response = 'left';
-                    trialData.rt = secs - trialData.respScreenTime;
-                elseif keyCode(KbName('RightArrow'))
-                    trialData.response = 'right';
-                    trialData.rt = secs - trialData.respScreenTime;
-                elseif keyCode(KbName('ESCAPE'))
-                    trialData.abortNow   = true;
-                    trialData.validTrial = false;
-                    trialData.response = 99;
+                if conditionInfo.stim == 1
+                    if keyCode(KbName('LeftArrow'))
+                        trialData.response = 'left';
+                        trialData.rt = secs - trialData.respScreenTime;
+                    elseif keyCode(KbName('RightArrow'))
+                        trialData.response = 'right';
+                        trialData.rt = secs - trialData.respScreenTime;
+                    elseif keyCode(KbName('ESCAPE'))
+                        trialData.abortNow   = true;
+                        trialData.validTrial = false;
+                        trialData.response = 99;
+                    end
+                elseif conditionInfo.stim == 2
+                    if keyCode(KbName('UpArrow'))
+                        trialData.response = 'up';
+                        trialData.rt = secs - trialData.respScreenTime;
+                    elseif keyCode(KbName('DownArrow'))
+                        trialData.response = 'down';
+                        trialData.rt = secs - trialData.respScreenTime;
+                    elseif keyCode(KbName('ESCAPE'))
+                        trialData.abortNow   = true;
+                        trialData.validTrial = false;
+                        trialData.response = 99;
+                    end
                 end
             end
         end

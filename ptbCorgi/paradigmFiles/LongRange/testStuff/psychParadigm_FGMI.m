@@ -43,7 +43,8 @@ conditionInfo(1).texRect = [0 0 6 12];
 
 %% stimulus
 conditionInfo(1).stimSize = [0 0 0.1 2]; % in deg
-conditionInfo(1).xloc = 5; % eccentricity of stim centre from screen centre in deg
+conditionInfo(1).xloc = 5.5; % eccentricity of stim centre from screen centre in deg
+% + up to 1 deg to get a random location
 conditionInfo(1).yloc = 0; % y eccentricity of stim centre
 conditionInfo(1).trialFun=@trial_FGMI;
 
@@ -52,10 +53,10 @@ conditionInfo(1).trialFun=@trial_FGMI;
 %% experimental manipulation
 
 % single stim condition
-testedFreq = [85/8 85/32]; % [85/8 85/16 85/32]; % in Hz this is the onset of the single stimulus
+testedFreq = [85/8 85/16 85/32]; % in Hz this is the onset of the single stimulus
 onTime = [1 2 4 6 7];
 motionType = [0 0.1 0.6];
-stimType = 1;
+stimType = 1:2; % vertical or horizontal
 
 % same parameters in all conditions
 for cc=2:length(testedFreq)*length(onTime)*length(motionType)*length(stimType)
@@ -87,7 +88,7 @@ end
 
 %%% make blocks of different stimuli
 %%% cannot have low contrast with the other trials
-condPerStim = length(conditionInfo)/length(stimType);nbRep=40;
+condPerStim = length(conditionInfo)/length(stimType);nbRep=20;
 allStim = [];
 for btype = 1:length(stimType)
     allStim = [allStim Shuffle(repmat(1+condPerStim*(btype-1):condPerStim*btype,1,nbRep))];
