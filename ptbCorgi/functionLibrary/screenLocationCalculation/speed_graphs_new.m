@@ -2,7 +2,7 @@
 % speed change intervals.
 
 nt = 1000;
-tend = 0.482; %duration in seconds. as in t-end.
+tend = 0.506; %duration in seconds. as in t-end.
 samplesPerSecond = nt/tend;
 dt = tend/nt;
 T = linspace(0,tend-dt,nt);
@@ -13,8 +13,9 @@ eyeL = [-3, 0, 0];
 eyeR = [3, 0, 0];
 fixation = [0, 0, 97]; 
 objectStart = [0, 1, 97];
+deltaV = 0;
 
-objectVelocity = -20*ones(nt,1); % velocity in cm/s
+objectVelocity = -40+(1)*[deltaV*ones(nt/2,1) -deltaV*ones(nt/2,1)]; % velocity in cm/s
 
 objectCurrentPosition = objectStart;
 
