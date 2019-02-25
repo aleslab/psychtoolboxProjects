@@ -88,7 +88,7 @@ for cycleNb = 1 : nbTotalCycles
     drawFixation(expInfo, expInfo.fixationInfo);
     t = Screen('Flip', expInfo.curWindow, firstON + framesOn * ifi - ifi/2 );
     if checkTiming
-        if t-firstON > framesOn + ifi/2 || t-firstON < framesOn - ifi/2
+        if t-firstON > timeStimOn + ifi/2 || t-firstON < timeStimOn - ifi/2
             trialData.validTrial = false;
             break;
         end

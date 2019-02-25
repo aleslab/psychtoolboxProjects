@@ -1,8 +1,10 @@
-function [trialData] = trial_DCrating_size(expInfo, conditionInfo)
+function [trialData] = trial_DC_bkgd(expInfo, conditionInfo)
 % if the escape key is pressed then the experiment is aborted
 % press space to pause the experiment
 
 stimStartTime = 0;
+black = BlackIndex(expInfo.curWindow);
+white = WhiteIndex(expInfo.curWindow);
 
 
 drawFixation(expInfo, expInfo.fixationInfo);
@@ -51,28 +53,17 @@ trialData.cycleDuration = cycleDuration;
 
 %%% stim presentation
 rectStim = conditionInfo.stimSize*expInfo.ppd;
+rectBkgd = conditionInfo.stimBkgd*expInfo.ppd;
 ycoord = expInfo.center(2) - (conditionInfo.yloc * expInfo.ppd); % - above
 xcoord = expInfo.center(1) + (conditionInfo.xloc * expInfo.ppd); % + right
-eccMotion = xcoord + (conditionInfo.xMotion * expInfo.ppd);
-eccMotionY = ycoord + (conditionInfo.xMotion * expInfo.ppd);
-% loc1 = conditionInfo.loc1 * expInfo.ppd;
-% loc2 = conditionInfo.loc2 * expInfo.ppd;
+eccMotion = xcoord + (conditionInfo.xMotion * expInfo.ppd); 
+loc1 = conditionInfo.loc1 * expInfo.ppd;
+loc2 = conditionInfo.loc2 * expInfo.ppd;
 
-
-
-%%% stimulus
-stimCol = BlackIndex(expInfo.curWindow);
-
-texRect = conditionInfo.texRect*expInfo.ppd;
-
-
-%%% gaussian stimulus
-[x,y]=meshgrid(-600:600,-200:200); % size of your blob matrix (can change x or y or both)
-m=exp(-((x/90).^2)-((y/90).^2)); % gaussian on top of the matrix
-white = 0; gray = expInfo.bckgnd; % if you want the edge to match a background gray. if not it goes to black
-texGaus=Screen('MakeTexture', expInfo.curWindow, gray+(white-gray)*m); % play with the terms inside round to get what you want...
-
-
+% horizontal bar
+horizBar = conditionInfo.horizBar*expInfo.ppd;
+yBarTop = ycoord - conditionInfo.stimSize(4)/2*expInfo.ppd;
+yBarBottom = ycoord + conditionInfo.stimSize(4)/2*expInfo.ppd;
 
 
 % start trial
@@ -86,7 +77,7 @@ for cycleNb = 1 : nbTotalCycles
         elseif keyCode(KbName('space'))
             trialData.validTrial = false;
             Screen('DrawText', expInfo.curWindow, 'Taking a break', 0, expInfo.center(2), [0 0 0]);
-            Screen('DrawText', expInfo.curWindow, 'Press c to continue', 0, expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
+            Screen('DrawText', expInfo.curWinratingdow, 'Press c to continue', 0, expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
             Screen('Flip',expInfo.curWindow);
             pressSpace = 1;
             while pressSpace
@@ -98,41 +89,39 @@ for cycleNb = 1 : nbTotalCycles
         end
         break;
     end
-    
+
     %%% stim ON
     drawFixation(expInfo, expInfo.fixationInfo);
     if conditionInfo.motion == 1 && mod(cycleNb,2)==0 % in motion
-        if rectStim(3)<rectStim(4)
-            x_coord = eccMotion; y_coord = ycoord;
-        else
-            x_coord = xcoord; y_coord = eccMotionY;
-        end
+%     Screen('FillRect', expInfo.curWindow, black,CenterRectOnPoint(rectStim,eccMotion,ycoord));
+        Screen('FillRect', expInfo.curWindow, black,CenterRectOnPoint(rectBkgd,eccMotion,ycoord));
+%         Screen('FrameRect', expInfo.curWindow, black,CenterRectOnPoint(rectBkgd,eccMotion,ycoord));
     else
-        x_coord = xcoord; y_coord = ycoord;
+%     Screen('FillRect', expInfo.curWindow, black,CenterRectOnPoint(rectStim,xcoord,ycoord));
+        Screen('FillRect', expInfo.curWindow, black,CenterRectOnPoint(rectBkgd,xcoord,ycoord));
+%         Screen('FrameRect', expInfo.curWindow, black,CenterRectOnPoint(rectBkgd,xcoord,ycoord));
     end
-    if conditionInfo.stimType == 1
-        Screen('FillRect', expInfo.curWindow, stimCol,CenterRectOnPoint(rectStim,x_coord,y_coord));
-    elseif conditionInfo.stimType == 2
-        Screen('DrawTexture', expInfo.curWindow, texGaus, [],CenterRectOnPoint(texRect,x_coord,ycoord),[],0);
-    end
-    prevStim = t;
+    Screen('FillRect', expInfo.curWindow, white,CenterRectOnPoint(rectStim,xcoord,ycoord));
+%  Screen('FrameRect', expInfo.curWindow, black,CenterRectOnPoint(rectBkgd,xcoord,ycoord));
+ prevStim = t;
     t = Screen('Flip', expInfo.curWindow, t + framesOff * ifi - ifi/2);
     if cycleNb == 1
         stimStartTime = t;
     end
     
     %%% stim OFF
-    Screen('FillRect', expInfo.curWindow, expInfo.bckgnd);
     drawFixation(expInfo, expInfo.fixationInfo);
+% Screen('FrameRect', expInfo.curWindow, black,CenterRectOnPoint(rectBkgd,xcoord,ycoord));
+    Screen('FillRect', expInfo.curWindow, white,CenterRectOnPoint(rectStim,xcoord,ycoord));
     t = Screen('Flip', expInfo.curWindow, t + framesOn * ifi - ifi/2 );
-    
+        
     if checkTiming
         if t-prevStim > cycleDuration + ifi/2 || t-prevStim < cycleDuration - ifi/2
             trialData.validTrial = false;
             break;
         end
     end
-    
+        
 end
 
 % this is to send a last trigger
@@ -143,7 +132,7 @@ trialData.stimEndTime = t;
 % t-prevStim
 if checkTiming
     if t-prevStim > cycleDuration + ifi/2 || t-prevStim < cycleDuration - ifi/2
-        trialData.validTrial = false;
+    trialData.validTrial = false;
     end
 end
 
@@ -156,7 +145,7 @@ end
 
 if trialData.validTrial
     % response screen
-    Screen('DrawText', expInfo.curWindow, 'Did the stimulus move?', 0, expInfo.center(2)-expInfo.center(2)/2, [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, 'Did the stimulus move horizontally?', 0, expInfo.center(2)-expInfo.center(2)/2, [0 0 0]);
     Screen('DrawText', expInfo.curWindow, '0. definitely not ', 0, expInfo.center(2), [0 0 0]);
     Screen('DrawText', expInfo.curWindow, '1. probably not', 0, expInfo.center(2)+expInfo.center(2)/8, [0 0 0]);
     Screen('DrawText', expInfo.curWindow, '2. probably yes', 0, expInfo.center(2)+expInfo.center(2)*2/8, [0 0 0]);
@@ -166,15 +155,14 @@ if trialData.validTrial
     while trialData.response==999 % && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer -ifi/2)
         [keyDown, secs, keyCode] = KbCheck;
         if keyDown
-            if length(find(keyCode)) == 1 % only one key pressed
-                if find(keyCode)>=min(vectKeyVal) && find(keyCode)<=max(vectKeyVal)
-                    trialData.response = str2num(KbName(keyCode));
-                    trialData.rt = secs - trialData.respScreenTime;
-                elseif keyCode(KbName('ESCAPE'))
+            if find(keyCode)>=min(vectKeyVal) && find(keyCode)<=max(vectKeyVal)
+                trialData.response = str2num(KbName(keyCode));
+                trialData.rt = secs - trialData.respScreenTime;
+            else
+                if keyCode(KbName('ESCAPE'))
                     trialData.abortNow   = true;
-                    trialData.validTrial = false;
-                    trialData.response = 99;
                 end
+                trialData.validTrial = false;break;
             end
         end
     end

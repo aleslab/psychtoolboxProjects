@@ -41,11 +41,11 @@ conditionInfo(1).texRect = [0 0 6 12];
 
 %% stimulus
 conditionInfo(1).stimSize = [0 0 0.5 10]; % in deg
-conditionInfo(1).xlocRef = [-5 -5.3]; % use 2 different numbers for moving stim
-conditionInfo(1).dutyCycle =1/8;
+conditionInfo(1).xlocRef = [-5 -5.5]; % use 2 different numbers for moving stim
+conditionInfo(1).dutyCycle =4/8;
 % + up to 1 deg to get a random location
 conditionInfo(1).yloc = 0; % y eccentricity of stim centre
-conditionInfo(1).trialFun=@trial_standardDist;
+conditionInfo(1).trialFun=@trial_standardDist_int;
 conditionInfo(1).trialDuration = 2*32/85;
 
 
@@ -53,9 +53,9 @@ conditionInfo(1).trialDuration = 2*32/85;
 
 % single stim condition
 testedFreq = 85/16; % [85/8 85/16 85/32]; % in Hz this is the onset of the single stimulus
-dist = [0 0.2 0.4 0.6];
-ecc = [5 15];
-stimContrast = [1 2];
+dist = [0 0.25 0.5 0.75];
+ecc = [5];
+stimContrast = [1];
 
 % same parameters in all conditions
 for cc=2:length(dist)*length(ecc)*length(stimContrast)
@@ -80,7 +80,7 @@ end
 
 %%% make blocks of different stimuli
 %%% cannot have low contrast with the other trials
-condPerStim = length(conditionInfo)/length(stimContrast);nbRep=80;
+condPerStim = length(conditionInfo)/length(stimContrast);nbRep=60;
 allStim = [];
 for btype = 1:length(stimContrast)
     allStim = [allStim Shuffle(repmat(1+condPerStim*(btype-1):condPerStim*btype,1,nbRep))];

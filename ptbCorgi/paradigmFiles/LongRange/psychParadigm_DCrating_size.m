@@ -5,16 +5,16 @@ function [conditionInfo, expInfo] = psychParadigm_DCrating_size(expInfo)
 KbName('UnifyKeyNames');
 
 %paradigmName is what will be prepended to data files
-expInfo.paradigmName = 'DC_rating_addition';
+expInfo.paradigmName = 'DCrating_size';
 expInfo.trialRandomization.blockByField = 'xloc';
 expInfo.trialRandomization.nBlockReps   = 8;
 
 
 expInfo.viewingDistance = 57;
 
-expInfo.useBitsSharp = false;
+% expInfo.useBitsSharp = false;
 expInfo.enableTriggers = false;
-% expInfo.useBitsSharp = true;
+expInfo.useBitsSharp = true;
 expInfo.trialRandomization.type = 'blocked';
 
 % %%% this is for fully random trials
@@ -59,7 +59,6 @@ conditionInfo(1).maxToAnswer = 999; % next trial starts only after giving an ans
 
 %% stimulus
 conditionInfo(1).stimType = 1; % normal stim (2 = gaussian)
-conditionInfo(1).stimSize = [0 0 2 2]; % in deg - square stim
 conditionInfo(1).xloc = 5; % eccentricity of stim centre from screen centre in deg
 conditionInfo(1).yloc = 3; % y eccentricity of stim centre
 conditionInfo(1).trialFun=@trial_DCrating_size;
@@ -71,7 +70,7 @@ conditionInfo(1).xMotion = 0.6; % eccentricity from the other stim in motion con
 % conditionInfo(1).horizBar = [0 0 conditionInfo(1).loc2+0.5 0.1];
 % conditionInfo(1).lineSize = 0.3;
 
-conditionInfo(1).texRect = [0 0 6 12];
+conditionInfo(1).texRect = [0 0 6 12]; % texture rect for gaussian
 
 %% experimental manipulation
 
@@ -83,7 +82,7 @@ testedFreq = [85/32]; % in Hz this is the onset of the single stimulus
 onTime = [1 7];
 
 % get all the different possible sizes of the stimuli
-stimSize = conditionInfo(1).stimSize;
+stimSize = [0 0 2 2];
 dd=0;
 for ratio = 1:2:10
     dd=dd+1;
@@ -96,7 +95,7 @@ for ratio = [1 9]
 end
 
 % same parameters in all conditions
-for cc=2:(length(testedFreq)*length(onTime)*length(curSize) + 2) * 2 % add the 2 gaussian conditions and multiply 2 for moving or not
+for cc=1:(length(testedFreq)*length(onTime)*length(curSize) + 2) * 2 % add the 2 gaussian conditions and multiply 2 for moving or not
     conditionInfo(cc) = conditionInfo(1);
 end
 
@@ -120,9 +119,9 @@ end
 for mot=1:2
     for testFq=1:length(testedFreq)
     for tt = 1:length(onTime)
+        conditionInfo(condNb).stimSize = [0 0 0.4 10]; % does not matter but requiered for horizontal check
         conditionInfo(condNb).stimTagFreq = testedFreq(testFq);
         conditionInfo(condNb).motion = mot-1;
-        conditionInfo(1).stimSize = [0 0 0.4 10];
         conditionInfo(condNb).stimType = 2;
         conditionInfo(condNb).dutyCycle = onTime(tt)/8;
         conditionInfo(condNb).label = ['S2' num2str(mot) 'Size' num2str(curSize(taille,3),'%.1f') '-' num2str(curSize(taille,4),'%.1f') '-' num2str(round(onTime(tt)/8*100)) '%'];

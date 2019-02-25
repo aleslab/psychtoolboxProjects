@@ -1,4 +1,4 @@
-function [trialData] = trial_standardDC(expInfo, conditionInfo)
+function [trialData] = trial_standardDist_int(expInfo, conditionInfo)
 
 
 stimStartTime = 0;
@@ -51,23 +51,19 @@ trialData.nbTotalCycles = nbTotalCycles;
 trialData.trialDuration = trialDuration;
 trialData.cycleDuration = cycleDuration;
 
-% ref stimulus
-framesOnRef = conditionInfo.dcRef * framesPerCycle;
-framesOffRef = framesPerCycle - framesOnRef;
-timeRefOn = monitorPeriodSecs * framesOnRef;
-timeRefOff = monitorPeriodSecs * framesOffRef;
-trialData.framesOnRef = framesOnRef;
-trialData.framesOffRef = framesOffRef;
-trialData.timeRefOn = timeRefOn;
-trialData.timeRefOff = timeRefOff;
 
 %%% stim presentation
 rectStim = conditionInfo.stimSize*expInfo.ppd;
 ycoord = expInfo.center(2) - (conditionInfo.yloc * expInfo.ppd); % - above
-xcoord = expInfo.center(1) + (conditionInfo.xloc * expInfo.ppd); % + right
+xcoord = [expInfo.center(1) + (conditionInfo.xloc * expInfo.ppd) ...
+    expInfo.center(1) + ((conditionInfo.xloc+conditionInfo.xMotion) * expInfo.ppd)]; % + right
 xcoordRef = expInfo.center(1) + (conditionInfo.xlocRef * expInfo.ppd);
 
+refOrder = randi([1 2]);
+trialData.refOrder = refOrder;
 
+
+for inter=1:2
 % start trial
 for cycleNb = 1 : nbTotalCycles
     % check if key is pressed in case needs to quit
@@ -82,9 +78,11 @@ for cycleNb = 1 : nbTotalCycles
 
     %%% stim ON
     drawFixation(expInfo, expInfo.fixationInfo);
-    Screen('FillRect', expInfo.curWindow, stimCol,CenterRectOnPoint(rectStim,xcoord,ycoord));
-    Screen('FillRect', expInfo.curWindow, refCol,CenterRectOnPoint(rectStim,xcoordRef(mod(cycleNb,2)+1),ycoord));
-    
+    if inter == refOrder
+        Screen('FillRect', expInfo.curWindow, refCol,CenterRectOnPoint(rectStim,xcoordRef(mod(cycleNb,2)+1),ycoord));
+    else
+        Screen('FillRect', expInfo.curWindow, stimCol,CenterRectOnPoint(rectStim,xcoord(mod(cycleNb,2)+1),ycoord));
+    end
     
     t = Screen('Flip', expInfo.curWindow, t + framesOff * ifi - ifi/2);
     firstON = t;
@@ -93,61 +91,17 @@ for cycleNb = 1 : nbTotalCycles
     end
     
     %%% stim OFF
-    if framesOnRef < framesOn
-        % only stim ON
-        drawFixation(expInfo, expInfo.fixationInfo);
-        Screen('FillRect', expInfo.curWindow, stimCol,CenterRectOnPoint(rectStim,xcoord,ycoord));
-        t = Screen('Flip', expInfo.curWindow, firstON + framesOnRef * ifi - ifi/2 );
-        if checkTiming
-            if t-firstON > timeRefOn + ifi/2 || t-firstON < timeRefOn - ifi/2
-                trialData.validTrial = false;
-                break;
-            end
-        end
-        % nothing on
-        Screen('FillRect', expInfo.curWindow, expInfo.bckgnd);
-        drawFixation(expInfo, expInfo.fixationInfo);
-        t = Screen('Flip', expInfo.curWindow, firstON + framesOn * ifi - ifi/2 );
-        if checkTiming
-            if t-firstON > timeStimOn + ifi/2 || t-firstON < timeStimOn - ifi/2
-                trialData.validTrial = false;
-                break;
-            end
-        end        
-    elseif framesOnRef > framesOn
-        % only ref ON
-        drawFixation(expInfo, expInfo.fixationInfo);
-        Screen('FillRect', expInfo.curWindow, refCol,CenterRectOnPoint(rectStim,xcoordRef(mod(cycleNb,2)+1),ycoord));
-        t = Screen('Flip', expInfo.curWindow, firstON + framesOn * ifi - ifi/2 );
-        if checkTiming
-            if t-firstON > timeStimOn + ifi/2 || t-firstON < timeStimOn - ifi/2
-                trialData.validTrial = false;
-                break;
-            end
-        end
-        % nothing ON
-        Screen('FillRect', expInfo.curWindow, expInfo.bckgnd);
-        drawFixation(expInfo, expInfo.fixationInfo);
-        t = Screen('Flip', expInfo.curWindow, firstON + framesOnRef * ifi - ifi/2 );
-        if checkTiming
-            if t-firstON > timeRefOn + ifi/2 || t-firstON < timeRefOn - ifi/2
-                trialData.validTrial = false;
-                break;
-            end
-        end        
-    elseif framesOnRef == framesOn
-        Screen('FillRect', expInfo.curWindow, expInfo.bckgnd);
-        drawFixation(expInfo, expInfo.fixationInfo);
-        t = Screen('Flip', expInfo.curWindow, firstON + framesOn * ifi - ifi/2 );
-        if checkTiming
-            if t-firstON > timeStimOn + ifi/2 || t-firstON < timeStimOn - ifi/2
-                trialData.validTrial = false;
-                break;
-            end
+    Screen('FillRect', expInfo.curWindow, expInfo.bckgnd);
+    drawFixation(expInfo, expInfo.fixationInfo);
+    t = Screen('Flip', expInfo.curWindow, firstON + framesOn * ifi - ifi/2 );
+    if checkTiming
+        if t-firstON > timeStimOn + ifi/2 || t-firstON < timeStimOn - ifi/2
+            trialData.validTrial = false;
+            break;
         end
     end
     
-        
+end
 end
 
 % this is to send a last trigger
