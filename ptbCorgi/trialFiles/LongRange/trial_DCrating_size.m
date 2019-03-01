@@ -102,10 +102,10 @@ for cycleNb = 1 : nbTotalCycles
     %%% stim ON
     drawFixation(expInfo, expInfo.fixationInfo);
     if conditionInfo.motion == 1 && mod(cycleNb,2)==0 % in motion
-        if rectStim(3)<rectStim(4)
-            x_coord = eccMotion; y_coord = ycoord;
-        else
+        if rectStim(3)>rectStim(4)
             x_coord = xcoord; y_coord = eccMotionY;
+        else
+            x_coord = eccMotion; y_coord = ycoord;
         end
     else
         x_coord = xcoord; y_coord = ycoord;

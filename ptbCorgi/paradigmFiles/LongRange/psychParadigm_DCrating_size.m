@@ -84,14 +84,14 @@ onTime = [1 7];
 % get all the different possible sizes of the stimuli
 stimSize = [0 0 2 2];
 dd=0;
-for ratio = 1:2:10
+for ratio = [1 2 4 6 8 10] % 1:2:10 
     dd=dd+1;
     curSize(dd,:) = [0 0 stimSize(3)/ratio stimSize(4)*ratio];
 end
-for ratio = [1 9]
+for ratio = [1 10]
     dd=length(curSize);
-    curSize(dd+1,:) = [0 0 stimSize(3)*ratio 0.4];
-    curSize(dd+2,:) =  [0 0 0.4 stimSize(4)*ratio];
+    curSize(dd+1,:) = [0 0 stimSize(3)*ratio 0.5];
+    curSize(dd+2,:) =  [0 0 0.5 stimSize(4)*ratio];
 end
 
 % same parameters in all conditions
@@ -119,7 +119,7 @@ end
 for mot=1:2
     for testFq=1:length(testedFreq)
     for tt = 1:length(onTime)
-        conditionInfo(condNb).stimSize = [0 0 0.4 10]; % does not matter but requiered for horizontal check
+        conditionInfo(condNb).stimSize = stimSize; % does not matter but requiered for horizontal check
         conditionInfo(condNb).stimTagFreq = testedFreq(testFq);
         conditionInfo(condNb).motion = mot-1;
         conditionInfo(condNb).stimType = 2;
