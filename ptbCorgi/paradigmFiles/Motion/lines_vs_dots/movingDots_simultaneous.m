@@ -1,13 +1,13 @@
-function [conditionInfo, expInfo] = movingLine_continuous(expInfo)
+function [conditionInfo, expInfo] = movingDots_simultaneous(expInfo)
 
 %paradigm for exp 9 (lines vs. dots experiment).
 
-expInfo.paradigmName = 'movingLine_continuous';
+expInfo.paradigmName = 'movingDots_simultaneous';
 
 expInfo.viewingDistance = 92; %in cm; 92 rounded up, it's 91.7 from the screen to the outer edge of the chin rest
 
 %on screen text
-expInfo.instructions = 'Did the line \nspeed up or slow down?';
+expInfo.instructions = 'Did the dots \nspeed up or slow down?';
 expInfo.pauseInfo = 'Paused\nPress any key to continue';
 
 %Define the fixation marker for the experiment.
@@ -27,14 +27,14 @@ iCond = 1; %defining here initially to prevent overwriting
         conditionInfo(iCond).randomizeField(1).param = [0.5 1.5]; %randomise between 0.5 and 1.5s for iti
         
         %general
-        conditionInfo(iCond).trialFun=@ContSimultLineTrial; %This defines what function to call to draw the condition
+        conditionInfo(iCond).trialFun=@ContSimultDotTrial; %This defines what function to call to draw the condition
         conditionInfo(iCond).type = 'simpleResponse'; %type of task based on ptbCorgi definition
         conditionInfo(iCond).label = ['second_speed_' num2str(section2velocity(iSpeed))];
         %the labels for the levels when viewing in ptbCorgi gui
         conditionInfo(iCond).nReps = 10; %number of repeats of the level
         conditionInfo(iCond).validKeyNames = {'f','j'};
         %key presses that will be considered valid responses and not keyboard errors
-        conditionInfo(iCond).conditionType = 'continuous'; %so the moving lines move one after the other
+        conditionInfo(iCond).conditionType = 'simultaneous'; %so the moving lines move simultaneously
         
         %timings
         conditionInfo(iCond).preStimDuration  = 0.25;  %Static time before stimulus change
@@ -48,8 +48,7 @@ iCond = 1; %defining here initially to prevent overwriting
         %velocities
         conditionInfo(iCond).velocityDegPerSecSection1 = 12; %velocity of section 1 in deg/s. Constant for this exp
         conditionInfo(iCond).velocityDegPerSecSection2 = section2velocity(iSpeed); %velocity of section 2 in deg/s
-        conditionInfo(iCond).startPos = -6; %the start position of the line on the screen in degrees of visual angle.
-        %Negative = left hand side of the screen.
+
         
         iCond = iCond+1; %so you don't overwrite the conditions you create with each gap
     end
