@@ -37,14 +37,21 @@ frameIdx = 1;
 
 %% creating the moving dots
 
-apSize = round(3 * expInfo.pixPerDeg); %aperture size in pixels. we want this to be 3 degrees. expInfo.pixPerDeg
+apXSize = round(3 * expInfo.pixPerDeg); %aperture width in pixels. we want this to be 3 degrees. expInfo.pixPerDeg
+apYSize = round(6 * expInfo.pixPerDeg); %aperture height in pixels.
 dotSize = 8; %dot size in pixels, may change later
-xymatrix1 = randi(apSize,2,200);
-xymatrix2 = randi(apSize,2,200);
-xymatrix2(1,:) = bsxfun(@plus, xymatrix2(1,:), apSize);
+xy1x = randi(apXSize,1,200); %random x positions for dots in the first aperture
+xy1y = randi(apYSize,1,200); % as above but for y positions
+xymatrix1 = vertcat(xy1x, xy1y); %forms the matrix of xy coordinates for the first aperture of dots
 
-DotPos(1) = expInfo.center(1) - (apSize);
-DotPos(2) = expInfo.center(2) - (0.5*apSize);
+xy2x = randi(apXSize,1,200); %random x positions for dots in second aperture
+xy2y = randi(apYSize,1,200); % as above but y positions
+xymatrix2 = vertcat(xy2x, xy2y); %forms the matrix of the xy coordinates for the second aperture of dots
+
+xymatrix2(1,:) = bsxfun(@plus, xymatrix2(1,:), apXSize); %moves the position that these dots start to the end position of the first group of dots
+
+DotPos(1) = expInfo.center(1) - (apXSize);
+DotPos(2) = expInfo.center(2) - (0.5*apYSize);
 
 curLeftPositions = xymatrix1;
 curRightPositions = xymatrix2;
@@ -101,8 +108,15 @@ if strcmp(conditionInfo.conditionType, 'continuous')
             
         end
         
-        curLeftPositions(curLeftPositions >= apSize) = 0;
-        curRightPositions(curRightPositions >= 2*apSize) = apSize;
+        %this section is broken
+        %curLeftPositions(curLeftPositions >= apXSize) = 0;
+        %curRightPositions(curRightPositions >= 2*apXSize) = apXSize;
+        
+        wrapAroundL = find(curLeftPositions(1,:) >= apXSize);
+        curLeftPositions(1,wrapAroundL) = 0;
+        
+        wrapAroundR = find(curRightPositions(1,:) >= 2*apXSize);
+        curRightPositions(1,wrapAroundR) = apXSize;
         
         if drawLeftDots == true
             
@@ -174,8 +188,15 @@ elseif strcmp(conditionInfo.conditionType, 'simultaneous')
             velocity2PixPerSec = velocity2PixPerSec;
         end
         
-        curLeftPositions(curLeftPositions >= apSize) = 0;
-        curRightPositions(curRightPositions >= 2*apSize) = apSize;
+        %this section is broken
+        %curLeftPositions(curLeftPositions >= apXSize) = 0;
+        %curRightPositions(curRightPositions >= 2*apXSize) = apXSize;
+        
+        wrapAroundL = find(curLeftPositions(1,:) >= apXSize);
+        curLeftPositions(1,wrapAroundL) = 0;
+        
+        wrapAroundR = find(curRightPositions(1,:) >= 2*apXSize);
+        curRightPositions(1,wrapAroundR) = apXSize;
         
         Screen('DrawDots', expInfo.curWindow, curLeftPositions, dotSize, 1, DotPos, 2); %draw white dots
         
