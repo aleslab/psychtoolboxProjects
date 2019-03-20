@@ -32,7 +32,7 @@ trialData.nFrames.Total = nFramesTotal;
 %velocity conversions to pixels per second
 velSection1PixPerSec = conditionInfo.velocityDegPerSecSection1*expInfo.pixPerDeg;
 velSection2PixPerSec = conditionInfo.velocityDegPerSecSection2*expInfo.pixPerDeg;
-gapVelocityPixPerSec = conditionInfo.gapVelocity*expInfo.pixPerDeg;
+
 
 trialData.flipTimes = NaN(nFramesTotal,1);
 trialData.LinePos = NaN(nFramesTotal,1);
