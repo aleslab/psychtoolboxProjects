@@ -61,16 +61,16 @@ minYdot = ycoord - (conditionInfo.stimSize(4)-1)/2 * expInfo.ppd;
 
 % stim sequence
 if conditionInfo.seq(1) == 0 % random (keep temp)
-    fullSeq = repmat([shuffle(1:4) 5 shuffle(1:4) 5],1,nbTotalSeq);
+    fullSeq = repmat([Shuffle(1:4) 5 Shuffle(1:4) 5],1,nbTotalSeq);
 elseif conditionInfo.seq == 6 % full random
-    fullSeq = repmat(shuffle(1:5),1,2*nbTotalSeq);
-elseif conditionInfo.seq(1) == 1 % motion or predictable
+    fullSeq = repmat(Shuffle(1:5),1,2*nbTotalSeq);
+else % motion or predictable
     fullSeq = repmat(conditionInfo.seq,1,nbTotalSeq);
 end
 
 indexOn = find(fullSeq<5);
 nbDots = randi(5)-1; % between 0 and 4 dots
-indexOn = shuffle(indexOn);
+indexOn = Shuffle(indexOn);
 if nbDots> 0 
     timeDots = indexOn(1:nbDots);
 else
@@ -82,8 +82,7 @@ trialData.fullSeq = fullSeq;
 
 
 % start trial
-for seqNb = 1 : nbTotalSeq
-    for locNb = 1:10
+for locNb = 1:length(fullSeq)
     % check if key is pressed in case needs to quit
     [keyIsDown, secs, keyCode]=KbCheck(expInfo.deviceIndex);
     if keyIsDown
@@ -108,16 +107,16 @@ for seqNb = 1 : nbTotalSeq
 
     %%% stim ON
     drawFixation(expInfo, expInfo.fixationInfo);
-    if fullSeq(locNb+10*(seqNb-1))<5
-        Screen('FillRect', expInfo.curWindow, black,CenterRectOnPoint(rectStim,xcoord(fullSeq(locNb+10*(seqNb-1))),ycoord));
+    if fullSeq(locNb)<5
+        Screen('FillRect', expInfo.curWindow, black,CenterRectOnPoint(rectStim,xcoord(fullSeq(locNb)),ycoord));
     end
-    if ismember(locNb+10*(seqNb-1),timeDots)
+    if ismember(locNb,timeDots)
         yDot = (maxYdot-minYdot)*rand(1)+minYdot;
-        Screen('FillOval', expInfo.curWindow, dimColour,CenterRectOnPoint(dotSize,xcoord(fullSeq(locNb+10*(seqNb-1))),yDot));
+        Screen('FillOval', expInfo.curWindow, dimColour,CenterRectOnPoint(dotSize,xcoord(fullSeq(locNb)),yDot));
     end
     prevStim = t;
     t = Screen('Flip', expInfo.curWindow, t + framesOff * ifi - ifi/2);
-    if seqNb == 1 && locNb == 1
+    if locNb == 1
         stimStartTime = t;
     end
     
@@ -133,10 +132,8 @@ for seqNb = 1 : nbTotalSeq
         end
     end
     
-    end 
+end 
     
-end
-
 % this is to send a last trigger
 drawFixation(expInfo, expInfo.fixationInfo);
 prevStim = t;
@@ -158,11 +155,8 @@ end
 
 if trialData.validTrial
     % response screen
-    Screen('DrawText', expInfo.curWindow, 'Did the stimulus move horizontally?', 0, expInfo.center(2)-expInfo.center(2)/2, [0 0 0]);
-    Screen('DrawText', expInfo.curWindow, '0. definitely not ', 0, expInfo.center(2), [0 0 0]);
-    Screen('DrawText', expInfo.curWindow, '1. probably not', 0, expInfo.center(2)+expInfo.center(2)/8, [0 0 0]);
-    Screen('DrawText', expInfo.curWindow, '2. probably yes', 0, expInfo.center(2)+expInfo.center(2)*2/8, [0 0 0]);
-    Screen('DrawText', expInfo.curWindow, '3. definitely yes', 0, expInfo.center(2)+expInfo.center(2)*3/8, [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, 'Number of dots?', 0, expInfo.center(2), [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, ['(0-4)'], 0, expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
     trialData.respScreenTime =Screen('Flip',expInfo.curWindow);
     % check for key press
     while trialData.response==999 % && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer -ifi/2)
