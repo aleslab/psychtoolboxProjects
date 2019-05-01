@@ -35,8 +35,8 @@ framesOff = framesPerCycle - framesOn;
 timeStimOn = monitorPeriodSecs * framesOn;
 timeStimOff = monitorPeriodSecs * framesOff;
 
-nbTotalCycles = ceil(conditionInfo.trialDuration * conditionInfo.stimTagFreq);
-trialDuration = nbTotalCycles * cycleDuration; 
+nbTotalSeq = conditionInfo.nbSeq;
+trialDuration = nbTotalSeq * cycleDuration * length(conditionInfo.seq);
 
 % save it in the data output structure
 trialData.framesPerCycle = framesPerCycle;
@@ -44,10 +44,8 @@ trialData.framesOn = framesOn;
 trialData.framesOff = framesOff;
 trialData.timeStimOn = timeStimOn;
 trialData.timeStimOff = timeStimOff;
-trialData.nbTotalCycles = nbTotalCycles;
 trialData.trialDuration = trialDuration;
 trialData.cycleDuration = cycleDuration;
-nbTotalSeq = conditionInfo.nbSeq;
     
 %%% stim presentation
 rectStim = conditionInfo.stimSize*expInfo.ppd;
@@ -60,21 +58,25 @@ maxYdot = ycoord + (conditionInfo.stimSize(4)-1)/2 * expInfo.ppd;
 minYdot = ycoord - (conditionInfo.stimSize(4)-1)/2 * expInfo.ppd;
 
 % stim sequence
-if conditionInfo.seq(1) == 0 % random (keep temp)
-    fullSeq = repmat([Shuffle(1:4) 5 Shuffle(1:4) 5],1,nbTotalSeq);
-elseif conditionInfo.seq == 6 % full random
-    fullSeq = repmat(Shuffle(1:5),1,2*nbTotalSeq);
-else % motion or predictable
+if conditionInfo.seq == 9 % random 
+    fullSeq = Shuffle(repmat(1:5,1,nbTotalSeq));
+    for ss=1:length(fullSeq) 
+        if fullSeq(ss) == 4
+            fullSeq(ss+1) = 0;
+            fullSeq(ss+2) = 0;
+        end
+    end
+else 
     fullSeq = repmat(conditionInfo.seq,1,nbTotalSeq);
 end
 
-indexOn = find(fullSeq<5);
-nbDots = randi(5)-1; % between 0 and 4 dots
+indexOn = find(fullSeq>0);
+nbDots = randi(4)-1; % between 0 and 3 dots
 indexOn = Shuffle(indexOn);
-if nbDots> 0 
-    timeDots = indexOn(1:nbDots);
-else
+if nbDots == 0
     timeDots = [];
+else
+    timeDots = indexOn(1:nbDots);
 end
 trialData.timeDots = timeDots;
 trialData.nbDots = nbDots;
@@ -107,7 +109,7 @@ for locNb = 1:length(fullSeq)
 
     %%% stim ON
     drawFixation(expInfo, expInfo.fixationInfo);
-    if fullSeq(locNb)<5
+    if fullSeq(locNb)>0
         Screen('FillRect', expInfo.curWindow, black,CenterRectOnPoint(rectStim,xcoord(fullSeq(locNb)),ycoord));
     end
     if ismember(locNb,timeDots)
@@ -156,7 +158,7 @@ end
 if trialData.validTrial
     % response screen
     Screen('DrawText', expInfo.curWindow, 'Number of dots?', 0, expInfo.center(2), [0 0 0]);
-    Screen('DrawText', expInfo.curWindow, ['(0-4)'], 0, expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, ['(0-3)'], 0, expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
     trialData.respScreenTime =Screen('Flip',expInfo.curWindow);
     % check for key press
     while trialData.response==999 % && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer -ifi/2)
