@@ -3,6 +3,10 @@ function [trialData] = trial_SeqContext(expInfo, conditionInfo)
 % press space to pause the experiment
 
 stimStartTime = 0;
+if expInfo.useBitsSharp
+    ptbCorgiSendTrigger(expInfo,'starttrial',true);
+end
+
 black = BlackIndex(expInfo.curWindow);
 dimColour = 0.5;
 
@@ -19,9 +23,14 @@ ifi = expInfo.ifi;
 
 if expInfo.useBitsSharp
     checkTiming = 1;
+    f1Trigger = expInfo.triggerInfo.ssvepTagF1;
 else
+    f1Trigger = 1;
     checkTiming = 0; % timing of the nb of frames only checked for the "real" experiment using bitsharp
 end
+abortExpTrigger = 99;
+invalidTrialTrigger = 98; % miss frame or somthg else
+endStimTrigger = 10;
 
 %%% VEP parameters
 framesPerCycle = 1/conditionInfo.stimTagFreq * round(expInfo.monRefresh);
@@ -91,6 +100,7 @@ for locNb = 1:length(fullSeq)
         trialData.validTrial = false;
         if keyCode(KbName('escape'))
             trialData.abortNow   = true;
+            ptbCorgiSendTrigger(expInfo,'raw',1,abortExpTrigger); % abort experiment trigger
         elseif keyCode(KbName('space'))
             trialData.validTrial = false;
             Screen('DrawText', expInfo.curWindow, 'Taking a break', 0, expInfo.center(2), [0 0 0]);
@@ -116,6 +126,7 @@ for locNb = 1:length(fullSeq)
         yDot = (maxYdot-minYdot)*rand(1)+minYdot;
         Screen('FillOval', expInfo.curWindow, dimColour,CenterRectOnPoint(dotSize,xcoord(fullSeq(locNb)),yDot));
     end
+    ptbCorgiSendTrigger(expInfo,'raw',0,f1Trigger);
     prevStim = t;
     t = Screen('Flip', expInfo.curWindow, t + framesOff * ifi - ifi/2);
     if locNb == 1
@@ -125,11 +136,13 @@ for locNb = 1:length(fullSeq)
     %%% stim OFF
     %Screen('FillRect', expInfo.curWindow, expInfo.bckgnd);
     drawFixation(expInfo, expInfo.fixationInfo);
+    ptbCorgiSendTrigger(expInfo,'clear',0);
     t = Screen('Flip', expInfo.curWindow, t + framesOn * ifi - ifi/2 );
         
     if checkTiming
         if t-prevStim > cycleDuration + ifi/2 || t-prevStim < cycleDuration - ifi/2
             trialData.validTrial = false;
+            ptbCorgiSendTrigger(expInfo,'raw',1,invalidTrialTrigger); % abort trial
             break;
         end
     end
@@ -138,6 +151,7 @@ end
     
 % this is to send a last trigger
 drawFixation(expInfo, expInfo.fixationInfo);
+ptbCorgiSendTrigger(expInfo,'raw',0,endStimTrigger);
 prevStim = t;
 t = Screen('Flip', expInfo.curWindow, t + framesPerCycle * ifi - ifi/2);
 trialData.stimEndTime = t;
@@ -145,6 +159,7 @@ trialData.stimEndTime = t;
 if checkTiming
     if t-prevStim > cycleDuration + ifi/2 || t-prevStim < cycleDuration - ifi/2
     trialData.validTrial = false;
+    ptbCorgiSendTrigger(expInfo,'raw',1,invalidTrialTrigger); % abort trial
     end
 end
 
@@ -171,7 +186,9 @@ if trialData.validTrial
                 if keyCode(KbName('ESCAPE'))
                     trialData.abortNow   = true;
                 end
-                trialData.validTrial = false;break;
+                trialData.validTrial = false;
+                ptbCorgiSendTrigger(expInfo,'raw',1,invalidTrialTrigger); % abort trial
+                break;
             end
         end
     end
@@ -180,6 +197,7 @@ end
 
 if trialData.response==999 % no response
     trialData.validTrial = false;
+    ptbCorgiSendTrigger(expInfo,'raw',1,invalidTrialTrigger); % abort trial
 end
 
 drawFixation(expInfo, expInfo.fixationInfo);
@@ -189,6 +207,9 @@ trialData.trialEndTime = t;
 trialData.trialDurationReal = trialData.stimEndTime - trialData.stimStartTime ;
 trialData.trialDurationTotal = trialData.trialEndTime - trialData.trialStartTime ;
 
+if expInfo.useBitsSharp
+    ptbCorgiSendTrigger(expInfo,'endtrial',true);
+end
 
 end
 
