@@ -7,15 +7,15 @@ KbName('UnifyKeyNames');
 %paradigmName is what will be prepended to data files
 expInfo.paradigmName = 'SeqContext';
 expInfo.trialRandomization.type = 'blocked';
-expInfo.trialRandomization.nBlockReps   = 17; % 2 repeats/blk = 2.5 min but count 3 min for breaks as well 
+expInfo.trialRandomization.nBlockReps   = 13; 
 expInfo.trialRandomization.blockByField = 'dutyCycle';
 
 expInfo.viewingDistance = 57;
 
-% expInfo.useBitsSharp = true;
-% expInfo.enableTriggers = true;
-expInfo.useBitsSharp = false; 
-expInfo.enableTriggers = false;
+expInfo.useBitsSharp = true;
+expInfo.enableTriggers = true;
+% expInfo.useBitsSharp = false; 
+% expInfo.enableTriggers = false;
 
 %Setup a simple fixation cross. See help drawFixation for more info on how
 %to setup this field.
@@ -42,7 +42,7 @@ conditionInfo(1).stimSize = [0 0 0.75 15]; % in deg
 conditionInfo(1).dotSize = [0 0 0.3 0.3];
 conditionInfo(1).yloc = 2; % y eccentricity of stim centre
 conditionInfo(1).trialFun=@trial_SeqContext;
-conditionInfo(1).nbSeq = 8; % 8*6*24/85
+conditionInfo(1).nbSeq = 10; % 10*6*24/85 = 17 sec trial
 conditionInfo(1).stimTagFreq = 85/24;
 conditionInfo(1).dutyCycle = 4/8;
 conditionInfo(1).xloc = [-1.5 -0.5 0.5 1.5 2.5]; % eccentricity of stim centre from screen centre in deg
@@ -56,7 +56,7 @@ end
 conditionInfo(1).seq = [1 2 3 4 0 0];
 conditionInfo(1).label = 'motion';
 conditionInfo(2).seq = [2 5 3 4 0 0];
-conditionInfo(2).label = 'predictable';
+conditionInfo(2).label = 'sequence';
 conditionInfo(3).seq = [5 4 3 4 0 0];
 conditionInfo(3).label = 'reversal';
 conditionInfo(4).seq = [3 4 3 4 0 0];

@@ -15,7 +15,7 @@ function [expInfo] = drawFixation(expInfo, fixationInfo)
 %             size         - [variable] The size (full width) in degrees of the cross
 %             lineWidthPix - [1] line width in pixels
 %             color        - [0] Color of the lines
-%             loc          - [0 0] vertical and horizontal location from center
+%             loc          - [0 0] horizontal and vertical location from center
 %
 %         'square' A square box. 
 %             size         - [variable] The size (full width) in degrees of
@@ -100,7 +100,7 @@ switch lower(fixationInfo.type)
             0 0 -fixCrossPix fixCrossPix]; %fixation cross y coordinates
         if ~isfield(fixationInfo,'loc') || isempty(fixationInfo.loc)
             fixLocation = expInfo.center;
-        else %fixationInfo.loc should contain 2 values vert and horiz corresponding to the deviation from centre
+        else %fixationInfo.loc should contain 2 values for horiz and vert deviation from centre
             fixLocation = [expInfo.center(1)+expInfo.ppd*fixationInfo.loc(1) expInfo.center(2)+expInfo.ppd*fixationInfo.loc(2)];
         end
         Screen('DrawLines', expInfo.curWindow, fixCoords, fixationInfo.lineWidthPix, ...
