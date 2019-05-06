@@ -64,6 +64,9 @@ conditionInfo(4).label = 'twoPositions';
 conditionInfo(5).seq = 9; 
 conditionInfo(5).label = 'random';
 
+for cc=1:5
+    conditionInfo(cc).lengthSeq = length(conditionInfo(1).seq);
+end
 
 end
 

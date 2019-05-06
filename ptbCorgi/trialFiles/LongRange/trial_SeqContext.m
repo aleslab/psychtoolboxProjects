@@ -45,6 +45,7 @@ timeStimOn = monitorPeriodSecs * framesOn;
 timeStimOff = monitorPeriodSecs * framesOff;
 
 nbTotalSeq = conditionInfo.nbSeq;
+totalStim = nbTotalSeq * conditionInfo.lengthSeq;
 trialDuration = nbTotalSeq * cycleDuration * length(conditionInfo.seq);
 
 % save it in the data output structure
@@ -68,7 +69,7 @@ minYdot = ycoord - (conditionInfo.stimSize(4)-1)/2 * expInfo.ppd;
 
 % stim sequence
 if conditionInfo.seq == 9 % random 
-    fullSeq = Shuffle(repmat(1:5,1,nbTotalSeq));
+    fullSeq = Shuffle(repmat(1:length(conditionInfo.xloc),1,totalStim/length(conditionInfo.xloc)));
     for ss=1:length(fullSeq) 
         if fullSeq(ss) == 4
             fullSeq(ss+1) = 0;
@@ -90,7 +91,7 @@ end
 trialData.timeDots = timeDots;
 trialData.nbDots = nbDots;
 trialData.fullSeq = fullSeq;
-
+fullSeq
 
 % start trial
 for locNb = 1:length(fullSeq)
