@@ -91,7 +91,7 @@ end
 trialData.timeDots = timeDots;
 trialData.nbDots = nbDots;
 trialData.fullSeq = fullSeq;
-fullSeq
+
 
 % start trial
 for locNb = 1:length(fullSeq)

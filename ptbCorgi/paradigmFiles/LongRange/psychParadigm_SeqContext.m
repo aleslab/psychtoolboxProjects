@@ -7,7 +7,7 @@ KbName('UnifyKeyNames');
 %paradigmName is what will be prepended to data files
 expInfo.paradigmName = 'SeqContext';
 expInfo.trialRandomization.type = 'blocked';
-expInfo.trialRandomization.nBlockReps   = 13; 
+expInfo.trialRandomization.nBlockReps   = 14; 
 expInfo.trialRandomization.blockByField = 'dutyCycle';
 
 expInfo.viewingDistance = 57;
