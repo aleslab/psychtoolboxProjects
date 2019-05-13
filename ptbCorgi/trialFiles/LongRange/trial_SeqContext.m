@@ -71,7 +71,7 @@ minYdot = ycoord - (conditionInfo.stimSize(4)-1)/2 * expInfo.ppd;
 if conditionInfo.seq == 9 % random 
     fullSeq = Shuffle(repmat(1:length(conditionInfo.xloc),1,totalStim/length(conditionInfo.xloc)));
     for ss=1:length(fullSeq) 
-        if fullSeq(ss) == 4
+        if fullSeq(ss) == 4 && ss+2 < totalStim
             fullSeq(ss+1) = 0;
             fullSeq(ss+2) = 0;
         end
