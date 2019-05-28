@@ -1,6 +1,5 @@
-function [conditionInfo, expInfo] = psychParadigm_DCrating_size(expInfo)
-% similar to the DCrating exp test the effect of the size of the stim +
-% what if it is a gaussian
+function [conditionInfo, expInfo] = psychParadigm_DCrating_ratio(expInfo)
+% change ratio of the stimulus always static
 
 KbName('UnifyKeyNames');
 
@@ -44,6 +43,7 @@ expInfo.fixationInfo(1).type  = 'cross';
 expInfo.fixationInfo(1).size  = .2;
 expInfo.fixationInfo(1).lineWidthPix = 2;
 expInfo.fixationInfo(1).color = 0;
+expInfo.fixationInfo(1).loc = [-8 0]; % location of the fixation relative to centre in degrees (1st number is horizontal, 2nd is vertical)
 
 expInfo.instructions = 'FIXATE the dot';
 
@@ -59,10 +59,10 @@ conditionInfo(1).maxToAnswer = 999; % next trial starts only after giving an ans
 
 %% stimulus
 conditionInfo(1).stimType = 1; % normal stim (2 = gaussian)
-conditionInfo(1).xloc = 5; % eccentricity of stim centre from screen centre in deg
-conditionInfo(1).yloc = 3; % y eccentricity of stim centre
-conditionInfo(1).trialFun=@trial_DCrating_size;
-conditionInfo(1).trialDuration = 6*32/85; % in sec - around 9.0353 (or 100*8/85 or 50*16/85)
+conditionInfo(1).xloc = 8; % eccentricity of stim centre from screen centre in deg
+conditionInfo(1).yloc = 0; % y eccentricity of stim centre
+conditionInfo(1).trialFun=@trial_DCrating_ratio;
+conditionInfo(1).trialDuration = 5*32/85; % in sec - around 9.0353 (or 100*8/85 or 50*16/85)
 conditionInfo(1).motion = 0; % by default, no motion
 conditionInfo(1).xMotion = 0.6; % eccentricity from the other stim in motion condition (xStim = xloc + xMotion)
 % conditionInfo(1).loc1 = 2; % xlocation of the 2nd stimulus IN ADDITION to the first stimulus
@@ -70,7 +70,7 @@ conditionInfo(1).xMotion = 0.6; % eccentricity from the other stim in motion con
 % conditionInfo(1).horizBar = [0 0 conditionInfo(1).loc2+0.5 0.1];
 % conditionInfo(1).lineSize = 0.3;
 
-conditionInfo(1).texRect = [0 0 6 12]; % texture rect for gaussian
+% conditionInfo(1).texRect = [0 0 6 12]; % texture rect for gaussian
 
 %% experimental manipulation
 
@@ -78,8 +78,8 @@ condNb = 1;
 
 % single stim condition
 testedFreq = [85/32]; % in Hz this is the onset of the single stimulus
-% onTime = [1 2 4 6 7];
-onTime = [1 7];
+onTime = [1 2 4 6 7];
+% onTime = [1 7];
 
 % get all the different possible sizes of the stimuli
 stimSize = [0 0 2 2];
@@ -95,40 +95,40 @@ for ratio = [1 10]
 end
 
 % same parameters in all conditions
-for cc=1:(length(testedFreq)*length(onTime)*length(curSize) + 2) * 2 % add the 2 gaussian conditions and multiply 2 for moving or not
+for cc=1:(length(testedFreq)*length(onTime)*length(curSize)) 
     conditionInfo(cc) = conditionInfo(1);
 end
 
-for mot=1:2
+% for mot=1:2
     for testFq=1:length(testedFreq)
         for tt = 1:length(onTime)
             for taille=1:length(curSize)
-                conditionInfo(condNb).motion = mot-1;
+%                 conditionInfo(condNb).motion = mot-1;
                 conditionInfo(condNb).stimSize = curSize(taille,:);
                 conditionInfo(condNb).stimTagFreq = testedFreq(testFq);
                 conditionInfo(condNb).dutyCycle = onTime(tt)/8;
-                conditionInfo(condNb).label = ['S1' num2str(mot) 'Size' num2str(curSize(taille,3),'%.1f') '-' num2str(curSize(taille,4),'%.1f') '-' num2str(round(onTime(tt)/8*100)) '%'];
+                conditionInfo(condNb).label = ['Size' num2str(curSize(taille,3),'%.1f') '-' num2str(curSize(taille,4),'%.1f') '-' num2str(round(onTime(tt)/8*100)) '%'];
                 condNb = condNb+1;
             end
         end
     end
-end
+% end
 
-% add a couple of conditions for gaussian stim
-% change DC
-for mot=1:2
-    for testFq=1:length(testedFreq)
-    for tt = 1:length(onTime)
-        conditionInfo(condNb).stimSize = stimSize; % does not matter but requiered for horizontal check
-        conditionInfo(condNb).stimTagFreq = testedFreq(testFq);
-        conditionInfo(condNb).motion = mot-1;
-        conditionInfo(condNb).stimType = 2;
-        conditionInfo(condNb).dutyCycle = onTime(tt)/8;
-        conditionInfo(condNb).label = ['S2' num2str(mot) 'Size' num2str(curSize(taille,3),'%.1f') '-' num2str(curSize(taille,4),'%.1f') '-' num2str(round(onTime(tt)/8*100)) '%'];
-        condNb = condNb+1;
-    end
-    end
-end
+% % add a couple of conditions for gaussian stim
+% % change DC
+% for mot=1:2
+%     for testFq=1:length(testedFreq)
+%     for tt = 1:length(onTime)
+%         conditionInfo(condNb).stimSize = stimSize; % does not matter but requiered for horizontal check
+%         conditionInfo(condNb).stimTagFreq = testedFreq(testFq);
+%         conditionInfo(condNb).motion = mot-1;
+%         conditionInfo(condNb).stimType = 2;
+%         conditionInfo(condNb).dutyCycle = onTime(tt)/8;
+%         conditionInfo(condNb).label = ['S2' num2str(mot) 'Size' num2str(curSize(taille,3),'%.1f') '-' num2str(curSize(taille,4),'%.1f') '-' num2str(round(onTime(tt)/8*100)) '%'];
+%         condNb = condNb+1;
+%     end
+%     end
+% end
 
 end
 

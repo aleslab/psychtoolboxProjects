@@ -96,9 +96,7 @@ for cycleNb = 1 : nbTotalCycles
     else
         x_coord = xcoord; y_coord = ycoord;
     end
-    if conditionInfo.stimType == 1
-        Screen('FillRect', expInfo.curWindow, stimCol,CenterRectOnPoint(rectStim,x_coord,y_coord));
-    end
+    Screen('FillRect', expInfo.curWindow, stimCol,CenterRectOnPoint(rectStim,x_coord,y_coord));
     prevStim = t;
     t = Screen('Flip', expInfo.curWindow, t + framesOff * ifi - ifi/2);
     if cycleNb == 1
@@ -140,11 +138,11 @@ end
 
 if trialData.validTrial
     % response screen
-    Screen('DrawText', expInfo.curWindow, 'Strength of motion?', 0, expInfo.center(2)-expInfo.center(2)/2, [0 0 0]);
-    Screen('DrawText', expInfo.curWindow, '0. no motion ', 0, expInfo.center(2), [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, 'Flashing or moving?', 0, expInfo.center(2)-expInfo.center(2)/2, [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, '0. Static no motion ', 0, expInfo.center(2), [0 0 0]);
     Screen('DrawText', expInfo.curWindow, '1. weak motion', 0, expInfo.center(2)+expInfo.center(2)/8, [0 0 0]);
     Screen('DrawText', expInfo.curWindow, '2. medium motion', 0, expInfo.center(2)+expInfo.center(2)*2/8, [0 0 0]);
-    Screen('DrawText', expInfo.curWindow, '3. strong motion', 0, expInfo.center(2)+expInfo.center(2)*3/8, [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, '3. Definitely moving', 0, expInfo.center(2)+expInfo.center(2)*3/8, [0 0 0]);
     trialData.respScreenTime =Screen('Flip',expInfo.curWindow);
     % check for key press
     while trialData.response==999 % && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer -ifi/2)

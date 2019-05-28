@@ -12,7 +12,7 @@ expInfo.trialRandomization.nBlockReps   = 8;
 expInfo.viewingDistance = 57;
 
 expInfo.enableTriggers = false;
-expInfo.useBitsSharp = false;
+expInfo.useBitsSharp = true;
 expInfo.trialRandomization.type = 'blocked';
 
 
@@ -38,7 +38,7 @@ conditionInfo(1).maxToAnswer = 999; % next trial starts only after giving an ans
 
 %% stimulus
 conditionInfo(1).stimType = 1; % normal stim (2 = gaussian)
-conditionInfo(1).xloc = 5; % eccentricity of stim centre from screen centre in deg
+conditionInfo(1).xloc = 8; % eccentricity of stim centre from screen centre in deg
 conditionInfo(1).yloc = 0; % y eccentricity of stim centre
 conditionInfo(1).trialFun=@trial_DCrating_oneBar;
 conditionInfo(1).trialDuration = 5*32/85; % in sec - around 9.0353 (or 100*8/85 or 50*16/85)
@@ -56,12 +56,12 @@ conditionInfo(1).texRect = [0 0 6 12]; % texture rect for gaussian
 condNb = 1;
 
 % single stim condition
-testedFreq = [85/32 85/16 85/12 85/8]; % in Hz this is the onset of the single stimulus
-% onTime = [1 2 4 6 7];
+testedFreq = [85/32 85/16 85/8]; % in Hz this is the onset of the single stimulus
 onTime = 1:7;
 
+
 % same parameters in all conditions
-for cc=1:(length(testedFreq)*length(onTime)) * 2 % multiply 2 for moving or not
+for cc=1:(length(testedFreq)*length(onTime)) * 2 + 7*2 % multiply 2 for moving or not
     conditionInfo(cc) = conditionInfo(1);
 end
 
@@ -72,6 +72,22 @@ for mot=0:1
             conditionInfo(condNb).stimTagFreq = testedFreq(testFq);
             conditionInfo(condNb).dutyCycle = onTime(tt)/8;
             conditionInfo(condNb).label = ['m' num2str(mot) '_' num2str(round(testedFreq(testFq))) 'Hz ' num2str(round(onTime(tt)/8*100)) '%'];
+            condNb = condNb+1;
+        end
+    end
+end
+
+% add 7hz (different DC)
+testedFreq = 85/12;
+onTime = [2 3 4 6 8 9 10];
+
+for mot=0:1
+    for testFq=1:length(testedFreq)
+        for tt = 1:length(onTime)
+            conditionInfo(condNb).motion = mot;
+            conditionInfo(condNb).stimTagFreq = testedFreq(testFq);
+            conditionInfo(condNb).dutyCycle = onTime(tt)/12;
+            conditionInfo(condNb).label = ['m' num2str(mot) '_' num2str(round(testedFreq(testFq))) 'Hz ' num2str(round(onTime(tt)/12*100)) '%'];
             condNb = condNb+1;
         end
     end

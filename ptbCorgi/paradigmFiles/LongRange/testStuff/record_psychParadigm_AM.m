@@ -1,4 +1,4 @@
-function [conditionInfo, expInfo] = record_psychParadigm_DCrating_addition(expInfo)
+function [conditionInfo, expInfo] = record_psychParadigm_AM(expInfo)
 % similar to the DCrating exp test different conditions:
 % - one single bar
 % - one low contrast single bar
@@ -16,7 +16,7 @@ expInfo.viewingDistance = 57;
 
 % expInfo.useBitsSharp = false; 
 expInfo.enableTriggers = false;
-expInfo.useBitsSharp = true;
+expInfo.useBitsSharp = false;
 expInfo.trialRandomization.type = 'custom';
 
 %%% this is for fully random trials
@@ -60,13 +60,13 @@ conditionInfo(1).maxToAnswer = 999; % next trial starts only after giving an ans
 % conditionInfo(1).randomizeField = 'false';
 
 %% stimulus
-conditionInfo(1).stimSize = [0 0 0.5 10]; % in deg
-conditionInfo(1).xloc = 5; % eccentricity of stim centre from screen centre in deg
+conditionInfo(1).stimSize = [0 0 3 5]; % in deg
+conditionInfo(1).xloc = -8; % eccentricity of stim centre from screen centre in deg
 conditionInfo(1).yloc = 0; % y eccentricity of stim centre
-conditionInfo(1).trialFun=@record_trial_DC_rating;
+conditionInfo(1).trialFun=@record_trial_AM;
 conditionInfo(1).trialDuration = 6*32/85; % in sec - around 9.0353 (or 100*8/85 or 50*16/85)
 % conditionInfo(1).motion = 0; % by default, no motion 
-conditionInfo(1).xMotion = 0.6; % eccentricity from the other stim in motion condition (xStim = xloc + xMotion)
+conditionInfo(1).xMotion = 16; % eccentricity from the other stim in motion condition (xStim = xloc + xMotion)
 conditionInfo(1).loc1 = 2; % xlocation of the 2nd stimulus IN ADDITION to the first stimulus
 conditionInfo(1).loc2 = 4; % x coord of the 3rd stimulus IN ADDITION to the first stimulus
 conditionInfo(1).horizBar = [0 0 conditionInfo(1).loc2+0.5 0.1];
@@ -78,10 +78,11 @@ conditionInfo(1).texRect = [0 0 6 12];
 
 condNb = 1;
 
-% single stim condition
-testedFreq = [85/8 85/16 85/32]; % in Hz this is the onset of the single stimulus
-onTime = [1 2 4 6 7];
-
+% % single stim condition
+% testedFreq = [85/8 85/16 85/32]; % in Hz this is the onset of the single stimulus
+% onTime = [1 2 4 6 7];
+testedFreq = [85 85/8 85/16 85/32];
+onTime = [1 2 4 6 7 8];
 % same parameters in all conditions
 for cc=2:length(testedFreq)*length(onTime)*2*3
     conditionInfo(cc) = conditionInfo(1);
