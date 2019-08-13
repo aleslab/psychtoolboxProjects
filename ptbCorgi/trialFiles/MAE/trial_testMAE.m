@@ -1,5 +1,4 @@
 function [trialData] = trial_testMAE(expInfo, conditionInfo)
-% is it the same to superimpose gabors and drifting gratings??????
 
 drawFixation(expInfo, expInfo.fixationInfo);
 Screen('Flip', expInfo.curWindow);
@@ -11,116 +10,93 @@ trialData.abortNow   = false;
 trialData.trialStartTime = t;
 trialData.response = 999;
 
+%%%%%%%%%%%%%%%%%
+%%% Screen 
 
+% Find the color values which correspond to white and black.
+white=WhiteIndex(expInfo.curWindow);
+black=BlackIndex(expInfo.curWindow);
+gray=(white+black)/2;
+inc=white-gray;
 
-% Query frame duration: We use it later on to time 'Flips' properly for an
-% animation with constant framerate:
-ifi = Screen('GetFlipInterval', expInfo.curWindow);
-
-
-% Enable alpha-blending, set it to a blend equation useable for linear
-% superposition with alpha-weighted source. This allows to linearly
-% superimpose gabor patches in the mathematically correct manner, should
-% they overlap. Alpha-weighted source means: The 'globalAlpha' parameter in
-% the 'DrawTextures' can be used to modulate the intensity of each pixel of
-% the drawn patch before it is superimposed to the framebuffer image, ie.,
-% it allows to specify a global per-patch contrast value:
-Screen('BlendFunction', expInfo.curWindow, GL_SRC_ALPHA, GL_ONE);
+% Enable alpha blending
+Screen('BlendFunction', expInfo.curWindow, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 % Create a special texture drawing shader for masked texture drawing:
-% Compared to previous demos, we apply the aperture to the grating texture
-% while drawing the grating texture, ie. in a single drawing pass, instead
-% of applying it in a 2nd pass after the grating has been drawn already.
-% This is simpler and faster than the dual-pass method. For this, we store
-% the grating pattern in the luminance channel of a single texture, and the
-% alpha-mask in the alpha channel of *the same texture*. During drawing, we
-% apply a special texture filter shader (created via
-% MakeTextureDrawShader()). This shader allows to treat the alpha channel
-% separate from the luminance or rgb channels of a texture: It applies the
-% alpha channel "as is", but applies some shift to the luminance or rgb
-% channels of the texture.
 glsl = MakeTextureDrawShader(expInfo.curWindow, 'SeparateAlphaChannel');
-    
-
-% Sine gratings
-% [x,y]=meshgrid(-s:s, -s:s);
-% angle=0*pi/180; % 0 deg orientation = vertical
-% f=0.1*2*pi; % cycles/pixel
-% a=cos(angle)*f;
-% b=sin(angle)*f;
-% m=sin(a*x+b*y);
-% % figure;imshow(m)
 
 
-% create a grating (simplified version with no orientation y)
-texsize=100; % Half-Size of the grating image.
-f=0.05; % Grating cycles/pixel
-fr=f*2*pi;
-p=ceil(1/f); % pixels/cycle, rounded up.
-x = meshgrid(-texsize:texsize + p, -texsize:texsize);
-grating = cos(fr*x);
-figure;imshow(grating)
+%%%%%%%%%%%%%%%%%
+%%%% Gratings
+texsize=200; % Half-Size of the grating image.
+cyclespersecond1 = 2; % speed 
+cyclespersecond2 = 2;
 
-% % to add aphase:
-% phase = 0 * pi/180;
-% grating = cos(f*x + phase);
+% spatial freq of the 2 gratings
+f1 = 0.005;
+f2 = 0.008;
+% direction of the 2 gratings
+angle1=0;
+angle2=180;
+adaptDuration=1; % Adaptation duration 30 s
 
-% % Create circular aperture for the alpha-channel:
-% x = meshgrid(-s:s, -s:s);
-% gratingAlpha = cos(f*x);
-% 
-% % Set 2nd channel (the alpha channel) of 'grating'
-% grating(:,:,2) = 0;
-% grating(1:2*s+1, 1:2*s+1, 2) = gratingAlpha;
-    
-    
-% Build drawable texture from gabor matrix: We set the 'floatprecision' flag to 2,
-% so it is internally stored with 32 bits of floating point precision and
-% sign. This allows for effectively 8 million (23 bits) of contrast levels
-% for both the positive- and the negative "half-lobe" of the patch -- More
-% than enough precision for any conceivable display system:
-% gratingtex=Screen('MakeTexture', expInfo.curWindow, m, [], [], 2);
-gratingtex = Screen('MakeTexture', expInfo.curWindow, grating, [], [], [], [], glsl);
+% Calculate parameters of the grating:
+p1=ceil(1/f1); % pixels/cycle, rounded up.
+p2=ceil(1/f2);
+fr1=f1*2*pi;
+fr2=f2*2*pi;
 
+% Create gratings:
+x = meshgrid(-texsize:texsize + p1, -texsize:texsize);
+grating1 = gray + inc*cos(fr1*x);
+x2 = meshgrid(-texsize:texsize + p2, -texsize:texsize);
+grating2 = gray + inc*cos(fr2*x2);
 
-ycoord = expInfo.center(2) - (2 * expInfo.ppd);
-xcoord = expInfo.center(1) + (2 * expInfo.ppd);
+% Store alpha-masked grating in texture and attach the special 'glsl'
+% texture shader to it:
+gratingAdapt1 = Screen('MakeTexture', expInfo.curWindow, grating1 , [], [], [], [], glsl);
+gratingAdapt2 = Screen('MakeTexture', expInfo.curWindow, grating2 , [], [], [], [], glsl);
+% make gratings for the test
+gratingtest1 = Screen('MakeTexture', expInfo.curWindow, double(grating1));
+gratingtest2 = Screen('MakeTexture', expInfo.curWindow, double(grating2));
+
+% assignin('base','g',grating1)
+
 % Definition of the drawn source rectangle on the screen:
-visiblesize = 2*texsize+1;
-srcRect=[xcoord ycoord xcoord+visiblesize ycoord+visiblesize];
+srcRect=[0 0 texsize*2 texsize];
+yEcc = 150; % should change that into degrees
 
-% Screen('DrawTexture', expInfo.curWindow, gratingtex, texrect, location, [], [], 0.5);
-% vbl = Screen('Flip', expInfo.curWindow);
-
-% % Done. Flip one video refresh after the last 'Flip', ie. try to
-% % update the display every video refresh cycle if you can.
-% % This is the same as Screen('Flip', win);
-% % but the provided explicit 'when' deadline allows PTB's internal
-% % frame-skip detector to work more accurately and give a more
-% % meaningful report of missed deadlines at the end of the script. Not
-% % important for this demo, but here just in case you didn't know ;-)
-% vbl = Screen('Flip', expInfo.curWindow, vbl + 0.5 * ifi);
-
+%%%%%%%%%%%%%%%%%
+%%% timing for presentation
+% Query duration of monitor refresh interval:
+ifi=Screen('GetFlipInterval', expInfo.curWindow);
+waitframes = 1;
+waitduration = waitframes * ifi;
 
 % Recompute p, this time without the ceil() operation from above.
 % Otherwise we will get wrong drift speed due to rounding!
-p = 1/f; % pixels/cycle
+p1 = 1/f1; % pixels/cycle
+p2 = 1/f2; % pixels/cycle
 
-% Speed of grating in cycles per second:
-cyclespersecond=1;
-waitframes = 1;
-waitduration = waitframes * ifi;
 % Translate requested speed of the gratings (in cycles per second) into
 % a shift value in "pixels per frame", assuming given waitduration:
-shiftperframe = cyclespersecond * p * waitduration;
-  
-    % Perform initial Flip to sync us to the VBL and for getting an initial
-    % VBL-Timestamp for our "WaitBlanking" emulation:
-    vbl = Screen('Flip', expInfo.curWindow);
-    tstart = vbl;
+shiftperframe1 = cyclespersecond1 * p1 * waitduration;
+shiftperframe2 = cyclespersecond2 * p2 * waitduration;
 
+% Perform initial Flip to sync us to the VBL and for getting an initial
+% VBL-Timestamp for our "WaitBlanking" emulation:
+drawFixation(expInfo, expInfo.fixationInfo);
+vbl = Screen('Flip', expInfo.curWindow);
+
+vblAdaptTime = vbl + adaptDuration;
 i=0;
-while ~KbCheck
+
+
+%%%%%%%%%%%%%%%%%
+%%% Adaptation loop: Run for 30 s or keypress.
+while (vbl < vblAdaptTime) && ~KbCheck
+    drawFixation(expInfo, expInfo.fixationInfo);
+    
     % Shift the grating by "shiftperframe" pixels per frame. We pass
     % the pixel offset 'yoffset' as a parameter to
     % Screen('DrawTexture'). The attached 'glsl' texture draw shader
@@ -128,15 +104,48 @@ while ~KbCheck
     % color channels of the texture during drawing, thereby shifting
     % the gratings. Before drawing the shifted grating, it will mask it
     % with the "unshifted" alpha mask values inside the Alpha channel:
-    yoffset = mod(i*shiftperframe,p);
+    yoffset1 = mod(i*shiftperframe1,p1);
+    yoffset2 = mod(i*shiftperframe2,p2);
     i=i+1;
     
-    % Draw grating texture
-    Screen('DrawTexture', expInfo.curWindow, gratingtex, srcRect, [], [], [], [], [], [], [], [0, yoffset, 0, 0]);
+    % Draw first grating texture, rotated by "angle":
+%     Screen('DrawTexture', w, gratingtex1, srcRect, [], angle1, [], 0.5, [], [], [], [0, yoffset1, 0, 0]);
+%     Screen('DrawTexture', w, gratingtex2, srcRect, [], angle2, [], 0.5, [], [], [], [0, yoffset2, 0, 0]);
+    Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle1, [], 0.5, [], [], [], [0, yoffset1, 0, 0]);
+    Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle2, [], 0.5, [], [], [], [0, yoffset2, 0, 0]);
     
+    % just for fun to check
+    Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1)-200,expInfo.center(2)+yEcc), angle1, [], 0.5, [], [], [], [0, yoffset1, 0, 0]);
+    Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1)+200,expInfo.center(2)+yEcc), angle2, [], 0.5, [], [], [], [0, yoffset2, 0, 0]);
+
+        
     % Flip 'waitframes' monitor refresh intervals after last redraw.
     vbl = Screen('Flip', expInfo.curWindow, vbl + (waitframes - 0.5) * ifi);
 end
+
+%%%%%%%%%%%%%%%%%
+framesPerHalfCycle = 20 ;
+testDuration = 10;
+moveTest = 2; % motion of the stimulus
+drawFixation(expInfo, expInfo.fixationInfo);
+vbl = Screen('Flip', expInfo.curWindow);
+vblTestTime = vbl + testDuration;
+
+%%% test stimulus (flicker)
+while (vbl < vblTestTime) && ~KbCheck
+    drawFixation(expInfo, expInfo.fixationInfo);
+    Screen('DrawTexture', expInfo.curWindow, gratingtest1, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle1, [], 0.5);
+    Screen('DrawTexture', expInfo.curWindow, gratingtest2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle2, [], 0.5);
+    vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * ifi);
+    % move the entire stimulus (overlapping gratings)
+    drawFixation(expInfo, expInfo.fixationInfo);
+    Screen('DrawTexture', expInfo.curWindow, gratingtest1, [], CenterRectOnPoint(srcRect,expInfo.center(1)+moveTest,expInfo.center(2)-yEcc), angle1, [], 0.5);
+    Screen('DrawTexture', expInfo.curWindow, gratingtest2, [], CenterRectOnPoint(srcRect,expInfo.center(1)+moveTest,expInfo.center(2)-yEcc), angle2, [], 0.5);
+    vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * ifi);    
+end
+
+
+
 
 % get response: direction of MAE
 if trialData.validTrial

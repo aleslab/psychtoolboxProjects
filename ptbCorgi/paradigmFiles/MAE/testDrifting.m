@@ -3,6 +3,15 @@ Screen('Preference', 'SkipSyncTests', 1);
 
 %%%%%%%%%%%%%%%%%
 %%% Screen 
+
+
+% Open a double buffered fullscreen window with a gray background:
+PsychDefaultSetup(2)
+PsychImaging('PrepareConfiguration');
+% PsychImaging('AddTask', 'General', 'FloatingPoint32Bit');
+% PsychImaging('AddTask', 'General', 'NormalizedHighresColorRange', 1);
+% [oldmaximumvalue, oldclampcolors, oldapplyToDoubleInputMakeTexture] = Screen('ColorRange', windowPtr [, maximumvalue][, clampcolors][, applyToDoubleInputMakeTexture]);
+
 % Get the list of screens and choose the one with the highest screen number.
 screenNumber=max(Screen('Screens'));
 
@@ -10,13 +19,11 @@ screenNumber=max(Screen('Screens'));
 white=WhiteIndex(screenNumber);
 black=BlackIndex(screenNumber);
 
-% Round gray to integral number, to avoid roundoff artifacts with some
-% graphics cards:
-gray=round((white+black)/2);
+gray=(white+black)/2;
 inc=white-gray;
 
-% Open a double buffered fullscreen window with a gray background:
-[w, wRect]=Screen('OpenWindow',screenNumber, gray,[0 0 1000 1000]);
+[w, wRect]=PsychImaging('OpenWindow',screenNumber, gray,[0 0 1000 1000]);
+% [w, wRect]=PsychImaging('OpenWindow',screenNumber, gray);
 [xCenter, yCenter] = RectCenter(wRect);
 
 % Enable alpha blending
@@ -28,7 +35,7 @@ glsl = MakeTextureDrawShader(w, 'SeparateAlphaChannel');
 
 %%%%%%%%%%%%%%%%%
 %%%% Gratings
-texsize=300; % Half-Size of the grating image.
+texsize=200; % Half-Size of the grating image.
 cyclespersecond1 = 2; % speed 
 cyclespersecond2 = 2;
 
@@ -38,14 +45,13 @@ f2 = 0.008;
 % direction of the 2 gratings
 angle1=0;
 angle2=180;
-adaptDuration=30; % Adaptation duration 30 s
+adaptDuration=1; % Adaptation duration 30 s
 
 % Calculate parameters of the grating:
 p1=ceil(1/f1); % pixels/cycle, rounded up.
 p2=ceil(1/f2);
 fr1=f1*2*pi;
 fr2=f2*2*pi;
-visiblesize=2*texsize+1;
 
 % Create gratings:
 x = meshgrid(-texsize:texsize + p1, -texsize:texsize);
@@ -58,9 +64,11 @@ grating2 = gray + inc*cos(fr2*x2);
 gratingtex1 = Screen('MakeTexture', w, grating1 , [], [], [], [], glsl);
 gratingtex2 = Screen('MakeTexture', w, grating2 , [], [], [], [], glsl);
 
+assignin('base','g',grating1)
+
 % Definition of the drawn source rectangle on the screen:
-xcoord = 0; ycoord = 0;
-srcRect=[xcoord ycoord xcoord+visiblesize ycoord+visiblesize];
+srcRect=[0 0 texsize*2 texsize];
+yEcc = 150; % should change that into degrees
 
 %%%%%%%%%%%%%%%%%
 %%% timing for presentation
@@ -103,9 +111,16 @@ while (vbl < vblAdaptTime) && ~KbCheck
     i=i+1;
     
     % Draw first grating texture, rotated by "angle":
-    Screen('DrawTexture', w, gratingtex1, srcRect, [], angle1, [], 0.5, [], [], [], [0, yoffset1, 0, 0]);
-    Screen('DrawTexture', w, gratingtex2, srcRect, [], angle2, [], 0.5, [], [], [], [0, yoffset2, 0, 0]);
+%     Screen('DrawTexture', w, gratingtex1, srcRect, [], angle1, [], 0.5, [], [], [], [0, yoffset1, 0, 0]);
+%     Screen('DrawTexture', w, gratingtex2, srcRect, [], angle2, [], 0.5, [], [], [], [0, yoffset2, 0, 0]);
+    Screen('DrawTexture', w, gratingtex1, srcRect, CenterRectOnPoint(srcRect,xCenter,yCenter-yEcc), angle1, [], 0.5, [], [], [], [0, yoffset1, 0, 0]);
+    Screen('DrawTexture', w, gratingtex2, srcRect, CenterRectOnPoint(srcRect,xCenter,yCenter-yEcc), angle2, [], 0.5, [], [], [], [0, yoffset2, 0, 0]);
     
+    % just for fun to check
+    Screen('DrawTexture', w, gratingtex1, srcRect, CenterRectOnPoint(srcRect,xCenter-200,yCenter+yEcc), angle1, [], 0.5, [], [], [], [0, yoffset1, 0, 0]);
+    Screen('DrawTexture', w, gratingtex2, srcRect, CenterRectOnPoint(srcRect,xCenter+200,yCenter+yEcc), angle2, [], 0.5, [], [], [], [0, yoffset2, 0, 0]);
+
+        
     % Flip 'waitframes' monitor refresh intervals after last redraw.
     vbl = Screen('Flip', w, vbl + (waitframes - 0.5) * ifi);
 end
@@ -117,17 +132,17 @@ moveTest = 2; % motion of the stimulus
 Screen('FillRect', w,gray);
 vbl = Screen('Flip', w);
 vblTestTime = vbl + testDuration;
-gratingtest1 = Screen('MakeTexture', w, grating1);
-gratingtest2 = Screen('MakeTexture', w, grating2);
+gratingtest1 = Screen('MakeTexture', w, double(grating1));
+gratingtest2 = Screen('MakeTexture', w, double(grating2));
 
 %%% test stimulus (flicker)
 while (vbl < vblTestTime) && ~KbCheck
-    Screen('DrawTexture', w, gratingtest1, [], CenterRectOnPoint(srcRect,xCenter,yCenter), angle1, [], 0.5);
-    Screen('DrawTexture', w, gratingtest2, [], CenterRectOnPoint(srcRect,xCenter,yCenter), angle2, [], 0.5);
+    Screen('DrawTexture', w, gratingtest1, [], CenterRectOnPoint(srcRect,xCenter,yCenter-yEcc), angle1, [], 0.5);
+    Screen('DrawTexture', w, gratingtest2, [], CenterRectOnPoint(srcRect,xCenter,yCenter-yEcc), angle2, [], 0.5);
     vbl = Screen('Flip', w, vbl + (framesPerHalfCycle - 0.5) * ifi);
     % move the entire stimulus (overlapping gratings)
-    Screen('DrawTexture', w, gratingtest1, [], CenterRectOnPoint(srcRect,xCenter+moveTest,yCenter), angle1, [], 0.5);
-    Screen('DrawTexture', w, gratingtest2, [], CenterRectOnPoint(srcRect,xCenter+moveTest,yCenter), angle2, [], 0.5);
+    Screen('DrawTexture', w, gratingtest1, [], CenterRectOnPoint(srcRect,xCenter+moveTest,yCenter-yEcc), angle1, [], 0.5);
+    Screen('DrawTexture', w, gratingtest2, [], CenterRectOnPoint(srcRect,xCenter+moveTest,yCenter-yEcc), angle2, [], 0.5);
     vbl = Screen('Flip', w, vbl + (framesPerHalfCycle - 0.5) * ifi);    
 end
 
