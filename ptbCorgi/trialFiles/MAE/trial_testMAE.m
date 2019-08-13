@@ -28,17 +28,16 @@ glsl = MakeTextureDrawShader(expInfo.curWindow, 'SeparateAlphaChannel');
 
 %%%%%%%%%%%%%%%%%
 %%%% Gratings
-texsize=200; % Half-Size of the grating image.
-cyclespersecond1 = 2; % speed 
-cyclespersecond2 = 2;
+texsize = conditionInfo.stimSize*expInfo.ppd; % Half-Size of the grating image.
+cyclespersecond1 = conditionInfo.speed; % speed 
+cyclespersecond2 = cyclespersecond1; % same speed for both gratings
 
 % spatial freq of the 2 gratings
-f1 = 0.005;
-f2 = 0.008;
+f1 = conditionInfo.f1;
+f2 = conditionInfo.f2;
 % direction of the 2 gratings
-angle1=0;
-angle2=180;
-adaptDuration=1; % Adaptation duration 30 s
+angle1=conditionInfo.angle1;
+angle2=conditionInfo.angle2;
 
 % Calculate parameters of the grating:
 p1=ceil(1/f1); % pixels/cycle, rounded up.
@@ -64,9 +63,11 @@ gratingtest2 = Screen('MakeTexture', expInfo.curWindow, double(grating2));
 
 % Definition of the drawn source rectangle on the screen:
 srcRect=[0 0 texsize*2 texsize];
-yEcc = 150; % should change that into degrees
+yEcc = conditionInfo.yEccentricity * expInfo.ppd;
 
 %%%%%%%%%%%%%%%%%
+adaptDuration=5; % Adaptation duration 30 s
+
 %%% timing for presentation
 % Query duration of monitor refresh interval:
 ifi=Screen('GetFlipInterval', expInfo.curWindow);
@@ -114,9 +115,9 @@ while (vbl < vblAdaptTime) && ~KbCheck
     Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle1, [], 0.5, [], [], [], [0, yoffset1, 0, 0]);
     Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle2, [], 0.5, [], [], [], [0, yoffset2, 0, 0]);
     
-    % just for fun to check
-    Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1)-200,expInfo.center(2)+yEcc), angle1, [], 0.5, [], [], [], [0, yoffset1, 0, 0]);
-    Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1)+200,expInfo.center(2)+yEcc), angle2, [], 0.5, [], [], [], [0, yoffset2, 0, 0]);
+%     % just for fun to check
+%     Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1)-200,expInfo.center(2)+yEcc), angle1, [], 0.5, [], [], [], [0, yoffset1, 0, 0]);
+%     Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1)+200,expInfo.center(2)+yEcc), angle2, [], 0.5, [], [], [], [0, yoffset2, 0, 0]);
 
         
     % Flip 'waitframes' monitor refresh intervals after last redraw.
@@ -124,9 +125,10 @@ while (vbl < vblAdaptTime) && ~KbCheck
 end
 
 %%%%%%%%%%%%%%%%%
-framesPerHalfCycle = 20 ;
+framesPerCycle = 1/conditionInfo.testFreq * round(expInfo.monRefresh);
+framesPerHalfCycle = framesPerCycle/2;
 testDuration = 10;
-moveTest = 2; % motion of the stimulus
+moveTest = conditionInfo.testPhase; 
 drawFixation(expInfo, expInfo.fixationInfo);
 vbl = Screen('Flip', expInfo.curWindow);
 vblTestTime = vbl + testDuration;
