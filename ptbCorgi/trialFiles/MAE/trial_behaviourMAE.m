@@ -2,7 +2,7 @@ function [trialData] = trial_behaviourMAE(expInfo, conditionInfo)
 
 drawFixation(expInfo, expInfo.fixationInfo);
 Screen('Flip', expInfo.curWindow);
-WaitSecs(0.1);
+WaitSecs(2)
 drawFixation(expInfo, expInfo.fixationInfo);
 t = Screen('Flip', expInfo.curWindow);
 trialData.validTrial = true;
@@ -76,7 +76,7 @@ srcRect=[0 0 texsize*2 texsize];
 yEcc = conditionInfo.yEccentricity * expInfo.ppd;
 
 %%%%%%%%%%%%%%%%%
-adaptDuration=5; % Adaptation duration 30 s
+adaptDuration=30; % Adaptation duration 30 s
 
 %%% timing for presentation
 % Query duration of monitor refresh interval:
@@ -139,6 +139,7 @@ framesPerCycle = 1/conditionInfo.testFreq * round(expInfo.monRefresh);
 framesPerHalfCycle = framesPerCycle/2;
 drawFixation(expInfo, expInfo.fixationInfo);
 vbl = Screen('Flip', expInfo.curWindow);
+testStart = vbl;
 
 % %%% test stimulus (flicker)
 % while (vbl < vblTestTime) && ~KbCheck
@@ -169,17 +170,19 @@ end
 
 % get response: direction of MAE
 if trialData.validTrial
-    trialData.respScreenTime =Screen('Flip',expInfo.curWindow);
     % check for key press
     while trialData.response==999 % && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer -ifi/2)
         [keyDown, secs, keyCode] = KbCheck;
         if keyDown
             if keyCode(KbName('LeftArrow'))
                 trialData.response = 'LeftArrow';
-                trialData.rt = secs - trialData.respScreenTime;
+                trialData.rt = secs - testStart;
             elseif keyCode(KbName('RightArrow'))
                 trialData.response = 'LeftArrow';
-                trialData.rt = secs - trialData.respScreenTime;
+                trialData.rt = secs - testStart;
+            elseif keyCode(KbName('DownArrow'))
+                trialData.response = 'DownArrow';
+                trialData.rt = secs - testStart;
             else
                 if keyCode(KbName('ESCAPE'))
                     trialData.abortNow   = true;
