@@ -29,21 +29,25 @@ glsl = MakeTextureDrawShader(expInfo.curWindow, 'SeparateAlphaChannel');
 %%%%%%%%%%%%%%%%%
 %%%% Gratings
 texsize = conditionInfo.stimSize*expInfo.ppd; % Half-Size of the grating image.
-cyclespersecond1 = conditionInfo.speed; % speed 
-cyclespersecond2 = cyclespersecond1; % same speed for both gratings
+cyclespersecond1 = conditionInfo.tempFq; % temporal frequency (related to velocity) 
+cyclespersecond2 = cyclespersecond1; % same for both gratings
 
 % spatial freq of the 2 gratings
-f1 = conditionInfo.f1;
-f2 = conditionInfo.f2;
-% direction of the 2 gratings
-angle1=conditionInfo.angle1;
-angle2=conditionInfo.angle2;
+f1 = conditionInfo.f1/expInfo.ppd; % cycle/deg
+f2 = conditionInfo.f2/expInfo.ppd;
+% direction of the 2 gratings picked randomly
+possibleAngles = Shuffle([0 180]); % 0=right, 180=left
+angle1=possibleAngles(1);
+angle2=possibleAngles(2);
+trialData.angle1 = angle1;
+trialData.angle2 = angle2;
 
 % Calculate parameters of the grating:
 p1=ceil(1/f1); % pixels/cycle, rounded up.
 p2=ceil(1/f2);
 fr1=f1*2*pi;
 fr2=f2*2*pi;
+
 
 % Create gratings:
 x = meshgrid(-texsize:texsize + p1, -texsize:texsize);
@@ -55,9 +59,15 @@ grating2 = gray + inc*cos(fr2*x2);
 % texture shader to it:
 gratingAdapt1 = Screen('MakeTexture', expInfo.curWindow, grating1 , [], [], [], [], glsl);
 gratingAdapt2 = Screen('MakeTexture', expInfo.curWindow, grating2 , [], [], [], [], glsl);
-% make gratings for the test
-gratingtest1 = Screen('MakeTexture', expInfo.curWindow, double(grating1));
-gratingtest2 = Screen('MakeTexture', expInfo.curWindow, double(grating2));
+
+% create gratings for the test
+phase = conditionInfo.testPhase * pi/180; % counterphase
+gratingT1 = gray + inc*cos(fr1*x + phase);
+gratingT2 = gray + inc*cos(fr2*x2 + phase);
+gratingPhaseShift1 = Screen('MakeTexture', expInfo.curWindow, gratingT1);
+gratingPhaseShift2 = Screen('MakeTexture', expInfo.curWindow, gratingT2);
+gratingtest1 = Screen('MakeTexture', expInfo.curWindow, grating1);
+gratingtest2 = Screen('MakeTexture', expInfo.curWindow, grating2);
 
 % assignin('base','g',grating1)
 
@@ -66,7 +76,7 @@ srcRect=[0 0 texsize*2 texsize];
 yEcc = conditionInfo.yEccentricity * expInfo.ppd;
 
 %%%%%%%%%%%%%%%%%
-adaptDuration=5; % Adaptation duration 30 s
+adaptDuration=2; % Adaptation duration 30 s
 
 %%% timing for presentation
 % Query duration of monitor refresh interval:
@@ -128,10 +138,22 @@ end
 framesPerCycle = 1/conditionInfo.testFreq * round(expInfo.monRefresh);
 framesPerHalfCycle = framesPerCycle/2;
 testDuration = 10;
-moveTest = conditionInfo.testPhase; 
 drawFixation(expInfo, expInfo.fixationInfo);
 vbl = Screen('Flip', expInfo.curWindow);
 vblTestTime = vbl + testDuration;
+
+% %%% test stimulus (flicker)
+% while (vbl < vblTestTime) && ~KbCheck
+%     drawFixation(expInfo, expInfo.fixationInfo);
+%     Screen('DrawTexture', expInfo.curWindow, gratingtest1, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle1, [], 0.5);
+%     Screen('DrawTexture', expInfo.curWindow, gratingtest2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle2, [], 0.5);
+%     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * ifi);
+%     % move the entire stimulus (overlapping gratings)
+%     drawFixation(expInfo, expInfo.fixationInfo);
+%     Screen('DrawTexture', expInfo.curWindow, gratingtest1, [], CenterRectOnPoint(srcRect,expInfo.center(1)+moveTest,expInfo.center(2)-yEcc), angle1, [], 0.5);
+%     Screen('DrawTexture', expInfo.curWindow, gratingtest2, [], CenterRectOnPoint(srcRect,expInfo.center(1)+moveTest,expInfo.center(2)-yEcc), angle2, [], 0.5);
+%     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * ifi);    
+% end
 
 %%% test stimulus (flicker)
 while (vbl < vblTestTime) && ~KbCheck
@@ -141,12 +163,10 @@ while (vbl < vblTestTime) && ~KbCheck
     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * ifi);
     % move the entire stimulus (overlapping gratings)
     drawFixation(expInfo, expInfo.fixationInfo);
-    Screen('DrawTexture', expInfo.curWindow, gratingtest1, [], CenterRectOnPoint(srcRect,expInfo.center(1)+moveTest,expInfo.center(2)-yEcc), angle1, [], 0.5);
-    Screen('DrawTexture', expInfo.curWindow, gratingtest2, [], CenterRectOnPoint(srcRect,expInfo.center(1)+moveTest,expInfo.center(2)-yEcc), angle2, [], 0.5);
+    Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift1, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle1, [], 0.5);
+    Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle2, [], 0.5);
     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * ifi);    
 end
-
-
 
 
 % get response: direction of MAE
