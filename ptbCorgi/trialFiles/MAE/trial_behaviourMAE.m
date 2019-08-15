@@ -36,24 +36,23 @@ cyclespersecond2 = cyclespersecond1; % same for both gratings
 f1 = conditionInfo.f1/expInfo.ppd; % cycle/deg
 f2 = conditionInfo.f2/expInfo.ppd;
 % direction of the 2 gratings picked randomly
-possibleAngles = Shuffle([0 180]); % 0=right, 180=left
+possibleAngles = Shuffle([0 180]); % 0=left, 180=right
 angle1=possibleAngles(1);
 angle2=possibleAngles(2);
 trialData.angle1 = angle1;
 trialData.angle2 = angle2;
 
 % Calculate parameters of the grating:
-p1=ceil(1/f1); % pixels/cycle, rounded up.
-p2=ceil(1/f2);
 fr1=f1*2*pi;
 fr2=f2*2*pi;
 
 
 % Create gratings:
-x = meshgrid(-texsize:texsize + p1, -texsize:texsize);
-grating1 = gray + inc*cos(fr1*x);
-x2 = meshgrid(-texsize:texsize + p2, -texsize:texsize);
-grating2 = gray + inc*cos(fr2*x2);
+x = meshgrid(-texsize:texsize, -texsize:texsize);
+grating1 = gray + inc*sin(fr1*x);
+x2 = meshgrid(-texsize:texsize, -texsize:texsize);
+grating2 = gray + inc*sin(fr2*x2);
+
 
 % Store alpha-masked grating in texture and attach the special 'glsl'
 % texture shader to it:
@@ -61,9 +60,11 @@ gratingAdapt1 = Screen('MakeTexture', expInfo.curWindow, grating1 , [], [], [], 
 gratingAdapt2 = Screen('MakeTexture', expInfo.curWindow, grating2 , [], [], [], [], glsl);
 
 % create gratings for the test
+% the 2 gratings are created with the same sin 0 such that it gives a more
+% 'edgy' stimulus (which is more natural and that the brain likes)
 phase = conditionInfo.testPhase * pi/180; % counterphase
-gratingT1 = gray + inc*cos(fr1*x + phase);
-gratingT2 = gray + inc*cos(fr2*x2 + phase);
+gratingT1 = gray + inc*sin(fr1*x + phase);
+gratingT2 = gray + inc*sin(fr2*x2 + phase);
 gratingPhaseShift1 = Screen('MakeTexture', expInfo.curWindow, gratingT1);
 gratingPhaseShift2 = Screen('MakeTexture', expInfo.curWindow, gratingT2);
 gratingtest1 = Screen('MakeTexture', expInfo.curWindow, grating1);
@@ -76,7 +77,7 @@ srcRect=[0 0 texsize*2 texsize];
 yEcc = conditionInfo.yEccentricity * expInfo.ppd;
 
 %%%%%%%%%%%%%%%%%
-adaptDuration=30; % Adaptation duration 30 s
+adaptDuration=1; % Adaptation duration 30 s
 
 %%% timing for presentation
 % Query duration of monitor refresh interval:
@@ -121,7 +122,7 @@ while (vbl < vblAdaptTime) && ~KbCheck
     
     % Draw first grating texture, rotated by "angle":
 %     Screen('DrawTexture', w, gratingtex1, srcRect, [], angle1, [], 0.5, [], [], [], [0, yoffset1, 0, 0]);
-%     Screen('DrawTexture', w, gratingtex2, srcRect, [], angle2, [], 0.5, [], [], [], [0, yoffset2, 0, 0]);
+%     Screen('DrawTexture', w, gratingtex2, srcRect, [], angle2, [], 0.5, [], [], [],30 [0, yoffset2, 0, 0]);
     Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle1, [], 0.5, [], [], [], [0, yoffset1, 0, 0]);
     Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle2, [], 0.5, [], [], [], [0, yoffset2, 0, 0]);
     
@@ -151,9 +152,21 @@ testStart = vbl;
 %     drawFixation(expInfo, expInfo.fixationInfo);
 %     Screen('DrawTexture', expInfo.curWindow, gratingtest1, [], CenterRectOnPoint(srcRect,expInfo.center(1)+moveTest,expInfo.center(2)-yEcc), angle1, [], 0.5);
 %     Screen('DrawTexture', expInfo.curWindow, gratingtest2, [], CenterRectOnPoint(srcRect,expInfo.center(1)+moveTest,expInfo.center(2)-yEcc), angle2, [], 0.5);
-%     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * ifi);    
+%     vbl = Screen('Flip', expInfo.curWindow, + p vbl + (framesPerHalfCycle - 0.5) * ifi);    
 % end
 
+%%%%% ATTENTION
+%%% at the moment 1 grating has higher contrast than the other grating!!! 
+%%% here are some lines to check if the 2 are the same
+    Screen('DrawTexture', expInfo.curWindow, gratingtest1, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle1, [], 0.5);
+    Screen('DrawTexture', expInfo.curWindow, gratingtest2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle2, [], 0.5);
+    vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * ifi);
+    imageArray=Screen('GetImage', expInfo.curWindow);
+    figure; plot(imageArray(300,:,1))
+    t=linspace(-2*pi,2*pi,100);
+    figure; plot(t,sin(2*pi*0.13*t)+.5*sin(2*pi*0.53*t))  % this is what i get now
+    figure; plot(t,.5*sin(2*pi*0.13*t)+.5*sin(2*pi*0.53*t))  % this is what i should have
+ 
 %%% test stimulus 
 while ~KbCheck
     drawFixation(expInfo, expInfo.fixationInfo);
