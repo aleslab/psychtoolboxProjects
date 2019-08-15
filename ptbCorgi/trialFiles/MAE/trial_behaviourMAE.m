@@ -178,7 +178,7 @@ if trialData.validTrial
                 trialData.response = 'LeftArrow';
                 trialData.rt = secs - testStart;
             elseif keyCode(KbName('RightArrow'))
-                trialData.response = 'LeftArrow';
+                trialData.response = 'RightArrow';
                 trialData.rt = secs - testStart;
             elseif keyCode(KbName('DownArrow'))
                 trialData.response = 'DownArrow';
