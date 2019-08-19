@@ -1,11 +1,9 @@
-function [trialData] = trial_behaviourMAE(expInfo, conditionInfo)
-%%% different BlendFunctions for overlapping the 2 gratings
+function [trialData] = trial_MAE_sameBlendFunction(expInfo, conditionInfo)
+%%% same BlendFunction over the entire program
 
-%%%% contrast ok now but no fixation 
 
 drawFixation(expInfo, expInfo.fixationInfo);
 Screen('Flip', expInfo.curWindow);
-WaitSecs(2)
 drawFixation(expInfo, expInfo.fixationInfo);
 t = Screen('Flip', expInfo.curWindow);
 trialData.validTrial = true;
@@ -27,7 +25,7 @@ gray=(white+black)/2;
 inc=white-gray;
 
 % Enable alpha blending
-Screen('BlendFunction', expInfo.curWindow, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+Screen('BlendFunction', expInfo.curWindow, GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 % Screen('BlendFunction', expInfo.curWindow, GL_ONE, GL_ONE);
 
 % Create a special texture drawing shader for masked texture drawing:
@@ -45,7 +43,7 @@ f1 = conditionInfo.f1/expInfo.ppd; % cycle/deg
 f2 = conditionInfo.f2/expInfo.ppd;
 % direction of the 2 gratings picked randomly
 possibleAngles = Shuffle([0 180]); % 0=left, 180=right
-angle1=possibleAngles(1);
+angle1=possibleAngles(1)
 angle2=possibleAngles(2);
 trialData.angle1 = angle1;
 trialData.angle2 = angle2;
@@ -54,13 +52,16 @@ trialData.angle2 = angle2;
 fr1=f1*2*pi;
 fr2=f2*2*pi;
 
-
 % Create gratings:
 x = meshgrid(-texsize:texsize, -texsize:texsize);
 grating1 = gray + inc*sin(fr1*x);
 x2 = meshgrid(-texsize:texsize, -texsize:texsize);
 grating2 = gray + inc*sin(fr2*x2);
-
+% add alpha column
+grating1 = repmat(grating1,[1,1,3]);
+grating2 = repmat(grating2,[1,1,3]);
+grating1(:,:,4) = ones(size(grating1,1));
+grating2(:,:,4) = ones(size(grating2,1))*.5;
 
 % Store alpha-masked grating in texture and attach the special 'glsl'
 % texture shader to it:
@@ -73,6 +74,12 @@ gratingAdapt2 = Screen('MakeTexture', expInfo.curWindow, grating2 , [], [], [], 
 phase = conditionInfo.testPhase * pi/180; % counterphase
 gratingT1 = gray + inc*sin(fr1*x + phase);
 gratingT2 = gray + inc*sin(fr2*x2 + phase);
+% add alpha column
+gratingT1 = repmat(gratingT1,[1,1,3]);
+gratingT2 = repmat(gratingT2,[1,1,3]);
+gratingT1(:,:,4) = ones(size(gratingT1,1));
+gratingT2(:,:,4) = ones(size(gratingT2,1))*.5;
+% make texture
 gratingPhaseShift1 = Screen('MakeTexture', expInfo.curWindow, gratingT1);
 gratingPhaseShift2 = Screen('MakeTexture', expInfo.curWindow, gratingT2);
 gratingtest1 = Screen('MakeTexture', expInfo.curWindow, grating1);
@@ -85,7 +92,7 @@ srcRect=[0 0 texsize*1.5 texsize];
 yEcc = conditionInfo.yEccentricity * expInfo.ppd;
 
 %%%%%%%%%%%%%%%%%
-adaptDuration=30; % Adaptation duration 30 s
+adaptDuration=3; % Adaptation duration 30 s
 
 %%% timing for presentation
 % Query duration of monitor refresh interval:
@@ -111,19 +118,15 @@ vbl = Screen('Flip', expInfo.curWindow);
 vblAdaptTime = vbl + adaptDuration;
 i=0;
 
-% %%%%% To check that the 2 overlaping gratings have same contrast
-%     Screen('BlendFunction', expInfo.curWindow, GL_SRC_ALPHA, GL_ZERO);
-%     Screen('DrawTexture', expInfo.curWindow, gratingtest1, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle1, [], 0.5);
-%     Screen('BlendFunction', expInfo.curWindow, GL_SRC_ALPHA, GL_ONE);
-%     Screen('DrawTexture', expInfo.curWindow, gratingtest2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle2, [], 0.5);
+% %%%% To check that the 2 overlaping gratings have same contrast
+% Screen('BlendFunction', expInfo.curWindow, GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+%     Screen('DrawTexture', expInfo.curWindow, gratingtest1, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle1);
+%     Screen('DrawTexture', expInfo.curWindow, gratingtest2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle2);
 %     vbl = Screen('Flip', expInfo.curWindow);
 %     imageArray=Screen('GetImage', expInfo.curWindow);
 %     figure; plot(imageArray(300,:,1))
 %     t=linspace(-2*pi,2*pi,100);
-%     figure; plot(t,sin(2*pi*0.13*t+angle1)+sin(2*pi*0.53*t+angle2))  % this is what
-% %     i should have (add +pi because one grating is reversed = opposite
-% %     direction)
-
+%     figure; plot(t,sin(2*pi*0.13*t+angle1)+sin(2*pi*0.53*t+angle2))  % this is what i should have (add +pi because one grating is reversed = opposite direction)
 
 %%%%%%%%%%%%%%%%%
 %%% Adaptation loop: Run for 30 s or keypress.
@@ -144,10 +147,8 @@ while (vbl < vblAdaptTime) && ~KbCheck
     % Draw first grating texture, rotated by "angle":
 %     Screen('DrawTexture', w, gratingtex1, srcRect, [], angle1, [], 0.5, [], [], [], [0, yoffset1, 0, 0]);
 %     Screen('DrawTexture', w, gratingtex2, srcRect, [], angle2, [], 0.5, [], [], [],30 [0, yoffset2, 0, 0]);
-    Screen('BlendFunction', expInfo.curWindow, GL_SRC_ALPHA, GL_ZERO);
-    Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle1, [], 0.5, [], [], [], [0, yoffset1, 0, 0]);
-    Screen('BlendFunction', expInfo.curWindow, GL_SRC_ALPHA, GL_ONE);
-    Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2, [], 0.5, [], [], [], [0, yoffset2, 0, 0]);
+    Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle1, [], [], [], [], [], [0, yoffset1, 0, 0]);
+    Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2, [], [], [], [], [], [0, yoffset2, 0, 0]);
 
 %     % just for fun to check
 %     Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1)-200,expInfo.center(2)+yEcc), angle1, [], 0.5, [], [], [], [0, yoffset1, 0, 0]);
@@ -156,7 +157,7 @@ while (vbl < vblAdaptTime) && ~KbCheck
         imageArray=Screen('GetImage', expInfo.curWindow);
         figure; plot(imageArray(700,:,1))
     end
-    
+        
     % Flip 'waitframes' monitor refresh intervals after last redraw.
     vbl = Screen('Flip', expInfo.curWindow, vbl + (waitframes - 0.5) * ifi);
 end
@@ -186,17 +187,13 @@ testStart = vbl;
 %%% test stimulus 
 while ~KbCheck
     drawFixation(expInfo, expInfo.fixationInfo);
-    Screen('BlendFunction', expInfo.curWindow, GL_SRC_ALPHA, GL_ZERO);
-    Screen('DrawTexture', expInfo.curWindow, gratingtest1, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle1, [], 0.5);
-    Screen('BlendFunction', expInfo.curWindow, GL_SRC_ALPHA, GL_ONE);
-    Screen('DrawTexture', expInfo.curWindow, gratingtest2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2, [], 0.5);
+    Screen('DrawTexture', expInfo.curWindow, gratingtest1, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle1);
+    Screen('DrawTexture', expInfo.curWindow, gratingtest2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2);
     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * ifi);
     % move the entire stimulus (overlapping gratings)
     drawFixation(expInfo, expInfo.fixationInfo);
-    Screen('BlendFunction', expInfo.curWindow, GL_SRC_ALPHA, GL_ZERO);
-    Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift1, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle1, [], 0.5);
-    Screen('BlendFunction', expInfo.curWindow, GL_SRC_ALPHA, GL_ONE);
-    Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2, [], 0.5);
+    Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift1, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle1);
+    Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2);
     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * ifi);    
 end
 
