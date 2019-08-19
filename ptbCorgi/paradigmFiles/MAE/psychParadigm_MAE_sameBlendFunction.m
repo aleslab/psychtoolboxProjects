@@ -1,10 +1,10 @@
-function [conditionInfo, expInfo] = psychParadigm_behaviourMAE(expInfo)
+function [conditionInfo, expInfo] = psychParadigm_MAE_sameBlendFunction(expInfo)
 
 
 KbName('UnifyKeyNames');
 
 %paradigmName is what will be prepended to data files
-expInfo.paradigmName = 'behaviourMAE';
+expInfo.paradigmName = 'MAE';
 expInfo.trialRandomization.type = 'blocked';
 expInfo.trialRandomization.blockByField = 'stimSize'; 
 expInfo.trialRandomization.nBlockReps = 4; 
@@ -29,7 +29,7 @@ conditionInfo(1).type = 'Generic';
 conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;
 conditionInfo(1).intervalBeep = 0;
-conditionInfo(1).trialFun=@trial_behaviourMAE;
+conditionInfo(1).trialFun=@trial_MAE_sameBlendFunction;
 conditionInfo(1).stimSize = 8; % Half-Size of the grating image in degrees
 conditionInfo(1).yEccentricity = 3;
 conditionInfo(1).f1 = 0.53; % in cycle (changes to c/deg in the trial pg)

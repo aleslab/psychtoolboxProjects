@@ -40,7 +40,7 @@ cyclespersecond1 = 2; % velocity or temporal frequency??????
 cyclespersecond2 = 2;
 
 % spatial freq of the 2 gratings
-f1 = 0.005;
+f1 = 0.005; % Grating cycles/pixel
 f2 = 0.008;
 % direction of the 2 gratings
 angle1=0;
