@@ -1,6 +1,7 @@
 function [trialData] = trial_MAE(expInfo, conditionInfo)
 %%% same BlendFunction over the entire program
 %%% what transition between adaptation and test? 1 flip? More?
+%%% was planning to ask twice for MAE direction but KbCheck messes it up
 
 trialData.validTrial = true;
 trialData.abortNow   = false;
@@ -115,7 +116,6 @@ shiftperframe2 = cyclespersecond2 * p2 * waitduration;
 
 % Perform initial Flip to sync us to the VBL and for getting an initial
 % VBL-Timestamp for our "WaitBlanking" emulation:
-drawFixation(expInfo, expInfo.fixationInfo);
 if expInfo.useBitsSharp
     f1Trigger = expInfo.triggerInfo.ssvepTagF1;
 else
@@ -124,6 +124,7 @@ end
 if expInfo.useBitsSharp
     ptbCorgiSendTrigger(expInfo,'starttrial',true);
 end
+drawFixation(expInfo, expInfo.fixationInfo);
 vbl = Screen('Flip', expInfo.curWindow);
 trialData.trialStartTime = vbl;
 
@@ -147,7 +148,7 @@ i=0;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if conditionInfo.direction == 99
     %%%%%%%%%%%%%%%%% No adaptation
-    while (vbl < vblAdaptTime) && ~KbCheck
+    while (vbl < vblAdaptTime) && ~KbCheck(expInfo.deviceIndex)
         drawFixation(expInfo, expInfo.fixationInfo);
         Screen('DrawTexture', expInfo.curWindow, gratingtest1, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle1);
         Screen('DrawTexture', expInfo.curWindow, gratingtest2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2);
@@ -156,7 +157,7 @@ if conditionInfo.direction == 99
 else
     %%%%%%%%%%%%%%%%%
     %%% Adaptation loop: Run for 30 s or keypress.
-    while (vbl < vblAdaptTime) && ~KbCheck
+    while (vbl < vblAdaptTime) && ~KbCheck(expInfo.deviceIndex)
         drawFixation(expInfo, expInfo.fixationInfo);
         
         % Shift the grating by "shiftperframe" pixels per frame. We pass
@@ -188,10 +189,11 @@ else
         vbl = Screen('Flip', expInfo.curWindow, vbl + (waitframes - 0.5) * ifi);
     end
     
-    if KbCheck
+    [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
+    if keyDown
         trialData.validTrial = false;
         ptbCorgiSendTrigger(expInfo,'raw',1,abortExpTrigger); % abort trial
-        [keyDown, secs, keyCode] = KbCheck;
+        
         if keyCode(KbName('ESCAPE'))
             trialData.abortNow   = true;
         end
@@ -203,6 +205,7 @@ end
 %%%%%%%%%%%%%%%%% 1st test
 framesPerCycle = 1/conditionInfo.testFreq * round(expInfo.monRefresh);
 framesPerHalfCycle = framesPerCycle/2;
+ptbCorgiSendTrigger(expInfo,'conditionNumber',true,expInfo.trigTestNb);
 drawFixation(expInfo, expInfo.fixationInfo);
 vbl = Screen('Flip', expInfo.curWindow);
 testStart = vbl;
@@ -225,7 +228,7 @@ testStart = vbl;
 vblTest = vbl + conditionInfo.vblTestDuration;
 
 %%% test stimulus
-while (vbl < vblTest) && ~KbCheck
+while (vbl < vblTest) && ~KbCheck(expInfo.deviceIndex)
     drawFixation(expInfo, expInfo.fixationInfo);
     Screen('DrawTexture', expInfo.curWindow, gratingtest1, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle1);
     Screen('DrawTexture', expInfo.curWindow, gratingtest2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2);
@@ -239,59 +242,63 @@ while (vbl < vblTest) && ~KbCheck
     ptbCorgiSendTrigger(expInfo,'clear',0);
     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * ifi);
     
-    if KbCheck
+    [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
+    if keyDown
         trialData.validTrial = false;
         ptbCorgiSendTrigger(expInfo,'raw',1,abortExpTrigger); % abort trial
-        [keyDown, secs, keyCode] = KbCheck;
         if keyCode(KbName('ESCAPE'))
             trialData.abortNow   = true;
         end
     end
 end
 
-
-% get response: direction of MAE
-if trialData.validTrial
-    % response screen
-    Screen('DrawText', expInfo.curWindow, 'direction of motion?', 0, expInfo.center(2), [0 0 0]);
-    Screen('DrawText', expInfo.curWindow, 'left arrow, right arrow, down arrow for no motion', 0, expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
-    trialData.respScreenTime =Screen('Flip',expInfo.curWindow);
-    % check for key press
-    while trialData.response==999 % && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer -ifi/2)
-        [keyDown, secs, keyCode] = KbCheck;
-        if keyDown
-            if keyCode(KbName('LeftArrow'))
-                trialData.response = 'LeftArrow';
-                trialData.rt = secs - testStart;
-            elseif keyCode(KbName('RightArrow'))
-                trialData.response = 'RightArrow';
-                trialData.rt = secs - testStart;
-            elseif keyCode(KbName('DownArrow'))
-                trialData.response = 'DownArrow';
-                trialData.rt = secs - testStart;
-            else
-                if keyCode(KbName('ESCAPE'))
-                    trialData.abortNow   = true;
-                end
-                trialData.validTrial = false;break;
-                ptbCorgiSendTrigger(expInfo,'raw',1,abortExpTrigger); % abort trial
-            end
-        end
-    end
-    FlushEvents('keyDown');
-end
-WaitSecs(0.2); % so that KbCheck is at 0
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% KbCheck messes up with the expt
+% % get response: direction of MAE
+% if trialData.validTrial
+%     % response screen
+%     Screen('DrawText', expInfo.curWindow, 'direction of motion?', 0, expInfo.center(2), [0 0 0]);
+%     Screen('DrawText', expInfo.curWindow, 'left arrow, right arrow, down arrow for no motion', 0, expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
+%     trialData.respScreenTime =Screen('Flip',expInfo.curWindow);
+%     % check for key press
+%     while trialData.response==999 % && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer -ifi/2)
+%         [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
+%         if keyDown
+%             if keyCode(KbName('LeftArrow'))
+%                 trialData.response = 'LeftArrow';
+%                 trialData.rt = secs - testStart;
+%             elseif keyCode(KbName('RightArrow'))
+%                 trialData.response = 'RightArrow';
+%                 trialData.rt = secs - testStart;
+%             elseif keyCode(KbName('DownArrow'))
+%                 trialData.response = 'DownArrow';
+%                 trialData.rt = secs - testStart;
+%             else
+%                 if keyCode(KbName('ESCAPE'))
+%                     trialData.abortNow   = true;
+%                 end
+%                 trialData.validTrial = false;break;
+%                 ptbCorgiSendTrigger(expInfo,'raw',1,abortExpTrigger); % abort trial
+%             end
+%         end
+%     end
+%     FlushEvents('keyDown');
+% end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%    LOOP     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+drawFixation(expInfo, expInfo.fixationInfo);
+vbl = Screen('Flip', expInfo.curWindow);
+    
 % loop over top-up adaptation + test
 for nbTrial=1:conditionInfo.nbRepeat
     vblTopUP = vbl + conditionInfo.vblAdaptTopUP;
     if conditionInfo.direction == 99
         %%%%%%%%%%%%%%%%% No adaptation
-        while (vbl < vblTopUP) && ~KbCheck
+        while (vbl < vblTopUP) && ~KbCheck(expInfo.deviceIndex)
             drawFixation(expInfo, expInfo.fixationInfo);
             Screen('DrawTexture', expInfo.curWindow, gratingtest1, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle1);
             Screen('DrawTexture', expInfo.curWindow, gratingtest2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2);
@@ -300,7 +307,7 @@ for nbTrial=1:conditionInfo.nbRepeat
     else
         %%%%%%%%%%%%%%%%%
         %%% Adaptation loop: Run for 30 s or keypress.
-        while (vbl < vblTopUP) && ~KbCheck
+        while (vbl < vblTopUP) && ~KbCheck(expInfo.deviceIndex)
             drawFixation(expInfo, expInfo.fixationInfo);
             
             % Shift the grating by "shiftperframe" pixels per frame. We pass
@@ -326,25 +333,26 @@ for nbTrial=1:conditionInfo.nbRepeat
         end
     end
     
-    if KbCheck
+    [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
+    if keyDown
         trialData.validTrial = false;
         ptbCorgiSendTrigger(expInfo,'raw',1,abortExpTrigger); % abort trial
-        [keyDown, secs, keyCode] = KbCheck;
         if keyCode(KbName('ESCAPE'))
             trialData.abortNow   = true;
         end
     end
     
-    
-    
+    ptbCorgiSendTrigger(expInfo,'conditionNumber',true,expInfo.trigTestNb);
+    drawFixation(expInfo, expInfo.fixationInfo);
+    vbl = Screen('Flip', expInfo.curWindow);
+
     if nbTrial==conditionInfo.nbRepeat
-        drawFixation(expInfo, expInfo.fixationInfo);
-        vbl = Screen('Flip', expInfo.curWindow);
         test2Start = vbl;
     end
     vblTest = vbl + conditionInfo.vblTestDuration;
+    
     %%% test stimulus
-    while (vbl < vblTest) && ~KbCheck
+    while (vbl < vblTest) && ~KbCheck(expInfo.deviceIndex)
         drawFixation(expInfo, expInfo.fixationInfo);
         Screen('DrawTexture', expInfo.curWindow, gratingtest1, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle1);
         Screen('DrawTexture', expInfo.curWindow, gratingtest2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2);
@@ -358,10 +366,10 @@ for nbTrial=1:conditionInfo.nbRepeat
         vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * ifi);
     end
     
-    if KbCheck
+    [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
+    if keyDown
         trialData.validTrial = false;
         ptbCorgiSendTrigger(expInfo,'raw',1,abortExpTrigger); % abort trial
-        [keyDown, secs, keyCode] = KbCheck;
         if keyCode(KbName('ESCAPE'))
             trialData.abortNow   = true;
         end
@@ -373,12 +381,13 @@ end
 % get response: direction of MAE
 if trialData.validTrial
     % response screen
-    Screen('DrawText', expInfo.curWindow, 'direction of motion?', 0, expInfo.center(2), [0 0 0]);
-    Screen('DrawText', expInfo.curWindow, 'left arrow, right arrow, down arrow for no motion', 0, expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, 'direction of the after effect?', 0, expInfo.center(2)-expInfo.center(2)/4, [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, 'left arrow, right arrow', 0, expInfo.center(2), [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, 'down arrow for no or back and forth motion', 0, expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
     trialData.respScreenTime =Screen('Flip',expInfo.curWindow);
     % check for key press
     while trialData.response2==999 % && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer -ifi/2)
-        [keyDown, secs, keyCode] = KbCheck;
+        [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
         if keyDown
             if keyCode(KbName('LeftArrow'))
                 trialData.response2 = 'LeftArrow';
@@ -401,7 +410,12 @@ if trialData.validTrial
     FlushEvents('keyDown');
 end
 
-if trialData.response==999 % no response
+
+% if trialData.response==999 % no response
+%     trialData.validTrial = false;
+%     ptbCorgiSendTrigger(expInfo,'raw',1,abortExpTrigger); % abort trial
+% end
+if trialData.response2==999 % no response
     trialData.validTrial = false;
     ptbCorgiSendTrigger(expInfo,'raw',1,abortExpTrigger); % abort trial
 end

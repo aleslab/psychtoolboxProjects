@@ -8,40 +8,38 @@ KbName('UnifyKeyNames');
 
 %paradigmName is what will be prepended to data files
 expInfo.paradigmName = 'MAE';
-expInfo.trialRandomization.type = 'blocked';
-expInfo.trialRandomization.blockByField = 'direction'; 
-expInfo.trialRandomization.nBlockReps = 3; 
 
 expInfo.viewingDistance = 57;
 
-% expInfo.useBitsSharp = true;
-% expInfo.enableTriggers = true;
-expInfo.useBitsSharp = false; 
-expInfo.enableTriggers = false;
+expInfo.useBitsSharp = true;
+expInfo.enableTriggers = true;
+% expInfo.useBitsSharp = false; 
+% expInfo.enableTriggers = false;
 
 expInfo.fixationInfo(1).type  = 'cross';
 expInfo.fixationInfo(1).size  = .2;
 expInfo.fixationInfo(1).lineWidthPix = 2;
 expInfo.fixationInfo(1).color = 0;
 expInfo.fixationInfo(1).loc = [0 -5]; % location of the fixation relative to centre in degrees (1st number is horizontal, 2nd is vertical)
+expInfo.trigTestNb = 50 ; % trigger at the beginning of each test
 
 expInfo.instructions = 'FIXATE the cross';
 
-conditionInfo(1).nReps = 1; 
+conditionInfo(1).nReps = 3; 
 conditionInfo(1).type = 'Generic';
 conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;
 conditionInfo(1).intervalBeep = 0;
 conditionInfo(1).trialFun=@trial_MAE;
-conditionInfo(1).stimSize = 8; % Half-Size of the grating image in degrees
+conditionInfo(1).stimSize = 10; % Half-Size of the grating image in degrees
 conditionInfo(1).yEccentricity = 3;
 conditionInfo(1).f1 = 0.53; % in cycle (changes to c/deg in the trial pg)
 conditionInfo(1).tempFq = 85/17; % 5 Hz
 conditionInfo(1).testFreq = 85/21; % 4 Hz 
-conditionInfo(1).vblAdaptTopUP = 3; % re-adaptation 10 seconds
-conditionInfo(1).vblTestDuration = 2; % test duration 5 seconds 
-conditionInfo(1).adaptDuration = 2; % % Adaptation duration 30 s
-conditionInfo(1).nbRepeat = 4; % in addition to the first adaptation
+conditionInfo(1).vblAdaptTopUP = 10; % re-adaptation 10 seconds
+conditionInfo(1).vblTestDuration = 5; % test duration 5 seconds 
+conditionInfo(1).adaptDuration = 30; % % Adaptation duration 30 s
+conditionInfo(1).nbRepeat = 4; % nb adaptation in addition to the first adaptation
 
 %%%%%%%%%%%% parameters for the different conditions
 % spatial freq of the 2 gratings
