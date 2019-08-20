@@ -1,20 +1,25 @@
 function [conditionInfo, expInfo] = psychParadigm_MAE(expInfo)
-% 5 times 5 s tests per block, each block repeated 3 times
+% 9 times 5 s tests per trial, 2 trials per cond
 % 12 conditions
-% 30 epochs of 2 s per condition
-% 1h+ session
+% 90 epochs of 2 s per condition
+% 1h+ session.. might need one less repeat
+% pb is that invalid trials are added to the end all together without breaks
 
 KbName('UnifyKeyNames');
 
 %paradigmName is what will be prepended to data files
 expInfo.paradigmName = 'MAE';
-
 expInfo.viewingDistance = 57;
+expInfo.trialRandomization.type = 'custom';
 
-expInfo.useBitsSharp = true;
-expInfo.enableTriggers = true;
-% expInfo.useBitsSharp = false; 
-% expInfo.enableTriggers = false;
+%%% fully random trials
+expInfo.trialRandomization.trialList = Shuffle(repmat(1:12,1,2));% 12 trials repeated 2 times
+expInfo.trialRandomization.blockList = 1:length(expInfo.trialRandomization.trialList); % one trial per block
+
+% expInfo.useBitsSharp = true;
+% expInfo.enableTriggers = true;
+expInfo.useBitsSharp = false; 
+expInfo.enableTriggers = false;
 
 expInfo.fixationInfo(1).type  = 'cross';
 expInfo.fixationInfo(1).size  = .2;
@@ -25,7 +30,7 @@ expInfo.trigTestNb = 50 ; % trigger at the beginning of each test
 
 expInfo.instructions = 'FIXATE the cross';
 
-conditionInfo(1).nReps = 3; 
+conditionInfo(1).nReps = 1; 
 conditionInfo(1).type = 'Generic';
 conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;
@@ -39,7 +44,7 @@ conditionInfo(1).testFreq = 85/21; % 4 Hz
 conditionInfo(1).vblAdaptTopUP = 10; % re-adaptation 10 seconds
 conditionInfo(1).vblTestDuration = 5; % test duration 5 seconds 
 conditionInfo(1).adaptDuration = 30; % % Adaptation duration 30 s
-conditionInfo(1).nbRepeat = 4; % nb adaptation in addition to the first adaptation
+conditionInfo(1).nbRepeat = 8; % nb adaptation in addition to the first adaptation
 
 %%%%%%%%%%%% parameters for the different conditions
 % spatial freq of the 2 gratings
