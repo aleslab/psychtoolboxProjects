@@ -31,7 +31,7 @@ glsl = MakeTextureDrawShader(expInfo.curWindow, 'SeparateAlphaChannel');
 
 %%%%%%%%%%%%%%%%%
 %%%% Gratings
-texsize = conditionInfo.stimSize*expInfo.ppd; % Half-Size of the grating image.
+texsize = conditionInfo.stimSize*expInfo.ppd; % Size of the grating image.
 cyclespersecond1 = conditionInfo.tempFq; % temporal frequency (related to velocity)
 cyclespersecond2 = cyclespersecond1; % same for both gratings
 
@@ -94,7 +94,7 @@ gratingtest2 = Screen('MakeTexture', expInfo.curWindow, grating2);
 % assignin('base','g',grating1)
 
 % Definition of the drawn source rectangle on the screen:
-srcRect=[0 0 texsize texsize*0.5];
+srcRect=[0 0 texsize texsize/2];
 yEcc = conditionInfo.yEccentricity * expInfo.ppd;
 
 %%%%%%%%%%%%%%%%%
@@ -158,7 +158,7 @@ else
     %%%%%%%%%%%%%%%%%
     %%% Adaptation loop: Run for 30 s or keypress.
     while (vbl < vblAdaptTime) && ~KbCheck(expInfo.deviceIndex)
-        drawFixation(expInfo, expInfo.fixationInfo);
+%         drawFixation(expInfo, expInfo.fixationInfo);
         
         % Shift the grating by "shiftperframe" pixels per frame. We pass
         % the pixel offset 'yoffset' as a parameter to
@@ -178,10 +178,11 @@ else
         Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2, [], [], [], [], [], [0, yoffset2, 0, 0]);
         
         %     % just for fun to check
-        %     Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1)-200,expInfo.center(2)+yEcc), angle1, [], 0.5, [], [], [], [0, yoffset1, 0, 0]);
-        %     Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1)+200,expInfo.center(2)+yEcc), angle2, [], 0.5, [], [], [], [0, yoffset2, 0, 0]);
+%             Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1)-300,expInfo.center(2)-1.5*yEcc), angle1, [], [], [], [], [], [0, yoffset1, 0, 0]);
+%             Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1)+300,expInfo.center(2)-1.5*yEcc), angle2, [], [], [], [], [], [0, yoffset2, 0, 0]);
         %         if i==10
-        %             imageArray=Screen('GetImage', expInfo.curWindow);
+%                     imageArray=Screen('GetImage', expInfo.curWindow);
+%                     mean(mean(imageArray(:,:,1)))
         %             figure; plot(imageArray(700,:,1))
         %         end
         
@@ -227,7 +228,7 @@ testStart = vbl;
 
 %%% test stimulus
 cycle = 0;
-time = vbl;
+% time = vbl;
 while cycle<conditionInfo.testDuration && ~KbCheck(expInfo.deviceIndex)
     % first stim
     drawFixation(expInfo, expInfo.fixationInfo);
@@ -252,9 +253,9 @@ while cycle<conditionInfo.testDuration && ~KbCheck(expInfo.deviceIndex)
         end
     end
     % increment cycle
-    cycle = cycle+1
+    cycle = cycle+1;
 end
-vbl-time
+% vbl-time
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%
