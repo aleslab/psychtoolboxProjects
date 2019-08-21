@@ -94,7 +94,7 @@ gratingtest2 = Screen('MakeTexture', expInfo.curWindow, grating2);
 % assignin('base','g',grating1)
 
 % Definition of the drawn source rectangle on the screen:
-srcRect=[0 0 texsize*1.5 texsize];
+srcRect=[0 0 texsize texsize*0.5];
 yEcc = conditionInfo.yEccentricity * expInfo.ppd;
 
 %%%%%%%%%%%%%%%%%
@@ -225,17 +225,18 @@ testStart = vbl;
 
 
 
-vblTest = vbl + conditionInfo.vblTestDuration;
-
 %%% test stimulus
-while (vbl < vblTest) && ~KbCheck(expInfo.deviceIndex)
+cycle = 0;
+time = vbl;
+while cycle<conditionInfo.testDuration && ~KbCheck(expInfo.deviceIndex)
+    % first stim
     drawFixation(expInfo, expInfo.fixationInfo);
     Screen('DrawTexture', expInfo.curWindow, gratingtest1, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle1);
     Screen('DrawTexture', expInfo.curWindow, gratingtest2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2);
     ptbCorgiSendTrigger(expInfo,'raw',0,f1Trigger);
     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * ifi);
     
-    % move the entire stimulus (overlapping gratings)
+    % second stim
     drawFixation(expInfo, expInfo.fixationInfo);
     Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift1, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle1);
     Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2);
@@ -250,7 +251,10 @@ while (vbl < vblTest) && ~KbCheck(expInfo.deviceIndex)
             trialData.abortNow   = true;
         end
     end
+    % increment cycle
+    cycle = cycle+1
 end
+vbl-time
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%
@@ -349,21 +353,24 @@ for nbTrial=1:conditionInfo.nbRepeat
     if nbTrial==conditionInfo.nbRepeat
         test2Start = vbl;
     end
-    vblTest = vbl + conditionInfo.vblTestDuration;
     
     %%% test stimulus
-    while (vbl < vblTest) && ~KbCheck(expInfo.deviceIndex)
+    cycle = 0;
+    while cycle<conditionInfo.testDuration && ~KbCheck(expInfo.deviceIndex)
+        % first 
         drawFixation(expInfo, expInfo.fixationInfo);
         Screen('DrawTexture', expInfo.curWindow, gratingtest1, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle1);
         Screen('DrawTexture', expInfo.curWindow, gratingtest2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2);
         ptbCorgiSendTrigger(expInfo,'raw',0,f1Trigger);
         vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * ifi);
-        % move the entire stimulus (overlapping gratings)
+        % second
         drawFixation(expInfo, expInfo.fixationInfo);
         Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift1, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle1);
         Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2);
         ptbCorgiSendTrigger(expInfo,'clear',0);
         vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * ifi);
+        % increment cycle
+        cycle = cycle+1;
     end
     
     [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);

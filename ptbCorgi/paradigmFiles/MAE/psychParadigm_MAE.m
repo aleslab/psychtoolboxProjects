@@ -36,15 +36,15 @@ conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;
 conditionInfo(1).intervalBeep = 0;
 conditionInfo(1).trialFun=@trial_MAE;
-conditionInfo(1).stimSize = 10; % Half-Size of the grating image in degrees
+conditionInfo(1).stimSize = 0.13*100; % grating image in degrees. should be an integer of the lowest spatial frequency
 conditionInfo(1).yEccentricity = 3;
-conditionInfo(1).f1 = 0.53; % in cycle (changes to c/deg in the trial pg)
+conditionInfo(1).f1 = 0.52; % in cycle (changes to c/deg in the trial pg)
 conditionInfo(1).tempFq = 85/17; % 5 Hz
 conditionInfo(1).testFreq = 85/21; % 4 Hz 
 conditionInfo(1).vblAdaptTopUP = 10; % re-adaptation 10 seconds
-conditionInfo(1).vblTestDuration = 5; % test duration 5 seconds 
-conditionInfo(1).adaptDuration = 30; % % Adaptation duration 30 s
+conditionInfo(1).adaptDuration = 1; % % Adaptation duration 30 s
 conditionInfo(1).nbRepeat = 8; % nb adaptation in addition to the first adaptation
+conditionInfo(1).testDuration = 20; % in cycles. 5 seconds = 21/85*20 cycles
 
 %%%%%%%%%%%% parameters for the different conditions
 % spatial freq of the 2 gratings
@@ -63,7 +63,7 @@ conditionInfo(1).nbRepeat = 8; % nb adaptation in addition to the first adaptati
 
 
 % spatialFq = [0.13 0.26 1.1 2.1];
-spatialFq = [0.13 2.1];
+spatialFq = [0.13 2.08]; % standard fq 0.52 /4 or *4
 phase = [5 90];
 direction = [0 180 99]; % of standard 0=left, 180=right, 99=none (no drift)
 
