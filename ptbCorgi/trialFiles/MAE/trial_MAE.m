@@ -158,9 +158,9 @@ else
     %%%%%%%%%%%%%%%%%
     %%% Adaptation loop: Run for 30 s or keypress.
     while (vbl < vblAdaptTime) && ~KbCheck(expInfo.deviceIndex)
-%         drawFixation(expInfo, expInfo.fixationInfo);
+        drawFixation(expInfo, expInfo.fixationInfo);
         
-        % Shift the grating by "shiftperframe" pixels per frame. We pass
+        % Shift the grating by "shiftp2perframe" pixels per frame. We pass
         % the pixel offset 'yoffset' as a parameter to
         % Screen('DrawTexture'). The attached 'glsl' texture draw shader
         % will apply this 'yoffset' pixel shift to the RGB or Luminance
@@ -391,7 +391,7 @@ if trialData.validTrial
     % response screen
     Screen('DrawText', expInfo.curWindow, 'direction of the after effect?', 0, expInfo.center(2)-expInfo.center(2)/4, [0 0 0]);
     Screen('DrawText', expInfo.curWindow, 'left arrow, right arrow', 0, expInfo.center(2), [0 0 0]);
-    Screen('DrawText', expInfo.curWindow, 'down arrow for no or back and forth motion', 0, expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, 'down arrow for no clear motion', 0, expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
     trialData.respScreenTime =Screen('Flip',expInfo.curWindow);
     % check for key press
     while trialData.response2==999 % && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer -ifi/2)
