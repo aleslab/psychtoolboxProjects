@@ -118,8 +118,10 @@ shiftperframe2 = cyclespersecond2 * p2 * waitduration;
 % VBL-Timestamp for our "WaitBlanking" emulation:
 if expInfo.useBitsSharp
     f1Trigger = expInfo.triggerInfo.ssvepTagF1;
+    checkTime = 1;
 else
     f1Trigger = 1;
+    checkTime = 0;
 end
 if expInfo.useBitsSharp
     ptbCorgiSendTrigger(expInfo,'starttrial',true);
@@ -204,14 +206,15 @@ end
 
 
 %%%%%%%%%%%%%%%%% 1st test
+halfCycleDuration = 1/conditionInfo.testFreq;
 framesPerCycle = 1/conditionInfo.testFreq * round(expInfo.monRefresh);
 framesPerHalfCycle = framesPerCycle/2;
 ptbCorgiSendTrigger(expInfo,'conditionNumber',true,expInfo.trigTestNb);
 drawFixation(expInfo, expInfo.fixationInfo);
 vbl = Screen('Flip', expInfo.curWindow);
-testStart = vbl;
 
 % %%% test stimulus (flicker)
+% testStart = vbl;
 % while (vbl < vblTestTime) && ~KbCheck
 %     drawFixation(expInfo, expInfo.fixationInfo);
 %     Screen('DrawTexture', expInfo.curWindow, gratingtest1, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle1, [], 0.5);
@@ -236,6 +239,7 @@ while cycle<conditionInfo.testDuration && ~KbCheck(expInfo.deviceIndex)
     Screen('DrawTexture', expInfo.curWindow, gratingtest2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2);
     ptbCorgiSendTrigger(expInfo,'raw',0,f1Trigger);
     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * ifi);
+    vbl1 = vbl;
     
     % second stim
     drawFixation(expInfo, expInfo.fixationInfo);
@@ -243,6 +247,13 @@ while cycle<conditionInfo.testDuration && ~KbCheck(expInfo.deviceIndex)
     Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2);
     ptbCorgiSendTrigger(expInfo,'clear',0);
     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * ifi);
+    vbl2 = vbl;
+    
+    if checkTime
+        if vbl2 - vbl1 > halfCycleDuration + ifi/2 || vbl2 - vbl1 < halfCycleDuration - ifi/2
+            trialData.validTrial = false;
+        end
+    end
     
     [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
     if keyDown
@@ -364,14 +375,25 @@ for nbTrial=1:conditionInfo.nbRepeat
         Screen('DrawTexture', expInfo.curWindow, gratingtest2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2);
         ptbCorgiSendTrigger(expInfo,'raw',0,f1Trigger);
         vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * ifi);
+        vbl1=vbl;
+        
         % second
         drawFixation(expInfo, expInfo.fixationInfo);
         Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift1, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle1);
         Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift2, [], CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2);
         ptbCorgiSendTrigger(expInfo,'clear',0);
         vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * ifi);
+        vbl2=vbl;
+        
+        if checkTime
+            if vbl2 - vbl1 > halfCycleDuration + ifi/2 || vbl2 - vbl1 < halfCycleDuration - ifi/2
+                trialData.validTrial = false;
+            end
+        end
+        
         % increment cycle
         cycle = cycle+1;
+        
     end
     
     [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
