@@ -41,8 +41,8 @@ conditionInfo(1).stimSize = 16; % grating image in degrees.
 % have full cycles only = the average luminance of the grating is equal to the background luminance 
 conditionInfo(1).yEccentricity = 3;
 conditionInfo(1).f1 = 0.5; % in cycle (changes to c/deg in the trial pg)
-conditionInfo(1).tempFq = 85/18; % 4.72 Hz
-conditionInfo(1).testFreq = 85/20; % 4.25 Hz 
+conditionInfo(1).tempFq = 85/18; % 4.72 Hz (85/17)
+conditionInfo(1).testFreq = 85/20; % 4.25 Hz (85/21)
 conditionInfo(1).vblAdaptTopUP = 10; % re-adaptation 10 seconds
 conditionInfo(1).adaptDuration = 30; % % Adaptation duration 30 s
 conditionInfo(1).nbRepeat = 8; % nb adaptation in addition to the first adaptation = 8
