@@ -1,5 +1,5 @@
 function [conditionInfo, expInfo] = psychParadigm_MAE_grouped(expInfo)
-% 10 times 5 s tests per adaptation block (2 tests x 4)
+% 8 times 5 s tests per adaptation block (2 tests x 4)
 % 20 s + 8*15s = 2.5 min per blk = around 1h
 % 12 test conditions 
 % 6 adaptor conditions repeated 4 times = 24 blocks (192 trials)
@@ -18,10 +18,10 @@ expInfo.trialRandomization.blockByField = 'adaptorNb';
 expInfo.trialRandomization.nBlockReps   = 4;
 
 
-% expInfo.useBitsSharp = true;
-% expInfo.enableTriggers = true;
-expInfo.useBitsSharp = false; 
-expInfo.enableTriggers = false;
+expInfo.useBitsSharp = true;
+expInfo.enableTriggers = true;
+% expInfo.useBitsSharp = false; 
+% expInfo.enableTriggers = false;
 
 expInfo.fixationInfo(2).type  = 'cross';
 expInfo.fixationInfo(2).size  = .4;
@@ -29,23 +29,23 @@ expInfo.fixationInfo(2).lineWidthPix = 3;
 expInfo.fixationInfo(2).color = 0;
 expInfo.fixationInfo(2).loc = [0 -5]; % location of the fixation relative to centre in degrees (1st number is horizontal, 2nd is vertical)
 expInfo.fixationInfo(1).type = 'noiseFrame';
-expInfo.fixationInfo(1).size = 5;
+expInfo.fixationInfo(1).size = 4;
 
 expInfo.instructions = 'FIXATE the cross';
 
 conditionInfo(1).iti = 0;
-conditionInfo(1).nReps = 2; % nb of tests in one adaptation block (x2 because there are 2 types of test stimuli per adaptor)
+conditionInfo(1).nReps = 4; % 4 nb of tests in one adaptation block (x2 because there are 2 types of test stimuli per adaptor)
 conditionInfo(1).type = 'Generic';
 conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;
 conditionInfo(1).intervalBeep = 0;
 conditionInfo(1).trialFun=@trial_MAE_grouped;
-conditionInfo(1).stimSize = 16; % grating image in degrees. 
+conditionInfo(1).stimSize = 24; % grating image in degrees. 
 % should be an integer of 8 so that the lowest spatial frequency grating will
 % have full cycles only = the average luminance of the grating is equal to the background luminance 
 conditionInfo(1).yEccentricity = 3;
 conditionInfo(1).f1 = 0.5; % in cycle (changes to c/deg in the trial pg)
-conditionInfo(1).tempFq = 85/18; % 4.72 Hz 
+conditionInfo(1).tempFq = 85/18; % 85/18 or 85/16? 4.72 Hz 
 conditionInfo(1).testFreq = 85/20; % 4.25 Hz
 conditionInfo(1).testDuration = 20; % in cycles. 5 seconds = 20/85*20 cycles (exactly 4.7 seconds)
 conditionInfo(1).adaptDuration = 10; % in sec: 10s top-up
@@ -72,15 +72,16 @@ conditionInfo(1).longAdapt = 20; % 20 sec added to top-up for the 1st trial
 
 
 % spatialFq = [0.13 0.26 1.1 2.1];
+% spatialFq = [0.25 1]; % standard fq 0.5 /4 or *4
 spatialFq = [0.125 2]; % standard fq 0.5 /4 or *4
 phase = [5 90]; % cannot use a 180 (counterphase) because there is no clear energy motion direction for the SSVEP. 
 % with 180 there is no 1st harmonic which is the one showing a direction
 % selective response
-adaptDirection = [0 180 99]; % of standard 0=left, 180=right, 99=none (no drift)
+standardDirection = [0 180 99]; % of standard 0=left, 180=right, 99=none (no drift)
 
 conditionTemplate = conditionInfo(1); %Take the first condition as the template
 conditionInfo = createConditionsFromParamList(conditionTemplate,'crossed',...
-   'testPhase',phase, 'f2',spatialFq,'direction',adaptDirection);
+   'testPhase',phase, 'f2',spatialFq,'direction',standardDirection);
 
 % there must be a better way but being lazy here
 adaptorType = {'leftSlow','leftSlow','leftFast','leftFast',...

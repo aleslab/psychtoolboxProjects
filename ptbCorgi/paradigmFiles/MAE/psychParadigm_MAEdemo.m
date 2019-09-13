@@ -1,4 +1,7 @@
 function [conditionInfo, expInfo] = psychParadigm_MAEdemo(expInfo)
+% demo on LCD during EEG set-up
+% ATTENTION if run a test condition full screen, because there is no sca in
+% this debug mode, you'll be stuck with the exp screen
 
 KbName('UnifyKeyNames');
 
@@ -34,7 +37,7 @@ expInfo.fixationInfo(1).size = 2;
 expInfo.instructions = 'FIXATE the cross';
 
 conditionInfo(1).iti = 0;
-conditionInfo(1).nReps = 2; % nb of tests in one adaptation block (x2 because there are 2 types of test stimuli per adaptor)
+conditionInfo(1).nReps = 1; % nb of tests in one adaptation block (x2 because there are 2 types of test stimuli per adaptor)
 conditionInfo(1).type = 'Generic';
 conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;

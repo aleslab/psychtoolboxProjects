@@ -105,7 +105,7 @@ shiftperframe1 = cyclespersecond1 * p1 * waitduration;
 shiftperframe2 = cyclespersecond2 * p2 * waitduration;
 
 % parameters for test
-halfCycleDuration = 1/conditionInfo.testFreq;
+cycleDuration = 1/conditionInfo.testFreq;
 framesPerCycle = 1/conditionInfo.testFreq * round(expInfo.monRefresh);
 framesPerHalfCycle = framesPerCycle/2;
 
@@ -152,7 +152,7 @@ if conditionInfo.direction == 99
                 trialData.abortNow   = true;
             end
             drawFixation(expInfo, expInfo.fixationInfo);
-            Screen('DrawText', expInfo.curWindow, 'please do not press a key', 10, expInfo.center(2)-expInfo.center(2)/4, [0 0 0]);
+            Screen('DrawText', expInfo.curWindow, 'please do not press a key', 150, expInfo.center(2)-expInfo.center(2)/4, [0 0 0]);
             vbl = Screen('Flip',expInfo.curWindow);
             vblAdaptTime = vbl + trialAdaptDuration;
             trialData.adaptTime = vblAdaptTime;
@@ -188,7 +188,7 @@ else
                 trialData.abortNow   = true;
             end
             drawFixation(expInfo, expInfo.fixationInfo);
-            Screen('DrawText', expInfo.curWindow, 'please do not press a key', 10, expInfo.center(2)-expInfo.center(2)/4, [0 0 0]);
+            Screen('DrawText', expInfo.curWindow, 'please do not press a key', 150, expInfo.center(2)-expInfo.center(2)/4, [0 0 0]);
             vbl = Screen('Flip',expInfo.curWindow);
             vblAdaptTime = vbl + trialAdaptDuration;
             trialData.adaptTime = vblAdaptTime;
@@ -223,7 +223,7 @@ while cycle<conditionInfo.testDuration && trialData.validTrial % ~KbCheck(expInf
     vbl2 = vbl;
     
     if checkTime
-        if vbl2 - vbl1 > halfCycleDuration + expInfo.ifi/2 || vbl2 - vbl1 < halfCycleDuration - expInfo.ifi/2
+        if vbl2 - vbl1 > cycleDuration/2 + expInfo.ifi/2 || vbl2 - vbl1 < cycleDuration/2 - expInfo.ifi/2
             trialData.validTrial = false;
         end
     end
@@ -248,9 +248,9 @@ end
 if trialData.validTrial
     % response screen
     drawFixation(expInfo, expInfo.fixationInfo);
-    Screen('DrawText', expInfo.curWindow, 'direction of the after effect?', 10, expInfo.center(2)-expInfo.center(2)/4, [0 0 0]);
-    Screen('DrawText', expInfo.curWindow, 'left arrow, right arrow', 10, expInfo.center(2), [0 0 0]);
-    Screen('DrawText', expInfo.curWindow, 'down arrow for no clear motion', 10, expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, 'direction of the after effect?', 150, expInfo.center(2)-expInfo.center(2)/4, [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, 'left arrow, right arrow', 150, expInfo.center(2), [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, 'down arrow for no effect', 150, expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
     trialData.respScreenTime =Screen('Flip',expInfo.curWindow);
     % check for key press
     while trialData.response==999 
@@ -266,8 +266,8 @@ if trialData.validTrial
                 trialData.abortNow   = true;
                 trialData.response = 'Abort';
             else
-                Screen('DrawText', expInfo.curWindow, 'not an existing response key', 10, expInfo.center(2)-expInfo.center(2)/4, [0 0 0]);
-                Screen('DrawText', expInfo.curWindow, 'please choose left, right or down arrow', 10, expInfo.center(2), [0 0 0]);
+                Screen('DrawText', expInfo.curWindow, 'not an existing response key', 150, expInfo.center(2)-expInfo.center(2)/4, [0 0 0]);
+                Screen('DrawText', expInfo.curWindow, 'please choose left, right or down arrow', 50, expInfo.center(2), [0 0 0]);
                 Screen('Flip',expInfo.curWindow);
             end
         end
