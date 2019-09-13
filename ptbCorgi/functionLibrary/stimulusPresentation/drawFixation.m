@@ -150,7 +150,7 @@ switch lower(fixationInfo.type)
             fixationInfo.size = 100/expInfo.ppd; %Default box size is 100 pixels for backwards compatability.
         end
         
-        texWidthPix = expInfo.ppd*fixationInfo.size;
+        texWidthPix = round(expInfo.ppd*fixationInfo.size);
         
         if ~isfield(expInfo,'fixationTextures') || isempty(expInfo.fixationTextures)
             
