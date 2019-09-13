@@ -180,7 +180,7 @@ end
 %If we're running on a separate monitor assume that we want accurate
 %timings, but if we're run on the main desktop diasble synctests i.e. for
 %debugging on laptops
-if expInfo.screenNum >0
+if expInfo.screenNum >0 || isfield(expInfo,'skipCalib')
     Screen('Preference', 'SkipSyncTests', 0);
     
 else
@@ -255,7 +255,7 @@ if expInfo.useFullScreen == true
 end
 
 %Verify size calibration video mode:
-if isfield(expInfo,'sizeCalibInfo')
+if isfield(expInfo,'sizeCalibInfo') && ~isfield(expInfo,'skipCalib')
     %First check if the calibration was done for the current system.
     [ isCorrectSystem, msg ] = checkIfCalibrationIsForThisSystem( expInfo, expInfo.sizeCalibInfo );
     
@@ -281,7 +281,7 @@ else
 
 end
 
-if isfield(expInfo,'gammaTable')
+if isfield(expInfo,'gammaTable') && ~isfield(expInfo,'skipCalib')
     
     %Verifiy calibration is for the current video mode:
     if ~isequal(expInfo.lumCalibInfo.modeInfo,expInfo.modeInfo)
