@@ -213,6 +213,9 @@ while cycle<conditionInfo.testDuration && trialData.validTrial % ~KbCheck(expInf
     ptbCorgiSendTrigger(expInfo,'raw',0,f1Trigger);
     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * expInfo.ifi);
     vbl1 = vbl;
+    if cycle == 0
+        trialData.trialTestTime = vbl;
+    end
     
     % second stim
     drawFixation(expInfo, expInfo.fixationInfo);
@@ -239,6 +242,18 @@ while cycle<conditionInfo.testDuration && trialData.validTrial % ~KbCheck(expInf
     % increment cycle
     cycle = cycle+1;
 end
+
+drawFixation(expInfo, expInfo.fixationInfo);
+if expInfo.useBitsSharp
+    if trialData.validTrial
+        ptbCorgiSendTrigger(expInfo,'endtrial',true); % should be sent with the last flip
+    else
+        ptbCorgiSendTrigger(expInfo,'raw',1,abortExpTrigger); % abort trial
+    end
+end
+trialData.trialEndTime = Screen('Flip', expInfo.curWindow);
+trialData.testDuration = trialData.trialEndTime - trialData.trialTestTime;
+trialData.trialDuration = trialData.trialEndTime - trialData.trialStartTime;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -275,18 +290,6 @@ if trialData.validTrial
     FlushEvents('keyDown');    
 end
 
-
-drawFixation(expInfo, expInfo.fixationInfo);
-if expInfo.useBitsSharp
-    if trialData.validTrial
-        ptbCorgiSendTrigger(expInfo,'endtrial',true); % should be sent with the last flip
-    else
-        ptbCorgiSendTrigger(expInfo,'raw',1,abortExpTrigger); % abort trial
-    end
-end
-t = Screen('Flip', expInfo.curWindow);
-trialData.trialEndTime = t;
-trialData.trialDuration = trialData.trialEndTime - trialData.trialStartTime;
     
 end
 
