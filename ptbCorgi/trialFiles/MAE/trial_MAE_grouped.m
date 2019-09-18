@@ -215,6 +215,11 @@ while cycle<conditionInfo.testDuration && trialData.validTrial % ~KbCheck(expInf
     vbl1 = vbl;
     if cycle == 0
         trialData.trialTestTime = vbl;
+    elseif checkTime
+%         vbl1 - vbl2
+        if vbl1 - vbl2 > cycleDuration/2 + expInfo.ifi/2 || vbl1 - vbl2 < cycleDuration/2 - expInfo.ifi/2
+            trialData.validTrial = false;
+        end
     end
     
     % second stim
@@ -226,6 +231,7 @@ while cycle<conditionInfo.testDuration && trialData.validTrial % ~KbCheck(expInf
     vbl2 = vbl;
     
     if checkTime
+%         vbl2 - vbl1
         if vbl2 - vbl1 > cycleDuration/2 + expInfo.ifi/2 || vbl2 - vbl1 < cycleDuration/2 - expInfo.ifi/2
             trialData.validTrial = false;
         end
