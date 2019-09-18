@@ -251,7 +251,7 @@ if expInfo.useBitsSharp
         ptbCorgiSendTrigger(expInfo,'raw',1,abortExpTrigger); % abort trial
     end
 end
-trialData.trialEndTime = Screen('Flip', expInfo.curWindow);
+trialData.trialEndTime = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * expInfo.ifi);
 trialData.testDuration = trialData.trialEndTime - trialData.trialTestTime;
 trialData.trialDuration = trialData.trialEndTime - trialData.trialStartTime;
 
