@@ -158,10 +158,11 @@ while (vbl < vblAdaptTime) && ~trialData.abortNow % && ~KbCheck(expInfo.deviceIn
     i=i+1;
     
     % Draw gratings texture, rotated by "angle":
-    Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2, [], [], [], [], [], [0, yoffset2, 0, 0]);
     if conditionInfo.direction ~= 99
         Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle1, [], [], [], [], [], [0, yoffset1, 0, 0]);
     end
+    Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2, [], [], [], [], [], [0, yoffset2, 0, 0]);
+
     
     % Flip 'waitframes' monitor refresh intervals after last redraw.
     vbl = Screen('Flip', expInfo.curWindow, vbl + (waitframes - 0.5) * expInfo.ifi);
@@ -190,9 +191,9 @@ cycle = 0;
 while cycle<conditionInfo.testDuration && trialData.validTrial % ~KbCheck(expInfo.deviceIndex)
     % first stim
     drawFixation(expInfo, expInfo.fixationInfo);
-    if conditionInfo.direction ~= 99
+%     if conditionInfo.direction ~= 99
         Screen('DrawTexture', expInfo.curWindow, gratingtest1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc));
-    end
+%     end
     Screen('DrawTexture', expInfo.curWindow, gratingtest2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc));
     ptbCorgiSendTrigger(expInfo,'raw',0,f1Trigger);
     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * expInfo.ifi);
@@ -208,9 +209,9 @@ while cycle<conditionInfo.testDuration && trialData.validTrial % ~KbCheck(expInf
     
     % second stim
     drawFixation(expInfo, expInfo.fixationInfo);
-    if conditionInfo.direction ~= 99
+%     if conditionInfo.direction ~= 99
         Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc));
-    end
+%     end
     Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc));
     ptbCorgiSendTrigger(expInfo,'clear',0);
     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * expInfo.ifi);
