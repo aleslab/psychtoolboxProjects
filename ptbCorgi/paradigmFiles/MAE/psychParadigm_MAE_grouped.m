@@ -76,7 +76,7 @@ conditionInfo(1).longAdapt = 20; % 20 sec added to top-up for the 1st trial
 % spatialFq = [0.13 0.26 1.1 2.1];
 % spatialFq = [0.25 1]; % standard fq 0.5 /4 or *4
 spatialFq = [0.125 2]; % standard fq 0.5 /4 or *4
-phase = [5 90]; % cannot use a 180 (counterphase) because there is no clear energy motion direction for the SSVEP. 
+phase = [10 90]; % cannot use a 180 (counterphase) because there is no clear energy motion direction for the SSVEP. 
 % with 180 there is no 1st harmonic which is the one showing a direction
 % selective response
 standardDirection = [0 180 99]; % of standard 0=left, 180=right, 99=none (no drift)
