@@ -125,7 +125,7 @@ drawFixation(expInfo, expInfo.fixationInfo);
 vbl = Screen('Flip', expInfo.curWindow);
 trialData.trialStartTime = vbl;
 
-if expInfo.currentTrial.number == 1
+if mod(expInfo.currentTrial.number-1,8) == 0
     trialAdaptDuration = conditionInfo.adaptDuration + conditionInfo.longAdapt;
 else
     trialAdaptDuration = conditionInfo.adaptDuration;
@@ -186,6 +186,7 @@ else
         if keyDown
             if keyCode(KbName('ESCAPE'))
                 trialData.abortNow   = true;
+                trialData.validTrial = false;
             end
             drawFixation(expInfo, expInfo.fixationInfo);
             Screen('DrawText', expInfo.curWindow, 'please do not press a key', 150, expInfo.center(2)-expInfo.center(2)/4, [0 0 0]);
@@ -236,17 +237,17 @@ while cycle<conditionInfo.testDuration && trialData.validTrial % ~KbCheck(expInf
             trialData.validTrial = false;
         end
     end
-    
-    [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
-    if keyDown
-        trialData.validTrial = false;
-        if keyCode(KbName('ESCAPE'))
-            trialData.abortNow   = true;
-        end
-    end
-    
+
     % increment cycle
     cycle = cycle+1;
+end
+
+[keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
+if keyDown
+    if keyCode(KbName('ESCAPE'))
+        trialData.abortNow   = true;
+        trialData.validTrial = false;
+    end
 end
 
 drawFixation(expInfo, expInfo.fixationInfo);
@@ -274,18 +275,18 @@ if trialData.validTrial
     Screen('DrawText', expInfo.curWindow, 'down arrow for no effect', 150, expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
     trialData.respScreenTime =Screen('Flip',expInfo.curWindow);
     % check for key press
-    while trialData.response==999 
+    while trialData.response==999 && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer)
         [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
         if keyDown
             if keyCode(KbName('LeftArrow'))
-                trialData.response = 'LeftArrow';
+                trialData.response = 1;
             elseif keyCode(KbName('RightArrow'))
-                trialData.response = 'RightArrow';
+                trialData.response = 2;
             elseif keyCode(KbName('DownArrow'))
-                trialData.response = 'DownArrow';
+                trialData.response = 3;
             elseif keyCode(KbName('ESCAPE'))
                 trialData.abortNow   = true;
-                trialData.response = 'Abort';
+                trialData.response = 0;
             else
                 Screen('DrawText', expInfo.curWindow, 'not an existing response key', 150, expInfo.center(2)-expInfo.center(2)/4, [0 0 0]);
                 Screen('DrawText', expInfo.curWindow, 'please choose left, right or down arrow', 50, expInfo.center(2), [0 0 0]);

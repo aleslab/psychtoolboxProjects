@@ -122,7 +122,7 @@ drawFixation(expInfo, expInfo.fixationInfo);
 vbl = Screen('Flip', expInfo.curWindow);
 trialData.trialStartTime = vbl;
 
-if expInfo.currentTrial.number == 1
+if mod(expInfo.currentTrial.number-1,9) == 0
     trialAdaptDuration = conditionInfo.adaptDuration + conditionInfo.longAdapt;
 else
     trialAdaptDuration = conditionInfo.adaptDuration;

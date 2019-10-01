@@ -1,10 +1,10 @@
 function [conditionInfo, expInfo] = psychParadigm_MAE_grouped(expInfo)
 % 8 times 5 s tests per adaptation block (2 tests x 4)
-% 20 s + 8*15s = 2.5 min per blk = around 1h
+% 20 s + 8*15s = 2.5 min per blk = 1h ++
 % 12 test conditions 
 % 6 adaptor conditions repeated 4 times = 24 blocks (192 trials)
-% 1 test 4.7s = 0.47 removed + 20/85*6 (1.4s epoch) * 3
-% would do 48 epochs per test condition
+% 1 test 4.7s = 0.47 removed + 20/85*10 (2.35s epoch) * 2
+% would do around 72 s recording time per test condition
 
 % add a noise frame around to increase the strengh of the MAE?
 
@@ -27,12 +27,13 @@ expInfo.fixationInfo(2).type  = 'cross';
 expInfo.fixationInfo(2).size  = .4;
 expInfo.fixationInfo(2).lineWidthPix = 3;
 expInfo.fixationInfo(2).color = 0;
-expInfo.fixationInfo(2).loc = [0 -5]; % location of the fixation relative to centre in degrees (1st number is horizontal, 2nd is vertical)
+expInfo.fixationInfo(2).loc = [0 -6]; % location of the fixation relative to centre in degrees (1st number is horizontal, 2nd is vertical)
 expInfo.fixationInfo(1).type = 'noiseFrame';
 expInfo.fixationInfo(1).size = 4;
 
 expInfo.instructions = 'FIXATE the cross';
 
+conditionInfo(1).maxToAnswer = 2;
 conditionInfo(1).iti = 0;
 conditionInfo(1).nReps = 4; % 4 nb of tests in one adaptation block (x2 because there are 2 types of test stimuli per adaptor)
 conditionInfo(1).type = 'Generic';
