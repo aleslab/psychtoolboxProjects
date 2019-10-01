@@ -22,10 +22,10 @@ expInfo.trialRandomization.blockByField = 'adaptorNb';
 expInfo.trialRandomization.nBlockReps   = 5;
 
 
-% expInfo.useBitsSharp = true;
-% expInfo.enableTriggers = true;
-expInfo.useBitsSharp = false; 
-expInfo.enableTriggers = false;
+expInfo.useBitsSharp = true;
+expInfo.enableTriggers = true;
+% expInfo.useBitsSharp = false; 
+% expInfo.enableTriggers = false;
 
 expInfo.fixationInfo(2).type  = 'cross';
 expInfo.fixationInfo(2).size  = .4;
@@ -53,8 +53,8 @@ conditionInfo(1).testFreq = 85/20; % 4.25 Hz
 conditionInfo(1).testDuration = 21; % in cycles. 5 seconds = 20/85*20 cycles (exactly 4.7 seconds)
 % add one cycle because real refresh is 0.01176 not 0.0118 so I miss some
 % data at the end of the trial...
-conditionInfo(1).adaptDuration = 2; % in sec: 10s top-up
-conditionInfo(1).longAdapt = 2; % 20 sec added to top-up for the 1st trial
+conditionInfo(1).adaptDuration = 10; % in sec: 10s top-up
+conditionInfo(1).longAdapt = 20; % 20 sec added to top-up for the 1st trial
 
 %%%%%%%%%%%% parameters for the different conditions
 % spatial freq of the 2 gratings
