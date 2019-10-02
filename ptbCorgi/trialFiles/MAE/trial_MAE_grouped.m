@@ -2,8 +2,6 @@ function [trialData] = trial_MAE_grouped(expInfo, conditionInfo)
 % 10 s adaptation followed by 5 s test
 % if 1st trial then longer adaptation
 % trial not stopped if a random key is pressed 
-% Problem: if invalid trial then it is put at the end of the experiment,
-% not at the end of the block!
 
 trialData.validTrial = true;
 trialData.abortNow   = false;
@@ -262,6 +260,12 @@ trialData.trialEndTime = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfC
 trialData.testDuration = trialData.trialEndTime - trialData.trialTestTime;
 trialData.trialDuration = trialData.trialEndTime - trialData.trialStartTime;
 
+%%%% close all the textures
+if conditionInfo.direction ~= 99
+    Screen('Close',[gratingAdapt1 gratingAdapt2 gratingtest1 gratingtest2 gratingPhaseShift1 gratingPhaseShift2]);
+else
+    Screen('Close',[gratingtest1 gratingtest2 gratingPhaseShift1 gratingPhaseShift2]);
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% RESPONSE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

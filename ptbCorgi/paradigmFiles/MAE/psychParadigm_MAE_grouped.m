@@ -48,7 +48,7 @@ conditionInfo(1).yEccentricity = 3;
 conditionInfo(1).f1 = 0.5; % in cycle (changes to c/deg in the trial pg)
 conditionInfo(1).tempFq = 85/18; % 85/18 or 85/16? 4.72 Hz 
 conditionInfo(1).testFreq = 85/20; % 4.25 Hz
-conditionInfo(1).testDuration = 21; % in cycles. 5 seconds = 20/85*20 cycles (exactly 4.7 seconds)
+conditionInfo(1).testDuration = 2; % in cycles. 5 seconds = 20/85*20 cycles (exactly 4.7 seconds)
 % add one cycle because real refresh is 0.01176 not 0.0118 so I miss some
 % data at the end of the trial...
 conditionInfo(1).adaptDuration = 10; % in sec: 10s top-up
@@ -99,36 +99,34 @@ end
 % group conditions by adaptation condition
 expInfo.conditionGroupingField = 'adaptorNb';
 
-% % help makeTrialList
-% expInfo.trialRandomization.type = 'custom';
-% condition = [];
-% for blk=1:expInfo.nbBlock
-%     condList = Shuffle([repmat(1:22,1,2) 23:44]);
-%     new = [condList ;repmat(blk,1,length(condList))];
-%     condition = [condition; new'];
-% end
-% expInfo.trialRandomization.trialList = condition(:,1);
-% expInfo.trialRandomization.blockList =  condition(:,2);
 
 
-% % same parameters in all conditions
-% for cc=2:(length(direction)*length(spatialFq)*length(phase))
-%     conditionInfo(cc) = conditionInfo(1);
+% %%%% specify the conditions 
+% expInfo.trialRandomization.nBlockReps   = 1;
+% conditionTemplate = conditionInfo(1); %Take the first condition as the template
+% conditionInfo = createConditionsFromParamList(conditionTemplate,'pairwise',...
+%     'testPhase',[90 10],...
+%     'direction',[0 180 99],...
+%     'f2',[0.125 2]);
+% 
+% adaptorType = {'leftSlow','leftSlow','leftFast','leftFast',...
+%     'rightSlow','rightSlow','rightFast','rightFast','staticSlow','staticSlow','staticFast','staticFast'};
+% numCond = [1 1 2 2 3 3 4 4 5 5 6 6];
+% for aa = 1:length(conditionInfo)
+%     conditionInfo(aa).adaptor = adaptorType(aa);
+%     conditionInfo(aa).adaptorNb = numCond(aa);
 % end
 % 
-% dir = {'left' 'right' 'none'};
-% cond = 1;
-% for aa = 1:length(direction)
-%     for bb = 1:length(spatialFq)
-%         for cc=1:length(phase)
-%             conditionInfo(cond).direction = direction(aa);
-%             conditionInfo(cond).f2 = spatialFq(bb);
-%             conditionInfo(cond).testPhase = phase(cc);
-%             conditionInfo(cond).label = [dir{aa} ' sf' num2str(spatialFq(bb)) ' p' num2str(phase(cc))] ;
-%             cond = cond+1;
-%         end
-%     end
-% end
+% % group conditions by adaptation condition
+% expInfo.conditionGroupingField = 'adaptorNb';
+
+
 
 
 end
+
+
+
+
+
+
