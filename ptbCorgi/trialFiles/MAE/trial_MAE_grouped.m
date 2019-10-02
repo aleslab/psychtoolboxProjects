@@ -282,6 +282,7 @@ if trialData.validTrial
     while trialData.response==999 && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer)
         [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
         if keyDown
+            trialData.rt = secs - trialData.respScreenTime;
             if keyCode(KbName('LeftArrow'))
                 trialData.response = 1;
             elseif keyCode(KbName('RightArrow'))
