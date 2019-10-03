@@ -1,13 +1,12 @@
 function [trialData] = trial_MAE_singleFq(expInfo, conditionInfo)
 % 10 s adaptation followed by 5 s test
-% if 1st trial then longer adaptation
+% if 1st trial of the block then longer adaptation
 % trial not stopped if a random key is pressed 
-% Problem: if invalid trial then it is put at the end of the experiment,
-% not at the end of the block!
+
 
 trialData.validTrial = true;
 trialData.abortNow   = false;
-trialData.response = 999;
+trialData.response = 'none';
 abortExpTrigger = 99;
 
 % Find the color values which correspond to white and black.
@@ -146,6 +145,7 @@ if conditionInfo.direction == 99
         if keyDown
             if keyCode(KbName('ESCAPE'))
                 trialData.abortNow   = true;
+                trialData.validTrial = false;
             end
             drawFixation(expInfo, expInfo.fixationInfo);
             Screen('DrawText', expInfo.curWindow, 'please do not press a key', 150, expInfo.center(2)-expInfo.center(2)/4, [0 0 0]);
@@ -179,6 +179,7 @@ else
         if keyDown
             if keyCode(KbName('ESCAPE'))
                 trialData.abortNow   = true;
+                trialData.validTrial = false;
             end
             drawFixation(expInfo, expInfo.fixationInfo);
             Screen('DrawText', expInfo.curWindow, 'please do not press a key', 150, expInfo.center(2)-expInfo.center(2)/4, [0 0 0]);
@@ -234,18 +235,18 @@ while cycle<conditionInfo.testDuration && trialData.validTrial % ~KbCheck(expInf
         end
     end
     
-    [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
-    if keyDown
-        trialData.validTrial = false;
-        if keyCode(KbName('ESCAPE'))
-            trialData.abortNow   = true;
-        end
-    end
-    
     % increment cycle
     cycle = cycle+1;
 end
 
+[keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
+if keyDown
+    if keyCode(KbName('ESCAPE'))
+        trialData.abortNow   = true;
+        trialData.validTrial = false;
+    end
+end
+    
 drawFixation(expInfo, expInfo.fixationInfo);
 if expInfo.useBitsSharp
     if trialData.validTrial
@@ -255,9 +256,17 @@ if expInfo.useBitsSharp
     end
 end
 trialData.trialEndTime = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * expInfo.ifi);
-trialData.testDuration = trialData.trialEndTime - trialData.trialTestTime;
-trialData.trialDuration = trialData.trialEndTime - trialData.trialStartTime;
+if trialData.validTrial
+    trialData.testDuration = trialData.trialEndTime - trialData.trialTestTime;
+    trialData.trialDuration = trialData.trialEndTime - trialData.trialStartTime;
+end
 
+%%%% close all the textures 
+if conditionInfo.direction ~= 99 
+    Screen('Close',[gratingAdapt1 gratingtest1 gratingtest2 gratingPhaseShift1 gratingPhaseShift2]); 
+else 
+    Screen('Close',[gratingtest1 gratingPhaseShift1 gratingPhaseShift2]); 
+end 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% RESPONSE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -271,18 +280,19 @@ if trialData.validTrial
     Screen('DrawText', expInfo.curWindow, 'down arrow for no effect', 150, expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
     trialData.respScreenTime =Screen('Flip',expInfo.curWindow);
     % check for key press
-    while trialData.response==999 
+    while strcmp(trialData.response,'none') && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer) 
         [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
         if keyDown
+            trialData.rt = secs - trialData.respScreenTime; 
             if keyCode(KbName('LeftArrow'))
-                trialData.response = 'LeftArrow';
+                trialData.response = 'left';
             elseif keyCode(KbName('RightArrow'))
-                trialData.response = 'RightArrow';
+                trialData.response = 'right';
             elseif keyCode(KbName('DownArrow'))
-                trialData.response = 'DownArrow';
+                trialData.response = 'down';
             elseif keyCode(KbName('ESCAPE'))
                 trialData.abortNow   = true;
-                trialData.response = 'Abort';
+                trialData.response = 'abort';
             else
                 Screen('DrawText', expInfo.curWindow, 'not an existing response key', 150, expInfo.center(2)-expInfo.center(2)/4, [0 0 0]);
                 Screen('DrawText', expInfo.curWindow, 'please choose left, right or down arrow', 50, expInfo.center(2), [0 0 0]);

@@ -5,7 +5,7 @@ function [trialData] = trial_MAE_grouped(expInfo, conditionInfo)
 
 trialData.validTrial = true;
 trialData.abortNow   = false;
-trialData.response = 999;
+trialData.response = 'none';
 abortExpTrigger = 99;
 
 % Find the color values which correspond to white and black.
@@ -257,8 +257,10 @@ if expInfo.useBitsSharp
     end
 end
 trialData.trialEndTime = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * expInfo.ifi);
-trialData.testDuration = trialData.trialEndTime - trialData.trialTestTime;
-trialData.trialDuration = trialData.trialEndTime - trialData.trialStartTime;
+if trialData.validTrial
+    trialData.testDuration = trialData.trialEndTime - trialData.trialTestTime;
+    trialData.trialDuration = trialData.trialEndTime - trialData.trialStartTime;
+end
 
 %%%% close all the textures
 if conditionInfo.direction ~= 99
@@ -279,19 +281,19 @@ if trialData.validTrial
     Screen('DrawText', expInfo.curWindow, 'down arrow for no effect', 150, expInfo.center(2)+expInfo.center(2)/4, [0 0 0]);
     trialData.respScreenTime =Screen('Flip',expInfo.curWindow);
     % check for key press
-    while trialData.response==999 && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer)
+    while strcmp(trialData.response,'none') && (GetSecs < trialData.respScreenTime + conditionInfo.maxToAnswer)
         [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
         if keyDown
             trialData.rt = secs - trialData.respScreenTime;
             if keyCode(KbName('LeftArrow'))
-                trialData.response = 1;
+                trialData.response = 'left';
             elseif keyCode(KbName('RightArrow'))
-                trialData.response = 2;
+                trialData.response = 'right';
             elseif keyCode(KbName('DownArrow'))
-                trialData.response = 3;
+                trialData.response = 'down';
             elseif keyCode(KbName('ESCAPE'))
                 trialData.abortNow   = true;
-                trialData.response = 0;
+                trialData.response = 'abort';
             else
                 Screen('DrawText', expInfo.curWindow, 'not an existing response key', 150, expInfo.center(2)-expInfo.center(2)/4, [0 0 0]);
                 Screen('DrawText', expInfo.curWindow, 'please choose left, right or down arrow', 50, expInfo.center(2), [0 0 0]);

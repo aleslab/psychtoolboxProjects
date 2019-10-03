@@ -1,16 +1,8 @@
 function [conditionInfo, expInfo] = psychParadigm_MAE_singleFq(expInfo)
 % adaptation using only one adaptor (not overlapping)
+% 4 adaptors with 3 tests per adaptor (9 tests per block)
+% 5 blocks per adaptor (=20 blocks in total)
 
-
-
-% 8 times 5 s tests per adaptation block (2 tests x 4)
-% 20 s + 8*15s = 2.5 min per blk = around 1h
-% 12 test conditions 
-% 6 adaptor conditions repeated 4 times = 24 blocks (192 trials)
-% 1 test 4.7s = 0.47 removed + 20/85*6 (1.4s epoch) * 3
-% would do 48 epochs per test condition
-
-% add a noise frame around to increase the strengh of the MAE?
 
 KbName('UnifyKeyNames');
 
@@ -31,12 +23,14 @@ expInfo.fixationInfo(2).type  = 'cross';
 expInfo.fixationInfo(2).size  = .4;
 expInfo.fixationInfo(2).lineWidthPix = 3;
 expInfo.fixationInfo(2).color = 0;
-expInfo.fixationInfo(2).loc = [0 -7]; % location of the fixation relative to centre in degrees (1st number is horizontal, 2nd is vertical)
+expInfo.fixationInfo(2).loc = [0 -6]; % location of the fixation relative to centre in degrees (1st number is horizontal, 2nd is vertical)
 expInfo.fixationInfo(1).type = 'noiseFrame';
 expInfo.fixationInfo(1).size = 4;
 
 expInfo.instructions = 'FIXATE the cross';
 
+
+conditionInfo(1).maxToAnswer = 2; 
 conditionInfo(1).iti = 0;
 conditionInfo(1).nReps = 3; % 3 nb of tests in one adaptation block (x3 because there are 3 types of test stimuli per adaptor)
 conditionInfo(1).type = 'Generic';
@@ -50,11 +44,11 @@ conditionInfo(1).stimSize = 24; % grating image in degrees.
 conditionInfo(1).yEccentricity = 3;
 conditionInfo(1).tempFq = 85/18; % 85/18 or 85/16? 4.72 Hz 
 conditionInfo(1).testFreq = 85/20; % 4.25 Hz
-conditionInfo(1).testDuration = 21; % in cycles. 5 seconds = 20/85*20 cycles (exactly 4.7 seconds)
+conditionInfo(1).testDuration = 5; % in cycles. 5 seconds = 20/85*20 cycles (exactly 4.7 seconds)
 % add one cycle because real refresh is 0.01176 not 0.0118 so I miss some
 % data at the end of the trial...
-conditionInfo(1).adaptDuration = 10; % in sec: 10s top-up
-conditionInfo(1).longAdapt = 20; % 20 sec added to top-up for the 1st trial
+conditionInfo(1).adaptDuration = 1; % in sec: 10s top-up
+conditionInfo(1).longAdapt = 1; % 20 sec added to top-up for the 1st trial
 
 %%%%%%%%%%%% parameters for the different conditions
 % spatial freq of the 2 gratings
@@ -75,7 +69,7 @@ conditionInfo(1).longAdapt = 20; % 20 sec added to top-up for the 1st trial
 
 conditionTemplate = conditionInfo(1); %Take the first condition as the template
 conditionInfo = createConditionsFromParamList(conditionTemplate,'pairwise',...
-    'testPhase',[90 10 90 90 170 90 90 10 90 90 10 90],...
+    'testPhase',[90 10 10 90 170 170 90 170 170 90 10 10],...
     'f1',[2 2 2 2 2 2 2 2 2 0.125 0.125 0.125],...
     'direction',[180 180 180 0 0 0 99 99 99 0 0 0],...
     'f2',[0 0 0.5 0 0 0.5 0 0 0.5 0 0 0.5]);
