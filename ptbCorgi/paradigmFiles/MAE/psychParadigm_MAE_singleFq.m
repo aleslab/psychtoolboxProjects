@@ -44,11 +44,11 @@ conditionInfo(1).stimSize = 24; % grating image in degrees.
 conditionInfo(1).yEccentricity = 3;
 conditionInfo(1).tempFq = 85/18; % 85/18 or 85/16? 4.72 Hz 
 conditionInfo(1).testFreq = 85/20; % 4.25 Hz
-conditionInfo(1).testDuration = 5; % in cycles. 5 seconds = 20/85*20 cycles (exactly 4.7 seconds)
+conditionInfo(1).testDuration = 21; % in cycles. 5 seconds = 20/85*20 cycles (exactly 4.7 seconds)
 % add one cycle because real refresh is 0.01176 not 0.0118 so I miss some
 % data at the end of the trial...
-conditionInfo(1).adaptDuration = 1; % in sec: 10s top-up
-conditionInfo(1).longAdapt = 1; % 20 sec added to top-up for the 1st trial
+conditionInfo(1).adaptDuration = 10; % in sec: 10s top-up
+conditionInfo(1).longAdapt = 20; % 20 sec added to top-up for the 1st trial
 
 %%%%%%%%%%%% parameters for the different conditions
 % spatial freq of the 2 gratings
@@ -69,7 +69,7 @@ conditionInfo(1).longAdapt = 1; % 20 sec added to top-up for the 1st trial
 
 conditionTemplate = conditionInfo(1); %Take the first condition as the template
 conditionInfo = createConditionsFromParamList(conditionTemplate,'pairwise',...
-    'testPhase',[90 10 10 90 170 170 90 170 170 90 10 10],...
+    'testPhase',[90 10 10 90 170 170 90 10 10 90 10 10],...
     'f1',[2 2 2 2 2 2 2 2 2 0.125 0.125 0.125],...
     'direction',[180 180 180 0 0 0 99 99 99 0 0 0],...
     'f2',[0 0 0.5 0 0 0.5 0 0 0.5 0 0 0.5]);

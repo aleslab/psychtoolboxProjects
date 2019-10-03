@@ -148,6 +148,7 @@ if conditionInfo.direction == 99
         if keyDown
             if keyCode(KbName('ESCAPE'))
                 trialData.abortNow   = true;
+                trialData.validTrial = false;
             end
             drawFixation(expInfo, expInfo.fixationInfo);
             Screen('DrawText', expInfo.curWindow, 'please do not press a key', 150, expInfo.center(2)-expInfo.center(2)/4, [0 0 0]);

@@ -48,7 +48,7 @@ conditionInfo(1).yEccentricity = 3;
 conditionInfo(1).f1 = 0.5; % in cycle (changes to c/deg in the trial pg)
 conditionInfo(1).tempFq = 85/18; % 85/18 or 85/16? 4.72 Hz 
 conditionInfo(1).testFreq = 85/20; % 4.25 Hz
-conditionInfo(1).testDuration = 2; % in cycles. 5 seconds = 20/85*20 cycles (exactly 4.7 seconds)
+conditionInfo(1).testDuration = 21; % in cycles. 5 seconds = 20/85*20 cycles (exactly 4.7 seconds)
 % add one cycle because real refresh is 0.01176 not 0.0118 so I miss some
 % data at the end of the trial...
 conditionInfo(1).adaptDuration = 10; % in sec: 10s top-up
