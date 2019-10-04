@@ -27,7 +27,7 @@ expInfo.fixationInfo(2).type  = 'cross';
 expInfo.fixationInfo(2).size  = .4;
 expInfo.fixationInfo(2).lineWidthPix = 3;
 expInfo.fixationInfo(2).color = 0;
-expInfo.fixationInfo(2).loc = [0 -6]; % location of the fixation relative to centre in degrees (1st number is horizontal, 2nd is vertical)
+expInfo.fixationInfo(2).loc = [0 -5]; % location of the fixation relative to centre in degrees (1st number is horizontal, 2nd is vertical)
 expInfo.fixationInfo(1).type = 'noiseFrame';
 expInfo.fixationInfo(1).size = 4;
 
