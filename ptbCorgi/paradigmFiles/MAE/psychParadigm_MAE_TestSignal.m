@@ -28,7 +28,7 @@ expInfo.instructions = 'FIXATE the cross';
 
 conditionInfo(1).maxToAnswer = 3;
 conditionInfo(1).iti = 0;
-conditionInfo(1).nReps = 1; %
+conditionInfo(1).nReps = 16; %
 conditionInfo(1).type = 'Generic';
 conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;
