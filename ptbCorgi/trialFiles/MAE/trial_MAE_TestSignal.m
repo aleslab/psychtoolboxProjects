@@ -23,11 +23,11 @@ glsl = MakeTextureDrawShader(expInfo.curWindow, 'SeparateAlphaChannel');
 %%%% Gratings
 texsize = conditionInfo.stimSize*expInfo.ppd; % Size of the grating image.
 cyclespersecond1 = conditionInfo.tempFq; % temporal frequency (related to velocity)
-cyclespersecond2 = cyclespersecond1; % same for both gratings
+% cyclespersecond2 = cyclespersecond1; % same for both gratings
 
 % spatial freq of the 2 gratings
 f1 = conditionInfo.f1/expInfo.ppd; % cycle/deg
-f2 = conditionInfo.f2/expInfo.ppd;
+% f2 = conditionInfo.f2/expInfo.ppd;
 % direction of the 2 gratings
 if conditionInfo.direction == 99 % no adaptation
     angle1 = 0;
@@ -40,28 +40,28 @@ elseif conditionInfo.direction == 0
     angle2 = 180;
 end
 trialData.angle1 = angle1;
-trialData.angle2 = angle2;
+% trialData.angle2 = angle2;
 
 % Calculate parameters of the grating:
 fr1=f1*2*pi;
-fr2=f2*2*pi;
+% fr2=f2*2*pi;
 
 % Create gratings:
 x = meshgrid(-texsize:texsize, -texsize:texsize);
 grating1 = gray + inc*sin(fr1*x);
-x2 = meshgrid(-texsize:texsize, -texsize:texsize);
-grating2 = gray + inc*sin(fr2*x2);
+% x2 = meshgrid(-texsize:texsize, -texsize:texsize);
+% grating2 = gray + inc*sin(fr2*x2);
 % add alpha column
 grating1 = repmat(grating1,[1,1,3]);
-grating2 = repmat(grating2,[1,1,3]);
+% grating2 = repmat(grating2,[1,1,3]);
 grating1(:,:,4) = ones(size(grating1,1));
-grating2(:,:,4) = ones(size(grating2,1))*.5;
+% grating2(:,:,4) = ones(size(grating2,1))*.5;
 
 % Store alpha-masked grating in texture and attach the special 'glsl'
 % texture shader to it:
 if conditionInfo.direction ~= 99
     gratingAdapt1 = Screen('MakeTexture', expInfo.curWindow, grating1 , [], [], [], [], glsl);
-    gratingAdapt2 = Screen('MakeTexture', expInfo.curWindow, grating2 , [], [], [], [], glsl);
+%     gratingAdapt2 = Screen('MakeTexture', expInfo.curWindow, grating2 , [], [], [], [], glsl);
 end
 
 % create gratings for the test
@@ -69,17 +69,17 @@ end
 % 'edgy' stimulus (which is more natural and that the brain likes)
 phase = conditionInfo.testPhase * pi/180; 
 gratingT1 = gray + inc*sin(fr1*x + phase);
-gratingT2 = gray + inc*sin(fr2*x2 + phase);
 % add alpha column
 gratingT1 = repmat(gratingT1,[1,1,3]);
-gratingT2 = repmat(gratingT2,[1,1,3]);
 gratingT1(:,:,4) = ones(size(gratingT1,1));
-gratingT2(:,:,4) = ones(size(gratingT2,1))*.5;
+% gratingT2 = gray + inc*sin(fr2*x2 + phase);
+% gratingT2 = repmat(gratingT2,[1,1,3]);
+% gratingT2(:,:,4) = ones(size(gratingT2,1))*.5;
 % make texture
 gratingPhaseShift1 = Screen('MakeTexture', expInfo.curWindow, gratingT1);
-gratingPhaseShift2 = Screen('MakeTexture', expInfo.curWindow, gratingT2);
+% gratingPhaseShift2 = Screen('MakeTexture', expInfo.curWindow, gratingT2);
 gratingtest1 = Screen('MakeTexture', expInfo.curWindow, grating1);
-gratingtest2 = Screen('MakeTexture', expInfo.curWindow, grating2);
+% gratingtest2 = Screen('MakeTexture', expInfo.curWindow, grating2);
 
 % Definition of the drawn source rectangle on the screen:
 srcRect=[0 0 texsize texsize/2];
@@ -93,12 +93,12 @@ waitduration = waitframes * expInfo.ifi;
 % Recompute p, this time without the ceil() operation from above.
 % Otherwise we will get wrong drift speed due to rounding!
 p1 = 1/f1; % pixels/cycle
-p2 = 1/f2; % pixels/cycle
+% p2 = 1/f2; % pixels/cycle
 
 % Translate requested speed of the gratings (in cycles per second) into
 % a shift value in "pixels per frame", assuming given waitduration:
 shiftperframe1 = cyclespersecond1 * p1 * waitduration;
-shiftperframe2 = cyclespersecond2 * p2 * waitduration;
+% shiftperframe2 = cyclespersecond2 * p2 * waitduration;
 
 % parameters for test
 cycleDuration = 1/conditionInfo.testFreq;
@@ -138,9 +138,9 @@ if conditionInfo.direction == 99
     %%%%%%%%%%%%%%%%% No adaptation
     while (vbl < vblAdaptTime) && ~trialData.abortNow % && ~KbCheck(expInfo.deviceIndex)
         Screen('DrawTexture', expInfo.curWindow, gratingtest1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc));
-        Screen('DrawTexture', expInfo.curWindow, gratingtest2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc));
+%         Screen('DrawTexture', expInfo.curWindow, gratingtest2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc));
         Screen('DrawTexture', expInfo.curWindow, gratingtest1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc));
-        Screen('DrawTexture', expInfo.curWindow, gratingtest2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc));
+%         Screen('DrawTexture', expInfo.curWindow, gratingtest2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc));
         drawFixation(expInfo, expInfo.fixationInfo);
         vbl = Screen('Flip', expInfo.curWindow, vbl + (waitframes - 0.5) * expInfo.ifi);
         
@@ -170,14 +170,14 @@ else
         % the gratings. Before drawing the shifted grating, it will mask it
         % with the "unshifted" alpha mask values inside the Alpha channel:
         yoffset1 = mod(i*shiftperframe1,p1);
-        yoffset2 = mod(i*shiftperframe2,p2);
+%         yoffset2 = mod(i*shiftperframe2,p2);
         i=i+1;
         
         % Draw gratings texture, rotated by "angle":
         Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle1, [], [], [], [], [], [0, yoffset1, 0, 0]);
-        Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle2, [], [], [], [], [], [0, yoffset2, 0, 0]);
+%         Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle2, [], [], [], [], [], [0, yoffset2, 0, 0]);
         Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle1, [], [], [], [], [], [0, yoffset1, 0, 0]);
-        Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2, [], [], [], [], [], [0, yoffset2, 0, 0]);
+%         Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2, [], [], [], [], [], [0, yoffset2, 0, 0]);
         drawFixation(expInfo, expInfo.fixationInfo);
         
         % Flip 'waitframes' monitor refresh intervals after last redraw.
@@ -210,9 +210,9 @@ cycle = 0;
 while cycle<conditionInfo.testDuration && trialData.validTrial % ~KbCheck(expInfo.deviceIndex)
     % first stim
     Screen('DrawTexture', expInfo.curWindow, gratingtest1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc));
-    Screen('DrawTexture', expInfo.curWindow, gratingtest2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc));
+%     Screen('DrawTexture', expInfo.curWindow, gratingtest2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc));
     Screen('DrawTexture', expInfo.curWindow, gratingtest1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc));
-    Screen('DrawTexture', expInfo.curWindow, gratingtest2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc));
+%     Screen('DrawTexture', expInfo.curWindow, gratingtest2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc));
     drawFixation(expInfo, expInfo.fixationInfo);
     ptbCorgiSendTrigger(expInfo,'raw',0,f1Trigger);
     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * expInfo.ifi);
@@ -228,9 +228,9 @@ while cycle<conditionInfo.testDuration && trialData.validTrial % ~KbCheck(expInf
     
     % second stim
     Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc));
-    Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc));
+%     Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc));
     Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc));
-    Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc));
+%     Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc));
     drawFixation(expInfo, expInfo.fixationInfo);
     ptbCorgiSendTrigger(expInfo,'clear',0);
     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * expInfo.ifi);
@@ -271,9 +271,11 @@ end
 
 %%%% close all the textures
 if conditionInfo.direction ~= 99
-    Screen('Close',[gratingAdapt1 gratingAdapt2 gratingtest1 gratingtest2 gratingPhaseShift1 gratingPhaseShift2]);
+%     Screen('Close',[gratingAdapt1 gratingAdapt2 gratingtest1 gratingtest2 gratingPhaseShift1 gratingPhaseShift2]);
+    Screen('Close',[gratingAdapt1  gratingtest1  gratingPhaseShift1 ]);
 else
-    Screen('Close',[gratingtest1 gratingtest2 gratingPhaseShift1 gratingPhaseShift2]);
+%     Screen('Close',[gratingtest1 gratingtest2 gratingPhaseShift1 gratingPhaseShift2]);
+    Screen('Close',[gratingtest1  gratingPhaseShift1 ]);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

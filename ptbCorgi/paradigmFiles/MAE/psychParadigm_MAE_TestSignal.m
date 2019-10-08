@@ -1,22 +1,22 @@
 function [conditionInfo, expInfo] = psychParadigm_MAE_TestSignal(expInfo)
 % Only 6 conditions, each with 30 s adaptation 5 s test
 % test high spatial fq grating at 90 or 5 deg phase
-% also change the spatial freq (0.25 or 1 instead of 0.125 2)
+% NO overlapping grating
 
 KbName('UnifyKeyNames');
 
 %paradigmName is what will be prepended to data files
-expInfo.paradigmName = 'MAE';
+expInfo.paradigmName = 'MAE_testSignal';
 expInfo.viewingDistance = 57;
 % expInfo.trialRandomization.type = 'blocked';
 % expInfo.trialRandomization.blockByField = 'adaptorNb';
 % expInfo.trialRandomization.nBlockReps   = 4;
 
 
-% expInfo.useBitsSharp = true;
-% expInfo.enableTriggers = true;
-expInfo.useBitsSharp = false; 
-expInfo.enableTriggers = false;
+expInfo.useBitsSharp = true;
+expInfo.enableTriggers = true;
+% expInfo.useBitsSharp = false; 
+% expInfo.enableTriggers = false;
 
 expInfo.fixationInfo(1).type  = 'cross';
 expInfo.fixationInfo(1).size  = .4;
@@ -26,19 +26,19 @@ expInfo.fixationInfo(1).loc = [0 0]; % [0 -5]; % location of the fixation relati
 
 expInfo.instructions = 'FIXATE the cross';
 
-conditionInfo(1).maxToAnswer = 2;
+conditionInfo(1).maxToAnswer = 3;
 conditionInfo(1).iti = 0;
-conditionInfo(1).nReps = 16; %
+conditionInfo(1).nReps = 1; %
 conditionInfo(1).type = 'Generic';
 conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;
 conditionInfo(1).intervalBeep = 0;
 conditionInfo(1).trialFun=@trial_MAE_TestSignal;
-conditionInfo(1).stimSize = 32; % grating image in degrees. 
+conditionInfo(1).stimSize = 24; % grating image in degrees. 
 % should be an integer of 8 so that the lowest spatial frequency grating will
 % have full cycles only = the average luminance of the grating is equal to the background luminance 
-conditionInfo(1).yEccentricity = 3;
-conditionInfo(1).f1 = 0.5; % in cycle (changes to c/deg in the trial pg)
+conditionInfo(1).yEccentricity = 7;
+conditionInfo(1).f1 = 1; % 0.25 or 1 (standard is 0.5) % in cycle (changes to c/deg in the trial pg)
 conditionInfo(1).tempFq = 85/18; % 85/18 or 85/16? 4.72 Hz 
 conditionInfo(1).testFreq = 85/20; % 4.25 Hz
 conditionInfo(1).testDuration = 21; % in cycles. 5 seconds = 20/85*20 cycles (exactly 4.7 seconds)
@@ -70,15 +70,15 @@ conditionInfo(1).adaptDuration = 30; % in s
 % spatialFq = [0.13 0.26 1.1 2.1];
 % spatialFq = [0.25 1]; % standard fq 0.5 /4 or *4
 % spatialFq = [0.125 2]; % standard fq 0.5 /4 or *4
-spatialFq = 1; % 0.25 or 1 (standard is 0.5)
-phase = [5 90]; % cannot use a 180 (counterphase) because there is no clear energy motion direction for the SSVEP. 
+% spatialFq = 1; % 0.25 or 1 (standard is 0.5)
+phase = [10 90]; % cannot use a 180 (counterphase) because there is no clear energy motion direction for the SSVEP. 
 % with 180 there is no 1st harmonic which is the one showing a direction
 % selective response
 standardDirection = [0 180 99]; % of standard 0=left, 180=right, 99=none (no drift)
 
 conditionTemplate = conditionInfo(1); %Take the first condition as the template
 conditionInfo = createConditionsFromParamList(conditionTemplate,'crossed',...
-   'testPhase',phase, 'f2',spatialFq,'direction',standardDirection);
+   'testPhase',phase, 'direction',standardDirection);
 
 % % there must be a better way but being lazy here
 % adaptorType = {'left','left','right','right','static','static'};
