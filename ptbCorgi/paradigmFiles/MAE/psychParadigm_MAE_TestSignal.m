@@ -8,10 +8,15 @@ KbName('UnifyKeyNames');
 %paradigmName is what will be prepended to data files
 expInfo.paradigmName = 'MAE_testSignal';
 expInfo.viewingDistance = 57;
-% expInfo.trialRandomization.type = 'blocked';
-% expInfo.trialRandomization.blockByField = 'adaptorNb';
-% expInfo.trialRandomization.nBlockReps   = 4;
 
+% expInfo.trialRandomization.blockByField = 'adaptorNb';
+% expInfo.trialRandomization.nBlockReps   = 8;
+
+% %%% fully random trials
+expInfo.trialRandomization.type = 'custom';
+expInfo.trialRandomization.trialList = Shuffle(repmat(1:6,1,16));% 6 conditions repeated 16 times
+tt=repmat(1:12,8,1);
+expInfo.trialRandomization.blockList = tt(:); 
 
 expInfo.useBitsSharp = true;
 expInfo.enableTriggers = true;
@@ -26,9 +31,9 @@ expInfo.fixationInfo(1).loc = [0 0]; % [0 -5]; % location of the fixation relati
 
 expInfo.instructions = 'FIXATE the cross';
 
-conditionInfo(1).maxToAnswer = 3;
+conditionInfo(1).maxToAnswer = 5;
 conditionInfo(1).iti = 0;
-conditionInfo(1).nReps = 16; %
+conditionInfo(1).nReps = 1; %
 conditionInfo(1).type = 'Generic';
 conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).giveAudioFeedback = 0;
@@ -41,7 +46,7 @@ conditionInfo(1).yEccentricity = 7;
 conditionInfo(1).f1 = 1; % 0.25 or 1 (standard is 0.5) % in cycle (changes to c/deg in the trial pg)
 conditionInfo(1).tempFq = 85/18; % 85/18 or 85/16? 4.72 Hz 
 conditionInfo(1).testFreq = 85/20; % 4.25 Hz
-conditionInfo(1).testDuration = 21; % in cycles. 5 seconds = 20/85*20 cycles (exactly 4.7 seconds)
+conditionInfo(1).testDuration = 21; % 21 in cycles. 5 seconds = 20/85*20 cycles (exactly 4.7 seconds)
 % add one cycle because real refresh is 0.01176 not 0.0118 so I miss some
 % data at the end of the trial...
 conditionInfo(1).adaptDuration = 30; % in s
