@@ -16,17 +16,17 @@ expInfo.viewingDistance = 57;
 % expInfo.trialRandomization.nBlockReps   = 4;
 
 expInfo.trialRandomization.type = 'custom';
-ss = shuffle([1 3 5]);
+ss = Shuffle([1 3 5]);
 ss = [ss(1) ss(1)+1 ss(2) ss(2)+1 ss(3) ss(3)+1];
 allCond = repmat(ss,32,1);allCond = allCond(:);
 expInfo.trialRandomization.trialList = allCond';
 tt= repmat(1:24,8,1);
 expInfo.trialRandomization.blockList = tt(:)'; 
 
-% expInfo.useBitsSharp = true;
-% expInfo.enableTriggers = true;
-expInfo.useBitsSharp = false; 
-expInfo.enableTriggers = false;
+expInfo.useBitsSharp = true;
+expInfo.enableTriggers = true;
+% expInfo.useBitsSharp = false; 
+% expInfo.enableTriggers = false;
 
 expInfo.fixationInfo(1).type  = 'cross';
 expInfo.fixationInfo(1).size  = .4;
