@@ -16,8 +16,8 @@ expInfo.viewingDistance = 57;
 % expInfo.trialRandomization.nBlockReps   = 4;
 
 expInfo.trialRandomization.type = 'custom';
-ss = Shuffle([1 3 5]);
-ss = [ss(1) ss(1)+1 ss(2) ss(2)+1 ss(3) ss(3)+1];
+ss = Shuffle([1 3]);
+ss = [ss(1) ss(1)+1 5 6 ss(2) ss(2)+1];
 allCond = repmat(ss,32,1);allCond = allCond(:);
 expInfo.trialRandomization.trialList = allCond';
 tt= repmat(1:24,8,1);
