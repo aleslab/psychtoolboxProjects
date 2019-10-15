@@ -22,27 +22,26 @@ function [conditionInfo, expInfo] = psychParadigm_MAE_split(expInfo)
 KbName('UnifyKeyNames');
 
 
-currentCondition = 2;
+currentCondition = 5;
 
 % 3 columns, 1st is spatial fq, second for direction, third for trigger
-% odd triggers are static tests (10 phase), even triggers are dynamic tests
-% (170 phase)
-allCond = [0.25 -1 101;
-    1 -1 103;
-    0.25 1 105;
-    1 1 107;
-    0.25 0 109;
-    1 0 111];
+% (the number will be added to the condition number so ends up being between 120-131)
+allCond = [0.25 -1 20;
+    1 -1 22;
+    0.25 1 24;
+    1 1 26;
+    0.25 0 28;
+    1 0 30];
 
 
 conditionInfo(1).f2 = allCond(currentCondition,1); % standard fq [0.125 2]
 conditionInfo(1).direction = allCond(currentCondition,2); % direction of standard: -1 = left, 1=right
-expInfo.triggerInfo.startTrial = allCond(currentCondition,3);
+conditionInfo(1).triggerCond = allCond(currentCondition,3);
 
 
 
 %paradigmName is what will be prepended to data files
-expInfo.paradigmName = 'MAE';
+expInfo.paradigmName = 'MAEshift';
 expInfo.viewingDistance = 57;
 expInfo.trialRandomization.type = 'blocked';
 expInfo.trialRandomization.blockByField = 'shift';

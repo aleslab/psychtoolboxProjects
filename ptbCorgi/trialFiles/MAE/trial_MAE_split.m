@@ -70,7 +70,7 @@ gratingDb = gray + (inc*sin(fr1*x)/2 + inc*sin(fr2*x2)/2);
 gratingDb = repmat(gratingDb,[1,1,3]);
 gratingDb(:,:,4) = ones(size(gratingDb,1));
 gratingTest = Screen('MakeTexture', expInfo.curWindow, gratingDb , [], [], [], [], glsl);
-if conditionInfo.f2 == 0.25
+if conditionInfo.f2 == 0.25 && conditionInfo.shift == 0.97
     conditionInfo.shift = conditionInfo.shift+1;
 end
 testShift = conditionInfo.shift * expInfo.ppd;
@@ -116,9 +116,13 @@ framesPerHalfCycle = framesPerCycle/2;
 % Perform initial Flip to sync us to the VBL and for getting an initial
 % VBL-Timestamp for our "WaitBlanking" emulation:
 if conditionInfo.shift ~= 0.03
-    expInfo.triggerInfo.startTrial = expInfo.triggerInfo.startTrial + 1;
+    conditionInfo.triggerCond = conditionInfo.triggerCond + 1;
 end   
-trialData.trigger = expInfo.triggerInfo.startTrial;
+if expInfo.useBitsSharp
+    trialData.trigger = expInfo.triggerInfo.startTrial;
+    ptbCorgiSendTrigger(expInfo,'conditionnumber',true,conditionInfo.triggerCond);
+end
+    
 if expInfo.useBitsSharp
     f1Trigger = expInfo.triggerInfo.ssvepTagF1;
     checkTime = 1;

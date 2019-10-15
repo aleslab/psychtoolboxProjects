@@ -138,7 +138,7 @@ switch lower(command)
             warning('ptbCorgi:sendTrigger:condNumMaxExceeded','Sending condition number trigger value over range, still sending but check yourself');
         end
         
-        trigMessage=sprintf('Sending conditionNumber trigger value: %i',triggerValue);
+        trigMessage=sprintf('Sending conditionNumber trigger value: %i',triggerValue)
 
     case 'raw'         
         triggerValue = varargin{1};
