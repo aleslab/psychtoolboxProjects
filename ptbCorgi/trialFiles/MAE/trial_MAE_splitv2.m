@@ -81,7 +81,7 @@ testShift = conditionInfo.shift * expInfo.ppd;
 if conditionInfo.shift ~= 0.03
     conditionInfo.triggerCond = conditionInfo.triggerCond + 1;
 end 
-
+testShift = testShift/2;
 
 % Definition of the drawn source rectangle on the screen:
 srcRect=[0 0 texsize texsize/2];

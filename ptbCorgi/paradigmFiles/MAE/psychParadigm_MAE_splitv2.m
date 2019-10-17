@@ -3,6 +3,11 @@ function [conditionInfo, expInfo] = psychParadigm_MAE_splitv2(expInfo)
 % freq (using standard) and 3 are overlapping freq (standard + 1 c/deg)
 % do 2 blocks of the same kind one after the other
 
+% used 90 deg shift instead of counterphase: 
+% testShift = testShift/2;
+% in trial program
+
+
 % block order for S16: 3 4 6 1 5 2
 
 
@@ -49,10 +54,10 @@ expInfo.trialRandomization.blockList = bb(:)';
 % tt= repmat(1:24,8,1);
 % expInfo.trialRandomization.blockList = tt(:)'; 
 
-% expInfo.useBitsSharp = true;
-% expInfo.enableTriggers = true;
-expInfo.useBitsSharp = false; 
-expInfo.enableTriggers = false;
+expInfo.useBitsSharp = true;
+expInfo.enableTriggers = true;
+% expInfo.useBitsSharp = false; 
+% expInfo.enableTriggers = false;
 
 expInfo.fixationInfo(1).type  = 'cross';
 expInfo.fixationInfo(1).size  = .4;
@@ -79,11 +84,11 @@ conditionInfo(1).yEccentricity = 7;
 conditionInfo(1).f1 = 0.5; % in cycle (changes to c/deg in the trial pg)
 conditionInfo(1).tempFq = 85/16 ; % 85/18 or 85/16? 4.72 Hz or 5.3125
 conditionInfo(1).testFreq = 85/20; % 4.25 Hz
-conditionInfo(1).testDuration = 5; % in cycles. 5 seconds = 20/85*20 cycles (exactly 4.7 seconds)
+conditionInfo(1).testDuration = 21; % in cycles. 5 seconds = 20/85*20 cycles (exactly 4.7 seconds)
 % add one cycle because real refresh is 0.01176 not 0.0118 so I miss some
 % data at the end of the trial...
-conditionInfo(1).adaptDuration = 1; % in sec: 10s top-up
-conditionInfo(1).longAdapt = 2; % 20 sec added to top-up for the 1st trial
+conditionInfo(1).adaptDuration = 10; % in sec: 10s top-up
+conditionInfo(1).longAdapt = 20; % 20 sec added to top-up for the 1st trial
 
 %%%%%%%%%%%% parameters for the different conditions
 % phase = [10 170]; 
