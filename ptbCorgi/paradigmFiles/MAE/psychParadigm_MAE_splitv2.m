@@ -39,7 +39,7 @@ conditionInfo(1).triggerCond = allCond(currentCondition,3);
 
 
 %paradigmName is what will be prepended to data files
-expInfo.paradigmName = 'MAEshift';
+expInfo.paradigmName = 'MAEsplit';
 expInfo.viewingDistance = 57;
 expInfo.trialRandomization.nBlockReps   = 2; % 2 if 6 conditions are tested (4 if only 3 conditions are tested)
 expInfo.trialRandomization.type = 'custom'; 
