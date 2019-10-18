@@ -198,6 +198,7 @@ else
 %         Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle1, [], [], [], [], [], [0, yoffset1, 0, 0]);
 %         Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2, [], [], [], [], [], [0, yoffset2, 0, 0]);
         Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), [], [], [], [], [], [], [0, dir1*yoffset1, 0, 0]);
+%         Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), [], [], [], [], [], [], [0, yoffset1, 0, 0]);
         Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), [], [], [], [], [], [], [0, dir1*yoffset1, 0, 0]);
         if conditionInfo(1).overlap
             Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), [], [], [], [], [], [], [0, dir2*yoffset2, 0, 0]);

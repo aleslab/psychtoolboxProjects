@@ -13,7 +13,7 @@ function [conditionInfo, expInfo] = psychParadigm_MAE_splitv2(expInfo)
 
 KbName('UnifyKeyNames');
 
-currentCondition = 2;
+currentCondition = 1;
 
 % % 3 columns, 1st is spatial fq, second for direction, third for trigger
 % % (the number will be added to the condition number so ends up being between 120-131)
