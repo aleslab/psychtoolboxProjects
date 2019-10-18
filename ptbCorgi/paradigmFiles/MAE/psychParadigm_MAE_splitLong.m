@@ -11,40 +11,9 @@ function [conditionInfo, expInfo] = psychParadigm_MAE_splitLong(expInfo)
 
 KbName('UnifyKeyNames');
 
-currentCondition = 2;
+currentCondition = 4;
 
 
-switch currentCondition
-    case 1
-        % condition 1
-        condGrating = 1;
-        conditionInfo(1).overlap = 1;
-        test = 2;
-        conditionInfo(1).direction = -1;
-        conditionInfo(1).triggerCond = 20;
-    case 2
-        condGrating = 2;
-        test = 1;
-        conditionInfo(1).triggerCond = 22;
-        dirAdapt = -1;
-    case 3
-        condGrating = 1;
-        conditionInfo(1).overlap = 0;
-        test = 1;
-        conditionInfo(1).direction = 0;
-        conditionInfo(1).triggerCond = 27;
-    case 4
-        condGrating = 1;
-        conditionInfo(1).overlap = 1;
-        test = 2;
-        conditionInfo(1).direction = 1;
-        conditionInfo(1).triggerCond = 24;
-    case 5
-        condGrating = 2;
-        dirAdapt = 1;
-        test = 1;
-        conditionInfo(1).triggerCond = 26;
-end
 
 
 
@@ -96,11 +65,11 @@ conditionInfo(1).yEccentricity = 7;
 conditionInfo(1).f1 = 0.5; % in cycle (changes to c/deg in the trial pg)
 conditionInfo(1).tempFq = 85/16 ; % 85/18 or 85/16? 4.72 Hz or 5.3125
 conditionInfo(1).testFreq = 85/20; % 4.25 Hz
-conditionInfo(1).testDuration = 5; % in cycles. 5 seconds = 20/85*20 cycles (exactly 4.7 seconds)
+conditionInfo(1).testDuration = 20; % in cycles. 5 seconds = 20/85*20 cycles (exactly 4.7 seconds)
 % add one cycle because real refresh is 0.01176 not 0.0118 so I miss some
 % data at the end of the trial...
-conditionInfo(1).adaptDuration = 5; % in sec: 15s top-up
-conditionInfo(1).longAdapt = 2; % 30 sec added to top-up for the 1st trial
+conditionInfo(1).adaptDuration = 15; % in sec: 15s top-up
+conditionInfo(1).longAdapt = 30; % 30 sec added to top-up for the 1st trial
 
 %%%%%%%%%%%% parameters for the different conditions
 % phase = [10 170]; 
@@ -109,19 +78,57 @@ conditionInfo(1).longAdapt = 2; % 30 sec added to top-up for the 1st trial
 % conditionTemplate = conditionInfo(1); %Take the first condition as the template
 % conditionInfo = createConditionsFromParamList(conditionTemplate,'crossed',...
 %    'shift',testShift);
-conditionInfo(1).shift = 0.95;
 
-if test == 2
-    conditionInfo(2) = conditionInfo(1);
-    conditionInfo(2).shift = 0.05;
+
+
+switch currentCondition
+    case 1
+        % condition 1
+        conditionInfo(1).overlap = 1;
+        conditionInfo(1).direction = 'left';
+        conditionInfo(1).shift = 0.95;
+        conditionInfo(1).triggerCond = 20;
+        
+        conditionInfo(2) = conditionInfo(1);
+        conditionInfo(2).shift = 0.05;
+        conditionInfo(2).triggerCond = 21;
+    case 2
+        conditionInfo(1).overlap = 1;
+        conditionInfo(1).direction = 'none';
+        conditionInfo(1).triggerCond = 26;
+        conditionInfo(1).shift = 0.05;
+        
+        conditionInfo(2) = conditionInfo(1);
+        conditionInfo(2).direction = 'left';
+        conditionInfo(2).triggerCond = 24;
+        conditionInfo(2).overlap = 0;
+    case 3
+        conditionInfo(1).overlap = 0;
+        conditionInfo(1).shift = 0.95;
+        conditionInfo(1).direction = 'none';
+        conditionInfo(1).triggerCond = 28;
+    case 4
+        conditionInfo(1).overlap = 1;
+        conditionInfo(1).direction = 'right';
+        conditionInfo(1).shift = 0.95;
+        conditionInfo(1).triggerCond = 22;
+        
+        conditionInfo(2) = conditionInfo(1);
+        conditionInfo(2).shift = 0.05;
+        conditionInfo(2).triggerCond = 23;
+    case 5
+        conditionInfo(1).overlap = 1;
+        conditionInfo(1).direction = 'none';
+        conditionInfo(1).triggerCond = 27;
+        conditionInfo(1).shift = 0.95;
+        
+        conditionInfo(2) = conditionInfo(1);
+        conditionInfo(2).direction = 'right';
+        conditionInfo(2).triggerCond = 25;
+        conditionInfo(2).overlap = 0;
 end
-if condGrating == 2
-    conditionInfo(2) = conditionInfo(1);
-    conditionInfo(1).overlap = 1;
-    conditionInfo(1).direction = 0;
-    conditionInfo(2).overlap = 0;
-    conditionInfo(2).direction = dirAdapt;    
-end
+
+
 
 end
 

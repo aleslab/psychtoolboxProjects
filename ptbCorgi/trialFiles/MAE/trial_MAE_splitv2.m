@@ -31,14 +31,14 @@ cyclespersecond2 = cyclespersecond1; % same for both gratings
 f1 = conditionInfo.f1/expInfo.ppd; % cycle/deg
 f2 = conditionInfo.f2/expInfo.ppd;
 % direction of the 2 gratings
-dir1 = 1; dir2 = 1;
-if conditionInfo.direction == 1
-    dir2 = -1;
-elseif conditionInfo.direction == -1
-    dir1 = -1;
+angle1 = 0; angle2 = 0; % left by default
+if strcmp(conditionInfo.direction,'left')
+    angle2 = 180;
+elseif strcmp(conditionInfo.direction,'right')
+    angle1 = 180;
 end
-trialData.dir1 = dir1;
-trialData.dir2 = dir2;
+trialData.dir1 = angle1;
+trialData.dir2 = angle2;
 
 % Calculate parameters of the grating:
 fr1=f1*2*pi;
@@ -71,16 +71,16 @@ end
 % add alpha column
 gratingDb = repmat(gratingDb,[1,1,3]);
 gratingDb(:,:,4) = ones(size(gratingDb,1));
-gratingTest = Screen('MakeTexture', expInfo.curWindow, gratingDb , [], [], [], [], glsl);
+gratingOverlap = Screen('MakeTexture', expInfo.curWindow, gratingDb , [], [], [], [], glsl);
     
 %%% shift
-if conditionInfo.f2 == 0.25 && conditionInfo.shift == 0.97
+if conditionInfo.f2 == 0.25 && conditionInfo.shift > 0.2
     conditionInfo.shift = conditionInfo.shift+1;
 end
 testShift = conditionInfo.shift * expInfo.ppd;
-if conditionInfo.shift ~= 0.03
-    conditionInfo.triggerCond = conditionInfo.triggerCond + 1;
-end 
+% if conditionInfo.shift < 0.2
+%     conditionInfo.triggerCond = conditionInfo.triggerCond + 1;
+% end 
 testShift = testShift/2;
 
 % Definition of the drawn source rectangle on the screen:
@@ -150,16 +150,12 @@ trialData.adaptTime = vblAdaptTime;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ADAPTATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 i = 0; % incremental shift of the gratings 
-if conditionInfo.direction == 0
+if strcmp(conditionInfo.direction,'none')
     %%%%%%%%%%%%%%%%% No adaptation
     while (vbl < vblAdaptTime) && ~trialData.abortNow % && ~KbCheck(expInfo.deviceIndex)
         drawFixation(expInfo, expInfo.fixationInfo);
-        Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc));
-        Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc));
-        if conditionInfo(1).overlap
-            Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc));
-            Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc));
-        end
+        Screen('DrawTexture', expInfo.curWindow, gratingOverlap, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc));
+        Screen('DrawTexture', expInfo.curWindow, gratingOverlap, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc));
         vbl = Screen('Flip', expInfo.curWindow, vbl + (waitframes - 0.5) * expInfo.ifi);
         
         [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
@@ -193,17 +189,13 @@ else
         i=i+1;
         
         % Draw gratings texture, rotated by "angle":
-%         Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle1, [], [], [], [], [], [0, yoffset1, 0, 0]);
-%         Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle2, [], [], [], [], [], [0, yoffset2, 0, 0]);
-%         Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle1, [], [], [], [], [], [0, yoffset1, 0, 0]);
-%         Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2, [], [], [], [], [], [0, yoffset2, 0, 0]);
-        Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), [], [], [], [], [], [], [0, dir1*yoffset1, 0, 0]);
-%         Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), [], [], [], [], [], [], [0, yoffset1, 0, 0]);
-        Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), [], [], [], [], [], [], [0, dir1*yoffset1, 0, 0]);
+        Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle1, [], [], [], [], [], [0, yoffset1, 0, 0]);
+        Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle1, [], [], [], [], [], [0, yoffset1, 0, 0]);
         if conditionInfo(1).overlap
-            Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), [], [], [], [], [], [], [0, dir2*yoffset2, 0, 0]);
-            Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), [], [], [], [], [], [], [0, dir2*yoffset2, 0, 0]);
+            Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc), angle2, [], [], [], [], [], [0, yoffset2, 0, 0]);
+            Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc), angle2, [], [], [], [], [], [0, yoffset2, 0, 0]);
         end
+        
         
         % Flip 'waitframes' monitor refresh intervals after last redraw.
         vbl = Screen('Flip', expInfo.curWindow, vbl + (waitframes - 0.5) * expInfo.ifi);
@@ -235,12 +227,8 @@ cycle = 0;
 while cycle<conditionInfo.testDuration && trialData.validTrial % ~KbCheck(expInfo.deviceIndex)
     % first stim
     drawFixation(expInfo, expInfo.fixationInfo);
-    Screen('DrawTexture', expInfo.curWindow, gratingTest, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc),[], [], [], [], [], [], [0, 0, 0, 0]);
-    Screen('DrawTexture', expInfo.curWindow, gratingTest, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc),[], [], [], [], [], [], [0, 0, 0, 0]);
-%     Screen('DrawTexture', expInfo.curWindow, gratingtest1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc));
-%     Screen('DrawTexture', expInfo.curWindow, gratingtest2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc));
-%     Screen('DrawTexture', expInfo.curWindow, gratingtest1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc));
-%     Screen('DrawTexture', expInfo.curWindow, gratingtest2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc));
+    Screen('DrawTexture', expInfo.curWindow, gratingOverlap, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc),[], [], [], [], [], [], [0, 0, 0, 0]);
+    Screen('DrawTexture', expInfo.curWindow, gratingOverlap, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc),[], [], [], [], [], [], [0, 0, 0, 0]);
     ptbCorgiSendTrigger(expInfo,'raw',0,f1Trigger);
     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * expInfo.ifi);
     vbl1 = vbl;
@@ -255,12 +243,8 @@ while cycle<conditionInfo.testDuration && trialData.validTrial % ~KbCheck(expInf
     
     % second stim
     drawFixation(expInfo, expInfo.fixationInfo);
-    Screen('DrawTexture', expInfo.curWindow, gratingTest, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc),[], [], [], [], [], [], [0, testShift, 0, 0]);
-    Screen('DrawTexture', expInfo.curWindow, gratingTest, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc),[], [], [], [], [], [], [0, testShift, 0, 0]);
-%     Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc));
-%     Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc));
-%     Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc));
-%     Screen('DrawTexture', expInfo.curWindow, gratingPhaseShift2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc));
+    Screen('DrawTexture', expInfo.curWindow, gratingOverlap, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc),[], [], [], [], [], [], [0, testShift, 0, 0]);
+    Screen('DrawTexture', expInfo.curWindow, gratingOverlap, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)+yEcc),[], [], [], [], [], [], [0, testShift, 0, 0]);
     ptbCorgiSendTrigger(expInfo,'clear',0);
     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * expInfo.ifi);
     vbl2 = vbl;
@@ -299,7 +283,7 @@ if trialData.validTrial
 end
 
 %%%% close all the textures
-Screen('Close',[gratingTest gratingAdapt1 gratingAdapt2]);
+Screen('Close',[gratingOverlap gratingAdapt1 gratingAdapt2]);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
