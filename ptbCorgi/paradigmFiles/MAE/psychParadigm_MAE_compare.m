@@ -15,7 +15,7 @@ KbName('UnifyKeyNames');
 
 
 
-conditionInfo(1).direction = 'left';
+conditionInfo(1).direction = 'none';
 % choose from none, left, or right adaptation
 
 
@@ -41,8 +41,8 @@ expInfo.trialRandomization.type = 'custom';
 list = repmat(1:3,expInfo.trialRandomization.nBlockReps,1);
 expInfo.trialRandomization.trialList  = list(:)';
 
-expInfo.useBitsSharp = true;
-expInfo.enableTriggers = true;
+% expInfo.useBitsSharp = true;
+% expInfo.enableTriggers = true;
 
 expInfo.fixationInfo(1).type  = 'dot';
 expInfo.fixationInfo(1).size  = .2; % radius of the dot
@@ -63,7 +63,7 @@ conditionInfo(1).stimSize = 24; % 24 grating image in degrees.
 % have full cycles only = the average luminance of the grating is equal to the background luminance 
 conditionInfo(1).yEccentricity = 3;
 conditionInfo(1).tempFq = 85/18; % 85/18 or 85/16? 4.72 Hz 
-conditionInfo(1).testDuration = 42; % 42 in cycles. 10 seconds = 20/85*42 cycles
+conditionInfo(1).testDuration = 840/85; % in s
 conditionInfo(1).adaptDuration = 25; % in sec: 25
 
 
@@ -74,6 +74,7 @@ conditionInfo = createConditionsFromParamList(conditionTemplate,'pairwise',...
     'testFreq',[85/10 85/20 85/10],... % Hz
     'fovea',[1 1 0],...
     'trigger',[1+condition 2+condition 3+condition]); % presented at fovea 1 or not 0
+
 
 
 end

@@ -17,6 +17,9 @@ Screen('BlendFunction', expInfo.curWindow, GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 % Create a special texture drawing shader for masked texture drawing:
 glsl = MakeTextureDrawShader(expInfo.curWindow, 'SeparateAlphaChannel');
 
+%%% timing test:
+nbTestCycles = conditionInfo.testDuration / (1/conditionInfo.testFreq);
+trialData.nbTestCycles = nbTestCycles;
 
 %%%%%%%%%%%%%%%%%
 %%%% Gratings
@@ -64,6 +67,7 @@ testShift = testShift/2* expInfo.ppd;
 % Definition of the drawn source rectangle on the screen:
 srcRect=[0 0 texsize texsize];
 foveaRect = [0 0 texsize 2*expInfo.ppd];
+tgtRect = [0 0 expInfo.fixationInfo(1).size*0.7*expInfo.ppd expInfo.fixationInfo(1).size*0.7*expInfo.ppd];
 % yEcc = conditionInfo.yEccentricity * expInfo.ppd;
 
 %%%%%%%%%%%%%%%%%
@@ -113,6 +117,19 @@ trialData.adaptTime = vblAdaptTime;
 % Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)-yEcc),[], [], [], [], [], [], [0, testShift, 0, 0]);
 % Screen('Flip', expInfo.curWindow);
 
+
+
+%%%%%% variables for the task
+frTgtPresent = 10; % nb of frames during which the target is presented
+tmpTgt = shuffle([4:7]); % add between 0 and 2 tgt during test
+nbTgt = tmpTgt(1);
+frAdapt = conditionInfo.adaptDuration / expInfo.ifi; % nb of frames during adaptation
+timeTgtOn = randsample(1:frTgtPresent:frAdapt,nbTgt,0);
+timeTgt = [];
+for tt=1:length(timeTgtOn)
+    timeTgt = [timeTgt timeTgtOn(tt):timeTgtOn(tt)+frTgtPresent];
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ADAPTATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -120,11 +137,16 @@ i = 0; % incremental shift of the gratings
 if strcmp(conditionInfo.direction,'none')
     %%%%%%%%%%%%%%%%% No adaptation
     while (vbl < vblAdaptTime) && ~trialData.abortNow % && ~KbCheck(expInfo.deviceIndex)
+        i=i+1;
         Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)));
         if conditionInfo.fovea == 0
             Screen('FillRect', expInfo.curWindow, gray, CenterRectOnPoint(foveaRect,expInfo.center(1),expInfo.center(2)));
         end
-        drawFixation(expInfo, expInfo.fixationInfo);
+        drawFixation(expInfo, expInfo.fixationInfo); 
+        
+        if ismember(i, timeTgt)
+            Screen('FillOval', expInfo.curWindow, gray, CenterRectOnPoint(tgtRect,expInfo.center(1),expInfo.center(2)));
+        end
         vbl = Screen('Flip', expInfo.curWindow, vbl + (waitframes - 0.5) * expInfo.ifi);
         
         [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
@@ -161,7 +183,9 @@ else
             Screen('FillRect', expInfo.curWindow, gray, CenterRectOnPoint(foveaRect,expInfo.center(1),expInfo.center(2)));
         end
         drawFixation(expInfo, expInfo.fixationInfo);
-        
+        if ismember(i, timeTgt)
+            Screen('FillOval', expInfo.curWindow, gray, CenterRectOnPoint(tgtRect,expInfo.center(1),expInfo.center(2)));
+        end        
         
         % Flip 'waitframes' monitor refresh intervals after last redraw.
         vbl = Screen('Flip', expInfo.curWindow, vbl + (waitframes - 0.5) * expInfo.ifi);
@@ -190,7 +214,7 @@ end
 % would create an ERP so that we can record SSVEP earlier 
 
 cycle = 0;
-while cycle<conditionInfo.testDuration && trialData.validTrial % ~KbCheck(expInfo.deviceIndex)
+while cycle<nbTestCycles && trialData.validTrial % ~KbCheck(expInfo.deviceIndex)
     [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
     if keyDown
         if keyCode(KbName('ESCAPE'))
