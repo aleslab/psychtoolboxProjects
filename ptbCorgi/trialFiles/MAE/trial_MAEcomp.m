@@ -86,10 +86,9 @@ framesPerHalfCycle = framesPerCycle/2;
 
 % Perform initial Flip to sync us to the VBL and for getting an initial
 % VBL-Timestamp for our "WaitBlanking" emulation:
-  
 if expInfo.useBitsSharp
-    trialData.trigger = expInfo.triggerInfo.startTrial;
-    ptbCorgiSendTrigger(expInfo,'conditionnumber',true,conditionInfo.triggerCond);
+    trialData.trigger = conditionInfo.trigger;
+    ptbCorgiSendTrigger(expInfo,'conditionnumber',true,conditionInfo.trigger);
 end
     
 if expInfo.useBitsSharp
@@ -192,6 +191,14 @@ end
 
 cycle = 0;
 while cycle<conditionInfo.testDuration && trialData.validTrial % ~KbCheck(expInfo.deviceIndex)
+    [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
+    if keyDown
+        if keyCode(KbName('ESCAPE'))
+            trialData.abortNow   = true;
+            trialData.validTrial = false;
+        end
+    end
+
     % first stim
     Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)),[], [], [], [], [], [], [0, 0, 0, 0]);
     if conditionInfo.fovea == 0
@@ -266,7 +273,6 @@ Screen('Flip', expInfo.curWindow);
 % get response: direction of MAE
 if trialData.validTrial
     % response screen
-    drawFixation(expInfo, expInfo.fixationInfo);
     Screen('DrawText', expInfo.curWindow, 'number of targers?', 150, expInfo.center(2)-expInfo.center(2)/4, [0 0 0]);
     Screen('DrawText', expInfo.curWindow, '(choose between 0 and 3)', 150, expInfo.center(2), [0 0 0]);
 
