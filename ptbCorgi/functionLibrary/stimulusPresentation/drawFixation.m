@@ -16,6 +16,11 @@ function [expInfo] = drawFixation(expInfo, fixationInfo)
 %             lineWidthPix - [1] line width in pixels
 %             color        - [0] Color of the lines
 %             loc          - [0 0] horizontal and vertical location from center
+% 
+%         'dot' A standard fixation dot with the following fields:
+%             size         - [variable] The size in degrees of the dot radius
+%             color        - [0] Color of the dot
+%             loc          - [0 0] horizontal and vertical location from center
 %
 %         'square' A square box. 
 %             size         - [variable] The size (full width) in degrees of
@@ -106,6 +111,22 @@ switch lower(fixationInfo.type)
         Screen('DrawLines', expInfo.curWindow, fixCoords, fixationInfo.lineWidthPix, ...
             fixationInfo.color, fixLocation, 0);
         
+    case 'dot'
+        
+        if ~isfield(fixationInfo,'size') || isempty(fixationInfo.size)
+            fixationInfo.size = 10/expInfo.ppd;
+        end
+        
+        fixCrossPix    = expInfo.ppd*fixationInfo.size;
+        fixCoords = [-fixCrossPix -fixCrossPix fixCrossPix fixCrossPix]; 
+        if ~isfield(fixationInfo,'loc') || isempty(fixationInfo.loc)
+            fixLocation = CenterRectOnPoint(fixCoords,expInfo.center(1),expInfo.center(2));
+        else %fixationInfo.loc should contain 2 values for horiz and vert deviation from centre
+            fixLocation = CenterRectOnPoint(fixCoords,expInfo.center(1)+expInfo.ppd*fixationInfo.loc(1), expInfo.center(2)+expInfo.ppd*fixationInfo.loc(2));
+        end
+        Screen('FillOval', expInfo.curWindow, fixationInfo.color, fixLocation);
+    
+    
     case 'square'
         %Consider changing this code to a framerect instead of lines for
         %simplicity.

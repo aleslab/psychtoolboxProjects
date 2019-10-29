@@ -133,6 +133,8 @@ function [] = ptbCorgi(sessionInfo)
 % 10/2015 - created by Justin Ales
 %
 
+% add field showTrialNb to expInfo for showing trial numbers and wait for keyboard
+
 %Initial setup
 
 thisFile = mfilename('fullpath');
@@ -978,11 +980,17 @@ disp('Use ptbCorgiSetup() to redefine defaults');
                 
             end %closes: elseif conditionInfo(thisCond).giveFeedbac
             
-            expInfo = drawFixation(expInfo, expInfo.fixationInfo);
-            Screen('Flip', expInfo.curWindow);
-            
-            
-            
+            if isfield(expInfo,'showTrialNb') == 0
+                expInfo = drawFixation(expInfo, expInfo.fixationInfo);
+                Screen('Flip', expInfo.curWindow);
+            else
+                blockMessage = ['Trial ' num2str(iTrial) '/' num2str(length(conditionList)) ' completed. Press any key to continue'];
+                DrawFormattedTextStereo(expInfo.curWindow, blockMessage,...
+                    'left', 'center', 1,[],[],[],[],[],expInfo.screenRect);
+                Screen('Flip', expInfo.curWindow);
+                KbStrokeWait();
+            end
+           
             experimentData(iTrial).trialData = trialData;
             iTrial = iTrial+1;
             
