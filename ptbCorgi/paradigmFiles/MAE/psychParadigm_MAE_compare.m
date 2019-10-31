@@ -15,16 +15,16 @@ KbName('UnifyKeyNames');
 
 
 
-conditionInfo(1).direction = 'left';
+conditionInfo(1).direction = 'right';
 % choose from none, left, or right adaptation
-
+% sequence: none - L/R - none - L/R - none
 
 if strcmp(conditionInfo(1).direction, 'none')
     expInfo.trialRandomization.nBlockReps = 3;
     condition = 10;
     %     conditionInfo(1).nReps = 3;
 else
-    expInfo.trialRandomization.nBlockReps = 2; % 9
+    expInfo.trialRandomization.nBlockReps = 9; % 9
     %     conditionInfo(1).nReps = 9;
     if strcmp(conditionInfo(1).direction, 'left')
         condition = 20;
@@ -41,21 +41,20 @@ expInfo.trialRandomization.type = 'custom';
 list = repmat(1:3,expInfo.trialRandomization.nBlockReps,1);
 expInfo.trialRandomization.trialList  = list(:)';
 
-% expInfo.useBitsSharp = true;
-% expInfo.enableTriggers = true;
+expInfo.useBitsSharp = true;
+expInfo.enableTriggers = true;
 
 expInfo.fixationInfo(1).type  = 'dot';
-expInfo.fixationInfo(1).size  = .2; % radius of the dot
+expInfo.fixationInfo(1).size  = .15; % radius of the dot
 expInfo.fixationInfo(1).loc = [0 0]; % location of the fixation relative to centre in degrees (1st number is horizontal, 2nd is vertical)
 
 expInfo.instructions = 'FIXATE the dot';
 expInfo.showTrialNb = 1; % give trial nb at the end of each trial (+ wait for keyboard)
 
-conditionInfo(1).maxToAnswer = 10000;
+conditionInfo(1).maxToAnswer = 5000;
 conditionInfo(1).iti = 0;
 conditionInfo(1).type = 'Generic';
-conditionInfo(1).giveFeedback = 0;
-conditionInfo(1).giveAudioFeedback = 0;
+conditionInfo(1).giveFeedback = 1;
 conditionInfo(1).intervalBeep = 0;
 conditionInfo(1).trialFun=@trial_MAEcomp;
 conditionInfo(1).stimSize = 24; % 24 grating image in degrees. 
@@ -66,7 +65,7 @@ conditionInfo(1).tempFq = 85/18; % 85/18 or 85/16? 4.72 Hz
 conditionInfo(1).testDuration = 840/85; % in s
 conditionInfo(1).adaptDuration = 25; % in sec: 25
 
-conditionInfo(1).probeDuration = 8; % nb of frames (6 frames = 70ms)
+conditionInfo(1).probeDuration = 6; % nb of frames (6 frames = 70ms)
 
 %%%%%%%%%%%% parameters for the different conditions
 conditionTemplate = conditionInfo(1); 
