@@ -120,15 +120,36 @@ trialData.adaptTime = vblAdaptTime;
 
 
 %%%%%% variables for the task
-frTgtPresent = 10; % nb of frames during which the target is presented
-tmpTgt = shuffle([4:7]); % add between 0 and 2 tgt during test
-nbTgt = tmpTgt(1);
+% between 4 and 7 probes during adaptation
+% add between 0 and 2 tgt during test
+%%%% for adaptation, do it based on frames
+frTgtPresent = conditionInfo.probeDuration; % nb of frames during which the target is presented
+tmpTgt = shuffle(4:7); 
+nbTgt = tmpTgt(1)
 frAdapt = conditionInfo.adaptDuration / expInfo.ifi; % nb of frames during adaptation
 timeTgtOn = randsample(1:frTgtPresent:frAdapt,nbTgt,0);
 timeTgt = [];
 for tt=1:length(timeTgtOn)
-    timeTgt = [timeTgt timeTgtOn(tt):timeTgtOn(tt)+frTgtPresent];
+    timeTgt = [timeTgt timeTgtOn(tt):timeTgtOn(tt)+frTgtPresent-1];
 end
+trialData.nbAdaptProbe = nbTgt;
+trialData.timeAdaptProbe = timeTgt;
+%%% for test do it based on cycle
+tmpTest = shuffle(0:2); 
+nbTestProbe = tmpTest(1);
+if conditionInfo.testFreq > 5
+    cycleOn = randsample(0:2:nbTestCycles-1,nbTestProbe,0); % do not include last cycle: probe duration can last until the next cycle    
+else
+    cycleOn = randsample(0:nbTestCycles,nbTestProbe,0)-1; % cycle starts at 0
+end
+halfCycle = randsample(1:2,nbTestProbe,1); % present at 1st or 2nd half of the cycle
+probeTest = [cycleOn' halfCycle'];
+trialData.cycleOn = cycleOn;
+trialData.halfCycle = halfCycle;
+trialData.probeTest = probeTest;
+interFrames = mod(framesPerCycle-frTgtPresent,10); % probe presented a couple of frames after the start of the cycle
+interTime = interFrames * expInfo.ifi;
+trialData.interTime = interTime;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ADAPTATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -229,6 +250,9 @@ while cycle<nbTestCycles && trialData.validTrial % ~KbCheck(expInfo.deviceIndex)
         Screen('FillRect', expInfo.curWindow, gray, CenterRectOnPoint(foveaRect,expInfo.center(1),expInfo.center(2)));
     end
     drawFixation(expInfo, expInfo.fixationInfo);
+    if probeTest(1) == cycle-1 && probeTest(2) == 2 &&  conditionInfo.testFreq > 5
+        Screen('FillOval', expInfo.curWindow, gray, CenterRectOnPoint(tgtRect,expInfo.center(1),expInfo.center(2)));
+    end
     ptbCorgiSendTrigger(expInfo,'raw',0,f1Trigger);
     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * expInfo.ifi);
     vbl1 = vbl;
@@ -241,12 +265,25 @@ while cycle<nbTestCycles && trialData.validTrial % ~KbCheck(expInfo.deviceIndex)
         end
     end
     
+    if probeTest(1) == cycle && probeTest(2) == 1
+        Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)),[], [], [], [], [], [], [0, 0, 0, 0]);
+        if conditionInfo.fovea == 0
+            Screen('FillRect', expInfo.curWindow, gray, CenterRectOnPoint(foveaRect,expInfo.center(1),expInfo.center(2)));
+        end
+        drawFixation(expInfo, expInfo.fixationInfo);
+        Screen('FillOval', expInfo.curWindow, gray, CenterRectOnPoint(tgtRect,expInfo.center(1),expInfo.center(2)));
+        Screen('Flip', expInfo.curWindow, vbl + (interTime - 0.5) * expInfo.ifi);
+    end
+    
     % second stim
     Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)),[], [], [], [], [], [], [0, testShift, 0, 0]);
     if conditionInfo.fovea == 0
         Screen('FillRect', expInfo.curWindow, gray, CenterRectOnPoint(foveaRect,expInfo.center(1),expInfo.center(2)));
     end
     drawFixation(expInfo, expInfo.fixationInfo);
+    if probeTest(1) == cycle && probeTest(2) == 1 &&  conditionInfo.testFreq > 5
+        Screen('FillOval', expInfo.curWindow, gray, CenterRectOnPoint(tgtRect,expInfo.center(1),expInfo.center(2)));
+    end
     ptbCorgiSendTrigger(expInfo,'clear',0);
     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * expInfo.ifi);
     vbl2 = vbl;
@@ -258,6 +295,16 @@ while cycle<nbTestCycles && trialData.validTrial % ~KbCheck(expInfo.deviceIndex)
         end
     end
 
+    if probeTest(1) == cycle && probeTest(2) == 2
+        Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)),[], [], [], [], [], [], [0, 0, 0, 0]);
+        if conditionInfo.fovea == 0
+            Screen('FillRect', expInfo.curWindow, gray, CenterRectOnPoint(foveaRect,expInfo.center(1),expInfo.center(2)));
+        end
+        drawFixation(expInfo, expInfo.fixationInfo);
+        Screen('FillOval', expInfo.curWindow, gray, CenterRectOnPoint(tgtRect,expInfo.center(1),expInfo.center(2)));
+        Screen('Flip', expInfo.curWindow, vbl + (interTime - 0.5) * expInfo.ifi);
+    end
+    
     % increment cycle
     cycle = cycle+1;
 end
@@ -298,7 +345,7 @@ Screen('Flip', expInfo.curWindow);
 if trialData.validTrial
     % response screen
     Screen('DrawText', expInfo.curWindow, 'number of targers?', 150, expInfo.center(2)-expInfo.center(2)/4, [0 0 0]);
-    Screen('DrawText', expInfo.curWindow, '(choose between 0 and 3)', 150, expInfo.center(2), [0 0 0]);
+    Screen('DrawText', expInfo.curWindow, '(choose between 4 and 9)', 150, expInfo.center(2), [0 0 0]);
 
     trialData.respScreenTime =Screen('Flip',expInfo.curWindow);
     % check for key press
@@ -306,20 +353,25 @@ if trialData.validTrial
         [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
         if keyDown
             trialData.rt = secs - trialData.respScreenTime;
-            if keyCode(KbName('1'))
-                trialData.response = 1;
-            elseif keyCode(KbName('2'))
-                trialData.response = 2;
-            elseif keyCode(KbName('3'))
-                trialData.response = 3;
-            elseif keyCode(KbName('0'))
-                trialData.response = 0;
+            keyCode(KbName)
+            if keyCode(KbName('4'))
+                trialData.response = 4;
+            elseif keyCode(KbName('5'))
+                trialData.response = 5;
+            elseif keyCode(KbName('6'))
+                trialData.response = 6;
+            elseif keyCode(KbName('7'))
+                trialData.response = 7;
+            elseif keyCode(KbName('8'))
+                trialData.response = 8;
+            elseif keyCode(KbName('9'))
+                trialData.response = 9;
             elseif keyCode(KbName('ESCAPE'))
                 trialData.abortNow   = true;
                 trialData.response = 'abort';
             else
                 Screen('DrawText', expInfo.curWindow, 'not an existing response key', 150, expInfo.center(2)-expInfo.center(2)/4, [0 0 0]);
-                Screen('DrawText', expInfo.curWindow, 'please choose between 0 and 3', 50, expInfo.center(2), [0 0 0]);
+                Screen('DrawText', expInfo.curWindow, 'please choose between 4 and 9', 50, expInfo.center(2), [0 0 0]);
                 Screen('Flip',expInfo.curWindow);
             end
         end

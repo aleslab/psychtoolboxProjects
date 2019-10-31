@@ -15,7 +15,7 @@ KbName('UnifyKeyNames');
 
 
 
-conditionInfo(1).direction = 'none';
+conditionInfo(1).direction = 'left';
 % choose from none, left, or right adaptation
 
 
@@ -66,6 +66,7 @@ conditionInfo(1).tempFq = 85/18; % 85/18 or 85/16? 4.72 Hz
 conditionInfo(1).testDuration = 840/85; % in s
 conditionInfo(1).adaptDuration = 25; % in sec: 25
 
+conditionInfo(1).probeDuration = 8; % nb of frames (6 frames = 70ms)
 
 %%%%%%%%%%%% parameters for the different conditions
 conditionTemplate = conditionInfo(1); 
