@@ -61,12 +61,21 @@ gratingAdapt1 = Screen('MakeTexture', expInfo.curWindow, grating1 , [], [], [], 
 
     
 %%% shift
-if conditionInfo.f1 == 0.5
-    testShift = 1; % counterphase
+if conditionInfo.f1 == 0.25
+    counterphase = 2;
+elseif conditionInfo.f1 == 0.5
+    counterphase = 1;
+elseif conditionInfo.f1 == 1
+    counterphase = 0.5;
 elseif conditionInfo.f1 == 2
-    testShift = 0.25; % counterphase
+    counterphase = 0.25;
+else
+    fprintf('!!!!!!!!! error: counterphase not defined for this spatial fq !!!!!!!!!!!');
+    return;
 end
-testShift = testShift/2* expInfo.ppd;
+phaseDiv = 180/conditionInfo.phase;
+testShift = counterphase / phaseDiv * expInfo.ppd;
+
 
 % Definition of the drawn source rectangle on the screen:
 srcRect=[0 0 texsize texsize];
@@ -154,6 +163,7 @@ trialData.interTime = interTime;
 trialData.nbTestProbe = nbTestProbe;
 trialData.totalProbe = nbTestProbe + nbTgt;
 
+    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ADAPTATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

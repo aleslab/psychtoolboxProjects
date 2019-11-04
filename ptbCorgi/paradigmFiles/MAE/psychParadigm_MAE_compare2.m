@@ -1,21 +1,16 @@
-function [conditionInfo, expInfo] = psychParadigm_MAE_compare(expInfo)
-% compare Justin's parameters with the ones used until now 
-% 3 different tests: 
-% - 9 Hz fovea 2c/deg
-% - 4 Hz fovea 0.5c/deg
-% - 9 Hz not fovea 2 c/deg
+function [conditionInfo, expInfo] = psychParadigm_MAE_compare2(expInfo)
+% mix the different test conditions
+% 9 Hz test works. Now compare with small phase and counterphase flicker
+% - 9Hz 90deg
+% - 9Hz 10deg
+% - 9Hz 180deg
+% All with 0.5 c/deg
 % 25 s adapt followed by 10 s test
 % 3 different tests (blocked) x 9 times each = 27 trials in adaptation
 % block x 2 directions + 3x9 trials in unadaptated
 
 % triggers: 101 102 103 = not meaningful
 % only consider 111 to 133
-
-
-%%% for S2
-% - 4.25 Hz fovea 2c/deg
-% - 8.5 Hz fovea 0.5c/deg
-% - 8.5 Hz fovea 2 c/deg
 
 
 KbName('UnifyKeyNames');
@@ -25,8 +20,6 @@ KbName('UnifyKeyNames');
 conditionInfo(1).direction = 'none';
 % choose from none, left, or right adaptation
 % sequence: none - L/R - none - L/R - none
-
-
 
 
 if strcmp(conditionInfo(1).direction, 'none')
@@ -49,7 +42,7 @@ expInfo.paradigmName = 'MAEcomp';
 expInfo.viewingDistance = 57;
 expInfo.trialRandomization.type = 'custom';
 list = repmat(1:3,expInfo.trialRandomization.nBlockReps,1);
-expInfo.trialRandomization.trialList  = list(:)';
+expInfo.trialRandomization.trialList  = Shuffle(list(:)');
 
 expInfo.useBitsSharp = true;
 expInfo.enableTriggers = true;
@@ -72,20 +65,20 @@ conditionInfo(1).stimSize = 24; % 24 grating image in degrees.
 % have full cycles only = the average luminance of the grating is equal to the background luminance 
 conditionInfo(1).yEccentricity = 3;
 conditionInfo(1).tempFq = 85/18; % 85/18 or 85/16? 4.72 Hz 
-conditionInfo(1).testDuration = 840/85; % in s
+conditionInfo(1).testDuration = 840/85; % in s: 840/85
 conditionInfo(1).adaptDuration = 25; % in sec: 25
-conditionInfo(1).phase = 90;
 
 conditionInfo(1).probeDuration = 6; % nb of frames (6 frames = 70ms)
+
+conditionInfo(1).f1 = 0.5; % 0.5 cycle/deg
+conditionInfo(1).testFreq = 85/10; % 8.5 Hz
+conditionInfo(1).fovea = 0;
 
 %%%%%%%%%%%% parameters for the different conditions
 conditionTemplate = conditionInfo(1); 
 conditionInfo = createConditionsFromParamList(conditionTemplate,'pairwise',...
-    'f1',[2 0.5 2],... % cycle/deg
-    'testFreq',[85/20 85/10 85/10],... % Hz
-    'fovea',[0 0 0],...
-    'trigger',[1+condition 2+condition 3+condition]); % presented at fovea 1 or not 0
-
+    'phase',[10 90 180],...
+    'trigger',[1+condition 2+condition 3+condition]); 
 
 
 end
