@@ -11,13 +11,23 @@ function [conditionInfo, expInfo] = psychParadigm_MAE_compare(expInfo)
 % triggers: 101 102 103 = not meaningful
 % only consider 111 to 133
 
+
+%%% for S2
+% - 4.25 Hz fovea 2c/deg
+% - 8.5 Hz fovea 0.5c/deg
+% - 8.5 Hz fovea 2 c/deg
+
+
 KbName('UnifyKeyNames');
 
 
 
-conditionInfo(1).direction = 'right';
+conditionInfo(1).direction = 'left';
 % choose from none, left, or right adaptation
 % sequence: none - L/R - none - L/R - none
+
+
+
 
 if strcmp(conditionInfo(1).direction, 'none')
     expInfo.trialRandomization.nBlockReps = 3;
@@ -71,8 +81,8 @@ conditionInfo(1).probeDuration = 6; % nb of frames (6 frames = 70ms)
 conditionTemplate = conditionInfo(1); 
 conditionInfo = createConditionsFromParamList(conditionTemplate,'pairwise',...
     'f1',[2 0.5 2],... % cycle/deg
-    'testFreq',[85/10 85/20 85/10],... % Hz
-    'fovea',[1 1 0],...
+    'testFreq',[85/20 85/10 85/10],... % Hz
+    'fovea',[0 0 0],...
     'trigger',[1+condition 2+condition 3+condition]); % presented at fovea 1 or not 0
 
 
