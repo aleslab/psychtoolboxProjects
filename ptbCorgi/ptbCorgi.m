@@ -976,7 +976,12 @@ disp('Use ptbCorgiSetup() to redefine defaults');
                 Screen('Flip', expInfo.curWindow);
                 %Show feedback for 1.5 seconds
                 %JMA- Consider making this a tunable parameter.
-                WaitSecs(1.5);
+                if isfield(expInfo,'durationFeedback')
+                   WaitSecs(expInfo.durationFeedback);                 
+                else
+                    WaitSecs(1.5);
+                end
+                
                 
             end %closes: elseif conditionInfo(thisCond).giveFeedbac
             

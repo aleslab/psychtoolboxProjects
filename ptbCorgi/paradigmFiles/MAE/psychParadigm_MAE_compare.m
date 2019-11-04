@@ -17,12 +17,14 @@ function [conditionInfo, expInfo] = psychParadigm_MAE_compare(expInfo)
 % - 8.5 Hz fovea 0.5c/deg
 % - 8.5 Hz fovea 2 c/deg
 
+%%% S3 = S2 with fovea
+
 
 KbName('UnifyKeyNames');
 
 
 
-conditionInfo(1).direction = 'none';
+conditionInfo(1).direction = 'left';
 % choose from none, left, or right adaptation
 % sequence: none - L/R - none - L/R - none
 
@@ -65,6 +67,7 @@ conditionInfo(1).maxToAnswer = 5000;
 conditionInfo(1).iti = 0;
 conditionInfo(1).type = 'Generic';
 conditionInfo(1).giveFeedback = 1;
+expInfo(1).durationFeedback = 0.8; % Show feedback for 0.8 second
 conditionInfo(1).intervalBeep = 0;
 conditionInfo(1).trialFun=@trial_MAEcomp;
 conditionInfo(1).stimSize = 24; % 24 grating image in degrees. 
@@ -72,7 +75,7 @@ conditionInfo(1).stimSize = 24; % 24 grating image in degrees.
 % have full cycles only = the average luminance of the grating is equal to the background luminance 
 conditionInfo(1).yEccentricity = 3;
 conditionInfo(1).tempFq = 85/18; % 85/18 or 85/16? 4.72 Hz 
-conditionInfo(1).testDuration = 840/85; % in s
+conditionInfo(1).testDuration = 840/85; % in s 840/85
 conditionInfo(1).adaptDuration = 25; % in sec: 25
 conditionInfo(1).phase = 90;
 
@@ -83,9 +86,8 @@ conditionTemplate = conditionInfo(1);
 conditionInfo = createConditionsFromParamList(conditionTemplate,'pairwise',...
     'f1',[2 0.5 2],... % cycle/deg
     'testFreq',[85/20 85/10 85/10],... % Hz
-    'fovea',[0 0 0],...
-    'trigger',[1+condition 2+condition 3+condition]); % presented at fovea 1 or not 0
-
+    'fovea',[1 1 1],... % presented at fovea 1 or not 0
+    'trigger',[1+condition 2+condition 3+condition]); 
 
 
 end
