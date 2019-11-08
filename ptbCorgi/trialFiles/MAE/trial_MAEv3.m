@@ -143,12 +143,6 @@ trialData.adaptTime = vblAdaptTime;
 % Screen('Flip', expInfo.curWindow);
 
 
-keysOfInterest=zeros(1,256);
-keysOfInterest(KbName({'1' '2' '3' 'ESCAPE'}))=1;
-KbQueueCreate(expInfo.deviceIndex, keysOfInterest);
-KbQueueStart(expInfo.deviceIndex);
-KbQueueFlush();
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -160,13 +154,11 @@ if strcmp(conditionInfo.direction,'none')
     while (vbl < vblAdaptTime) && ~trialData.abortNow 
         i=i+1;
         Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)));
-        Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)));
-        drawFixation(expInfo, expInfo.fixationInfo); 
-        vbl = Screen('Flip', expInfo.curWindow, vbl + (waitframes - 0.5) * expInfo.ifi);
-        [pressed, firstPress]=KbQueueCheck(expInfo.deviceIndex);
-        if firstPress(KbName('ESCAPE'))
-            trialData.abortNow =1;
+        if conditionInfo.overlap
+            Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)));
         end
+        drawFixation(expInfo, expInfo.fixationInfo);
+        vbl = Screen('Flip', expInfo.curWindow, vbl + (waitframes - 0.5) * expInfo.ifi);
     end
 else
     %%%%%%%%%%%%%%%%%
@@ -186,14 +178,12 @@ else
         
         % Draw gratings texture, rotated by "angle":
         Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)), angle1, [], [], [], [], [], [0, yoffset1, 0, 0]);
-        Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)), angle2, [], [], [], [], [], [0, yoffset2, 0, 0]);
-        drawFixation(expInfo, expInfo.fixationInfo);       
+        if conditionInfo.overlap
+            Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)), angle2, [], [], [], [], [], [0, yoffset2, 0, 0]);
+        end
+        drawFixation(expInfo, expInfo.fixationInfo);
         % Flip 'waitframes' monitor refresh intervals after last redraw.
         vbl = Screen('Flip', expInfo.curWindow, vbl + (waitframes - 0.5) * expInfo.ifi);
-        [pressed, firstPress]=KbQueueCheck(expInfo.deviceIndex);
-        if firstPress(KbName('ESCAPE'))
-            trialData.abortNow =1;
-        end
 
     end
     
@@ -207,16 +197,30 @@ end
 % would create an ERP so that we can record SSVEP earlier 
 
 cycle = 0;
-trialData(:).response=zeros(1,nbTestCycles);
+response=zeros(1,nbTestCycles);
 while cycle<nbTestCycles && trialData.validTrial 
-    [pressed, firstPress]=KbQueueCheck(expInfo.deviceIndex);
-    if firstPress(KbName('ESCAPE'))
-        trialData.abortNow =1;
+    % check key press for each cycle 
+    [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
+    if keyDown
+        if keyCode(KbName('LeftArrow'))
+            response(cycle+1) = 1;
+        elseif keyCode(KbName('RightArrow'))
+            response(cycle+1) = 2;
+        elseif keyCode(KbName('DownArrow'))
+            response(cycle+1) = 3;
+        elseif keyCode(KbName('ESCAPE'))    
+            trialData.abortNow   = true;
+            trialData.response = 'abort';
+        end
+    else
+        response(cycle+1) = 0;
     end
         
     % first stim
     Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)),[], [], [], [], [], [], [0, 0, 0, 0]);
-    Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)),[], [], [], [], [], [], [0, 0, 0, 0]);
+    if conditionInfo.overlap
+        Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)),[], [], [], [], [], [], [0, 0, 0, 0]);
+    end
     drawFixation(expInfo, expInfo.fixationInfo);
     ptbCorgiSendTrigger(expInfo,'raw',0,f1Trigger);
     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * expInfo.ifi);
@@ -231,7 +235,9 @@ while cycle<nbTestCycles && trialData.validTrial
 
     % second stim
     Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)),[], [], [], [], [], [], [0, testShiftF1, 0, 0]);
-    Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)),[], [], [], [], [], [], [0, testShiftF2, 0, 0]);
+    if conditionInfo.overlap
+        Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)),[], [], [], [], [], [], [0, testShiftF2, 0, 0]);
+    end
     drawFixation(expInfo, expInfo.fixationInfo);
     ptbCorgiSendTrigger(expInfo,'clear',0);
     vbl = Screen('Flip', expInfo.curWindow, vbl + (framesPerHalfCycle - 0.5) * expInfo.ifi);
@@ -260,11 +266,13 @@ if trialData.validTrial
     trialData.trialDuration = trialData.trialEndTime - trialData.trialStartTime;
 end
 
-while KbEventAvail(expInfo.deviceIndex)
-    [trialData.evt] = KbEventGet(expInfo.deviceIndex);
-end 
-KbQueueRelease(expInfo.deviceIndex);
-KbEventFlush(expInfo.deviceIndex);
+trialData.allResp = response;
+
+% while KbEventAvail(expInfo.deviceIndex)
+%     [trialData.evt] = KbEventGet(expInfo.deviceIndex);
+% end 
+% KbQueueRelease(expInfo.deviceIndex);
+% KbEventFlush(expInfo.deviceIndex);
 
 %%%% close all the textures
 Screen('Close', [gratingAdapt1, gratingAdapt2]);

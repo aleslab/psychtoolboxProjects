@@ -2,12 +2,14 @@ function [conditionInfo, expInfo] = psychParadigm_MAE_v3(expInfo)
 % overlapping gratings of 1 and 0.25 cycle/deg
 % test at 10 or 180 deg phase
 % adapt at 4.72Hz test at 4.25Hz
-% 30s adapt followed by 8 s test (1st s not used)
-% eeg processing: 5 epochs of 1.4 + 1 s = 8 s test: 1/85*20*6*5+(1/85*20*4)
+% add one condition with only one grating for comparison purposes
+
+% 30s adapt followed by 9.4 s test (1st s not used)
+% eeg processing: 5 epochs of 1.4 + 1 s = 8 s test: 1/85*20*6*6+(1/85*20*4)
 % triggers: 101 102 = not meaningful
-% only consider 111 to 132
-% ask the sbj to report the direction of the motion all the time although I
-% don't record it
+% only consider 111 to 133
+% ask the sbj to report the direction of the motion all the time but only
+% get the response at the beginning of each test cycle
 
 
 KbName('UnifyKeyNames');
@@ -20,10 +22,10 @@ conditionInfo(1).direction = 'left';
 
 
 if strcmp(conditionInfo(1).direction, 'none')
-    expInfo.trialRandomization.nBlockReps = 4;
+    expInfo.trialRandomization.nBlockReps = 3;
     condition = 10;
 else
-    expInfo.trialRandomization.nBlockReps = 12; 
+    expInfo.trialRandomization.nBlockReps = 9; 
     if strcmp(conditionInfo(1).direction, 'left')
         condition = 20;
     elseif strcmp(conditionInfo(1).direction, 'right')
@@ -37,9 +39,9 @@ expInfo.paradigmName = 'MAEv3';
 expInfo.viewingDistance = 57;
 expInfo.trialRandomization.type = 'custom';
 expInfo.giveAudioFeedback = 0;
-list = repmat(1:2,expInfo.trialRandomization.nBlockReps,1);
-expInfo.trialRandomization.trialList  = list(:)';
-expInfo.useKbQueue = true;
+list = repelem(1:3,expInfo.trialRandomization.nBlockReps);
+% expInfo.trialRandomization.trialList  = list;
+expInfo.trialRandomization.trialList  = Shuffle(list);
 
 % expInfo.useBitsSharp = true;
 % expInfo.enableTriggers = true;
@@ -60,8 +62,8 @@ conditionInfo(1).stimSize = 24; % 24 grating image in degrees.
 % should be an integer of 8 so that the lowest spatial frequency grating will
 % have full cycles only = the average luminance of the grating is equal to the background luminance 
 conditionInfo(1).tempFq = 85/18; % 85/18 or 85/16? 4.72 Hz 
-conditionInfo(1).testDuration = (20*6*5 + 20*4)/85; % in s (20*6*5 + 20*4)/85 = 8 s
-conditionInfo(1).adaptDuration = 1; % in sec: 30
+conditionInfo(1).testDuration = (20*6*6 + 20*4)/85; % in s (20*6*5 + 20*4)/85 = 9.4 s
+conditionInfo(1).adaptDuration = 30; % in sec: 30
 conditionInfo(1).f1 = 1; % cycle/deg
 conditionInfo(1).f2 = 0.25; % cycle/deg
 conditionInfo(1).testFreq = 85/20;
@@ -69,8 +71,9 @@ conditionInfo(1).testFreq = 85/20;
 %%%%%%%%%%%% parameters for the different conditions
 conditionTemplate = conditionInfo(1); 
 conditionInfo = createConditionsFromParamList(conditionTemplate,'pairwise',...
-    'phase',[10 180],...
-    'trigger',[1+condition 2+condition]); 
+    'phase',[180 10 180],...
+    'overlap',[0 1 1],...
+    'trigger',[1+condition 2+condition 3+condition]); 
 
 end
 
