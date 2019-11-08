@@ -2,7 +2,15 @@ function [conditionInfo, expInfo] = psychParadigm_MAE_v3(expInfo)
 % overlapping gratings of 1 and 0.25 cycle/deg
 % test at 10 or 180 deg phase
 % adapt at 4.72Hz test at 4.25Hz
+
 % add one condition with only one grating for comparison purposes
+% not sure which is best. MAE is weaker with only one grating adaptation
+% if 2 gratings then I'll have to pick 0.125 0.5 2 to get clear percept but
+% the brain response might not be great.. (also 10deg phase for low spatial
+% freq might not be enough)
+% that might be it though, the test is not tunned to the adapted population
+% and that's why the percept and the brain response does not show good
+% adaptation
 
 % 30s adapt followed by 9.4 s test (1st s not used)
 % eeg processing: 5 epochs of 1.4 + 1 s = 8 s test: 1/85*20*6*6+(1/85*20*4)
@@ -22,10 +30,10 @@ conditionInfo(1).direction = 'left';
 
 
 if strcmp(conditionInfo(1).direction, 'none')
-    expInfo.trialRandomization.nBlockReps = 3;
+    expInfo.trialRandomization.nBlockReps = 3;%3
     condition = 10;
 else
-    expInfo.trialRandomization.nBlockReps = 9; 
+    expInfo.trialRandomization.nBlockReps = 9; %9
     if strcmp(conditionInfo(1).direction, 'left')
         condition = 20;
     elseif strcmp(conditionInfo(1).direction, 'right')
@@ -43,8 +51,8 @@ list = repelem(1:3,expInfo.trialRandomization.nBlockReps);
 % expInfo.trialRandomization.trialList  = list;
 expInfo.trialRandomization.trialList  = Shuffle(list);
 
-% expInfo.useBitsSharp = true;
-% expInfo.enableTriggers = true;
+expInfo.useBitsSharp = true;
+expInfo.enableTriggers = true;
 
 expInfo.fixationInfo(1).type  = 'dot';
 expInfo.fixationInfo(1).size  = .15; % radius of the dot
