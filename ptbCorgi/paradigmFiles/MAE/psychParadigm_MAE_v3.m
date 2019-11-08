@@ -30,10 +30,10 @@ conditionInfo(1).direction = 'left';
 
 
 if strcmp(conditionInfo(1).direction, 'none')
-    expInfo.trialRandomization.nBlockReps = 3;%3
+    expInfo.trialRandomization.nBlockReps = 1;%3
     condition = 10;
 else
-    expInfo.trialRandomization.nBlockReps = 9; %9
+    expInfo.trialRandomization.nBlockReps = 1; %9
     if strcmp(conditionInfo(1).direction, 'left')
         condition = 20;
     elseif strcmp(conditionInfo(1).direction, 'right')
@@ -72,15 +72,15 @@ conditionInfo(1).stimSize = 24; % 24 grating image in degrees.
 conditionInfo(1).tempFq = 85/18; % 85/18 or 85/16? 4.72 Hz 
 conditionInfo(1).testDuration = (20*6*6 + 20*4)/85; % in s (20*6*5 + 20*4)/85 = 9.4 s
 conditionInfo(1).adaptDuration = 30; % in sec: 30
-conditionInfo(1).f1 = 1; % cycle/deg
-conditionInfo(1).f2 = 0.25; % cycle/deg
+conditionInfo(1).f1 = 0.5; % cycle/deg
 conditionInfo(1).testFreq = 85/20;
 
 %%%%%%%%%%%% parameters for the different conditions
 conditionTemplate = conditionInfo(1); 
 conditionInfo = createConditionsFromParamList(conditionTemplate,'pairwise',...
     'phase',[180 10 180],...
-    'overlap',[0 1 1],...
+    'overlap',[1 1 1],...
+    'f2',[0.25 1 1],... % cycle/deg
     'trigger',[1+condition 2+condition 3+condition]); 
 
 end
