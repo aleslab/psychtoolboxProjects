@@ -32,12 +32,13 @@ f1 = conditionInfo.f1/expInfo.ppd; % cycle/deg
 f2 = conditionInfo.f2/expInfo.ppd; % cycle/deg
 
 % direction of the 2 gratings
-if strcmp(conditionInfo.direction,'left')
-    angle1 = 0;
-    angle2 = 180;
-elseif strcmp(conditionInfo.direction,'right')
+if strcmp(conditionInfo.direction,'right')
     angle1 = 180;
     angle2 = 0;
+else % the overlapping stim in the test is the same in the left and the no-adaptation 
+    % (see a few lines below how to construct grating3)
+    angle1 = 0;
+    angle2 = 180;
 end
 trialData.dir1 = angle1;
 trialData.dir2 = angle2;
@@ -52,7 +53,12 @@ fr2=f2*2*pi;
 x = meshgrid(-texsize:texsize, -texsize:texsize);
 grating1 = gray + inc*sin(fr1*x);
 grating2 = gray + inc*sin(fr2*x);
-grating3 = gray + (inc*sin(fr1*x) - inc*sin(fr2*x))/2;
+if strcmp(conditionInfo.direction,'right')
+    % overlapping test stim is mirrored
+    grating3 = gray + (inc*sin(fr2*x) - inc*sin(fr1*x))/2;
+else
+    grating3 = gray + (inc*sin(fr1*x) - inc*sin(fr2*x))/2;
+end
 
 % add alpha column
 grating1 = repmat(grating1,[1,1,3]);
@@ -94,7 +100,7 @@ testShiftF2 = counterphaseF2 / phaseDiv * expInfo.ppd;
 yoffset = conditionInfo.yoffset * expInfo.ppd;
 
 % Definition of the drawn source rectangle on the screen:
-srcRect=[0 0 texsize texsize];
+srcRect=[0 0 texsize texsize*2/3];
 
 %%%%%%%%%%%%%%%%%
 %%% timing for presentation
@@ -157,9 +163,9 @@ if strcmp(conditionInfo.direction,'none')
     %%%%%%%%%%%%%%%%% No adaptation
     while (vbl < vblAdaptTime) && ~trialData.abortNow 
         i=i+1;
-        Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)));
+        Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)), angle1);
         if conditionInfo.overlap
-            Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)));
+            Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)), angle2);
         end
         drawFixation(expInfo, expInfo.fixationInfo);
         vbl = Screen('Flip', expInfo.curWindow, vbl + (waitframes - 0.5) * expInfo.ifi);
@@ -247,8 +253,8 @@ while cycle<nbTestCycles && trialData.validTrial
     if conditionInfo.overlap
         if conditionInfo.phase == 180
             Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)),angle1, [], [], [], [], [], [0, testShiftF1, 0, 0]);
-            Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)),angle1, [], [], [], [], [], [0, testShiftF2, 0, 0]);
-        else
+            Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)),angle2, [], [], [], [], [], [0, testShiftF2, 0, 0]);
+        elseif conditionInfo.phase == 0
             Screen('DrawTexture', expInfo.curWindow, twoGratings, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)),[], [], [], [], [], [], [0, yoffset, 0, 0]);
         end
     else

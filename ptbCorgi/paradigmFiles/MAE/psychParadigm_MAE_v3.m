@@ -5,23 +5,26 @@ function [conditionInfo, expInfo] = psychParadigm_MAE_v3(expInfo)
 % adapt at 4.72Hz test at 4.25Hz
 % ask the sbj to report the direction of the motion all the time but only
 % get the response at the beginning of each test cycle
+% the overlapping gratings look different for left and right adaptation 
+% (mirrored). The left and no adaptation conditions are the same.
 
 % plan for 2 exp: 
 % 1 + 0.5 cycle/deg overlapping + single 0.5 sMAE
 % 0.25 + 0.5 cycle/deg + single 0.5 dMAE
 
-% should still check that the adaptation ends on 0 phase
-% check also how long to adapt/test (how long is the MAE for?)
-
-% eeg processing: 5 epochs of 1.4 + 0.5 s = 9 s test: 1/85*20*6*5+(1/85*20*2)
+% 30 s adaptation
+% eeg processing: 6 epochs of 1.4 + 0.5 s = 9 s test: 1/85*20*6*6+(1/85*20*2)
 % triggers: 101 102 = not meaningful
 % only consider 111 to 133
+
+% what about comparison with both adaptation (adaptation left + right)
+% and the role of attention?
 
 
 
 KbName('UnifyKeyNames');
 
-conditionInfo(1).direction = 'left';
+conditionInfo(1).direction = 'right';
 % choose from none, left, or right adaptation
 % sequence: none - L/R - none - L/R - none
 % odd sbj = left then right
@@ -29,10 +32,10 @@ conditionInfo(1).direction = 'left';
 
 
 if strcmp(conditionInfo(1).direction, 'none')
-    expInfo.trialRandomization.nBlockReps = 1;%3
+    expInfo.trialRandomization.nBlockReps = 3;%3
     condition = 10;
 else
-    expInfo.trialRandomization.nBlockReps = 1; %10
+    expInfo.trialRandomization.nBlockReps = 9; %9
     if strcmp(conditionInfo(1).direction, 'left')
         condition = 20;
     elseif strcmp(conditionInfo(1).direction, 'right')
@@ -49,8 +52,8 @@ expInfo.giveAudioFeedback = 0;
 list = repelem(2:3,expInfo.trialRandomization.nBlockReps);
 expInfo.trialRandomization.trialList  = [repelem(1,expInfo.trialRandomization.nBlockReps) Shuffle(list)];
 
-% expInfo.useBitsSharp = true;
-% expInfo.enableTriggers = true;
+expInfo.useBitsSharp = true;
+expInfo.enableTriggers = true;
 
 expInfo.fixationInfo(1).type  = 'dot';
 expInfo.fixationInfo(1).size  = .15; % radius of the dot
@@ -64,11 +67,11 @@ conditionInfo(1).type = 'Generic';
 conditionInfo(1).giveFeedback = 0;
 conditionInfo(1).intervalBeep = 0;
 conditionInfo(1).trialFun=@trial_MAEv3;
-conditionInfo(1).stimSize = 24; % 24 grating image in degrees. 
+conditionInfo(1).stimSize = 32; % 32 grating image in degrees. 
 % should be an integer of 8 so that the lowest spatial frequency grating will
 % have full cycles only = the average luminance of the grating is equal to the background luminance 
 conditionInfo(1).tempFq = 85/18; % 85/18 or 85/16? 4.72 Hz 
-conditionInfo(1).testDuration = (20*6*6 + 20*4)/85; % in s (20*6*5 + 20*4)/85 = 9.4 s
+conditionInfo(1).testDuration = (20*6*6 + 20*2)/85; % in s (20*6*5 + 20*2)/85 = 9 s
 conditionInfo(1).adaptDuration = 142/(85/18); % 142/(85/18) in sec: 30
 conditionInfo(1).testFreq = 85/20;
 conditionInfo(1).yoffset = 0.05; % for 0 phase, move the stim by yoffset (will be multiply by ppd)
