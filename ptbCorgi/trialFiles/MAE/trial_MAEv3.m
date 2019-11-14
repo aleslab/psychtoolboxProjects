@@ -74,6 +74,8 @@ twoGratings = Screen('MakeTexture', expInfo.curWindow, grating3 , [], [], [], []
 
 %%% shift
 switch conditionInfo.f1
+    case 0.125
+        counterphaseF1 = 4;
     case 0.25
         counterphaseF1 = 2;
     case 0.5
@@ -84,6 +86,8 @@ switch conditionInfo.f1
         counterphaseF1 = 0.25;
 end
 switch conditionInfo.f2
+    case 0.125
+        counterphaseF1 = 4;
     case 0.25
         counterphaseF2 = 2;
     case 0.5
@@ -95,9 +99,14 @@ switch conditionInfo.f2
 end
 
 phaseDiv = 180/conditionInfo.phase;
-testShiftF1 = counterphaseF1 / phaseDiv * expInfo.ppd;
-testShiftF2 = counterphaseF2 / phaseDiv * expInfo.ppd;
-yoffset = conditionInfo.yoffset * expInfo.ppd;
+if conditionInfo.phase == 180
+    testShiftF1 = counterphaseF1 / phaseDiv * expInfo.ppd;
+    testShiftF2 = counterphaseF2 / phaseDiv * expInfo.ppd;
+elseif conditionInfo.phase == 0
+    yoffset = conditionInfo.yoffset * expInfo.ppd;
+else
+    yoffset = counterphaseF1 / phaseDiv * expInfo.ppd;
+end
 
 % Definition of the drawn source rectangle on the screen:
 srcRect=[0 0 texsize texsize*2/3];
@@ -209,7 +218,7 @@ end
 cycle = 0;
 response=zeros(1,nbTestCycles);
 while cycle<nbTestCycles && trialData.validTrial 
-    % check key press for each cycle 
+    % check key press for half cycle 
     [keyDown, secs, keyCode] = KbCheck(expInfo.deviceIndex);
     if keyDown
         if keyCode(KbName('LeftArrow'))
@@ -254,14 +263,14 @@ while cycle<nbTestCycles && trialData.validTrial
         if conditionInfo.phase == 180
             Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)),angle1, [], [], [], [], [], [0, testShiftF1, 0, 0]);
             Screen('DrawTexture', expInfo.curWindow, gratingAdapt2, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)),angle2, [], [], [], [], [], [0, testShiftF2, 0, 0]);
-        elseif conditionInfo.phase == 0
+        else
             Screen('DrawTexture', expInfo.curWindow, twoGratings, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)),[], [], [], [], [], [], [0, yoffset, 0, 0]);
         end
     else
-         if conditionInfo.phase == 0
-            Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)),angle1, [], [], [], [], [], [0, yoffset, 0, 0]);       
-         else
+         if conditionInfo.phase == 180
             Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)),angle1, [], [], [], [], [], [0, testShiftF1, 0, 0]);       
+         else
+            Screen('DrawTexture', expInfo.curWindow, gratingAdapt1, srcRect, CenterRectOnPoint(srcRect,expInfo.center(1),expInfo.center(2)),angle1, [], [], [], [], [], [0, yoffset, 0, 0]);       
          end
     end
     drawFixation(expInfo, expInfo.fixationInfo);
