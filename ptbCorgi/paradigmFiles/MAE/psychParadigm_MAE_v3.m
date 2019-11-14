@@ -1,7 +1,5 @@
 function [conditionInfo, expInfo] = psychParadigm_MAE_v3(expInfo)
 % overlapping gratings 
-% test at 0 or 90 deg phase 
-% for 0 phase, move it by 3arcmin
 % adapt at 4.72Hz test at 8.5Hz
 % reason for 8.5 is that the motion direction effect is at around 80-100 ms
 % after stim onset which should be around 8-12Hz (otherwise the adaptated
@@ -20,7 +18,14 @@ function [conditionInfo, expInfo] = psychParadigm_MAE_v3(expInfo)
 % will look different between the 2 frames
 % if distance the stimulus looks the same but the phase is not equal for
 % the 2 stimuli so the velocity/amount of left-right motion in the test is 
-% different for the 2 stimuli
+% different for the 2 stimuli. Major problem is that if say 0.5 stim is at
+% 90 deg phase then the 1 cycle stim is at counterphase and the 0.25 at 40
+% deg phase. So a difference in the adapted response could be due to a
+% difference in the amount of phase change. 
+% Finally decide to move by a phase of 5 and 90 deg. 5 deg is around
+% 3arcmin for 0.5 cycle/deg stim. The test is moving to the right at the
+% second frame for both stimuli (e.g. whatever the adapted direction) but
+% while keeping the stimulus the way it should look (ie flipped/mirror)
 
 % plan for 2 exp: 
 % 1 + 0.5 cycle/deg overlapping + single 0.5 sMAE
@@ -33,7 +38,6 @@ function [conditionInfo, expInfo] = psychParadigm_MAE_v3(expInfo)
 
 % what about comparison with both adaptation (adaptation left + right alternating as a control condition)
 % and the role of attention?
-
 
 
 KbName('UnifyKeyNames');
@@ -97,7 +101,7 @@ conditionInfo(1).f2 = 1; % 1 or 0.25
 %%%%%%%%%%%% parameters for the different conditions
 conditionTemplate = conditionInfo(1); 
 conditionInfo = createConditionsFromParamList(conditionTemplate,'pairwise',...
-    'phase',[0 0 90],...
+    'phase',[5 5 90],...
     'overlap',[0 1 1],...
     'trigger',[1+condition 2+condition 3+condition]); 
 
