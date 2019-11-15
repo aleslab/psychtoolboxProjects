@@ -22,8 +22,8 @@ function [conditionInfo, expInfo] = psychParadigm_MAE_v3(expInfo)
 % 90 deg phase then the 1 cycle stim is at counterphase and the 0.25 at 40
 % deg phase. So a difference in the adapted response could be due to a
 % difference in the amount of phase change. 
-% Finally decide to move by a phase of 5 and 90 deg. 5 deg is around
-% 3arcmin for 0.5 cycle/deg stim. The test is moving to the right at the
+% Finally decide to move by a phase of 10 and 90 deg. 10 deg is around
+% 3arcmin for 0.5 cycle/deg stim (9deg is 3 arcmin). The test is moving to the right at the
 % second frame for both stimuli (e.g. whatever the adapted direction) but
 % while keeping the stimulus the way it should look (ie flipped/mirror)
 
@@ -42,7 +42,7 @@ function [conditionInfo, expInfo] = psychParadigm_MAE_v3(expInfo)
 
 KbName('UnifyKeyNames');
 
-conditionInfo(1).direction = 'left';
+conditionInfo(1).direction = 'none';
 % choose from none, left, or right adaptation
 % sequence: none - L/R - none - L/R - none
 % odd sbj = left then right
@@ -50,10 +50,10 @@ conditionInfo(1).direction = 'left';
 
 
 if strcmp(conditionInfo(1).direction, 'none')
-    expInfo.trialRandomization.nBlockReps = 1;%3
+    expInfo.trialRandomization.nBlockReps = 3;%3
     condition = 10;
 else
-    expInfo.trialRandomization.nBlockReps = 1; %9
+    expInfo.trialRandomization.nBlockReps = 9; %9
     if strcmp(conditionInfo(1).direction, 'left')
         condition = 20;
     elseif strcmp(conditionInfo(1).direction, 'right')
@@ -101,7 +101,7 @@ conditionInfo(1).f2 = 1; % 1 or 0.25
 %%%%%%%%%%%% parameters for the different conditions
 conditionTemplate = conditionInfo(1); 
 conditionInfo = createConditionsFromParamList(conditionTemplate,'pairwise',...
-    'phase',[5 5 90],...
+    'phase',[10 10 90],...
     'overlap',[0 1 1],...
     'trigger',[1+condition 2+condition 3+condition]); 
 
