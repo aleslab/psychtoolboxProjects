@@ -570,6 +570,7 @@ handles.sessionInfo.backupConditionInfo = handles.conditionInfo;
 handles.conditionInfo = handles.conditionInfo(selectedCondition);
 handles.conditionInfo(1).nReps = 1;
 handles.conditionInfo(1).testCondTrueNum = selectedCondition;
+handles.conditionInfo(1).isTest = true; 
 
 handles.sessionInfo.returnToGui = true;
 handles.sessionInfo.userCancelled = false;

@@ -19,6 +19,9 @@ nCond = length(sessionInfo.conditionInfo);
 
 repsPerCond = zeros(nCond,1); %Keep track of the valid repetitions per condition
 
+%Initialize sortedTrial data so it's total size is correct
+sortedTrialData(nCond).condNumber = [];
+
 for iTrial = 1:length(experimentData),
     
     thisCond = experimentData(iTrial).condNumber;

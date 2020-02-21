@@ -1,4 +1,4 @@
-function [trialData] = dep_gabor_trial(expInfo, conditionInfo)
+function [trialData] = fischer_whitney_trial(expInfo, conditionInfo)
 %test edit
 
 trialData.validTrial = true;
@@ -45,16 +45,19 @@ else
     gaborCenterYPix = 0;
 end
 
+%Vector form for some options. 
+gaborCenterPix = [gaborCenterXPix gaborCenterYPix];
 
 % parameters for gabor
 
-radiusPix = expInfo.ppd*conditionInfo.stimRadiusDeg;    % stimSize in degrees x pixels per degree.
 sigmaPix  = expInfo.ppd*conditionInfo.sigma;  % standard deviation in degrees iinto pixels
-cyclesPerSigma = conditionInfo.freq;    %cycles per standaard devaion
-contrast = conditionInfo.contrast;   % contrast
-phase = 90;      %phase of gabor
-destRect = [ expInfo.center-radiusPix-1 expInfo.center+radiusPix  ];
+radiusPix = round(sigmaPix*5);    % stimSize in degrees x pixels per degree.
 
+smoothingSigmaPix = expInfo.ppd*conditionInfo.noiseSmoothSigma;
+cyclesPerSigma = conditionInfo.freq;    %cycles per standaard devaion
+contrast = conditionInfo.gaborContrast;   % contrast
+phase = 0;      %phase of gabor
+destRect = [ expInfo.center+gaborCenterPix-radiusPix-1 expInfo.center+gaborCenterPix+radiusPix  ];
 
 %If no update is specified default to brownian.
 if ~isfield( conditionInfo, 'updateMethod') || isempty(conditionInfo.updateMethod)
@@ -78,8 +81,10 @@ end
 
 
 %Some parameters for the response line
-lineWidth = 4;
-lineLength = expInfo.ppd*3; %Line length in pixels-this visual degs into pixels
+[minSmoothLineWidth, maxSmoothLineWidth]=Screen('DrawLines',expInfo.curWindow);
+lineWidth = round(expInfo.ppd*0.61);
+lineWidth = min(lineWidth,maxSmoothLineWidth);
+lineLength = expInfo.ppd*5; %Line length in pixels-this visual degs into pixels
 lineColor = [1];
 
 
@@ -91,28 +96,35 @@ end
 
 
 %create a new gabor on every frame we present.
-my_gabor = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient,gaborCenterXPix,gaborCenterYPix);
-my_noise = conditionInfo.noiseSigma.*randn(size(my_gabor));
+my_gabor = createGaborCorrectScale(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient,0,0);
+my_noise = createLowPassNoise(2*radiusPix+1, smoothingSigmaPix, sigmaPix, 0,0);
+my_noise = conditionInfo.noiseContrast*my_noise+.5;
+
+my_mask = createGaussian(2*radiusPix+1, sigmaPix, 1,  0,0);
+%Make a texture with a luminance and alpha plane;
+my_mask = cat(3,0.5*ones(size(my_mask)),1-my_mask);
 %my_noise = max(min(my_noise,.5),-.25);
 %convert it to a texture 'tex'
-tex=Screen('makeTexture', expInfo.curWindow, my_gabor+my_noise);
+gaborTex=Screen('makeTexture', expInfo.curWindow, my_gabor);
+noiseTex = Screen('makeTexture', expInfo.curWindow, my_noise);
+maskTex =  Screen('makeTexture', expInfo.curWindow, my_mask);
 
 %draw the Gabor
-Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
-
+Screen('DrawTexture', expInfo.curWindow, gaborTex, [], destRect, [], 0);
 drawFixation(expInfo,expInfo.fixationInfo);
 stimStartTime= Screen('Flip',expInfo.curWindow);
+
+
 requestedStimEndTime=stimStartTime + conditionInfo.stimDuration;
-Screen('Close',tex);
+Screen('Close',gaborTex);
 
 %draw the mask
-noiseMask = conditionInfo.noiseSigma.*randn(size(my_gabor));
-maskTex=Screen('makeTexture', expInfo.curWindow, noiseMask+0.5);
-Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
+
+Screen('DrawTexture', expInfo.curWindow, noiseTex, [], destRect, [], 0);
 
 drawFixation(expInfo,expInfo.fixationInfo);
 actualStimEndTime=Screen('Flip', expInfo.curWindow, requestedStimEndTime);
-Screen('Close',maskTex);
+Screen('Close',noiseTex);
 
 %calculate mask offset time
 requestedMaskEndTime = actualStimEndTime + 1;
@@ -268,8 +280,10 @@ end
                 sind(thisOrient) cosd(thisOrient)];
             xy = rotMtx'*initXy;
             
-            Screen('DrawLines', expInfo.curWindow, xy,lineWidth,lineColor,expInfo.center,1);
-       
+            Screen('DrawLines', expInfo.curWindow, xy,lineWidth,lineColor,expInfo.center+gaborCenterPix,1);
+            %draw the Gabor
+            Screen('DrawTexture', expInfo.curWindow, maskTex, [], destRect, [], 0,[],[]);
+            drawFixation(expInfo,expInfo.fixationInfo);
             thisFlipTime = Screen('Flip', expInfo.curWindow,lastFlipTime+pollingInterval+expInfo.ifi/2);
             trialData.allRespData(responseIdx,1) = thisOrient; 
             trialData.allRespData(responseIdx,2) = thisFlipTime; 
@@ -286,14 +300,14 @@ end
 
      %create a new gabor on every frame we present.
      feedbackContrast = .8;
-     my_gabor = createGabor(radiusPix, sigmaPix, cyclesPerSigma, feedbackContrast, phase, orient);
+     my_gabor = createGaborCorrectScale(radiusPix, sigmaPix, cyclesPerSigma, feedbackContrast, phase, orient);
      %my_noise = conditionInfo.noiseSigma.*randn(size(my_gabor));
      %my_noise = max(min(my_noise,.5),-.25);
      %convert it to a texture 'tex'
-     tex=Screen('makeTexture', expInfo.curWindow, my_gabor);
+     gaborTex=Screen('makeTexture', expInfo.curWindow, my_gabor);
 
      %draw the Gabor
-     Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
+     Screen('DrawTexture', expInfo.curWindow, gaborTex, [], destRect, [], 0);
 
  
      rotMtx = [cosd(trialData.respOri) -sind(trialData.respOri);...
@@ -311,7 +325,7 @@ end
      drawFixation(expInfo,expInfo.fixationInfo);
      Screen('Flip', expInfo.curWindow,thisFlipTime+feedbackDur);
  
-     Screen('Close',tex);
+     Screen('Close',gaborTex);
 
  end
 % % %

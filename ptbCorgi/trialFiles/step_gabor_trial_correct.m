@@ -1,4 +1,4 @@
-function [trialData] = dep_gabor_trial(expInfo, conditionInfo)
+function [trialData] = step_gabor_trial_correct(expInfo, conditionInfo)
 %test edit
 
 trialData.validTrial = true;
@@ -7,7 +7,7 @@ trialData.abortNow   = false;
 %for rendering the stimulus but whatever.
 trialData.stimStartTime = GetSecs; %Get current time to start the clock
 
-feedbackDur = 2;
+
 % %Now lets setup response gathering
 % KBqueue's are the better way to get responses, quick and accurate but they can be
 % fragile on different systems
@@ -21,29 +21,6 @@ if expInfo.useKbQueue
     KbQueueFlush();
 end
 
-
-%Check for optional fields presence.  If not set to default values. 
-
-if ~isfield(expInfo,'enableKeyboard')
-    expInfo.enableKeyboard = false;
-end
-
-if ~isfield(conditionInfo,'showFeedbackGabor')
-    conditionInfo.showFeedbackGabor = false;
-end
-
-
-if isfield(conditionInfo,'gaborCenterX')
-    gaborCenterXPix = expInfo.ppd*conditionInfo.gaborCenterX;
-else
-    gaborCenterXPix = 0;
-end
-
-if isfield(conditionInfo,'gaborCenterY')
-    gaborCenterYPix = expInfo.ppd*conditionInfo.gaborCenterY;
-else
-    gaborCenterYPix = 0;
-end
 
 
 % parameters for gabor
@@ -61,7 +38,7 @@ if ~isfield( conditionInfo, 'updateMethod') || isempty(conditionInfo.updateMetho
     conditionInfo.updateMethod = 'brownian';
 end
 
-persistent orient;
+persistent orient
 if isempty(orient);
     orient=360*rand;
 end
@@ -74,12 +51,28 @@ switch lower(conditionInfo.updateMethod)
         
 end
 
+% orient=360*rand;
+% expInfo.currentTrial.number
+currentIndex = mod(expInfo.currentTrial.number,3*conditionInfo.trials_per_step);% current phase of orientation 
+if currentIndex==1;
+    orient=(orient);
+elseif currentIndex==conditionInfo.trials_per_step+1;
+    orient=orient+conditionInfo.step_size_deg;
+elseif currentIndex==conditionInfo.trials_per_step*2+1
+    orient=orient-conditionInfo.step_size_deg;
+else
+    orient = orient;
+    
+end
+
+    
+    
 
 
 
 %Some parameters for the response line
 lineWidth = 4;
-lineLength = expInfo.ppd*3; %Line length in pixels-this visual degs into pixels
+lineLength = expInfo.ppd*3; %Line length in pixels
 lineColor = [1];
 
 
@@ -91,7 +84,7 @@ end
 
 
 %create a new gabor on every frame we present.
-my_gabor = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient,gaborCenterXPix,gaborCenterYPix);
+my_gabor = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient);
 my_noise = conditionInfo.noiseSigma.*randn(size(my_gabor));
 %my_noise = max(min(my_noise,.5),-.25);
 %convert it to a texture 'tex'
@@ -99,8 +92,6 @@ tex=Screen('makeTexture', expInfo.curWindow, my_gabor+my_noise);
 
 %draw the Gabor
 Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
-
-drawFixation(expInfo,expInfo.fixationInfo);
 stimStartTime= Screen('Flip',expInfo.curWindow);
 requestedStimEndTime=stimStartTime + conditionInfo.stimDuration;
 Screen('Close',tex);
@@ -110,18 +101,16 @@ noiseMask = conditionInfo.noiseSigma.*randn(size(my_gabor));
 maskTex=Screen('makeTexture', expInfo.curWindow, noiseMask+0.5);
 Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
 
-drawFixation(expInfo,expInfo.fixationInfo);
+
 actualStimEndTime=Screen('Flip', expInfo.curWindow, requestedStimEndTime);
 Screen('Close',maskTex);
 
 %calculate mask offset time
 requestedMaskEndTime = actualStimEndTime + 1;
-drawFixation(expInfo,expInfo.fixationInfo);
 actualMaskEndTime = Screen('Flip', expInfo.curWindow, requestedMaskEndTime);
 
 %Calculate the fixation offset time
 requestedFixEndTime = actualMaskEndTime + 0.25;
-drawFixation(expInfo,expInfo.fixationInfo);
 actualFixEndTime = Screen('Flip', expInfo.curWindow, requestedFixEndTime);
 
 getParticipantResponse();
@@ -131,21 +120,18 @@ trialData.stimEndTime   = actualStimEndTime;
 trialData.maskEndTime   = actualMaskEndTime;
 trialData.fixEndTime    = actualFixEndTime;
 
+trialData.validTrial = true;
 trialData.stimOri = wrapTo180(orient); %wrapTo180 makes angle go from[-180 180];
-trialData.respError = minAngleDiff(trialData.stimOri,trialData.respOri);
-trialData.feedbackMsg = ['Error: ' num2str(round(trialData.respError,1)) ' degrees'];
+trialData.feedbackMsg = [num2str(round(trialData.respOri)) ' degrees'];
 
-if conditionInfo.showFeedbackGabor
-    showParticipantFeedback();
-end
 
 %This subroutine draws a line and allows it to be adjusted with a mouse or
 %powermate. The funtion ends when a mouse button is clicked.
-    function getParticipantResponse()
+function getParticipantResponse()
         waitingForResponse = true;
         responseStartTime = GetSecs;
         lastFlipTime = responseStartTime;
-        pollingInterval = 1*expInfo.ifi;
+        pollingInterval = 2*expInfo.ifi;
         
         SetMouse(expInfo.center(1),expInfo.center(2),expInfo.curWindow)
         %Randomize the line orientation
@@ -161,9 +147,6 @@ end
         else %use the mouse
             [xStart,yStart] = GetMouse(expInfo.curWindow);
         end
-        
-        oriIncrement = 0;
-        
        
         y = 0;
         x = xStart;
@@ -178,8 +161,6 @@ end
         initXy = [0 0; lineLength -lineLength];
         xy = rotMtx'*initXy;
         responseIdx = 1;
-        
-        prevPollPresses = 0;
         
         while waitingForResponse
             
@@ -207,57 +188,15 @@ end
                 [x,y,buttons] = GetMouse(expInfo.curWindow);
             end
             
-            incVal = .5;
-            
-            if expInfo.enableKeyboard
-           
-                %Wait up to half a polling interval for a response
-                [ keyRespData ] = getResponse(expInfo,pollingInterval/2);
-                if keyRespData.firstPress(KbName('space'))
-                    buttons(1) = true; %Ok this is a silly thing, If a space bar is pressed treat as a mouse button click to stop trial.
-                end
-                
-                if keyRespData.pressed
-                    prevPollPresses = prevPollPresses+1;
-                else
-                    prevPollPresses = 0;
-                end
-                
-                %If button is held down for 5 polling checks in a row speed
-                %up the rotation.
-                if prevPollPresses > 5
-                    incVal = 3;
-                else
-                    incVal = .4;
-                end
-                
-                if keyRespData.firstPress(KbName('f')) || keyRespData.firstPress(KbName('LeftArrow'))
-                    oriIncrement = oriIncrement + incVal;
-                elseif keyRespData.firstPress(KbName('j')) || keyRespData.firstPress(KbName('RightArrow'))
-                    oriIncrement = oriIncrement - incVal;
-                end
-                
-                %No matter what is parsed above. If 'ESCAPE' is pressed
-                %always abort
-                if keyRespData.firstPress(KbName('ESCAPE'))
-                    %pressed escape lets abort experiment;
-                    trialData.validTrial = false;
-                    trialData.abortNow = true
-                    waitingForResponse = false;
-                end
-                
-            end
-            
             timeNow = GetSecs;
-            if any(buttons) && timeNow>(responseStartTime+.2); %Minimum response time of 200 ms. 
-              
+            if any(buttons) && timeNow>(responseStartTime+.2); %Ok got a response lets quit
                 trialData.responseTime = timeNow;
                 waitingForResponse = false;
                 
             else
                 
                 
-                thisOrient = initLineOri+.25*(x-xStart)+oriIncrement;
+                thisOrient = initLineOri+.25*(x-xStart);
             end
             
             
@@ -280,45 +219,9 @@ end
         trialData.respStartTime = responseStartTime;
         trialData.respOri = wrapTo180(thisOrient);
     end
-
-
- function showParticipantFeedback()
-
-     %create a new gabor on every frame we present.
-     feedbackContrast = .8;
-     my_gabor = createGabor(radiusPix, sigmaPix, cyclesPerSigma, feedbackContrast, phase, orient);
-     %my_noise = conditionInfo.noiseSigma.*randn(size(my_gabor));
-     %my_noise = max(min(my_noise,.5),-.25);
-     %convert it to a texture 'tex'
-     tex=Screen('makeTexture', expInfo.curWindow, my_gabor);
-
-     %draw the Gabor
-     Screen('DrawTexture', expInfo.curWindow, tex, [], destRect, [], 0);
-
- 
-     rotMtx = [cosd(trialData.respOri) -sind(trialData.respOri);...
-         sind(trialData.respOri) cosd(trialData.respOri)];
-     initXy = [0 0; lineLength -lineLength];
-     xy = rotMtx'*initXy;
-     
-     Screen('DrawLines', expInfo.curWindow, xy,lineWidth,lineColor,expInfo.center,1);
-     
-     
-     DrawFormattedTextStereo(expInfo.curWindow, trialData.feedbackMsg,...
-                        'center', [], 1);
-     
-     thisFlipTime = Screen('Flip', expInfo.curWindow);
-     drawFixation(expInfo,expInfo.fixationInfo);
-     Screen('Flip', expInfo.curWindow,thisFlipTime+feedbackDur);
- 
-     Screen('Close',tex);
-
- end
-% % %
-% % %
-% % %
-
-
-
-
 end
+% % %
+% % %
+% % %
+
+

@@ -1,15 +1,11 @@
 function [conditionInfo,expInfo] = psychparadigm_dep_gabor(expInfo)
-expInfo.paradigmName = 'dependent';
+expInfo.paradigmName = 'walkdependent';
 expInfo.randomizationType = 'blocked';
 
 % use kbQueue's as they have high performance
 expInfo.useKbQueue = false;
 expInfo.enablePowermate = true;
 expInfo.viewingDistance = 57;
-
-
-
-
 
 
 
@@ -45,7 +41,7 @@ conditionInfo(1).responseDuration  = 0;    %Post trial window for waiting for a 
 
 conditionInfo(1).sigma             =2; %standard deviation of the gabor in degrees
 conditionInfo(1).freq              =1; %frequency of the gabor in cycles per sigma. 
-conditionInfo(1).nReps             = 105; %% number of trials to present this condition. 
+conditionInfo(1).nReps             = 5; %% number of trials to present this condition. 
 conditionInfo(1).stimRadiusDeg     =   8;    %stimulus size in degree;
 
 conditionInfo(1).contrast = 0.05;

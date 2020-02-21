@@ -31,6 +31,12 @@ function expInfo = openExperiment( expInfo)
 clear PsychHID;
 clear KbCheck;
 
+%This is another stupid line to try and clear any leftover bits from
+%previous runs.  These are getting annoyingly ad-hoc.  Should really deal
+%with everything needed for clearing in one place. Hopefully this closes
+%all orphan ports. 
+IOPort('closeAll');
+
 %
 % This is a line that is easily skipped/missed but is important
 % Various default setup options, including color as float 0-1;
@@ -131,7 +137,7 @@ if ~isfield(expInfo,'viewingDistance')
 end
 
 %Default fully randomize everything
-if ~isfield(expInfo, 'trialRandomization')
+if ~isfield(expInfo, 'trialRandomization') || isempty(expInfo.trialRandomization)
 
     expInfo.trialRandomization.type = 'random';
     
@@ -147,6 +153,29 @@ if ~isfield(expInfo, 'trialRandomization')
     
 
 end
+
+%   pauseBetweenBlocks - [true] If set will pause and show a message before
+%                        start of next block of trials
+%   repeatInvalidTrial - [true] If true will repeat any trial flagged
+%                        "invalid"
+defaults= {'pauseBetweenBlocks',true,...%Default to pausing between blocks
+    'repeatInvalidTrials',true,...%Default to repeating invalid trials.
+    };
+
+expInfo = validateFields(expInfo,defaults);
+%Repeating invalid trials is not compatible with markovian trial structure
+%because we need to preserve contingent probabilities. Disable repeating if
+%both markov and repeating requested. 
+if  expInfo.repeatInvalidTrials ... 
+        && (strcmpi(expInfo.trialRandomization.type,'markov') ...
+        || strcmpi(expInfo.trialRandomization.type,'blockedmarkov'))
+
+    disp('Repeating invlaid trials and markovian trial structure not compatible, disabling repeating invalid trials')
+    expInfo.repeatInvalidTrials = false;
+    
+end            
+               
+
 
 
 %Default to testing in a small window
@@ -203,6 +232,8 @@ end
 
 %Now setup bitssharp if requested
 if  expInfo.useBitsSharp
+    %First make sure to close any prior open bits connections
+    rc = BitsPlusPlus('Close');
     %Setup taken from BitsPlusPlusIdentityClutTest
      % Setup imaging pipeline:
     PsychImaging('PrepareConfiguration');
@@ -444,17 +475,61 @@ Screen('BlendFunction', expInfo.curWindow,  GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
 
 
 
-%Setup some defaults for keyboard interactions. 
-%Turn off KbQueue's because they can be fragile on untested systems. And
-%the code hasn't fully implemented them. 
-%If you need high performance responses turn them on. But be careful and
-%read the help and the help for ListenChar
-expInfo.useKbQueue = false;
 
 %-3 Merges all connected keypads and keyboards for KbCheck()
 %Negative numbers mean use default keyboard for kbQueueXXX()
 expInfo.inputDeviceNumber = -3;
 expInfo.deviceIndex = expInfo.inputDeviceNumber; %For old fieldname that wasn't clear
+
+%Setup some defaults for keyboard interactions. 
+%Turn off KbQueue's because they can be fragile on untested systems. And
+%the code hasn't fully implemented them. 
+%If you need high performance responses turn them on. But be careful and
+%read the help and the help for ListenChar
+if ~isfield(expInfo,'useKbQueue') || isempty(expInfo.useKbQueue)
+     expInfo.useKbQueue = false;
+end
+
+if expInfo.useKbQueue     
+    disp('!!! Warning kbQueue is a bit fragile.  Take care !!!');
+     keysOfInterest=ones(1,256);
+    KbQueueCreate(expInfo.inputDeviceNumber, keysOfInterest);
+    KbQueueStart(expInfo.inputDeviceNumber);    
+end
+
+
+%should we enable
+if ~isfield(expInfo,'enableBitsRTBox') || isempty(expInfo.enableBitsRTBox)
+     expInfo.enableBitsRTBox = false;
+end
+
+
+%Really fragile code here right now - JMA
+if expInfo.enableBitsRTBox
+    disp('Activating RT box')
+    
+    expInfo.RTBoxSyncInterval = 30;
+    %ExpInfo is using bits sharp.  If so we can just get the handle.
+    if expInfo.useBitsSharp
+        
+        bitsSharpHandle = BitsPlusPlus('getBitsSharpPort');
+        expInfo.RTBoxHandle = BitsSharpPsychRTBox('Open',bitsSharpHandle);
+   
+    else %WARNING HARDCODED PORT FIX THIS
+        try
+            BitsSharpPsychRTBox('closeAll');%Close any port left open to get ready to restart.
+            expInfo.RTBoxHandle = BitsSharpPsychRTBox('Open','/dev/ttyACM0');
+        catch ME
+            
+            disp('error enabling RTBOX,  disabling RTBOX');
+            expInfo.enableBitsRTBox = false;
+            disp(getReport(ME))
+        end
+        
+    end
+    
+    
+end
 
 %If we're in full screen mode we'll disable keypress mirroring to the
 %matlab window.
@@ -465,10 +540,10 @@ if expInfo.useFullScreen
         %supress inp
         ListenChar(0);
         ListenChar(-1);
-        expInfo.inputDeviceNumber = -3; %Negative numbers mean use default for kbQueue
+        
     else
         ListenChar(2); %disable echoing keypress to matlab window
-        expInfo.inputDeviceNumber = -3; 
+        
     end
 else
     

@@ -1,4 +1,4 @@
-function img = createGabor(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient, centerX,centerY)
+function img = createGaborCorrectScale(radiusPix, sigmaPix, cyclesPerSigma, contrast, phase, orient, centerX,centerY)
 % 
 % img = mrUtilGabor(radiusPix, sigmaPix, cyclesPerSigma, [contrast=0.25], [phase=0],[orient=0],[centerX=0],[centerY=0] )
 %
@@ -32,7 +32,7 @@ end
 if(~exist('centerY','var') || isempty(centerY))
     centerY = 0;
 end
-
+centerY = -centerY; %Minus sign so + equals up. 
 
 orient = (pi/180)*orient; %Convert degrees to radians.
 phase  = (pi/180)*phase;
@@ -41,7 +41,7 @@ sigmasPerImage = 2*radiusPix/sigmaPix;
 [x,y] = meshgrid(-radiusPix:radiusPix,-radiusPix:radiusPix);
 
 x=x-centerX;
-y=y-centerY;
+y=y-centerY; 
 imgPix = size(x,1);
 % cycles per pixel
 sf = (sigmasPerImage*cyclesPerSigma)/imgPix*2*pi;
@@ -51,9 +51,10 @@ sf = (sigmasPerImage*cyclesPerSigma)/imgPix*2*pi;
 xp = x*cos(orient)-y*sin(orient);
 %yp = x*sin(orient)+y*cos(orient);
 
-spatialWindow = exp(-((x/sigmaPix).^2)-((y/sigmaPix).^2));
+%spatialWindow = exp(-((x/sigmaPix).^2)-((y/sigmaPix).^2));
+spatialWindow = exp(-.5*( (x/sigmaPix).^2+(y/sigmaPix).^2));
+
 img = spatialWindow.*contrast.*sin(sf*xp+phase);
 img = img/2+.5;
 
 return;
-

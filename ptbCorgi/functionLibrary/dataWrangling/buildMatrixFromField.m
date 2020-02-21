@@ -78,6 +78,7 @@ for iPpt = 1:nParticipants,
     
     dimensionLabels{4}{iPpt} = ptbCorgiData.participantList{iPpt};
     
+    
     %Now go through each condition.
     for iCond = 1:ptbCorgiData.nConditions
         
@@ -137,8 +138,9 @@ allClassNames = unique(allClassNames);
 %warn users because it could get funny
 if length(allClassNames)>1
     warning('ptbCorgi:buildmatrix:diffClass',...
-        'Extracted data had multiple types, take care final data may be unexpected. Loaded types: %s',...
-        allClassNames);
+        ['Extracted data had multiple types, take care final data may have unexpected type. Loaded types: %s\n' ...
+        'Return Type: %s'],...
+        char(allClassNames)',class(outputMatrix));
 end
 
 %if we loaded a string or char convert it to a more useful space padded
